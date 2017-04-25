@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.car.dialer.telecom.TelecomUtils;
+import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.view.PagedListView;
 
 import java.util.ArrayList;
@@ -59,12 +60,14 @@ public class ContactDetailsFragment extends Fragment
     };
 
     private PagedListView mListView;
+    private UiCallManager mCallManager;
 
-    public static ContactDetailsFragment newInstance(Uri uri) {
+    public static ContactDetailsFragment newInstance(Uri uri, UiCallManager callManager) {
         ContactDetailsFragment fragment = new ContactDetailsFragment();
         Bundle args = new Bundle();
         args.putParcelable(KEY_URI, uri);
         fragment.setArguments(args);
+        fragment.mCallManager = callManager;
         return fragment;
     }
 
@@ -74,7 +77,7 @@ public class ContactDetailsFragment extends Fragment
         View v = inflater.inflate(R.layout.contact_details, container, false);
         mListView = v.findViewById(R.id.list_view);
         // Disable the default recyclerview decoration.
-        mListView.setDefaultItemDecoration(new PagedListView.Decoration(getContext()) {
+        mListView.setDefaultItemDecoration(new PagedListView.DividerDecoration(getContext()) {
             @Override
             public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) { }
         });
@@ -283,12 +286,17 @@ public class ContactDetailsFragment extends Fragment
                         TelecomUtils.setContactBitmapAsync(getContext(), viewHolder.rightIcon,
                                 mContactName, firstNumber);
                     }
+                    // Just in case a viewholder object gets recycled.
+                    viewHolder.card.setOnClickListener(null);
                     break;
                 case ID_CONTENT:
                     Pair<String, String> data = mPhoneNumbers.get(position - 1);
-                    viewHolder.title.setText(data.first);
-                    viewHolder.text.setText(data.second);
+                    viewHolder.title.setText(data.first);  // Type.
+                    viewHolder.text.setText(data.second);  // Number.
                     viewHolder.leftIcon.setImageResource(R.drawable.ic_phone);
+                    viewHolder.card.setOnClickListener(v -> {
+                        mCallManager.safePlaceCall(data.second, false);
+                    });
                     break;
                 default:
                     Log.e(TAG, "Unknown view type " + viewHolder.getItemViewType());

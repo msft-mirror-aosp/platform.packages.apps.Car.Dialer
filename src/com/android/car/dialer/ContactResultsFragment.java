@@ -22,7 +22,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.provider.ContactsContract.Contacts;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.net.Uri;
 
 import com.android.car.view.PagedListView;
 
@@ -47,18 +48,11 @@ public class ContactResultsFragment extends Fragment implements
     private static final String KEY_INITIAL_SEARCH_QUERY = "initial_search_query";
 
     private static final String[] CONTACT_DETAILS_PROJECTION = {
-            ContactsContract.Contacts._ID,
-            ContactsContract.Contacts.LOOKUP_KEY,
-            ContactsContract.Contacts.DISPLAY_NAME,
-            ContactsContract.Contacts.PHOTO_URI
+            Contacts._ID,
+            Contacts.LOOKUP_KEY,
+            Contacts.DISPLAY_NAME,
+            Contacts.PHOTO_URI
     };
-
-    /**
-     * A selection criteria to filter contacts based on the query given by {@link #mSearchQuery}.
-     * That query is assumed to be the name of a contact.
-     */
-    private static final String CONTACT_SELECTION =
-            ContactsContract.Contacts.DISPLAY_NAME + " LIKE ? ";
 
     private final ContactResultsAdapter mAdapter = new ContactResultsAdapter();
     private PagedListView mContactResultList;
@@ -144,15 +138,26 @@ public class ContactResultsFragment extends Fragment implements
         data.close();
     }
 
+    /**
+     * Finds the contacts with any field that matches the search query. Typically, the search
+     * criteria appears to be matching the beginning of the value in that data field (name, phone
+     * number, etc.)
+     */
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             Log.d(TAG, "onCreateLoader(); loaderId: " + loaderId + " with query: " + mSearchQuery);
         }
 
-        return new CursorLoader(getContext(), ContactsContract.Contacts.CONTENT_URI,
-                CONTACT_DETAILS_PROJECTION, CONTACT_SELECTION,
-                new String[] { "%" + mSearchQuery + "%" }, null);
+        /* To lookup against all fields, just append the search query to the content filter uri
+         * and perform a lookup without any selection
+         */
+        Uri lookupUri = Uri.withAppendedPath(Contacts.CONTENT_FILTER_URI,
+                Uri.encode(mSearchQuery));
+
+        return new CursorLoader(getContext(), lookupUri,
+                CONTACT_DETAILS_PROJECTION, null /* selection */,
+                null /* selectionArgs */, null /* sortOrder */);
     }
 
     @Override

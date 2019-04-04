@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2019 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.android.car.dialer.ui;
 
 import android.annotation.IntDef;
@@ -11,8 +27,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import com.android.car.dialer.R;
+import com.android.car.dialer.livedata.ActiveCallListLiveData;
 import com.android.car.dialer.livedata.BluetoothHfpStateLiveData;
 import com.android.car.dialer.livedata.BluetoothPairListLiveData;
 import com.android.car.dialer.livedata.BluetoothStateLiveData;
@@ -34,17 +52,18 @@ public class TelecomActivityViewModel extends AndroidViewModel {
     private final Context mApplicationContext;
     private final LiveData<String> mErrorStringLiveData;
     private final MutableLiveData<Integer> mDialerAppStateLiveData;
+    private final LiveData<Boolean> mHasOngoingCallLiveData;
 
     /**
      * App state indicates if bluetooth is connected or it should just show the content fragments.
      */
     @IntDef({DialerAppState.DEFAULT, DialerAppState.BLUETOOTH_ERROR,
-            DialerAppState.EMERGENCY_DAILPAD})
+            DialerAppState.EMERGENCY_DIALPAD})
     @Retention(RetentionPolicy.SOURCE)
     public @interface DialerAppState {
         int DEFAULT = 0;
         int BLUETOOTH_ERROR = 1;
-        int EMERGENCY_DAILPAD = 2;
+        int EMERGENCY_DIALPAD = 2;
     }
 
     public TelecomActivityViewModel(Application application) {
@@ -65,7 +84,13 @@ public class TelecomActivityViewModel extends AndroidViewModel {
                     uiBluetoothMonitor.getBluetoothStateLiveData());
         }
 
+        mHasOngoingCallLiveData = Transformations.map(new ActiveCallListLiveData(),
+                (calls) -> !calls.isEmpty());
         mDialerAppStateLiveData = new DialerAppStateLiveData(mErrorStringLiveData);
+    }
+
+    public LiveData<Boolean> getHasOngoingCallLiveData() {
+        return mHasOngoingCallLiveData;
     }
 
     public MutableLiveData<Integer> getDialerAppState() {
@@ -98,7 +123,7 @@ public class TelecomActivityViewModel extends AndroidViewModel {
             // Bluetooth error
             if (!NO_BT_ERROR.equals(mErrorStringLiveData.getValue())) {
                 // Currently bluetooth is not connected, stay on the emergency dial pad page.
-                if (getValue() == DialerAppState.EMERGENCY_DAILPAD) {
+                if (getValue() == DialerAppState.EMERGENCY_DIALPAD) {
                     return;
                 }
                 setValue(DialerAppState.BLUETOOTH_ERROR);

@@ -13,18 +13,32 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
+
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <FrameLayout
-        android:id="@+id/content_fragment_container"
+    <LinearLayout
+        android:id="@+id/content_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/telecom_activity_padding"/>
+        android:orientation="vertical">
+        <include layout="@layout/top_bar_with_tabs"/>
+        <!-- The main content view. Fragments will be added here. -->
+        <FrameLayout
+            android:id="@+id/content_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/content_top_padding">
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
+    </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/overlay_fragment_container"
+        android:id="@+id/overlay_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </FrameLayout>

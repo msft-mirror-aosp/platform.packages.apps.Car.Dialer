@@ -17,5 +17,5 @@
 
 <resources>
     <!-- Card view margins-->
-    <dimen name="dialer_card_margin_x">246dp</dimen>
+    <dimen name="dialer_card_margin_x">132dp</dimen>
 </resources>

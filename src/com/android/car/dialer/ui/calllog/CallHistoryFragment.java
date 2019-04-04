@@ -15,8 +15,6 @@
  */
 package com.android.car.dialer.ui.calllog;
 
-import static androidx.car.widget.PagedListView.UNLIMITED_PAGES;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,13 +22,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.car.widget.PagedListView;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
-import com.android.car.dialer.ui.view.VerticalListDividerDecoration;
 import com.android.car.dialer.ui.common.DialerBaseFragment;
+import com.android.car.dialer.ui.view.VerticalListDividerDecoration;
 
 public class CallHistoryFragment extends DialerBaseFragment {
     public static CallHistoryFragment newInstance() {
@@ -42,13 +40,13 @@ public class CallHistoryFragment extends DialerBaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.call_list_fragment, container, false);
-        PagedListView pagedListView = fragmentView.findViewById(R.id.list_view);
+        RecyclerView recyclerView = fragmentView.findViewById(R.id.list_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         CallLogAdapter callLogAdapter = new CallLogAdapter(getContext());
-        pagedListView.setAdapter(callLogAdapter);
-        pagedListView.getRecyclerView().addItemDecoration(
+        recyclerView.setAdapter(callLogAdapter);
+        recyclerView.addItemDecoration(
                 new VerticalListDividerDecoration(getContext(), true));
-        pagedListView.setMaxPages(UNLIMITED_PAGES);
 
         CallHistoryViewModel viewModel = ViewModelProviders.of(this).get(
                 CallHistoryViewModel.class);
@@ -56,11 +54,5 @@ public class CallHistoryFragment extends DialerBaseFragment {
         viewModel.getCallHistory().observe(this, callLogAdapter::setUiCallLogs);
 
         return fragmentView;
-    }
-
-    @StringRes
-    @Override
-    protected int getActionBarTitleRes() {
-        return R.string.call_history_title;
     }
 }

@@ -23,13 +23,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.car.widget.PagedListView;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
@@ -48,9 +48,6 @@ import java.util.List;
 public class FavoriteFragment extends DialerBaseFragment {
     private static final String TAG = "CD.FavoriteFrag";
 
-    private static final String KEY_MAX_CLICKS = "max_clicks";
-    private static final int DEFAULT_MAX_CLICKS = 6;
-
     public static FavoriteFragment newInstance() {
         return new FavoriteFragment();
     }
@@ -61,14 +58,13 @@ public class FavoriteFragment extends DialerBaseFragment {
         L.d(TAG, "onCreateView");
 
         View view = inflater.inflate(R.layout.favorite_fragment, container, false);
-        PagedListView listView = view.findViewById(R.id.list_view);
+        RecyclerView listView = view.findViewById(R.id.list_view);
         int numOfColumn = getContext().getResources().getInteger(
                 R.integer.favorite_fragment_grid_column);
-        listView.getRecyclerView().setLayoutManager(
+        listView.setLayoutManager(
                 new GridLayoutManager(getContext(), numOfColumn));
-        listView.getRecyclerView().addItemDecoration(new ItemSpacingDecoration());
-        listView.getRecyclerView().setItemAnimator(null);
-        listView.setMaxPages(getMaxPages());
+        listView.addItemDecoration(new ItemSpacingDecoration());
+        listView.setItemAnimator(null);
 
         FavoriteAdapter adapter = new FavoriteAdapter();
 
@@ -132,19 +128,6 @@ public class FavoriteFragment extends DialerBaseFragment {
         }
     }
 
-    private int getMaxPages() {
-        // Maximum number of forward acting clicks the user can perform
-        Bundle args = getArguments();
-        int maxClicks = args == null
-                ? DEFAULT_MAX_CLICKS
-                : args.getInt(KEY_MAX_CLICKS, DEFAULT_MAX_CLICKS);
-        // We want to show one fewer page than max clicks to allow clicking on an item,
-        // but, the first page is "free" since it doesn't take any clicks to show
-        final int maxPages = maxClicks < 0 ? -1 : maxClicks;
-        L.v(TAG, "Max clicks: %s, Max pages: %s", maxClicks, maxPages);
-        return maxPages;
-    }
-
     private class ItemSpacingDecoration extends RecyclerView.ItemDecoration {
 
         @Override
@@ -153,7 +136,7 @@ public class FavoriteFragment extends DialerBaseFragment {
             super.getItemOffsets(outRect, view, parent, state);
             int carPadding1 =
                     FavoriteFragment.this.getContext().getResources().getDimensionPixelOffset(
-                            R.dimen.car_padding_1);
+                            R.dimen.favorite_card_space);
 
             int leftPadding = 0;
             int rightPadding = 0;
@@ -165,11 +148,5 @@ public class FavoriteFragment extends DialerBaseFragment {
 
             outRect.set(leftPadding, carPadding1, rightPadding, carPadding1);
         }
-    }
-
-    @StringRes
-    @Override
-    protected int getActionBarTitleRes() {
-        return R.string.favorites_title;
     }
 }

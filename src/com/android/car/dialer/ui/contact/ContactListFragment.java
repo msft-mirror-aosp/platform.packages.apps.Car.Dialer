@@ -30,7 +30,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.common.DialerBaseFragment;
-import com.android.car.dialer.ui.view.VerticalListDividerDecoration;
 import com.android.car.telephony.common.Contact;
 
 /**
@@ -38,7 +37,6 @@ import com.android.car.telephony.common.Contact;
  */
 public class ContactListFragment extends DialerBaseFragment implements
         ContactListAdapter.OnShowContactDetailListener {
-    private static final String CONTACT_DETAIL_FRAGMENT_TAG = "CONTACT_DETAIL_FRAGMENT_TAG";
     private ContactListAdapter mContactListAdapter;
 
     public static ContactListFragment newInstance() {
@@ -55,8 +53,6 @@ public class ContactListFragment extends DialerBaseFragment implements
         RecyclerView recyclerView = fragmentView.findViewById(R.id.list_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(mContactListAdapter);
-        recyclerView.addItemDecoration(
-                new VerticalListDividerDecoration(getContext(), /* hideLastDivider= */true));
 
         ContactListViewModel contactListViewModel = ViewModelProviders.of(this).get(
                 ContactListViewModel.class);
@@ -67,6 +63,6 @@ public class ContactListFragment extends DialerBaseFragment implements
     @Override
     public void onShowContactDetail(Contact contact) {
         Fragment contactDetailsFragment = ContactDetailsFragment.newInstance(contact, null);
-        pushContentFragment(contactDetailsFragment, CONTACT_DETAIL_FRAGMENT_TAG);
+        pushContentFragment(contactDetailsFragment, ContactDetailsFragment.FRAGMENT_TAG);
     }
 }

@@ -42,7 +42,11 @@ import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.activecall.InCallViewModel;
 import com.android.car.dialer.ui.common.DialerBaseFragment;
+import com.android.car.telephony.common.Contact;
+import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.TelecomUtils;
+
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Fragment that controls the dialpad.
@@ -52,7 +56,8 @@ public class DialpadFragment extends DialerBaseFragment implements
     private static final String TAG = "CD.DialpadFragment";
     private static final String DIAL_NUMBER_KEY = "DIAL_NUMBER_KEY";
     private static final String DIALPAD_MODE_KEY = "DIALPAD_MODE_KEY";
-    private static final int MAX_DIAL_NUMBER = 20;
+    @VisibleForTesting
+    static final int MAX_DIAL_NUMBER = 20;
 
     private static final SparseIntArray sToneMap = new SparseIntArray();
     private static final SparseArray<Character> sDialValueMap = new SparseArray<>();
@@ -100,6 +105,7 @@ public class DialpadFragment extends DialerBaseFragment implements
     private static final int MODE_EMERGENCY = 3;
 
     private TextView mTitleView;
+    private TextView mDisplayName;
     private ImageButton mDeleteButton;
     private int mMode;
     private StringBuffer mNumber = new StringBuffer(MAX_DIAL_NUMBER);
@@ -162,6 +168,7 @@ public class DialpadFragment extends DialerBaseFragment implements
         mTitleView.setTextAppearance(
                 mMode == MODE_EMERGENCY ? R.style.EmergencyDialNumber : R.style.DialNumber);
         mTitleView.setGravity(Gravity.CENTER);
+        mDisplayName = rootView.findViewById(R.id.display_name);
         ImageButton callButton = rootView.findViewById(R.id.call_button);
         mDeleteButton = rootView.findViewById(R.id.delete_button);
 
@@ -297,27 +304,57 @@ public class DialpadFragment extends DialerBaseFragment implements
             return;
         }
 
-        if (mNumber.length() == 0 && mMode == MODE_DIAL) {
-            mTitleView.setText(R.string.dial_a_number);
-            mTitleView.setGravity(Gravity.CENTER);
-            mDeleteButton.setVisibility(View.GONE);
-            return;
+        if (mMode != MODE_IN_CALL) {
+            presentContactName();
         }
 
-        if (mNumber.length() == 0 && mMode == MODE_EMERGENCY) {
-            mTitleView.setText(R.string.emergency_call_description);
+        if (mNumber.length() == 0) {
             mTitleView.setGravity(Gravity.CENTER);
             mDeleteButton.setVisibility(View.GONE);
-            return;
-        }
 
-        if (mNumber.length() > 0 && mNumber.length() <= MAX_DIAL_NUMBER && mMode == MODE_DIAL) {
-            mTitleView.setText(TelecomUtils.getFormattedNumber(getContext(), mNumber.toString()));
+            if (mMode == MODE_DIAL) {
+                mTitleView.setText(R.string.dial_a_number);
+            } else if (mMode == MODE_EMERGENCY) {
+                mTitleView.setText(R.string.emergency_call_description);
+            } else {
+                mTitleView.setText("");
+            }
+        } else if (mNumber.length() > 0 && mNumber.length() <= MAX_DIAL_NUMBER) {
             mTitleView.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
-            mDeleteButton.setVisibility(View.VISIBLE);
+
+            if (mMode == MODE_IN_CALL) {
+                mTitleView.setText(mNumber);
+                mDeleteButton.setVisibility(View.GONE);
+            } else {
+                mTitleView.setText(
+                        TelecomUtils.getFormattedNumber(getContext(), mNumber.toString()));
+                mDeleteButton.setVisibility(View.VISIBLE);
+            }
+        } else {
+            mTitleView.setText(mNumber.substring(mNumber.length() - MAX_DIAL_NUMBER));
+            mTitleView.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+
+            if (mMode == MODE_IN_CALL) {
+                mDeleteButton.setVisibility(View.GONE);
+            } else {
+                mDeleteButton.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void presentContactName() {
+        if (mDisplayName == null) {
+            // OEM may remove this view from resource file.
             return;
         }
 
-        mTitleView.setText(mNumber.toString());
+        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(mNumber.toString());
+        if (contact == null) {
+            mDisplayName.setText("");
+            mDisplayName.setVisibility(View.GONE);
+            return;
+        }
+        mDisplayName.setVisibility(View.VISIBLE);
+        mDisplayName.setText(contact.getDisplayName());
     }
 }

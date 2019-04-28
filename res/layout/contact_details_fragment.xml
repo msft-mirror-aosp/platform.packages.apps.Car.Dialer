@@ -20,5 +20,4 @@
     android:layout_height="match_parent"
     android:layout_marginStart="@dimen/contact_card_margin_x"
     android:layout_marginEnd="@dimen/contact_card_margin_x"
-    android:clipChildren="false"
-    android:paddingTop="@dimen/contact_detail_list_top_padding"/>
+    android:clipChildren="false"/>

@@ -38,13 +38,13 @@
         <item name="android:clickable">true</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@*android:dimen/car_padding_4</item>
-        <item name="android:layout_marginEnd">@*android:dimen/car_padding_4</item>
-        <item name="android:layout_marginTop">@*android:dimen/car_padding_2</item>
-        <item name="android:layout_marginBottom">@*android:dimen/car_padding_2</item>
+        <item name="android:layout_marginStart">@dimen/keypad_margin_x</item>
+        <item name="android:layout_marginEnd">@dimen/keypad_margin_x</item>
+        <item name="android:layout_marginTop">@dimen/keypad_margin_y</item>
+        <item name="android:layout_marginBottom">@dimen/keypad_margin_y</item>
         <item name="android:minWidth">@dimen/touch_target_size</item>
         <item name="android:minHeight">@dimen/touch_target_size</item>
-        <item name="android:background">@drawable/dialer_ripple_background</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:focusable">true</item>
     </style>
 
@@ -107,17 +107,19 @@
     </style>
 
     <!-- In-call styling for everything except short landscape screens -->
-    <style name="in_call_user_title" parent="@style/TextAppearance.Display2"></style>
-    <style name="in_call_user_phone_number" parent="@style/TextAppearance.Body1">
+    <style name="TextAppearance.InCallUserTitle" parent="@style/TextAppearance.Display2"/>
+    <style name="TextAppearance.InCallUserPhoneNumber" parent="@style/TextAppearance.Body1">
         <item name="android:textColor">#B8FFFFFF</item>
     </style>
-    <style name="in_call_user_description" parent="@style/TextAppearance.Body1">
+    <style name="InCallState">
+        <item name="android:textAppearance">@style/TextAppearance.Body1</item>
         <item name="android:textColor">#B8FFFFFF</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
     </style>
 
     <!-- Contact details -->
-    <style name="contact_details_title" parent="@style/TextAppearance.Display2"/>
-    <style name="contact_details_list_item_title_text" parent="@style/TextAppearance.Body1"/>
-    <style name="contact_details_list_item_subtitle_text" parent="@style/TextAppearance.Body3"/>
+    <style name="TextAppearance.ContactDetailsTitle" parent="@style/TextAppearance.Display2"/>
 
 </resources>

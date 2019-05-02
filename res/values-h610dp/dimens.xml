@@ -14,17 +14,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Main search menu doesn't have an action view, onClick navigates to the search result page-->
-    <item android:id="@+id/menu_contacts_search"
-          android:icon="@drawable/ic_search"
-          android:title="@string/search_title"
-          android:showAsAction="always"/>
 
-    <!-- Dialer setting button -->
-    <item android:id="@+id/menu_dialer_setting"
-          android:icon="@drawable/ic_setting"
-          android:title="@string/setting_title"
-          android:showAsAction="always"
-          android:visible="false"/>
-</menu>
+<resources>
+    <!-- Keypad dimensions -->
+    <dimen name="keypad_margin_x">@*android:dimen/car_padding_4</dimen>
+    <dimen name="keypad_margin_y">@*android:dimen/car_padding_2</dimen>
+
+    <dimen name="fab_outline_size">104dp</dimen>
+</resources>

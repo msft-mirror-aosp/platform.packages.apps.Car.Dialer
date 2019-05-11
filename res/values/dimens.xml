@@ -94,10 +94,11 @@
     <dimen name="dialpad_info_number_view_padding">32dp</dimen>
     <dimen name="dialpad_info_delete_button_margin">96dp</dimen>
     <dimen name="dialpad_fragment_margin">@*android:dimen/car_margin</dimen>
-    <dimen name="dialpad_info_title_container_size">@dimen/touch_target_size</dimen>
+    <dimen name="dialpad_info_guideline">@dimen/touch_target_size</dimen>
     <dimen name="dialpad_info_title_text_size_max">36sp</dimen>
     <dimen name="dialpad_info_title_text_size_min">24sp</dimen>
-    <dimen name="dialpad_display_name_size">24sp</dimen>
+    <dimen name="dialpad_display_name_size">32sp</dimen>
+    <dimen name="display_name_padding">@*android:dimen/car_padding_3</dimen>
 
     <!-- Keypad dimensions -->
     <dimen name="keypad_minimum_size">@dimen/touch_target_size</dimen>
@@ -132,6 +133,9 @@
     <!-- NoHfp error message page -->
     <dimen name="no_hfp_icon_size">@dimen/primary_icon_size</dimen>
     <dimen name="emergency_button_min_height">@dimen/touch_target_size</dimen>
+    <dimen name="emergency_button_min_width">@dimen/touch_target_width</dimen>
+    <dimen name="connect_bluetooth_button_min_height">@dimen/touch_target_size</dimen>
+    <dimen name="connect_bluetooth_button_min_width">@dimen/touch_target_width</dimen>
     <dimen name="emergency_button_bottom_margin">@*android:dimen/car_padding_4</dimen>
 
     <dimen name="telecom_activity_padding">@*android:dimen/car_app_bar_height</dimen>
@@ -160,6 +164,7 @@
     <dimen name="hero_button_corner_radius">38dp</dimen>
     <dimen name="hero_button_separator">@*android:dimen/car_padding_4</dimen>
     <dimen name="contact_avatar_corner_radius_percent" format="float">0.5</dimen>
+    <dimen name="touch_target_width">156dp</dimen>
 
     <!-- Card view margins-->
     <dimen name="contact_card_margin_x">@*android:dimen/car_margin</dimen>

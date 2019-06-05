@@ -55,8 +55,7 @@ import java.util.List;
 public class UiCallManager {
     private static String TAG = "CD.TelecomMgr";
 
-    @VisibleForTesting
-    static final String HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME
+    private static final String HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME
             = "com.android.bluetooth.hfpclient.connserv.HfpClientConnectionService";
     private static UiCallManager sUiCallManager;
 

@@ -39,10 +39,8 @@ import androidx.preference.PreferenceManager;
 
 import com.android.car.apps.common.util.Themes;
 import com.android.car.apps.common.widget.CarTabLayout;
-import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
-import com.android.car.dialer.notification.NotificationService;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.dialer.ui.calllog.CallHistoryFragment;
@@ -157,16 +155,6 @@ public class TelecomActivity extends FragmentActivity implements
             case Intent.ACTION_SEARCH:
                 String searchQuery = intent.getStringExtra(SearchManager.QUERY);
                 navigateToContactResultsFragment(searchQuery);
-                break;
-
-            case Constants.Intents.ACTION_SHOW_PAGE:
-                if (TelecomActivityViewModel.DialerAppState.BLUETOOTH_ERROR
-                        != mDialerAppStateLiveData.getValue()) {
-                    showTabPage(intent.getStringExtra(Constants.Intents.EXTRA_SHOW_PAGE));
-                    if (intent.getBooleanExtra(Constants.Intents.EXTRA_ACTION_READ_MISSED, false)) {
-                        NotificationService.readAllMissedCall(this);
-                    }
-                }
                 break;
 
             default:
@@ -285,9 +273,9 @@ public class TelecomActivity extends FragmentActivity implements
 
     /** Switch to {@link DialpadFragment} and set the given number as dialed number. */
     private void showDialPadFragment(String number) {
-        int dialpadTabIndex = showTabPage(TelecomPageTab.Page.DIAL_PAD);
-
+        int dialpadTabIndex = mTabFactory.getTabIndex(TelecomPageTab.Page.DIAL_PAD);
         if (dialpadTabIndex == -1) {
+            L.w(TAG, "Dialpad is not a tab.");
             return;
         }
 
@@ -298,21 +286,8 @@ public class TelecomActivity extends FragmentActivity implements
         } else {
             L.w(TAG, "Current tab is not a dialpad fragment!");
         }
-    }
 
-    private int showTabPage(@TelecomPageTab.Page String tabPage) {
-        int tabIndex = mTabFactory.getTabIndex(tabPage);
-        if (tabIndex == -1) {
-            L.w(TAG, "Page %s is not a tab.", tabPage);
-            return -1;
-        }
-        getSupportFragmentManager().executePendingTransactions();
-        while (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-            getSupportFragmentManager().popBackStackImmediate();
-        }
-
-        mTabLayout.selectCarTab(tabIndex);
-        return tabIndex;
+        mTabLayout.selectCarTab(dialpadTabIndex);
     }
 
     private void setContentFragment(Fragment fragment, String fragmentTag) {

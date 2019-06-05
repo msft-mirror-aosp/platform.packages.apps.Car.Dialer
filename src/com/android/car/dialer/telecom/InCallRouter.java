@@ -43,23 +43,11 @@ class InCallRouter {
     private final InCallNotificationController mInCallNotificationController;
     private final ArrayList<InCallServiceImpl.ActiveCallListChangedCallback>
             mActiveCallListChangedCallbacks = new ArrayList<>();
-    private final ProjectionCallHandler mProjectionCallHandler;
 
     InCallRouter(Context context) {
         mContext = context;
         mMainHandler = Handler.getMain();
         mInCallNotificationController = InCallNotificationController.get();
-        mProjectionCallHandler = new ProjectionCallHandler(context);
-    }
-
-    void start() {
-        mProjectionCallHandler.start();
-        mActiveCallListChangedCallbacks.add(mProjectionCallHandler);
-    }
-
-    void stop() {
-        mActiveCallListChangedCallbacks.remove(mProjectionCallHandler);
-        mProjectionCallHandler.stop();
     }
 
     /**

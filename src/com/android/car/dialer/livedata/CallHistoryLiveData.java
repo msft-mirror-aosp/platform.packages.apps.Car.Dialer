@@ -95,10 +95,8 @@ public class CallHistoryLiveData extends AsyncQueryLiveData<List<PhoneCallLog>> 
         return new CallHistoryLiveData(context, queryParam);
     }
 
-    private final Context mContext;
     private CallHistoryLiveData(Context context, QueryParam queryParam) {
         super(context, QueryParam.of(queryParam));
-        mContext = context;
     }
 
     @Override
@@ -106,7 +104,7 @@ public class CallHistoryLiveData extends AsyncQueryLiveData<List<PhoneCallLog>> 
         List<PhoneCallLog> resultList = new ArrayList<>();
 
         while (cursor.moveToNext()) {
-            PhoneCallLog phoneCallLog = PhoneCallLog.fromCursor(mContext, cursor);
+            PhoneCallLog phoneCallLog = PhoneCallLog.fromCursor(cursor);
             PhoneCallLog previousCallLog = resultList.isEmpty() ? null : resultList.get(
                     resultList.size() - 1);
 

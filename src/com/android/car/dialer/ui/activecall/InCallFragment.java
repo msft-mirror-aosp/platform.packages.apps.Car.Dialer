@@ -57,7 +57,7 @@ public class InCallFragment extends Fragment implements
     private static final String TAG_CALL_RINGING = "CallStateRinging";
     private static final String TAG_CALL_OTHER = "CallStateOther";
 
-    private DialpadFragment mDialpadFragment;
+    private Fragment mDialpadFragment;
     private View mUserProfileContainerView;
     private View mDialerFragmentContainer;
     private TextView mUserProfileCallStateText;
@@ -78,10 +78,6 @@ public class InCallFragment extends Fragment implements
         mBackgroundImage = fragmentView.findViewById(R.id.background_image);
         mDialpadFragment = DialpadFragment.newInCallDialpad();
 
-        getChildFragmentManager().beginTransaction()
-                .replace(R.id.dialpad_container, mDialpadFragment)
-                .commit();
-
         InCallViewModel inCallViewModel = ViewModelProviders.of(getActivity()).get(
                 InCallViewModel.class);
 
@@ -94,7 +90,7 @@ public class InCallFragment extends Fragment implements
     @Override
     public void onOpenDialpad() {
         getChildFragmentManager().beginTransaction()
-                .attach(mDialpadFragment)
+                .replace(R.id.dialpad_container, mDialpadFragment)
                 .commit();
         mDialerFragmentContainer.setVisibility(View.VISIBLE);
         mUserProfileContainerView.setVisibility(View.GONE);
@@ -104,7 +100,7 @@ public class InCallFragment extends Fragment implements
     @Override
     public void onCloseDialpad() {
         getChildFragmentManager().beginTransaction()
-                .detach(mDialpadFragment)
+                .remove(mDialpadFragment)
                 .commit();
         mDialerFragmentContainer.setVisibility(View.GONE);
         mUserProfileContainerView.setVisibility(View.VISIBLE);

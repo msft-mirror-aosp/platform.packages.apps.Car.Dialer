@@ -21,6 +21,8 @@ import static com.google.common.truth.Truth.assertThat;
 import android.content.Context;
 import android.view.View;
 
+import androidx.fragment.app.Fragment;
+
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.FragmentTestActivity;
 import com.android.car.dialer.R;
@@ -37,28 +39,31 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(CarDialerRobolectricTestRunner.class)
-public class InCallFragmentTest {
+public class OngoingCallFragmentTest {
 
-    private InCallFragment mInCallFragment;
+    private OngoingCallFragment mOngoingCallFragment;
     private FragmentTestActivity mFragmentTestActivity;
     private View mUserProfileContainerView;
-    private View mDialerFragmentContainer;
+    private Fragment mInCallDialpadFragment;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
         Context context = RuntimeEnvironment.application;
+        ((TestDialerApplication) context).setupInCallServiceImpl();
         ((TestDialerApplication) context).initUiCallManager();
         InMemoryPhoneBook.init(context);
 
-        mInCallFragment = InCallFragment.newInstance();
+        mOngoingCallFragment = new OngoingCallFragment();
         mFragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().start().resume().get();
-        mFragmentTestActivity.setFragment(mInCallFragment);
+        mFragmentTestActivity.setFragment(mOngoingCallFragment);
 
-        mUserProfileContainerView = mInCallFragment.getView().findViewById(
+        mUserProfileContainerView = mOngoingCallFragment.getView().findViewById(
                 R.id.user_profile_container);
-        mDialerFragmentContainer = mInCallFragment.getView().findViewById(R.id.dialpad_container);
+        mInCallDialpadFragment = mOngoingCallFragment.getChildFragmentManager().findFragmentById(
+                R.id.incall_dialpad_fragment);
     }
 
     @After
@@ -69,23 +74,23 @@ public class InCallFragmentTest {
 
     @Test
     public void testOnCreateView() {
-        assertThat(mDialerFragmentContainer.getVisibility()).isEqualTo(View.GONE);
+        assertThat(mInCallDialpadFragment.isHidden()).isTrue();
         assertThat(mUserProfileContainerView.getVisibility()).isEqualTo(View.VISIBLE);
     }
 
     @Test
     public void testOnOpenDialpad() {
-        mInCallFragment.onOpenDialpad();
+        mOngoingCallFragment.onOpenDialpad();
 
-        assertThat(mDialerFragmentContainer.getVisibility()).isEqualTo(View.VISIBLE);
+        assertThat(mInCallDialpadFragment.isHidden()).isFalse();
         assertThat(mUserProfileContainerView.getVisibility()).isEqualTo(View.GONE);
     }
 
     @Test
     public void testOnCloseDialpad() {
-        mInCallFragment.onCloseDialpad();
+        mOngoingCallFragment.onCloseDialpad();
 
-        assertThat(mDialerFragmentContainer.getVisibility()).isEqualTo(View.GONE);
+        assertThat(mInCallDialpadFragment.isHidden()).isTrue();
         assertThat(mUserProfileContainerView.getVisibility()).isEqualTo(View.VISIBLE);
     }
 }

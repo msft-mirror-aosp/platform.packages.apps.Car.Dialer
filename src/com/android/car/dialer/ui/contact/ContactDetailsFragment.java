@@ -20,8 +20,6 @@ import android.app.ActionBar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -102,16 +100,6 @@ public class ContactDetailsFragment extends DialerListBaseFragment implements
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.contact_edit, menu);
-        MenuItem defaultNumberMenuItem = menu.findItem(R.id.menu_contact_default_number);
-        ContactDefaultNumberActionProvider contactDefaultNumberActionProvider =
-                (ContactDefaultNumberActionProvider) defaultNumberMenuItem.getActionProvider();
-        contactDefaultNumberActionProvider.setContact(mContact);
-        mContactDetailsLiveData.observe(this, contactDefaultNumberActionProvider::setContact);
-    }
-
-    @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.menu_contacts_search).setVisible(false);
         menu.findItem(R.id.menu_dialer_setting).setVisible(false);
@@ -149,7 +137,7 @@ public class ContactDetailsFragment extends DialerListBaseFragment implements
     }
 
     @Override
-    protected void setupActionBar(@NonNull ActionBar actionBar) {
+    public void setupActionBar(@NonNull ActionBar actionBar) {
         actionBar.setCustomView(R.layout.contact_details_action_bar);
         actionBar.setTitle(null);
 

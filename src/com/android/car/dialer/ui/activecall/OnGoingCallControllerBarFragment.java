@@ -39,6 +39,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
@@ -55,27 +56,29 @@ public class OnGoingCallControllerBarFragment extends Fragment {
             ImmutableMap.<Integer, AudioRouteInfo>builder()
                     .put(CallAudioState.ROUTE_WIRED_HEADSET, new AudioRouteInfo(
                             R.string.audio_route_handset,
-                            R.drawable.ic_smartphone,
-                            R.drawable.ic_smartphone_activatable))
+                            R.drawable.ic_audio_route_headset,
+                            R.drawable.ic_audio_route_headset_activatable))
                     .put(CallAudioState.ROUTE_EARPIECE, new AudioRouteInfo(
                             R.string.audio_route_handset,
-                            R.drawable.ic_smartphone,
-                            R.drawable.ic_smartphone_activatable))
+                            R.drawable.ic_audio_route_earpiece,
+                            R.drawable.ic_audio_route_earpiece_activatable))
                     .put(CallAudioState.ROUTE_BLUETOOTH, new AudioRouteInfo(
                             R.string.audio_route_vehicle,
-                            R.drawable.ic_bluetooth,
-                            R.drawable.ic_bluetooth_activatable))
+                            R.drawable.ic_audio_route_vehicle,
+                            R.drawable.ic_audio_route_vehicle_activatable))
                     .put(CallAudioState.ROUTE_SPEAKER, new AudioRouteInfo(
                             R.string.audio_route_phone_speaker,
-                            R.drawable.ic_speaker_phone,
-                            R.drawable.ic_speaker_phone_activatable))
+                            R.drawable.ic_audio_route_speaker,
+                            R.drawable.ic_audio_route_speaker_activatable))
                     .build();
 
     private AlertDialog mAudioRouteSelectionDialog;
     private AudioRouteListAdapter mAudioRouteAdapter;
-    private ImageView mMuteButton;
+    private View mMuteButton;
+    private View mAudioRouteView;
     private ImageView mAudioRouteButton;
-    private ImageView mPauseButton;
+    private TextView mAudioRouteText;
+    private View mPauseButton;
     private LiveData<Call> mCallLiveData;
     private MutableLiveData<Boolean> mDialpadState;
     private int mCallState;
@@ -134,17 +137,19 @@ public class OnGoingCallControllerBarFragment extends Fragment {
         endCallButton.setOnClickListener(v -> onEndCall());
 
         List<Integer> audioRoutes = UiCallManager.get().getSupportedAudioRoute();
+        mAudioRouteView = fragmentView.findViewById(R.id.voice_channel_view);
         mAudioRouteButton = fragmentView.findViewById(R.id.voice_channel_button);
+        mAudioRouteText = fragmentView.findViewById(R.id.voice_channel_text);
         if (audioRoutes.size() > 1) {
-            mAudioRouteButton.setOnClickListener((v) -> {
-                mAudioRouteButton.setActivated(true);
+            mAudioRouteView.setOnClickListener((v) -> {
+                mAudioRouteView.setActivated(true);
                 mAudioRouteAdapter.setActiveAudioRoute(UiCallManager.get().getAudioRoute());
                 mAudioRouteSelectionDialog.show();
             });
         }
 
         mAudioRouteSelectionDialog.setOnDismissListener(
-                (dialog) -> mAudioRouteButton.setActivated(false));
+                (dialog) -> mAudioRouteView.setActivated(false));
 
         mPauseButton = fragmentView.findViewById(R.id.pause_button);
         mPauseButton.setOnClickListener((v) -> {
@@ -226,7 +231,11 @@ public class OnGoingCallControllerBarFragment extends Fragment {
         }
 
         L.i(TAG, "Audio Route State: " + audioRoute);
-        mAudioRouteButton.setImageResource(getAudioRouteInfo(audioRoute).mIconActivatable);
+        AudioRouteInfo audioRouteInfo = getAudioRouteInfo(audioRoute);
+        if (mAudioRouteButton != null) {
+            mAudioRouteButton.setImageResource(audioRouteInfo.mIconActivatable);
+        }
+        ViewUtils.setText(mAudioRouteText, audioRouteInfo.mLabel);
 
         updateMuteButtonEnabledState(audioRoute);
     }

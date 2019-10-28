@@ -27,23 +27,21 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
-import com.android.car.dialer.widget.WorkerExecutor;
+import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
  * View model for {@link ContactListFragment}.
  */
 public class ContactListViewModel extends AndroidViewModel {
-
-    public static final int SORT_BY_FIRST_NAME = 1;
-    public static final int SORT_BY_LAST_NAME = 2;
-
     private final Context mContext;
     private final LiveData<Pair<Integer, List<Contact>>> mSortedContactListLiveData;
 
@@ -72,28 +70,8 @@ public class ContactListViewModel extends AndroidViewModel {
         private final SharedPreferencesLiveData mPreferencesLiveData;
         private final Context mContext;
 
+        private final ExecutorService mExecutorService;
         private Future<?> mRunnableFuture;
-
-        /**
-         * Sort by the default display order of a name. For western names it will be "Given Family".
-         * For unstructured names like east asian this will be the only order.
-         * Phone Dialer uses the same method for sorting given names.
-         *
-         * @see android.provider.ContactsContract.Contacts#DISPLAY_NAME_PRIMARY
-         */
-        private final Comparator<Contact> mFirstNameComparator =
-                (o1, o2) -> o1.compareByDisplayName(o2);
-
-        /**
-         * Sort by the alternative display order of a name. For western names it will be "Family,
-         * Given". For unstructured names like east asian this order will be ignored and treated as
-         * primary.
-         * Phone Dialer uses the same method for sorting family names.
-         *
-         * @see android.provider.ContactsContract.Contacts#DISPLAY_NAME_ALTERNATIVE
-         */
-        private final Comparator<Contact> mLastNameComparator =
-                (o1, o2) -> o1.compareByAltDisplayName(o2);
 
         private SortedContactListLiveData(Context context,
                 @NonNull LiveData<List<Contact>> contactListLiveData,
@@ -101,6 +79,7 @@ public class ContactListViewModel extends AndroidViewModel {
             mContext = context;
             mContactListLiveData = contactListLiveData;
             mPreferencesLiveData = sharedPreferencesLiveData;
+            mExecutorService = Executors.newSingleThreadExecutor();
 
             addSource(mPreferencesLiveData, (trigger) -> updateSortedContactList());
             addSource(mContactListLiveData, (trigger) -> updateSortedContactList());
@@ -112,22 +91,11 @@ public class ContactListViewModel extends AndroidViewModel {
                 return;
             }
 
-            String key = mPreferencesLiveData.getKey();
-            String firstNameSort = mContext.getResources().getString(
-                    R.string.give_name_first_title);
-
             List<Contact> contactList = mContactListLiveData.getValue();
-            Comparator<Contact> comparator;
-            Integer sortMethod;
-            if (mPreferencesLiveData.getValue() == null
-                    || firstNameSort.equals(
-                    mPreferencesLiveData.getValue().getString(key, firstNameSort))) {
-                comparator = mFirstNameComparator;
-                sortMethod = SORT_BY_FIRST_NAME;
-            } else {
-                comparator = mLastNameComparator;
-                sortMethod = SORT_BY_LAST_NAME;
-            }
+            Pair<Comparator<Contact>, Integer> contactSortingInfo = ContactSortingInfo
+                    .getSortingInfo(mContext, mPreferencesLiveData);
+            Comparator<Contact> comparator = contactSortingInfo.first;
+            Integer sortMethod = contactSortingInfo.second;
 
             // SingleThreadPoolExecutor is used here to avoid multiple threads sorting the list
             // at the same time.
@@ -139,8 +107,7 @@ public class ContactListViewModel extends AndroidViewModel {
                 Collections.sort(contactList, comparator);
                 postValue(new Pair<>(sortMethod, contactList));
             };
-            mRunnableFuture = WorkerExecutor.getInstance().getSingleThreadExecutor().submit(
-                    runnable);
+            mRunnableFuture = mExecutorService.submit(runnable);
         }
 
         @Override

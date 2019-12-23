@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.CallLog;
 import android.telecom.Call;
 import android.telephony.PhoneNumberUtils;
 import android.view.Menu;
@@ -176,7 +177,14 @@ public class TelecomActivity extends FragmentActivity implements
                     }
                 }
                 break;
-
+            case Intent.ACTION_VIEW:
+                if (CallLog.Calls.CONTENT_TYPE.equals(intent.getType())) {
+                    if (TelecomActivityViewModel.DialerAppState.BLUETOOTH_ERROR
+                            != mDialerAppStateLiveData.getValue()) {
+                        showTabPage(TelecomPageTab.Page.CALL_HISTORY);
+                    }
+                }
+                break;
             default:
                 // Do nothing.
         }
@@ -318,7 +326,7 @@ public class TelecomActivity extends FragmentActivity implements
             return -1;
         }
         getSupportFragmentManager().executePendingTransactions();
-        while (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+        while (isBackNavigationAvailable()) {
             getSupportFragmentManager().popBackStackImmediate();
         }
 
@@ -362,6 +370,12 @@ public class TelecomActivity extends FragmentActivity implements
                         : R.style.RootToolbarDisplayOptions,
                 android.R.attr.displayOptions);
         getActionBar().setDisplayOptions(displayOptions);
+
+        Fragment topFragment = getSupportFragmentManager().findFragmentById(
+                R.id.content_fragment_container);
+        if (topFragment instanceof DialerBaseFragment) {
+            ((DialerBaseFragment) topFragment).setupActionBar(getActionBar());
+        }
     }
 
     @Override
@@ -371,6 +385,18 @@ public class TelecomActivity extends FragmentActivity implements
             return true;
         }
         return super.onNavigateUp();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // By default onBackPressed will pop all the fragments off the backstack and then finish
+        // the activity. We want to finish the activity while there is still one fragment on the
+        // backstack, because we use onBackStackChanged() to set up our fragments.
+        if (isBackNavigationAvailable()) {
+            super.onBackPressed();
+        } else {
+            finishAfterTransition();
+        }
     }
 
     @Override

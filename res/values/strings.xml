@@ -34,6 +34,10 @@
     <string name="error_contact_deleted">This contact might have been deleted.</string>
     <!-- Toast text when user has inputted an invalid phone number [CHAR LIMIT=NONE] -->
     <string name="error_invalid_phone_number">Can\'t dial this number. Check it and try again.</string>
+    <!-- Toast text when telephony service is not ready [CHAR LIMIT=NONE] -->
+    <string name="error_telephony_not_available">
+        Phone call is not available. Please try again later.
+    </string>
 
     <!-- Decline an in coming call [CHAR LIMIT=20] -->
     <string name="decline_call">Decline</string>
@@ -65,10 +69,24 @@
     <!-- Toolbar title for tabbed pages -->
     <string name="default_toolbar_title" translatable="false"></string>
 
+    <!-- Headers for call history -->
+    <!-- Header in call log to group calls from the current day. [CHAR LIMIT=30] -->
+    <string name="call_log_header_today">Today</string>
+
+    <!-- Header in call log to group calls from the previous day. [CHAR LIMIT=30] -->
+    <string name="call_log_header_yesterday">Yesterday</string>
+
+    <!-- Header in call log to group calls from before yesterday. [CHAR LIMIT=30] -->
+    <string name="call_log_header_older">Older</string>
+
     <!-- Button to add start choosing a contact to add as a new favorite [CHAR_LIMIT=50] -->
     <string name="add_favorite_button">Add a favorite</string>
     <!-- Error message shown when on the favorites page without any favorites added [CHAR_LIMIT=80] -->
     <string name="favorites_empty">You haven\'t added any favorites yet</string>
+    <!-- Button to cancel the dialog where you pick a phone number to add as a favorite -->
+    <string name="cancel_add_favorites_dialog" translatable="false">@android:string/cancel</string>
+    <!-- Button to confirm the dialog where you pick a phone number to add as a favorite -->
+    <string name="confirm_add_favorites_dialog" translatable="false">@android:string/ok</string>
 
     <!-- Keypad strings-->
     <string name="one" translatable="false">1</string>
@@ -109,12 +127,16 @@
     <string name="select_number_dialog_just_once_button">Just once</string>
     <!-- Button for choose a phone number dialog to set the selected number as default [CHAR LIMIT=30] -->
     <string name="select_number_dialog_always_button">Always</string>
-    <!-- Title for set default phone number dialog [CHAR LIMIT=60]-->
-    <string name="set_default_number">Set default phone number</string>
     <!-- Description for the default phone number of the contact [CHAR LIMIT=30] -->
     <string name="primary_number_description">
         <xliff:g id="label" example="Mobile">%1$s</xliff:g>
         " - Default"
+    </string>
+
+    <!-- Description for the favorite phone number in add to favorite flow [CHAR LIMIT=30] -->
+    <string name="favorite_number_description">
+        <xliff:g id="label" example="Mobile">%1$s</xliff:g>
+        " - Favorite"
     </string>
 
     <!-- Heads Up Notification -->
@@ -131,19 +153,28 @@
     <!-- Text to show the call is onhold [CHAR LIMIT=40]-->
     <string name="onhold_call_label">On Hold</string>
 
+    <!-- Contact list headers -->
+    <!-- Contact list label for contact names starting with special characters -->
+    <string name="header_for_type_other" translatable="false">&#8230;</string>
+
     <!-- Dialer Setting -->
     <!-- Title of the settings page [CHAR LIMIT=30]-->
     <string name="setting_title">Settings</string>
     <!-- Title of the settings to change the start page [CHAR LIMIT=40]-->
-    <string name="pref_start_page_title">Set start page</string>
+    <string name="pref_start_page_title">Start screen</string>
     <string name="pref_start_page_key" translatable="false">set_start_page</string>
 
     <!-- Title of the settings to sort contact order [CHAR LIMIT=40]-->
-    <string name="sort_order_title">Contact Order</string>
+    <string name="sort_order_title">Contact order</string>
     <string name="sort_order_key" translatable="false">contact_order</string>
-    <!-- Title of the settings for sorting Contacts in different orders -->
+
+    <!-- Keys and titles of the settings for sorting Contacts in different orders -->
+    <!-- Key of given name -->
+    <string name="given_name_first_key" translatable="false">given_name</string>
+    <!-- Key of family name -->
+    <string name="family_name_first_key" translatable="false">family_name</string>
     <!-- Title of given name [CHAR LIMIT=40]-->
-    <string name="give_name_first_title">First name</string>
+    <string name="given_name_first_title">First name</string>
     <!-- Title of family name [CHAR LIMIT=40]-->
     <string name="family_name_first_title">Last name</string>
 </resources>

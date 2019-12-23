@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,8 +38,10 @@ import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
+import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -74,7 +77,12 @@ public class DialpadFragment extends AbstractDialpadFragment {
                     .build();
 
     private TextView mTitleView;
+    @Nullable
     private TextView mDisplayName;
+    @Nullable
+    private TextView mLabel;
+    @Nullable
+    private ImageView mAvatar;
     private ImageButton mDeleteButton;
     private int mMode;
 
@@ -105,15 +113,14 @@ public class DialpadFragment extends AbstractDialpadFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mMode = getArguments().getInt(DIALPAD_MODE_KEY);
+        L.d(TAG, "onCreate mode: %s", mMode);
         mToneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, TONE_RELATIVE_VOLUME);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        mMode = getArguments().getInt(DIALPAD_MODE_KEY);
-        L.d(TAG, "onCreateView mode: %s", mMode);
-
         View rootView = inflater.inflate(R.layout.dialpad_fragment, container, false);
         // Offset the dialpad to under the tabs in normal dial mode.
         rootView.setPadding(0, getTopOffset(), 0, 0);
@@ -123,6 +130,11 @@ public class DialpadFragment extends AbstractDialpadFragment {
                 mMode == MODE_EMERGENCY ? R.style.TextAppearance_EmergencyDialNumber
                         : R.style.TextAppearance_DialNumber);
         mDisplayName = rootView.findViewById(R.id.display_name);
+        mLabel = rootView.findViewById(R.id.label);
+        mAvatar = rootView.findViewById(R.id.dialpad_contact_avatar);
+        if (mAvatar != null) {
+            mAvatar.setOutlineProvider(ContactAvatarOutputlineProvider.get());
+        }
 
         View callButton = rootView.findViewById(R.id.call_button);
         callButton.setOnClickListener(v -> {
@@ -160,7 +172,7 @@ public class DialpadFragment extends AbstractDialpadFragment {
     }
 
     @Override
-    protected void setupActionBar(ActionBar actionBar) {
+    public void setupActionBar(ActionBar actionBar) {
         // Only setup the actionbar if we're in dial mode.
         // In all the other modes, there will be another fragment in the activity
         // at the same time, and we don't want to mess up it's action bar.
@@ -213,7 +225,8 @@ public class DialpadFragment extends AbstractDialpadFragment {
                             : R.string.emergency_call_description);
             ViewUtils.setVisible(mDeleteButton, false);
         } else {
-            mTitleView.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+            mTitleView.setGravity(
+                    getResources().getInteger(R.integer.config_dialed_number_gravity));
             if (number.length() <= MAX_DIAL_NUMBER) {
                 mTitleView.setText(
                         TelecomUtils.getFormattedNumber(getContext(), number.toString()));
@@ -223,13 +236,37 @@ public class DialpadFragment extends AbstractDialpadFragment {
             ViewUtils.setVisible(mDeleteButton, true);
         }
 
-        presentContactName(number);
+        presentContactInfo(number.toString());
     }
 
-    private void presentContactName(@NonNull StringBuffer number) {
-        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(number.toString());
-        // OEM might remove the display name view.
+    private void presentContactInfo(@NonNull String number) {
+        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(number);
         ViewUtils.setText(mDisplayName, contact == null ? "" : contact.getDisplayName());
+        if (contact != null && getResources().getBoolean(
+                R.bool.config_show_detailed_user_profile_on_dialpad)) {
+            presentContactDetail(contact, number);
+        } else {
+            resetContactInfo();
+        }
+    }
+
+    private void presentContactDetail(@Nullable Contact contact, @NonNull String number) {
+        PhoneNumber phoneNumber = contact.getPhoneNumber(getContext(), number);
+        CharSequence readableLabel = phoneNumber.getReadableLabel(
+                getContext().getResources());
+        ViewUtils.setText(mLabel, phoneNumber.isPrimary() ? getContext().getString(
+                R.string.primary_number_description, readableLabel) : readableLabel);
+        ViewUtils.setVisible(mLabel, true);
+
+        if (mAvatar != null) {
+            TelecomUtils.setContactBitmapAsync(getContext(), mAvatar, contact, null);
+        }
+        ViewUtils.setVisible(mAvatar, true);
+    }
+
+    private void resetContactInfo() {
+        ViewUtils.setVisible(mLabel, false);
+        ViewUtils.setVisible(mAvatar, false);
     }
 
     private int getTopOffset() {

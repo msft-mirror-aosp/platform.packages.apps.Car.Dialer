@@ -13,12 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-        android:color="@*android:color/car_card_ripple_background">
-    <item>
-        <shape android:shape="rectangle">
-            <solid android:color="@color/hero_button_background_color" />
-            <corners android:radius="@dimen/hero_button_corner_radius"/>
-        </shape>
-    </item>
-</ripple>
+
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/title"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/subheader_list_height"
+    android:singleLine="true"
+    android:gravity="center_vertical"
+    style="@style/SubheaderText"/>

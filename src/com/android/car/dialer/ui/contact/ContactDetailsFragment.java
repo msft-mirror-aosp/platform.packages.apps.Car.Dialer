@@ -17,11 +17,9 @@
 package com.android.car.dialer.ui.contact;
 
 import android.app.ActionBar;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,6 +33,7 @@ import com.android.car.dialer.ui.common.DialerListBaseFragment;
 import com.android.car.dialer.ui.common.DialerUtils;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.Contact;
+import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 
 /**
@@ -42,30 +41,20 @@ import com.android.car.telephony.common.TelecomUtils;
  * primarily used to respond to the results of search queries but supplyig it with the content://
  * uri of a contact should work too.
  */
-public class ContactDetailsFragment extends DialerListBaseFragment {
+public class ContactDetailsFragment extends DialerListBaseFragment implements
+        ContactDetailsAdapter.PhoneNumberPresenter {
     private static final String TAG = "CD.ContactDetailsFragment";
     public static final String FRAGMENT_TAG = "CONTACT_DETAIL_FRAGMENT_TAG";
 
     // Key to load and save the contact entity instance.
     private static final String KEY_CONTACT_ENTITY = "ContactEntity";
 
-    // Key to load the contact details by passing in the content provider query uri.
-    private static final String KEY_CONTACT_QUERY_URI = "ContactQueryUri";
-
     private Contact mContact;
-    private Uri mContactLookupUri;
     private LiveData<Contact> mContactDetailsLiveData;
+    private View mActionBarView;
     private ImageView mAvatarView;
     private TextView mNameView;
-
-    /** Creates a new ContactDetailsFragment using a URI to lookup a {@link Contact} at. */
-    public static ContactDetailsFragment newInstance(Uri uri) {
-        ContactDetailsFragment fragment = new ContactDetailsFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(KEY_CONTACT_QUERY_URI, uri);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private ContactDetailsViewModel mContactDetailsViewModel;
 
     /** Creates a new ContactDetailsFragment using a {@link Contact}. */
     public static ContactDetailsFragment newInstance(Contact contact) {
@@ -82,27 +71,17 @@ public class ContactDetailsFragment extends DialerListBaseFragment {
         setHasOptionsMenu(true);
 
         mContact = getArguments().getParcelable(KEY_CONTACT_ENTITY);
-        mContactLookupUri = getArguments().getParcelable(KEY_CONTACT_QUERY_URI);
         if (mContact == null && savedInstanceState != null) {
             mContact = savedInstanceState.getParcelable(KEY_CONTACT_ENTITY);
         }
-        if (mContact != null) {
-            mContactLookupUri = mContact.getLookupUri();
-        }
-        ContactDetailsViewModel contactDetailsViewModel = ViewModelProviders.of(this).get(
+        mContactDetailsViewModel = ViewModelProviders.of(this).get(
                 ContactDetailsViewModel.class);
-        mContactDetailsLiveData = contactDetailsViewModel.getContactDetails(mContactLookupUri);
-        mContactDetailsLiveData.observe(this, this::onContactChanged);
-    }
+        mContactDetailsLiveData = mContactDetailsViewModel.getContactDetails(mContact);
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.contact_edit, menu);
-        MenuItem defaultNumberMenuItem = menu.findItem(R.id.menu_contact_default_number);
-        ContactDefaultNumberActionProvider contactDefaultNumberActionProvider =
-                (ContactDefaultNumberActionProvider) defaultNumberMenuItem.getActionProvider();
-        contactDefaultNumberActionProvider.setContact(mContact);
-        mContactDetailsLiveData.observe(this, contactDefaultNumberActionProvider::setContact);
+        mActionBarView = LayoutInflater.from(getContext()).inflate(
+                R.layout.contact_details_action_bar, null);
+        mAvatarView = mActionBarView.findViewById(R.id.contact_details_action_bar_avatar);
+        mNameView = mActionBarView.findViewById(R.id.contact_details_action_bar_name);
     }
 
     @Override
@@ -114,14 +93,20 @@ public class ContactDetailsFragment extends DialerListBaseFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ContactDetailsAdapter contactDetailsAdapter = new ContactDetailsAdapter(getContext(),
-                mContact);
+                mContact, this);
         getRecyclerView().setAdapter(contactDetailsAdapter);
-        mContactDetailsLiveData.observe(this, contactDetailsAdapter::setContact);
+        if (!DialerUtils.isShortScreen(getContext())) {
+            getRecyclerView().setScrollBarPadding(getTopBarHeight(), 0);
+        }
+        mContactDetailsLiveData.observe(this, contact -> {
+            mContact = contact;
+            onContactChanged(contact);
+            contactDetailsAdapter.setContact(contact);
+        });
     }
 
     private void onContactChanged(Contact contact) {
         getArguments().clear();
-
         if (mAvatarView != null) {
             mAvatarView.setOutlineProvider(ContactAvatarOutputlineProvider.get());
             TelecomUtils.setContactBitmapAsync(getContext(), mAvatarView, contact, null);
@@ -137,22 +122,14 @@ public class ContactDetailsFragment extends DialerListBaseFragment {
     }
 
     @Override
-    protected void setupActionBar(@NonNull ActionBar actionBar) {
-        actionBar.setCustomView(R.layout.contact_details_action_bar);
+    public void setupActionBar(@NonNull ActionBar actionBar) {
+        actionBar.setCustomView(mActionBarView);
         actionBar.setTitle(null);
-
-        // Will set these to null on screen sizes that don't have them in the action bar
-        View customView = actionBar.getCustomView();
-        mAvatarView = customView.findViewById(R.id.contact_details_action_bar_avatar);
-        mNameView = customView.findViewById(R.id.contact_details_action_bar_name);
 
         // Remove the action bar background on non-short screens
         // On short screens the avatar and name is in the action bar so we keep it
         if (mAvatarView == null) {
             setActionBarBackground(null);
-            getRecyclerView().setScrollBarPadding(actionBar.getHeight(), 0);
-        } else {
-            getRecyclerView().setScrollBarPadding(0, 0);
         }
     }
 
@@ -169,5 +146,15 @@ public class ContactDetailsFragment extends DialerListBaseFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_CONTACT_ENTITY, mContactDetailsLiveData.getValue());
+    }
+
+    @Override
+    public void onClick(Contact contact, PhoneNumber phoneNumber) {
+        boolean isFavorite = phoneNumber.isFavorite();
+        if (isFavorite) {
+            mContactDetailsViewModel.removeFromFavorite(contact, phoneNumber);
+        } else {
+            mContactDetailsViewModel.addToFavorite(contact, phoneNumber);
+        }
     }
 }

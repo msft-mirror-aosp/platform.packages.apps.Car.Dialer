@@ -24,6 +24,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.DialerUtils;
@@ -40,6 +41,7 @@ import java.util.List;
  */
 public class ContactListViewHolder extends RecyclerView.ViewHolder {
     private final ContactListAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
+    private final TextView mHeaderView;
     private final ImageView mAvatarView;
     private final TextView mTitleView;
     private final TextView mTextView;
@@ -50,6 +52,7 @@ public class ContactListViewHolder extends RecyclerView.ViewHolder {
             ContactListAdapter.OnShowContactDetailListener onShowContactDetailListener) {
         super(itemView);
         mOnShowContactDetailListener = onShowContactDetailListener;
+        mHeaderView = itemView.findViewById(R.id.header);
         mAvatarView = itemView.findViewById(R.id.icon);
         mAvatarView.setOutlineProvider(ContactAvatarOutputlineProvider.get());
         mTitleView = itemView.findViewById(R.id.title);
@@ -58,8 +61,15 @@ public class ContactListViewHolder extends RecyclerView.ViewHolder {
         mCallActionView = itemView.findViewById(R.id.call_action_id);
     }
 
-    public void onBind(Contact contact) {
+    /**
+     * Binds the view holder with relevant data.
+     */
+    public void onBind(Contact contact, boolean showHeader, String header) {
         TelecomUtils.setContactBitmapAsync(mAvatarView.getContext(), mAvatarView, contact, null);
+        ViewUtils.setVisible(mHeaderView, showHeader);
+        if (showHeader) {
+            ViewUtils.setText(mHeaderView, header);
+        }
         mTitleView.setText(contact.getDisplayName());
         setLabelText(contact);
         mShowContactDetailView.setOnClickListener(

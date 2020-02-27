@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2020 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.notification;
+package com.android.car.dialer.ui.dialpad;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
+import com.android.car.dialer.ui.search.ContactResultViewHolder;
+import com.android.car.dialer.ui.search.ContactResultsAdapter;
 
-/** This class is responsible for offloading notification broadcasts to the notification service. */
-public class NotificationReceiver extends BroadcastReceiver {
+/**
+ * An adapter used for type down functionality.
+ */
+public class TypeDownResultsAdapter extends ContactResultsAdapter {
+
+    public TypeDownResultsAdapter() {
+        super(null);
+    }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
-        NotificationService.enqueueWork(context, intent);
+    public void onBindViewHolder(ContactResultViewHolder holder, int position) {
+        holder.bindTypeDownResult(getContactResults().get(position));
     }
 }

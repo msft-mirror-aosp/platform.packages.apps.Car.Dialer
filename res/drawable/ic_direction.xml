@@ -13,19 +13,12 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <fragment
-        android:name="com.android.car.dialer.ui.activecall.IncomingCallFragment"
-        android:id="@+id/incoming_call_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
-    <fragment
-        android:name="com.android.car.dialer.ui.activecall.OngoingCallFragment"
-        android:id="@+id/ongoing_call_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-</FrameLayout>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="@dimen/primary_icon_size"
+        android:height="@dimen/primary_icon_size"
+        android:viewportWidth="24.0"
+        android:viewportHeight="24.0">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M21.41 10.59l-8-8c-.39-.4-.9-.59-1.41-.59s-1.02.2-1.41.59l-8 8c-.78.78-.78 2.05 0 2.83l8 8c.39.39.9.58 1.41.58s1.02-.2 1.41-.59l8-8c.78-.78.78-2.04 0-2.82zM12 20l-8-8 8-8 8 8-8 8zM10.59 8.41L13.17 11H7v2h6.17l-2.58 2.59L12 17l5-5-5-5z"/>
+</vector>

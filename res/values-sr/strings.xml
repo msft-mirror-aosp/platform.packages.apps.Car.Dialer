@@ -30,19 +30,23 @@
     <string name="decline_call" msgid="2505987200485272226">"Одбиј"</string>
     <string name="answer_call" msgid="3272474440561548115">"Одговори"</string>
     <string name="call_back" msgid="5745638356098600872">"Узврати позив"</string>
-    <string name="audio_route_vehicle" msgid="6274519162997743620">"Bluetooth возила"</string>
-    <string name="audio_route_phone_speaker" msgid="407520293892557697">"Спикерфон"</string>
-    <string name="audio_route_handset" msgid="1100259514278439355">"Слушалице"</string>
+    <string name="audio_route_vehicle" msgid="6250361588960528769">"Звучници у аутомобилу"</string>
+    <string name="audio_route_phone_speaker" msgid="4608904003558187244">"Звучник телефона"</string>
+    <string name="audio_route_handset" msgid="9133081623895172144">"Телефон"</string>
     <string name="dial_a_number" msgid="7432322177412387160">"Унесите број"</string>
     <string name="favorites_title" msgid="4767723901530488145">"Омиљено"</string>
-    <string name="call_history_title" msgid="1495905524218923242">"Историја позива"</string>
+    <string name="call_history_title" msgid="7997887846276371553">"Недавно"</string>
     <string name="contacts_title" msgid="9201954388634537346">"Контакти"</string>
     <string name="dialpad_title" msgid="3746259645005208554">"Нумеричка тастатура"</string>
     <string name="call_log_header_today" msgid="2069013936632793214">"Данас"</string>
     <string name="call_log_header_yesterday" msgid="4613686845163357847">"Јуче"</string>
     <string name="call_log_header_older" msgid="3971634717537073179">"Старије"</string>
+    <string name="call_logs_empty" msgid="3084720078894119049">"Нема недавних ставки"</string>
+    <string name="contact_list_empty" msgid="4225504548491888138">"Нема контаката"</string>
+    <string name="available_after_sync" msgid="33765918799197782">"Доступно после синхронизовања. Проверите да ли сте дозволили дељење контаката на телефону."</string>
+    <string name="favorites_empty" msgid="5794510741132758130">"Нема омиљених ставки"</string>
+    <string name="no_favorites_added" msgid="2359050103464783907">"Још нисте додали омиљене ставке"</string>
     <string name="add_favorite_button" msgid="7914955940249767808">"Додајте омиљен контакт"</string>
-    <string name="favorites_empty" msgid="6712416359691979975">"Још нисте додали омиљене контакте"</string>
     <string name="search_title" msgid="5412680850141871664">"Претражите контакте"</string>
     <string name="search_hint" msgid="3099066132607042439">"Претражите контакте"</string>
     <string name="type_multiple" msgid="3402949522797441236">"Више"</string>
@@ -54,7 +58,11 @@
     <string name="in_call_notification_channel_name" msgid="1978093630512401778">"Обавештење о долазном позиву"</string>
     <string name="notification_incoming_call" msgid="1722904631804432389">"Долазни позив"</string>
     <string name="missed_call_notification_channel_name" msgid="1135686963409691772">"Обавештење о пропуштеном позиву"</string>
-    <string name="notification_missed_call" msgid="7127823385811396529">"Пропуштен позив"</string>
+    <plurals name="notification_missed_call" formatted="false" msgid="1018870358427938752">
+      <item quantity="one">Пропуштени позиви(<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
+      <item quantity="few">Пропуштени позиви(<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
+      <item quantity="other">Пропуштени позиви(<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
+    </plurals>
     <string name="onhold_call_label" msgid="1937027519810985499">"На чекању"</string>
     <string name="setting_title" msgid="1296639422364732365">"Подешавања"</string>
     <string name="pref_start_page_title" msgid="1953465507368478503">"Почетни екран"</string>

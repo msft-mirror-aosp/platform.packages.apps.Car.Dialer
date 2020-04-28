@@ -51,12 +51,12 @@
     <string name="call_back">Call back</string>
 
     <!-- Audio route -->
-    <!-- Label for routing phone audio to the vehicle [CHAR LIMIT=30] -->
-    <string name="audio_route_vehicle">Vehicle bluetooth</string>
+    <!-- Label for routing phone audio to the vehicle using car speakers [CHAR LIMIT=30] -->
+    <string name="audio_route_vehicle">Car speakers</string>
     <!-- Label for routing phone audio to the phone speaker [CHAR LIMIT=30] -->
-    <string name="audio_route_phone_speaker">Speaker phone</string>
+    <string name="audio_route_phone_speaker">Phone speaker</string>
     <!-- Label for routing phone audio to the phone earpiece. [CHAR LIMIT=30] -->
-    <string name="audio_route_handset">Handset</string>
+    <string name="audio_route_handset">Phone</string>
 
     <!-- Button label to dial a manually entered phone number -->
     <string name="dial_a_number">Dial a number</string>
@@ -65,28 +65,35 @@
     <!-- Title for the favorites [CHAR LIMIT=30] -->
     <string name="favorites_title">Favorites</string>
     <!-- Title for the call history [CHAR LIMIT=30] -->
-    <string name="call_history_title">Call History</string>
+    <string name="call_history_title">Recents</string>
     <!-- Title for the contacts [CHAR LIMIT=30] -->
     <string name="contacts_title">Contacts</string>
     <!-- Title for the dialpad [CHAR LIMIT=30] -->
     <string name="dialpad_title">Dialpad</string>
-    <!-- Toolbar title for tabbed pages -->
-    <string name="default_toolbar_title" translatable="false"></string>
 
     <!-- Headers for call history -->
     <!-- Header in call log to group calls from the current day. [CHAR LIMIT=30] -->
     <string name="call_log_header_today">Today</string>
-
     <!-- Header in call log to group calls from the previous day. [CHAR LIMIT=30] -->
     <string name="call_log_header_yesterday">Yesterday</string>
-
     <!-- Header in call log to group calls from before yesterday. [CHAR LIMIT=30] -->
     <string name="call_log_header_older">Older</string>
 
+    <!-- Message shown when on the call history page without any call logs available [CHAR_LIMIT=50] -->
+    <string name="call_logs_empty">No recents</string>
+
+    <!-- Message shown when on the contact list page without any contacts available [CHAR_LIMIT=50] -->
+    <string name="contact_list_empty">No contacts</string>
+
+    <!-- Secondary message shown when the contact list page or call history page do not have any contents but will be available after syncing from phone [CHAR_LIMIT=200] -->
+    <string name="available_after_sync">Available after syncing. Make sure you have allowed sharing contacts on your phone.</string>
+
+    <!-- Error message shown when on the favorites page without any favorites added [CHAR_LIMIT=50] -->
+    <string name="favorites_empty">No favorites</string>
+    <!-- Secondary error message shown when on the favorites page without any favorites added [CHAR_LIMIT=80] -->
+    <string name="no_favorites_added">You haven\'t added any favorites yet</string>
     <!-- Button to add start choosing a contact to add as a new favorite [CHAR_LIMIT=50] -->
     <string name="add_favorite_button">Add a favorite</string>
-    <!-- Error message shown when on the favorites page without any favorites added [CHAR_LIMIT=80] -->
-    <string name="favorites_empty">You haven\'t added any favorites yet</string>
     <!-- Button to cancel the dialog where you pick a phone number to add as a favorite -->
     <string name="cancel_add_favorites_dialog" translatable="false">@android:string/cancel</string>
     <!-- Button to confirm the dialog where you pick a phone number to add as a favorite -->
@@ -134,14 +141,27 @@
     <!-- Description for the default phone number of the contact [CHAR LIMIT=30] -->
     <string name="primary_number_description">
         <xliff:g id="label" example="Mobile">%1$s</xliff:g>
-        " - Default"
+        ", default"
     </string>
 
-    <!-- Description for the favorite phone number in add to favorite flow [CHAR LIMIT=30] -->
+    <!-- Description for the phone favorite number in the add-to-favorite flow [CHAR LIMIT=30] -->
     <string name="favorite_number_description">
+        "Favorite - "
         <xliff:g id="label" example="Mobile">%1$s</xliff:g>
-        " - Favorite"
     </string>
+    <!-- Description for the local favorite number in the add-to-favorite flow and the contact details page [CHAR LIMIT=30] -->
+    <string name="local_favorite_number_description">
+        "Local favorite - "
+        <xliff:g id="label" example="Mobile">%1$s</xliff:g>
+    </string>
+
+    <!-- Header for phone favorite numbers [CHAR LIMIT=30] -->
+    <string name="phone_favorites">Favorites</string>
+    <!-- Header for local favorite numbers [CHAR LIMIT=30] -->
+    <string name="local_favorites">Local favorites</string>
+
+    <!-- Message in the add-to-favorite flow that no phone number available for this contact [CHAR_LIMIT=50] -->
+    <string name="no_phone_numbers">No phone numbers</string>
 
     <!-- Heads Up Notification -->
     <!-- Name of incoming call notification channel in app info [CHAR LIMIT=50] -->
@@ -185,4 +205,8 @@
     <string name="given_name_first_title">First name</string>
     <!-- Title of family name [CHAR LIMIT=40]-->
     <string name="family_name_first_title">Last name</string>
+
+    <!-- Audio route selection dialog. Placeholder resources for overriding -->
+    <string name="audio_route_dialog_title">Output call audio to:</string>
+    <string name="audio_route_dialog_subtitle"></string>
 </resources>

@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,6 +41,7 @@ public class InCallActivity extends FragmentActivity {
     private Fragment mOngoingCallFragment;
     private Fragment mIncomingCallFragment;
 
+    private InCallViewModel mInCallViewModel;
     private MutableLiveData<Boolean> mShowIncomingCall;
     private LiveData<Call> mIncomingCallLiveData;
 
@@ -56,13 +57,12 @@ public class InCallActivity extends FragmentActivity {
         mIncomingCallFragment = getSupportFragmentManager().findFragmentById(
                 R.id.incoming_call_fragment);
 
-        mShowIncomingCall = new MutableLiveData();
-        InCallViewModel inCallViewModel = ViewModelProviders.of(this).get(InCallViewModel.class);
+        mShowIncomingCall = new MutableLiveData<>();
+        mInCallViewModel = ViewModelProviders.of(this).get(InCallViewModel.class);
         mIncomingCallLiveData = LiveDataFunctions.iff(mShowIncomingCall,
-                inCallViewModel.getIncomingCall());
-        mIncomingCallLiveData.observe(this, this::updateIncomingCallVisibility);
-        LiveDataFunctions.pair(inCallViewModel.getOngoingCallList(), mIncomingCallLiveData).observe(
-                this, this::maybeFinishActivity);
+                mInCallViewModel.getIncomingCall());
+        LiveDataFunctions.pair(mInCallViewModel.getOngoingCallList(),
+                mIncomingCallLiveData).observe(this, this::updateVisibility);
 
         handleIntent();
     }
@@ -71,7 +71,7 @@ public class InCallActivity extends FragmentActivity {
     protected void onStop() {
         super.onStop();
         L.d(TAG, "onStop");
-        if (mShowIncomingCall.getValue()) {
+        if (mIncomingCallLiveData.getValue() != null) {
             InCallNotificationController.get()
                     .showInCallNotification(mIncomingCallLiveData.getValue());
         }
@@ -85,19 +85,24 @@ public class InCallActivity extends FragmentActivity {
         handleIntent();
     }
 
-    private void maybeFinishActivity(Pair<List<Call>, Call> callList) {
+    private void updateVisibility(Pair<List<Call>, Call> callList) {
         if ((callList.first == null || callList.first.isEmpty()) && callList.second == null) {
             L.d(TAG, "No call to show. Finish InCallActivity");
             finish();
+            return;
         }
+
+        updateIncomingCallVisibility(callList.second);
     }
 
     private void handleIntent() {
         Intent intent = getIntent();
 
-        if (intent != null && getIntent().getBooleanExtra(
-                Constants.Intents.EXTRA_SHOW_INCOMING_CALL, false)) {
-            mShowIncomingCall.setValue(true);
+        if (intent != null) {
+            mShowIncomingCall.setValue(
+                    getIntent().getBooleanExtra(Constants.Intents.EXTRA_SHOW_INCOMING_CALL, false));
+            mInCallViewModel.getDialpadOpenState().setValue(
+                    getIntent().getBooleanExtra(Constants.Intents.EXTRA_SHOW_DIALPAD, false));
         } else {
             mShowIncomingCall.setValue(false);
         }
@@ -105,13 +110,21 @@ public class InCallActivity extends FragmentActivity {
 
     private void updateIncomingCallVisibility(Call incomingCall) {
         if (incomingCall == null) {
-            getSupportFragmentManager().beginTransaction().show(mOngoingCallFragment).hide(
-                    mIncomingCallFragment).commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .show(mOngoingCallFragment)
+                    .hide(mIncomingCallFragment)
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .commit();
             mShowIncomingCall.setValue(false);
             setIntent(null);
         } else {
-            getSupportFragmentManager().beginTransaction().show(mIncomingCallFragment).hide(
-                    mOngoingCallFragment).commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .show(mIncomingCallFragment)
+                    .hide(mOngoingCallFragment)
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                    .commit();
         }
     }
 }

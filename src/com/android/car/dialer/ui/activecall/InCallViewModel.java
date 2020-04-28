@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.telecom.Call;
+import android.telecom.CallAudioState;
 
 import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
@@ -53,14 +54,14 @@ import java.util.List;
  * in call page should use a different ViewModel.
  */
 public class InCallViewModel extends AndroidViewModel implements
-        InCallServiceImpl.ActiveCallListChangedCallback {
+        InCallServiceImpl.ActiveCallListChangedCallback, InCallServiceImpl.CallAudioStateCallback {
     private static final String TAG = "CD.InCallViewModel";
 
     private final MutableLiveData<List<Call>> mCallListLiveData;
-    private final LiveData<List<Call>> mOngoingCallListLiveData;
+    private final MutableLiveData<List<Call>> mOngoingCallListLiveData;
     private final Comparator<Call> mCallComparator;
 
-    private final LiveData<Call> mIncomingCallLiveData;
+    private final MutableLiveData<Call> mIncomingCallLiveData;
 
     private final LiveData<CallDetail> mCallDetailLiveData;
     private final LiveData<Integer> mCallStateLiveData;
@@ -68,6 +69,7 @@ public class InCallViewModel extends AndroidViewModel implements
     private final LiveData<Call> mSecondaryCallLiveData;
     private final LiveData<CallDetail> mSecondaryCallDetailLiveData;
     private final LiveData<Integer> mAudioRouteLiveData;
+    private MutableLiveData<CallAudioState> mCallAudioStateLiveData;
     private final MutableLiveData<Boolean> mDialpadIsOpen;
     private final ShowOnholdCallLiveData mShowOnholdCall;
     private LiveData<Long> mCallConnectTimeLiveData;
@@ -86,6 +88,7 @@ public class InCallViewModel extends AndroidViewModel implements
             }
             updateCallList();
             mInCallService.addActiveCallListChangedCallback(InCallViewModel.this);
+            mInCallService.addCallAudioStateChangedCallback(InCallViewModel.this);
         }
 
         @Override
@@ -99,7 +102,11 @@ public class InCallViewModel extends AndroidViewModel implements
     private final Call.Callback mCallStateChangedCallback = new Call.Callback() {
         @Override
         public void onStateChanged(Call call, int state) {
-            // Sets value to trigger the live data for incoming call and active call list to update.
+            // Don't show in call activity by declining a ringing call to avoid UI flashing.
+            if (call.equals(mIncomingCallLiveData.getValue()) && state == Call.STATE_DISCONNECTED) {
+                return;
+            }
+            // Sets value to trigger incoming call and active call list to update.
             mCallListLiveData.setValue(mCallListLiveData.getValue());
         }
     };
@@ -108,20 +115,22 @@ public class InCallViewModel extends AndroidViewModel implements
         super(application);
         mContext = application.getApplicationContext();
 
-        mCallListLiveData = new MutableLiveData<>();
+        mIncomingCallLiveData = new MutableLiveData<>();
+        mOngoingCallListLiveData = new MutableLiveData<>();
+        mCallAudioStateLiveData = new MutableLiveData<>();
         mCallComparator = new CallComparator();
-
-        mIncomingCallLiveData = Transformations.map(mCallListLiveData,
-                callList -> firstMatch(callList,
+        mCallListLiveData = new MutableLiveData<List<Call>>() {
+            @Override
+            public void setValue(List<Call> callList) {
+                super.setValue(callList);
+                List<Call> activeCallList = filter(callList,
+                        call -> call != null && call.getState() != Call.STATE_RINGING);
+                activeCallList.sort(mCallComparator);
+                mOngoingCallListLiveData.setValue(activeCallList);
+                mIncomingCallLiveData.setValue(firstMatch(callList,
                         call -> call != null && call.getState() == Call.STATE_RINGING));
-
-        mOngoingCallListLiveData = Transformations.map(mCallListLiveData,
-                callList -> {
-                    List<Call> activeCallList = filter(callList,
-                            call -> call != null && call.getState() != Call.STATE_RINGING);
-                    activeCallList.sort(mCallComparator);
-                    return activeCallList;
-                });
+            }
+        };
 
         mPrimaryCallLiveData = Transformations.map(mOngoingCallListLiveData,
                 input -> input.isEmpty() ? null : input.get(0));
@@ -226,6 +235,13 @@ public class InCallViewModel extends AndroidViewModel implements
         return mAudioRouteLiveData;
     }
 
+    /**
+     * Returns current call audio state.
+     */
+    public MutableLiveData<CallAudioState> getCallAudioState() {
+        return mCallAudioStateLiveData;
+    }
+
     /** Return the {@link MutableLiveData} for dialpad open state. */
     public MutableLiveData<Boolean> getDialpadOpenState() {
         return mDialpadIsOpen;
@@ -252,6 +268,12 @@ public class InCallViewModel extends AndroidViewModel implements
         return false;
     }
 
+    @Override
+    public void onCallAudioStateChanged(CallAudioState callAudioState) {
+        L.i(TAG, "onCallAudioStateChanged %s %s", callAudioState, this);
+        mCallAudioStateLiveData.setValue(callAudioState);
+    }
+
     private void updateCallList() {
         List<Call> callList = new ArrayList<>();
         callList.addAll(mInCallService.getCalls());
@@ -266,6 +288,7 @@ public class InCallViewModel extends AndroidViewModel implements
                 call.unregisterCallback(mCallStateChangedCallback);
             }
             mInCallService.removeActiveCallListChangedCallback(this);
+            mInCallService.removeCallAudioStateChangedCallback(this);
         }
         mInCallService = null;
     }

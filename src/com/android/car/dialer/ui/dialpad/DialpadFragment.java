@@ -16,7 +16,6 @@
 
 package com.android.car.dialer.ui.dialpad;
 
-import android.app.ActionBar;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
@@ -33,6 +32,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
@@ -43,11 +43,15 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
+import com.android.car.ui.recyclerview.CarUiRecyclerView;
+import com.android.car.ui.toolbar.Toolbar;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 
-/** Fragment that controls the dialpad. */
+/**
+ * Fragment that controls the dialpad.
+ */
 public class DialpadFragment extends AbstractDialpadFragment {
     private static final String TAG = "CD.DialpadFragment";
 
@@ -75,10 +79,14 @@ public class DialpadFragment extends AbstractDialpadFragment {
                     .put(KeyEvent.KEYCODE_STAR, ToneGenerator.TONE_DTMF_S)
                     .put(KeyEvent.KEYCODE_POUND, ToneGenerator.TONE_DTMF_P)
                     .build();
+    private final TypeDownResultsAdapter mAdapter = new TypeDownResultsAdapter();
 
+    private TypeDownResultsViewModel mTypeDownResultsViewModel;
     private TextView mTitleView;
     @Nullable
     private TextView mDisplayName;
+    @Nullable
+    private CarUiRecyclerView mRecyclerView;
     @Nullable
     private TextView mLabel;
     @Nullable
@@ -96,7 +104,9 @@ public class DialpadFragment extends AbstractDialpadFragment {
         return fragment;
     }
 
-    /** Creates a new instance used for emergency dialing. */
+    /**
+     * Creates a new instance used for emergency dialing.
+     */
     public static DialpadFragment newEmergencyDialpad() {
         return newDialpad(MODE_EMERGENCY);
     }
@@ -116,20 +126,25 @@ public class DialpadFragment extends AbstractDialpadFragment {
         mMode = getArguments().getInt(DIALPAD_MODE_KEY);
         L.d(TAG, "onCreate mode: %s", mMode);
         mToneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, TONE_RELATIVE_VOLUME);
+
+        mTypeDownResultsViewModel = ViewModelProviders.of(this).get(
+                TypeDownResultsViewModel.class);
+        mTypeDownResultsViewModel.getContactSearchResults().observe(this,
+                contactResults -> mAdapter.setData(contactResults));
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.dialpad_fragment, container, false);
-        // Offset the dialpad to under the tabs in normal dial mode.
-        rootView.setPadding(0, getTopOffset(), 0, 0);
 
         mTitleView = rootView.findViewById(R.id.title);
         mTitleView.setTextAppearance(
                 mMode == MODE_EMERGENCY ? R.style.TextAppearance_EmergencyDialNumber
                         : R.style.TextAppearance_DialNumber);
         mDisplayName = rootView.findViewById(R.id.display_name);
+        mRecyclerView = rootView.findViewById(R.id.list_view);
+        mRecyclerView.setAdapter(mAdapter);
         mLabel = rootView.findViewById(R.id.label);
         mAvatar = rootView.findViewById(R.id.dialpad_contact_avatar);
         if (mAvatar != null) {
@@ -172,12 +187,12 @@ public class DialpadFragment extends AbstractDialpadFragment {
     }
 
     @Override
-    public void setupActionBar(ActionBar actionBar) {
+    protected void setupToolbar(Toolbar toolbar) {
         // Only setup the actionbar if we're in dial mode.
         // In all the other modes, there will be another fragment in the activity
         // at the same time, and we don't want to mess up it's action bar.
         if (mMode == MODE_DIAL) {
-            super.setupActionBar(actionBar);
+            super.setupToolbar(toolbar);
         }
     }
 
@@ -214,7 +229,7 @@ public class DialpadFragment extends AbstractDialpadFragment {
 
     @Override
     void presentDialedNumber(@NonNull StringBuffer number) {
-        if (getActivity() == null) {
+        if (getView() == null) {
             return;
         }
 
@@ -236,7 +251,19 @@ public class DialpadFragment extends AbstractDialpadFragment {
             ViewUtils.setVisible(mDeleteButton, true);
         }
 
-        presentContactInfo(number.toString());
+        if (getResources().getBoolean(R.bool.config_show_type_down_list_on_dialpad)) {
+            resetContactInfo();
+            ViewUtils.setVisible(mRecyclerView, true);
+            mTypeDownResultsViewModel.setSearchQuery(number.toString());
+        } else {
+            presentContactInfo(number.toString());
+        }
+    }
+
+    @Override
+    public void onToolbarHeightChange(int toolbarHeight) {
+        // Offset the dialpad to under the tabs in normal dial mode.
+        getView().setPadding(0, mMode == MODE_DIAL ? toolbarHeight : 0, 0, 0);
     }
 
     private void presentContactInfo(@NonNull String number) {
@@ -258,21 +285,12 @@ public class DialpadFragment extends AbstractDialpadFragment {
                 R.string.primary_number_description, readableLabel) : readableLabel);
         ViewUtils.setVisible(mLabel, true);
 
-        if (mAvatar != null) {
-            TelecomUtils.setContactBitmapAsync(getContext(), mAvatar, contact, null);
-        }
+        TelecomUtils.setContactBitmapAsync(getContext(), mAvatar, contact);
         ViewUtils.setVisible(mAvatar, true);
     }
 
     private void resetContactInfo() {
         ViewUtils.setVisible(mLabel, false);
         ViewUtils.setVisible(mAvatar, false);
-    }
-
-    private int getTopOffset() {
-        if (mMode == MODE_DIAL) {
-            return getTopBarHeight();
-        }
-        return 0;
     }
 }

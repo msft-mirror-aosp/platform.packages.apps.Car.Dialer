@@ -16,10 +16,16 @@
 
 package com.android.car.dialer.ui.common;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.PhoneLookup;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
@@ -42,16 +48,21 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
- * Represents a list of {@link UiCallLog}s and label {@link String}s for UI representation.
- * This live data gets data source from both call log and contact list. It also refresh
- * itself on the relative time in the body text.
+ * Represents a list of {@link UiCallLog}s and label {@link String}s for UI representation. This
+ * live data gets data source from both call log and contact list. It also refresh itself on the
+ * relative time in the body text.
  */
 public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
     private static final String TAG = "CD.UiCallLogLiveData";
 
     private static final String TYPE_AND_RELATIVE_TIME_JOINER = ", ";
+    private final ExecutorService mExecutorService;
+    private Future<?> mRunnableFuture;
     private Context mContext;
 
     public UiCallLogLiveData(Context context,
@@ -59,21 +70,27 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
             CallHistoryLiveData callHistoryLiveData,
             LiveData<List<Contact>> contactListLiveData) {
         mContext = context;
+        mExecutorService = Executors.newSingleThreadExecutor();
+
         addSource(callHistoryLiveData, this::onCallHistoryChanged);
-        addSource(contactListLiveData, (contacts) -> {
-            // Don't call onCallHistoryChanged() before the call history is loaded.
-            // Otherwise, we'll set our value to an empty list instead of just being
-            // uninitialized while loading. This will cause us to lose our scroll position.
-            List<PhoneCallLog> callLogs = callHistoryLiveData.getValue();
-            if (callLogs != null) {
-                onCallHistoryChanged(callLogs);
-            }
-        });
+        addSource(contactListLiveData,
+                (contacts) -> onCallHistoryChanged(callHistoryLiveData.getValue()));
         addSource(heartBeatLiveData, (trigger) -> updateRelativeTime());
     }
 
     private void onCallHistoryChanged(List<PhoneCallLog> callLogs) {
-        setValue(convert(callLogs));
+        // If there is no value set, don't set null value to trigger an update.
+        if (callLogs == null && getValue() == null) {
+            return;
+        }
+
+        if (mRunnableFuture != null) {
+            mRunnableFuture.cancel(true);
+        }
+        Runnable runnable = () -> {
+            postValue(convert(callLogs));
+        };
+        mRunnableFuture = mExecutorService.submit(runnable);
     }
 
     private void updateRelativeTime() {
@@ -115,6 +132,7 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
         }
     }
 
+    @NonNull
     private List<Object> convert(List<PhoneCallLog> phoneCallLogs) {
         if (phoneCallLogs == null) {
             return Collections.emptyList();
@@ -134,14 +152,51 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
             String relativeTime = getRelativeTime(phoneCallLog.getLastCallEndTimestamp());
             if (TelecomUtils.isVoicemailNumber(mContext, number)) {
                 String title = mContext.getString(R.string.voicemail);
-                UiCallLog uiCallLog = new UiCallLog(title,
-                        relativeTime, number, null, phoneCallLog.getAllCallRecords());
+                UiCallLog uiCallLog = new UiCallLog(title, relativeTime, number, null,
+                        phoneCallLog.getAllCallRecords());
                 uiCallLogs.add(uiCallLog);
                 continue;
             }
 
-            Contact contact = inMemoryPhoneBook.lookupContactEntry(number);
             String title;
+            CharSequence typeLabel = "";
+            Contact contact = null;
+
+            // If InMemoryPhoneBook hasn't finished loading, there is still a chance that this
+            // number can be found there later. So query will not be proceeded now.
+            // TODO: will move to utils later.
+            if (inMemoryPhoneBook.isLoaded()) {
+                contact = inMemoryPhoneBook.lookupContactEntry(number);
+                if (contact == null && !TextUtils.isEmpty(number)) {
+                    ContentResolver cr = mContext.getContentResolver();
+                    try (Cursor cursor = cr.query(
+                            Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI,
+                                    Uri.encode(number)),
+                            new String[]{
+                                    PhoneLookup.LOOKUP_KEY,
+                                    PhoneLookup.TYPE,
+                                    PhoneLookup.LABEL,
+                            },
+                            null, null, null)) {
+
+                        if (cursor != null && cursor.moveToFirst()) {
+                            int lookupKeyColIdx = cursor.getColumnIndex(PhoneLookup.LOOKUP_KEY);
+                            int typeColumn = cursor.getColumnIndex(PhoneLookup.TYPE);
+                            int labelColumn = cursor.getColumnIndex(PhoneLookup.LABEL);
+
+                            List<Contact> lookupResults =
+                                    InMemoryPhoneBook.get().lookupContactByKey(
+                                            cursor.getString(lookupKeyColIdx));
+                            contact = lookupResults.size() > 0 ? lookupResults.get(0) : null;
+                            int type = cursor.getInt(typeColumn);
+                            String label = cursor.getString(labelColumn);
+                            typeLabel = ContactsContract.CommonDataKinds.Phone.getTypeLabel(
+                                    mContext.getResources(), type, label);
+                        }
+                    }
+                }
+            }
+
             if (contact != null && contact.getDisplayName() != null) {
                 title = contact.getDisplayName();
             } else if (!TextUtils.isEmpty(number)) {
@@ -154,9 +209,11 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
 
             UiCallLog uiCallLog = new UiCallLog(
                     title,
-                    getSecondaryText(getType(phoneNumber), relativeTime),
+                    getSecondaryText(
+                            TextUtils.isEmpty(typeLabel) ? getType(phoneNumber) : typeLabel,
+                            relativeTime),
                     number,
-                    contact != null ? contact.getAvatarUri() : null,
+                    contact,
                     phoneCallLog.getAllCallRecords());
 
             uiCallLogs.add(uiCallLog);

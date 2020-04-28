@@ -31,7 +31,6 @@ import com.android.car.dialer.ui.common.entity.UiCallLog;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.dialer.widget.CallTypeIconsView;
 import com.android.car.telephony.common.Contact;
-import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneCallLog;
 import com.android.car.telephony.common.TelecomUtils;
 
@@ -70,11 +69,13 @@ public class CallLogViewHolder extends RecyclerView.ViewHolder {
      * Binds the view holder with relevant data.
      */
     public void bind(UiCallLog uiCallLog) {
+        Contact contact = uiCallLog.getContact();
+
         TelecomUtils.setContactBitmapAsync(
                 mAvatarView.getContext(),
                 mAvatarView,
-                uiCallLog.getAvatarUri(),
-                uiCallLog.getTitle());
+                contact,
+                uiCallLog.getNumber());
 
         mTitleView.setText(uiCallLog.getTitle());
         for (PhoneCallLog.Record record : uiCallLog.getCallRecords()) {
@@ -95,22 +96,25 @@ public class CallLogViewHolder extends RecyclerView.ViewHolder {
             mTextView.setTextAppearance(R.style.TextAppearance_CallLogTimestampDefault);
         }
 
-        mPlaceCallView.setOnClickListener(
+        ViewUtils.setOnClickListener(mPlaceCallView,
                 view -> UiCallManager.get().placeCall(uiCallLog.getNumber()));
 
-        setUpActionButton(uiCallLog);
+        setUpActionButton(contact);
     }
 
-    public void onRecycle() {
+    /**
+     * Recycles views.
+     */
+    public void recycle() {
         mCallTypeIconsView.clear();
+        ViewUtils.setOnClickListener(mPlaceCallView, null);
     }
 
-    private void setUpActionButton(UiCallLog uiCallLog) {
+    private void setUpActionButton(Contact contact) {
         if (mActionButton == null) {
             return;
         }
 
-        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(uiCallLog.getNumber());
         boolean forceShowActionButton = itemView.getResources().getBoolean(
                 R.bool.config_show_calllog_action_button_for_non_contact);
 
@@ -121,6 +125,8 @@ public class CallLogViewHolder extends RecyclerView.ViewHolder {
         if (contact != null) {
             ViewUtils.setOnClickListener(mActionButton,
                     view -> mOnShowContactDetailListener.onShowContactDetail(contact));
+        } else {
+            ViewUtils.setOnClickListener(mActionButton, null);
         }
     }
 }

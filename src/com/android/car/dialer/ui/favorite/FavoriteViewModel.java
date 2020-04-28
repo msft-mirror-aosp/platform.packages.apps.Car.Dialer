@@ -20,27 +20,72 @@ import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 
+import com.android.car.arch.common.FutureData;
+import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.dialer.R;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
+import com.android.car.dialer.ui.common.entity.ActionButton;
+import com.android.car.dialer.ui.common.entity.Header;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * View model for {@link FavoriteFragment}.
  */
 public class FavoriteViewModel extends AndroidViewModel {
-    private FavoriteNumberRepository mFavoriteNumberRepository;
+    private final FavoriteNumberRepository mFavoriteNumberRepository;
+    private final LiveData<FutureData<List<Object>>> mFavoriteContacts;
+    private final LiveData<List<Contact>> mBluetoothFavoriteContacts;
 
     public FavoriteViewModel(Application application) {
         super(application);
         mFavoriteNumberRepository = FavoriteNumberRepository.getRepository(application);
+        mBluetoothFavoriteContacts = new BluetoothFavoriteContactsLiveData(application);
+
+        MediatorLiveData<List<Object>> favoriteContacts = new MediatorLiveData<>();
+        favoriteContacts.addSource(mFavoriteNumberRepository.getFavoriteContacts(), contacts -> {
+            List<Object> contactList = new ArrayList<>();
+            if (mBluetoothFavoriteContacts.getValue() != null
+                    && !mBluetoothFavoriteContacts.getValue().isEmpty()) {
+                contactList.add(new Header(application.getString(R.string.phone_favorites)));
+                contactList.addAll(mBluetoothFavoriteContacts.getValue());
+            }
+            contactList.add(new Header(application.getString(R.string.local_favorites)));
+            if (contacts != null) {
+                contactList.addAll(contacts);
+            }
+            contactList.add(new ActionButton());
+            favoriteContacts.setValue(contactList);
+        });
+        favoriteContacts.addSource(mBluetoothFavoriteContacts, contacts -> {
+            List<Object> contactList = new ArrayList<>();
+            if (contacts != null && !contacts.isEmpty()) {
+                contactList.add(new Header(application.getString(R.string.phone_favorites)));
+                contactList.addAll(contacts);
+            }
+            contactList.add(new Header(application.getString(R.string.local_favorites)));
+            if (mFavoriteNumberRepository.getFavoriteContacts().getValue() != null) {
+                contactList.addAll(mFavoriteNumberRepository.getFavoriteContacts().getValue());
+            }
+            contactList.add(new ActionButton());
+            favoriteContacts.setValue(contactList);
+        });
+        mFavoriteContacts = LiveDataFunctions.loadingSwitchMap(
+                favoriteContacts,
+                input -> LiveDataFunctions.dataOf(input == null || input.isEmpty() ? null : input));
+
     }
 
-    /** Returns favorite contact list live data. */
-    public LiveData<List<Contact>> getFavoriteContacts() {
-        return mFavoriteNumberRepository.getFavoriteContacts();
+    /**
+     * Returns favorite contact list live data.
+     */
+    public LiveData<FutureData<List<Object>>> getFavoriteContacts() {
+        return mFavoriteContacts;
     }
 
     /**

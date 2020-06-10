@@ -38,17 +38,27 @@
         android:autoSizeMaxTextSize="@dimen/dialpad_info_title_text_size_max"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/dialpad_info_guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/delete_button"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/delete_button"/>
 
     <ImageButton
         android:id="@+id/delete_button"
         style="@style/DialpadSecondaryButton"
         android:src="@drawable/ic_backspace"
-        android:layout_marginStart="@dimen/dialpad_info_title_padding_size"
+        android:layout_marginLeft="@dimen/dialpad_info_title_padding_size"
+        android:layout_marginRight="@dimen/dialpad_info_margin_end"
         app:layout_constraintTop_toTopOf="@id/title"
         app:layout_constraintBottom_toBottomOf="@id/title"
-        app:layout_constraintStart_toEndOf="@id/title"
+        app:layout_constraintLeft_toRightOf="@id/title"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <ImageView
+        android:id="@+id/call_button"
+        style="@style/DialpadPrimaryButton"
+        android:src="@drawable/icon_call_button"
+        android:layout_marginBottom="@dimen/dialpad_info_edge_padding_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <include
@@ -57,15 +67,17 @@
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/dialpad_user_profile_padding"
         app:layout_constraintTop_toBottomOf="@id/title"
-        app:layout_constraintBottom_toTopOf="@+id/call_button"
+        app:layout_constraintBottom_toTopOf="@id/call_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <ImageView
-        android:id="@+id/call_button"
-        style="@style/DialpadPrimaryButton"
-        android:src="@drawable/icon_call_button"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <include
+        layout="@layout/list_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/dialpad_user_profile_padding"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintBottom_toTopOf="@id/call_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 

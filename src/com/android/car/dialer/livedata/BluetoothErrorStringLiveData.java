@@ -16,7 +16,6 @@
 
 package com.android.car.dialer.livedata;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
@@ -26,6 +25,7 @@ import androidx.lifecycle.MediatorLiveData;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.log.L;
+import com.android.car.dialer.servicelocator.DialerServiceLocator;
 
 import java.util.Set;
 
@@ -56,7 +56,7 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
     private BluetoothErrorStringLiveData(Context context) {
         mContext = context.getApplicationContext();
 
-        if (BluetoothAdapter.getDefaultAdapter() == null) {
+        if (DialerServiceLocator.get().getAndroidFramework().getBluetoothAdapter() == null) {
             setValue(mContext.getString(R.string.bluetooth_unavailable));
         } else {
             setValue(NO_BT_ERROR);

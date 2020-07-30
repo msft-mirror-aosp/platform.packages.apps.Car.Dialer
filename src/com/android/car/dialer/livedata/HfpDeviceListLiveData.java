@@ -28,12 +28,15 @@ import android.content.IntentFilter;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.android.car.dialer.servicelocator.DialerServiceLocator;
+
 import java.util.List;
 
 /** {@link LiveData} that monitors the hfp connected devices. */
 public class HfpDeviceListLiveData extends MutableLiveData<List<BluetoothDevice>> {
     private final Context mContext;
-    private final BluetoothAdapter mBluetoothAdapter;
+    private final BluetoothAdapter mBluetoothAdapter =
+            DialerServiceLocator.get().getBluetoothAdapter();
     private final IntentFilter mIntentFilter;
 
     private BluetoothHeadsetClient mBluetoothHeadsetClient;
@@ -49,7 +52,6 @@ public class HfpDeviceListLiveData extends MutableLiveData<List<BluetoothDevice>
     public HfpDeviceListLiveData(Context context) {
         mContext = context;
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter != null) {
             mBluetoothAdapter.getProfileProxy(mContext, new BluetoothProfile.ServiceListener() {
                 @Override

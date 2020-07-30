@@ -1,6 +1,8 @@
 //############################################################
-// Car Dialer Instrumented test target.                       #
+// Car Dialer Instrumented test target.                      #
 //############################################################
+// Install CarDialerAppForTesting target before running this test.
+
 android_test {
     name: "CarDialerInstruTests",
 
@@ -10,7 +12,13 @@ android_test {
 
     static_libs: [
         "androidx.test.ext.junit",
+        "androidx.test.ext.junit",
+        "androidx.test.runner",
+        "androidx.test.rules",
+        "mockito-target-extended",
     ],
+
+    jni_libs: ["libstaticjvmtiagent"],
 
     instrumentation_for: "CarDialerAppForTesting",
 }

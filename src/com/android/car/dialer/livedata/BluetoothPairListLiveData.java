@@ -27,6 +27,7 @@ import androidx.annotation.MainThread;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.log.L;
+import com.android.car.dialer.servicelocator.DialerServiceLocator;
 
 import java.util.Set;
 
@@ -36,7 +37,8 @@ import java.util.Set;
 public class BluetoothPairListLiveData extends LiveData<Set<BluetoothDevice>> {
     private static final String TAG = "CD.BluetoothPairListLiveData";
 
-    private final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    private final BluetoothAdapter mBluetoothAdapter =
+            DialerServiceLocator.get().getBluetoothAdapter();
     private final Context mContext;
     private final IntentFilter mIntentFilter = new IntentFilter();
 

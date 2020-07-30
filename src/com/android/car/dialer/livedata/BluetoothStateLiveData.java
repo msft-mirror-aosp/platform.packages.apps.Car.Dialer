@@ -26,6 +26,7 @@ import androidx.annotation.IntDef;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.log.L;
+import com.android.car.dialer.servicelocator.DialerServiceLocator;
 
 /**
  * Provides the device Bluetooth availability. Updates client with {@link BluetoothState}.
@@ -47,7 +48,8 @@ public class BluetoothStateLiveData extends LiveData<Integer> {
         int ENABLED = 2;
     }
 
-    private final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    private final BluetoothAdapter mBluetoothAdapter =
+            DialerServiceLocator.get().getBluetoothAdapter();
     private final Context mContext;
     private final IntentFilter mIntentFilter = new IntentFilter();
 

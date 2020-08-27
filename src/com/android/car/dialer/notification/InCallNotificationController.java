@@ -16,7 +16,6 @@
 
 package com.android.car.dialer.notification;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -32,6 +31,7 @@ import androidx.annotation.StringRes;
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
 import com.android.car.telephony.common.CallDetail;
+import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -45,6 +45,8 @@ public final class InCallNotificationController {
     private static final int NOTIFICATION_ID = 20181105;
 
     private static InCallNotificationController sInCallNotificationController;
+
+    private boolean mShowFullscreenIncallUi;
 
     /**
      * Initialized a globally accessible {@link InCallNotificationController} which can be retrieved
@@ -83,9 +85,11 @@ public final class InCallNotificationController {
     private final Set<String> mActiveInCallNotifications;
     private CompletableFuture<Void> mNotificationFuture;
 
-    @TargetApi(26)
     private InCallNotificationController(Context context) {
         mContext = context;
+
+        mShowFullscreenIncallUi = mContext.getResources().getBoolean(
+                R.bool.config_show_hun_fullscreen_incall_ui);
         mNotificationManager =
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -106,7 +110,6 @@ public final class InCallNotificationController {
 
 
     /** Show a new incoming call notification or update the existing incoming call notification. */
-    @TargetApi(26)
     public void showInCallNotification(Call call) {
         L.d(TAG, "showInCallNotification");
 
@@ -118,10 +121,14 @@ public final class InCallNotificationController {
         String number = callDetail.getNumber();
         String callId = call.getDetails().getTelecomCallId();
         mActiveInCallNotifications.add(callId);
+
+        if (mShowFullscreenIncallUi) {
+            mNotificationBuilder.setFullScreenIntent(
+                    getFullscreenIntent(call), /* highPriority= */true);
+        }
         mNotificationBuilder
-                .setFullScreenIntent(getFullscreenIntent(call), /* highPriority= */true)
                 .setLargeIcon((Icon) null)
-                .setContentTitle(number)
+                .setContentTitle(TelecomUtils.getBidiWrappedNumber(number))
                 .setActions(
                         getAction(call, R.string.answer_call,
                                 NotificationService.ACTION_ANSWER_CALL),
@@ -138,7 +145,7 @@ public final class InCallNotificationController {
                     if (mActiveInCallNotifications.contains(callId)) {
                         mNotificationBuilder
                                 .setLargeIcon(pair.second)
-                                .setContentTitle(pair.first);
+                                .setContentTitle(TelecomUtils.getBidiWrappedNumber(pair.first));
 
                         mNotificationManager.notify(
                                 callId,

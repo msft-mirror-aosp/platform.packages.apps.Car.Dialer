@@ -16,7 +16,6 @@
 
 package com.android.car.dialer.notification;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -37,6 +36,7 @@ import com.android.car.dialer.log.L;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.TelecomPageTab;
 import com.android.car.telephony.common.PhoneCallLog;
+import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,7 +97,6 @@ public final class MissedCallNotificationController {
     private final List<PhoneCallLog> mCurrentPhoneCallLogList;
     private final Map<String, CompletableFuture<Void>> mUpdateFutures;
 
-    @TargetApi(26)
     private MissedCallNotificationController(Context context) {
         mContext = context;
         mNotificationManager =
@@ -153,7 +152,7 @@ public final class MissedCallNotificationController {
                             .setLargeIcon(pair.second)
                             .setContentTitle(mContext.getResources().getQuantityString(
                                     R.plurals.notification_missed_call, callLogSize, callLogSize))
-                            .setContentText(pair.first)
+                            .setContentText(TelecomUtils.getBidiWrappedNumber(pair.first))
                             .setContentIntent(getContentPendingIntent())
                             .setDeleteIntent(getDeleteIntent())
                             .setOnlyAlertOnce(true)

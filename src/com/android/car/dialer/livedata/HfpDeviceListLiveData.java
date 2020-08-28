@@ -30,6 +30,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.servicelocator.DialerServiceLocator;
 
+import java.util.Collections;
 import java.util.List;
 
 /** {@link LiveData} that monitors the hfp connected devices. */
@@ -90,6 +91,8 @@ public class HfpDeviceListLiveData extends MutableLiveData<List<BluetoothDevice>
     private void update() {
         if (mBluetoothHeadsetClient != null) {
             setValue(mBluetoothHeadsetClient.getConnectedDevices());
+        } else {
+            setValue(Collections.emptyList());
         }
     }
 }

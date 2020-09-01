@@ -71,7 +71,7 @@ public class FavoriteFragmentTest {
         UiCallManager.set(mMockUiCallManager);
 
         when(mMockPhoneNumber.getRawNumber()).thenReturn(RAW_NUMBER);
-        MutableLiveData<FutureData<List<Contact>>> favoriteContacts = new MutableLiveData<>();
+        MutableLiveData<FutureData<List<Object>>> favoriteContacts = new MutableLiveData<>();
         favoriteContacts.setValue(new FutureData<>(false, Arrays.asList(mMockContact)));
         ShadowAndroidViewModelFactory.add(FavoriteViewModel.class, mMockFavoriteViewModel);
         when(mMockFavoriteViewModel.getFavoriteContacts()).thenReturn(favoriteContacts);
@@ -83,7 +83,7 @@ public class FavoriteFragmentTest {
 
         CarUiRecyclerView recyclerView = mFavoriteFragment.getView().findViewById(R.id.list_view);
         // set up layout for recyclerView
-        recyclerView.layoutBothForTesting(0, 0, 100, 1000);
+        recyclerView.layout(0, 0, 100, 1000);
         mViewHolder = (FavoriteContactViewHolder) recyclerView.findViewHolderForLayoutPosition(0);
     }
 

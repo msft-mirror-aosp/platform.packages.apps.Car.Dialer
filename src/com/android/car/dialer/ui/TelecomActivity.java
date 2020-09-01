@@ -17,6 +17,7 @@
 package com.android.car.dialer.ui;
 
 import android.app.SearchManager;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -30,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
@@ -69,8 +69,7 @@ import java.util.List;
  * <p>Based on call and connectivity status, it will choose the right page to display.
  */
 public class TelecomActivity extends FragmentActivity implements
-        DialerBaseFragment.DialerFragmentParent, FragmentManager.OnBackStackChangedListener,
-        Toolbar.OnHeightChangedListener {
+        DialerBaseFragment.DialerFragmentParent {
     private static final String TAG = "CD.TelecomActivity";
     private LiveData<String> mBluetoothErrorMsgLiveData;
     private LiveData<Integer> mDialerAppStateLiveData;
@@ -78,6 +77,7 @@ public class TelecomActivity extends FragmentActivity implements
     // View objects for this activity.
     private TelecomPageTab.Factory mTabFactory;
     private Toolbar mCarUiToolbar;
+    private BluetoothDevice mBluetoothDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +87,6 @@ public class TelecomActivity extends FragmentActivity implements
         setContentView(R.layout.telecom_activity);
 
         mCarUiToolbar = findViewById(R.id.car_ui_toolbar);
-        mCarUiToolbar.registerToolbarHeightChangeListener(this);
 
         setupTabLayout();
 
@@ -99,6 +98,7 @@ public class TelecomActivity extends FragmentActivity implements
                 dialerAppState -> updateCurrentFragment(dialerAppState));
         MutableLiveData<Integer> toolbarTitleMode = viewModel.getToolbarTitleMode();
         toolbarTitleMode.setValue(Themes.getAttrInteger(this, R.attr.toolbarTitleMode));
+        viewModel.getRefreshTabsLiveData().observe(this, this::refreshTabs);
 
         InCallViewModel inCallViewModel = ViewModelProviders.of(this).get(InCallViewModel.class);
         mOngoingCallListLiveData = inCallViewModel.getOngoingCallList();
@@ -108,25 +108,11 @@ public class TelecomActivity extends FragmentActivity implements
         handleIntent();
     }
 
-    @Override
-    public void onStart() {
-        getSupportFragmentManager().addOnBackStackChangedListener(this);
-        onBackStackChanged();
-        super.onStart();
-        L.d(TAG, "onStart");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        L.d(TAG, "onStop");
-        getSupportFragmentManager().removeOnBackStackChangedListener(this);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mCarUiToolbar.unregisterToolbarHeightChangeListener(this);
+    private void refreshTabs(boolean refreshTabs) {
+        L.v(TAG, "hfp connected device list Changes.");
+        if (refreshTabs) {
+            setupTabLayout();
+        }
     }
 
     @Override
@@ -269,6 +255,7 @@ public class TelecomActivity extends FragmentActivity implements
     private void setupTabLayout() {
         boolean wasContentFragmentRestored = false;
         mTabFactory = new TelecomPageTab.Factory(this, getSupportFragmentManager());
+        mCarUiToolbar.clearAllTabs();
         for (int i = 0; i < mTabFactory.getTabCount(); i++) {
             TelecomPageTab tab = mTabFactory.createTab(getBaseContext(), i);
             mCarUiToolbar.addTab(tab);
@@ -353,25 +340,6 @@ public class TelecomActivity extends FragmentActivity implements
                 .replace(R.id.content_fragment_container, topContentFragment, fragmentTag)
                 .addToBackStack(fragmentTag)
                 .commit();
-    }
-
-    @Override
-    public void onBackStackChanged() {
-        L.d(TAG, "onBackStackChanged");
-        Fragment topFragment = getSupportFragmentManager().findFragmentById(
-                R.id.content_fragment_container);
-        if (topFragment instanceof DialerBaseFragment) {
-            ((DialerBaseFragment) topFragment).setupToolbar(mCarUiToolbar);
-        }
-    }
-
-    @Override
-    public void onHeightChanged(int height) {
-        Fragment topFragment = getSupportFragmentManager().findFragmentById(
-                R.id.content_fragment_container);
-        if (topFragment instanceof DialerBaseFragment) {
-            ((DialerBaseFragment) topFragment).setToolbarHeight(height);
-        }
     }
 
     @Override

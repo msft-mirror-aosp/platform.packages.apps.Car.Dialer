@@ -33,10 +33,12 @@ import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.FragmentTestActivity;
 import com.android.car.dialer.R;
 import com.android.car.dialer.testutils.ShadowAndroidViewModelFactory;
+import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
 import com.android.car.dialer.ui.contact.ContactDetailsViewModel;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
+import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.ui.recyclerview.CarUiRecyclerView;
 
 import org.junit.After;
@@ -50,6 +52,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Config(shadows = {ShadowAndroidViewModelFactory.class})
@@ -62,15 +65,19 @@ public class ContactResultsFragmentTest {
     private ContactResultsFragment mContactResultsFragment;
     private FragmentTestActivity mFragmentTestActivity;
     private CarUiRecyclerView mListView;
-    private MutableLiveData<List<Contact>> mContactSearchResultsLiveData;
+    private MutableLiveData<List<ContactResultsLiveData.ContactResultListItem>>
+            mContactSearchResultsLiveData;
     @Mock
     private ContactResultsViewModel mMockContactResultsViewModel;
     @Mock
     private ContactDetailsViewModel mMockContactDetailsViewModel;
     @Mock
-    private Contact mMockContact;
+    private Contact mMockContact, mContact1, mContact2, mContact3;
     @Mock
-    private Contact mContact1, mContact2, mContact3;
+    private ContactResultsLiveData.ContactResultListItem mContactResult1, mContactResult2,
+            mContactResult3;
+    @Mock
+    private PhoneNumber mPhoneNumber;
 
     @Before
     public void setUp() {
@@ -83,9 +90,15 @@ public class ContactResultsFragmentTest {
         ShadowAndroidViewModelFactory.add(
                 ContactResultsViewModel.class, mMockContactResultsViewModel);
 
+        when(mContactResult1.getContact()).thenReturn(mContact1);
         when(mContact1.getDisplayName()).thenReturn(DISPLAY_NAMES[0]);
+        when(mContact1.getNumbers()).thenReturn(Collections.singletonList(mPhoneNumber));
+        when(mContactResult2.getContact()).thenReturn(mContact2);
         when(mContact2.getDisplayName()).thenReturn(DISPLAY_NAMES[1]);
+        when(mContact2.getNumbers()).thenReturn(Collections.singletonList(mPhoneNumber));
+        when(mContactResult3.getContact()).thenReturn(mContact3);
         when(mContact3.getDisplayName()).thenReturn(DISPLAY_NAMES[2]);
+        when(mContact3.getNumbers()).thenReturn(Collections.singletonList(mPhoneNumber));
     }
 
     @After
@@ -104,7 +117,7 @@ public class ContactResultsFragmentTest {
     @Test
     public void testDisplaySearchResults_multipleResults() {
         mContactSearchResultsLiveData.setValue(
-                Arrays.asList(mContact1, mContact2, mContact3));
+                Arrays.asList(mContactResult1, mContactResult2, mContactResult3));
 
         mContactResultsFragment = ContactResultsFragment.newInstance(INITIAL_SEARCH_QUERY);
         setUpFragment();
@@ -117,7 +130,7 @@ public class ContactResultsFragmentTest {
     @Test
     public void testClickSearchResult_showContactDetailPage() {
         mContactSearchResultsLiveData.setValue(
-                Arrays.asList(mContact1, mContact2, mContact3));
+                Arrays.asList(mContactResult1, mContactResult2, mContactResult3));
 
         MutableLiveData<FutureData<Contact>> contactDetailLiveData = new MutableLiveData<>();
         contactDetailLiveData.setValue(new FutureData<>(false, mMockContact));
@@ -143,7 +156,7 @@ public class ContactResultsFragmentTest {
 
         mListView = mContactResultsFragment.getView().findViewById(R.id.list_view);
         // Set up layout for recyclerView
-        mListView.layoutBothForTesting(0, 0, 100, 1000);
+        mListView.layout(0, 0, 100, 1000);
     }
 
     private void verifyChildAt(int position) {

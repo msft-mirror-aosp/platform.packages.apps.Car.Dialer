@@ -17,7 +17,6 @@
 package com.android.car.dialer.livedata;
 
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 
 import androidx.lifecycle.MediatorLiveData;
@@ -27,6 +26,7 @@ import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.servicelocator.DialerServiceLocator;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,7 +40,7 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
 
     private Context mContext;
 
-    private BluetoothHfpStateLiveData mHfpStateLiveData;
+    private HfpDeviceListLiveData mHfpDeviceListLiveData;
     private BluetoothPairListLiveData mPairListLiveData;
     private BluetoothStateLiveData mBluetoothStateLiveData;
 
@@ -61,17 +61,17 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
         } else {
             setValue(NO_BT_ERROR);
             UiBluetoothMonitor uiBluetoothMonitor = UiBluetoothMonitor.get();
-            mHfpStateLiveData = uiBluetoothMonitor.getHfpStateLiveData();
+            mHfpDeviceListLiveData = uiBluetoothMonitor.getHfpDeviceListLiveData();
             mPairListLiveData = uiBluetoothMonitor.getPairListLiveData();
             mBluetoothStateLiveData = uiBluetoothMonitor.getBluetoothStateLiveData();
 
-            addSource(mHfpStateLiveData, this::onHfpStateChanged);
+            addSource(mHfpDeviceListLiveData, this::onHfpDevicesChanged);
             addSource(mPairListLiveData, this::onPairListChanged);
             addSource(mBluetoothStateLiveData, this::onBluetoothStateChanged);
         }
     }
 
-    private void onHfpStateChanged(Integer state) {
+    private void onHfpDevicesChanged(List<BluetoothDevice> bluetoothDevices) {
         update();
     }
 
@@ -108,8 +108,8 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
     }
 
     private boolean isHfpConnected() {
-        Integer hfpState = mHfpStateLiveData.getValue();
-        return hfpState == null || hfpState == BluetoothProfile.STATE_CONNECTED;
+        List<BluetoothDevice> mHfpDeviceList = mHfpDeviceListLiveData.getValue();
+        return mHfpDeviceList != null && !mHfpDeviceList.isEmpty();
     }
 
     private boolean isBluetoothEnabled() {

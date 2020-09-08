@@ -109,16 +109,21 @@ public abstract class InCallFragment extends Fragment {
                     return;
                 }
 
-                mNameView.setText(info.getDisplayName());
+                String nameViewText = info.getDisplayName();
+                mNameView.setText(nameViewText);
 
                 String phoneNumberLabel = info.getTypeLabel();
                 if (!phoneNumberLabel.isEmpty()) {
                     phoneNumberLabel += " ";
                 }
+
+                String bidiWrappedLabel = phoneNumberLabel + TelecomUtils.getBidiWrappedNumber(
+                        TelecomUtils.getFormattedNumber(getContext(), number));
                 phoneNumberLabel += TelecomUtils.getFormattedNumber(getContext(), number);
+
                 if (!TextUtils.isEmpty(phoneNumberLabel)
                         && !phoneNumberLabel.equals(info.getDisplayName())) {
-                    mPhoneNumberView.setText(phoneNumberLabel);
+                    mPhoneNumberView.setText(bidiWrappedLabel);
                     mPhoneNumberView.setVisibility(View.VISIBLE);
                 } else {
                     mPhoneNumberView.setVisibility(View.GONE);
@@ -164,9 +169,8 @@ public abstract class InCallFragment extends Fragment {
             mUserProfileCallStateText.start();
         } else {
             mUserProfileCallStateText.stop();
-            mUserProfileCallStateText.setText(
-                    TelecomUtils.callStateToUiString(getContext(),
-                            callStateAndConnectTime.first));
+            mUserProfileCallStateText.setText(TelecomUtils.callStateToUiString(getContext(),
+                    callStateAndConnectTime.first));
         }
     }
 

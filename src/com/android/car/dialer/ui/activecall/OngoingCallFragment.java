@@ -23,14 +23,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.android.car.apps.common.BackgroundImageView;
 import com.android.car.dialer.R;
-
-import com.google.common.annotations.VisibleForTesting;
 
 /**
  * A fragment that displays information about an on-going call with options to hang up.
@@ -59,7 +58,6 @@ public class OngoingCallFragment extends InCallFragment {
         inCallViewModel.getCallStateAndConnectTime().observe(this, this::updateCallDescription);
 
         mDialpadState = inCallViewModel.getDialpadOpenState();
-        mDialpadState.setValue(savedInstanceState == null ? false : !mDialpadFragment.isHidden());
         mDialpadState.observe(this, isDialpadOpen -> {
             if (isDialpadOpen) {
                 onOpenDialpad();

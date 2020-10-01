@@ -16,11 +16,11 @@
 
 package com.android.car.dialer.ui.contact;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +33,7 @@ import com.android.car.apps.common.BackgroundImageView;
 import com.android.car.apps.common.LetterTileDrawable;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
+import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.Contact;
@@ -49,6 +50,8 @@ import com.bumptech.glide.request.transition.Transition;
  * ViewHolder for {@link ContactDetailsFragment}.
  */
 class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
+    private static final String TAG = "CD.ContactDetailsVH";
+
     // Applies to all
     @NonNull
     private final TextView mTitle;
@@ -198,13 +201,16 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
         ViewUtils.setText(mText, postalAddress.getReadableLabel(resources));
 
         mAddressView.setOnClickListener(
-                v -> openMapWithAddressUri(context, postalAddress.getAddressUri(resources)));
+                v -> openMapWithMapIntent(context, postalAddress.getAddressIntent(resources)));
         mNavigationButton.setOnClickListener(
-                v -> openMapWithAddressUri(context, postalAddress.getNavigationUri(resources)));
+                v -> openMapWithMapIntent(context, postalAddress.getNavigationIntent(resources)));
     }
 
-    private void openMapWithAddressUri(Context context, Uri addressUri) {
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, addressUri);
-        context.startActivity(mapIntent);
+    private void openMapWithMapIntent(Context context, Intent mapIntent) {
+        try {
+            context.startActivity(mapIntent);
+        } catch (ActivityNotFoundException e) {
+            L.w(TAG, "Map is not available.");
+        }
     }
 }

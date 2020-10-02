@@ -23,11 +23,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
-import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
+import com.android.car.dialer.ui.common.DialerUtils;
 import com.android.car.telephony.common.Contact;
+import com.android.car.telephony.common.TelecomUtils;
+import com.android.car.ui.recyclerview.ContentLimitingAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +38,7 @@ import java.util.List;
 /**
  * Adapter for contact list.
  */
-public class ContactListAdapter extends RecyclerView.Adapter<ContactListViewHolder> {
+public class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
     private static final String TAG = "CD.ContactListAdapter";
 
     interface OnShowContactDetailListener {
@@ -47,6 +50,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListViewHold
     private final OnShowContactDetailListener mOnShowContactDetailListener;
 
     private Integer mSortMethod;
+    private LinearLayoutManager mLinearLayoutManager;
+    private int mLimitingAnchorIndex = 0;
 
     public ContactListAdapter(Context context,
             OnShowContactDetailListener onShowContactDetailListener) {
@@ -63,19 +68,27 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListViewHold
             mContactList.addAll(contactListPair.second);
             mSortMethod = contactListPair.first;
         }
+        updateUnderlyingDataChanged(mContactList.size(),
+                DialerUtils.validateListLimitingAnchor(mContactList.size(), mLimitingAnchorIndex));
         notifyDataSetChanged();
+    }
+
+    @Override
+    public int computeAnchorIndexWhenRestricting() {
+        mLimitingAnchorIndex = DialerUtils.getFirstVisibleItemPosition(mLinearLayoutManager);
+        return mLimitingAnchorIndex;
     }
 
     @NonNull
     @Override
-    public ContactListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ContactListViewHolder onCreateViewHolderImpl(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.contact_list_item, parent,
                 false);
         return new ContactListViewHolder(itemView, mOnShowContactDetailListener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ContactListViewHolder holder, int position) {
+    public void onBindViewHolderImpl(@NonNull ContactListViewHolder holder, int position) {
         Contact contact = mContactList.get(position);
         String header = getHeader(contact);
 
@@ -85,19 +98,24 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListViewHold
     }
 
     @Override
-    public int getItemCount() {
+    public int getUnrestrictedItemCount() {
         return mContactList.size();
     }
 
     @Override
-    public void onViewRecycled(@NonNull ContactListViewHolder holder) {
-        super.onViewRecycled(holder);
+    public int getConfigurationId() {
+        return R.id.contact_list_uxr_config;
+    }
+
+    @Override
+    public void onViewRecycledImpl(@NonNull ContactListViewHolder holder) {
+        // Calling super.onViewRecycled() will cause an infinite loop.
         holder.recycle();
     }
 
     private String getHeader(Contact contact) {
         String label;
-        if (ContactSortingInfo.SORT_BY_LAST_NAME.equals(mSortMethod)) {
+        if (TelecomUtils.SORT_BY_LAST_NAME.equals(mSortMethod)) {
             label = contact.getPhonebookLabelAlt();
         } else {
             label = contact.getPhonebookLabel();
@@ -105,5 +123,17 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListViewHold
 
         return !TextUtils.isEmpty(label) ? label
                 : mContext.getString(R.string.header_for_type_other);
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        mLinearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        mLinearLayoutManager = null;
+        super.onDetachedFromRecyclerView(recyclerView);
     }
 }

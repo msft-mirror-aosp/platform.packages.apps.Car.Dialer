@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.livedata;
+package com.android.car.dialer.ui.warning;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -24,6 +24,8 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.livedata.BluetoothPairListLiveData;
+import com.android.car.dialer.livedata.BluetoothStateLiveData;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.servicelocator.DialerServiceLocator;
 
@@ -45,16 +47,7 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
     private BluetoothPairListLiveData mPairListLiveData;
     private BluetoothStateLiveData mBluetoothStateLiveData;
 
-    /**
-     * Creates {@link BluetoothErrorStringLiveData}.
-     *
-     * @param context A context for getting strings.
-     */
-    public static BluetoothErrorStringLiveData get(Context context) {
-        return new BluetoothErrorStringLiveData(context);
-    }
-
-    private BluetoothErrorStringLiveData(Context context) {
+    BluetoothErrorStringLiveData(Context context) {
         mContext = context.getApplicationContext();
 
         if (DialerServiceLocator.get().getAndroidFramework().getBluetoothAdapter() == null) {

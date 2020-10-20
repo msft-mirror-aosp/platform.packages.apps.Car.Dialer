@@ -26,6 +26,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
+import androidx.lifecycle.LiveData;
+
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.R;
 import com.android.car.dialer.TestDialerApplication;
@@ -33,7 +35,6 @@ import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.livedata.BluetoothErrorStringLiveData;
 import com.android.car.dialer.livedata.BluetoothPairListLiveData;
 import com.android.car.dialer.livedata.BluetoothStateLiveData;
-import com.android.car.dialer.livedata.HfpDeviceListLiveData;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testutils.ShadowBluetoothAdapterForDialer;
 
@@ -46,6 +47,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 
 import java.util.Collections;
+import java.util.List;
 
 @RunWith(CarDialerRobolectricTestRunner.class)
 @Config(shadows = ShadowBluetoothAdapterForDialer.class)
@@ -53,7 +55,7 @@ public class TelecomActivityViewModelTest {
 
     private TelecomActivityViewModel mTelecomActivityViewModel;
     private Context mContext;
-    private HfpDeviceListLiveData mHfpDeviceListLiveData;
+    private LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
     private BluetoothPairListLiveData mPairedListLiveData;
     private BluetoothStateLiveData mBluetoothStateLiveData;
 

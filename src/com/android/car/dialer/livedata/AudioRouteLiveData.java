@@ -39,6 +39,7 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
 
     private final Context mContext;
     private final IntentFilter mAudioRouteChangeFilter;
+    private final UiCallManager mUiCallManager;
 
     private final BroadcastReceiver mAudioRouteChangeReceiver = new BroadcastReceiver() {
         @Override
@@ -47,11 +48,16 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
         }
     };
 
-    public AudioRouteLiveData(Context context) {
+    public AudioRouteLiveData(
+            Context context,
+            UiBluetoothMonitor bluetoothMonitor,
+            UiCallManager callManager) {
         mContext = context;
         mAudioRouteChangeFilter =
                 new IntentFilter(BluetoothHeadsetClient.ACTION_AUDIO_STATE_CHANGED);
-        addSource(UiBluetoothMonitor.get().getHfpDeviceListLiveData(), this::onHfpDeviceListChange);
+        mUiCallManager = callManager;
+        // TODO: introduce a new AudioStateChanged listener for listening to the audio state change.
+        addSource(bluetoothMonitor.getHfpDeviceListLiveData(), this::onHfpDeviceListChange);
     }
 
     @Override
@@ -68,7 +74,7 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
     }
 
     private void updateAudioRoute() {
-        int audioRoute = UiCallManager.get().getAudioRoute();
+        int audioRoute = mUiCallManager.getAudioRoute();
         if (getValue() == null || audioRoute != getValue()) {
             L.d(TAG, "updateAudioRoute to %s", audioRoute);
             setValue(audioRoute);

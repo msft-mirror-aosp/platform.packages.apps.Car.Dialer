@@ -19,6 +19,7 @@ package com.android.car.dialer.livedata;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.dialer.R;
@@ -40,7 +41,7 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
 
     private Context mContext;
 
-    private HfpDeviceListLiveData mHfpDeviceListLiveData;
+    private LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
     private BluetoothPairListLiveData mPairListLiveData;
     private BluetoothStateLiveData mBluetoothStateLiveData;
 

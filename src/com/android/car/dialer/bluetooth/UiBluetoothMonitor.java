@@ -28,6 +28,8 @@ import com.android.car.dialer.livedata.BluetoothStateLiveData;
 import com.android.car.dialer.livedata.HfpDeviceListLiveData;
 import com.android.car.dialer.log.L;
 
+import java.util.List;
+
 /**
  * Class that responsible for getting status of bluetooth connections.
  */
@@ -116,7 +118,7 @@ public class UiBluetoothMonitor {
     /**
      * Returns a SingleLiveEvent which monitors whether to refresh Dialer.
      */
-    public HfpDeviceListLiveData getHfpDeviceListLiveData() {
+    public LiveData<List<BluetoothDevice>> getHfpDeviceListLiveData() {
         return mHfpDeviceListLiveData;
     }
 

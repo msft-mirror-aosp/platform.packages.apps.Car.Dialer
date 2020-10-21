@@ -34,11 +34,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
 import com.android.car.dialer.livedata.CallDetailLiveData;
 import com.android.car.dialer.livedata.CallStateLiveData;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.InCallServiceImpl;
+import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
 
 import com.google.common.base.Predicate;
@@ -206,7 +208,8 @@ public class InCallViewModel extends AndroidViewModel implements
         mOngoingCallPairLiveData = LiveDataFunctions.pair(mPrimaryCallLiveData,
                 mSecondaryCallLiveData);
 
-        mAudioRouteLiveData = new AudioRouteLiveData(mContext);
+        mAudioRouteLiveData = new AudioRouteLiveData(
+                mContext, UiBluetoothMonitor.get(), UiCallManager.get());
 
         mDialpadIsOpen = new MutableLiveData<>();
         // Set initial value to avoid NPE

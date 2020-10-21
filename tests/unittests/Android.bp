@@ -6,10 +6,13 @@ android_test {
 
     srcs: ["src/**/*.java"],
 
-    java_resource_dirs: ["config"],
-
     static_libs: [
+        "androidx.test.core",
+        "androidx.test.rules",
+        "androidx.test.runner",
         "androidx.test.ext.junit",
+        "truth-prebuilt",
+        "mockito-target-minus-junit4",
     ],
 
     instrumentation_for: "CarDialerAppForTesting",

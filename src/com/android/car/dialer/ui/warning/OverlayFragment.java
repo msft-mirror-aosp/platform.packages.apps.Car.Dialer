@@ -28,7 +28,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.dialer.R;
-import com.android.car.dialer.ui.NoHfpActivityViewModel;
 
 /**
  * A fullscreen {@link DialogFragment} that hosts the {@link NoHfpFragment} as an overlay of dialer
@@ -42,7 +41,7 @@ public class OverlayFragment extends DialogFragment {
         setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_Dialer);
 
         LiveData<Boolean> hasHfpDeviceConnectedLiveData = new ViewModelProvider(getActivity())
-                .get(NoHfpActivityViewModel.class)
+                .get(NoHfpViewModel.class)
                 .hasHfpDeviceConnected();
         hasHfpDeviceConnectedLiveData.observe(this, hasHfpDeviceConnected -> {
             if (Boolean.TRUE.equals(hasHfpDeviceConnected)) {

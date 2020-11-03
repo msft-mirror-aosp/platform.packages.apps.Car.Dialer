@@ -99,8 +99,7 @@ public final class InCallNotificationController {
         mNotificationManager.createNotificationChannel(notificationChannel);
 
         mNotificationBuilder = new Notification.Builder(mContext, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_phone)
-                .setContentText(mContext.getString(R.string.notification_incoming_call))
+                .setSmallIcon(R.drawable.ic_app_icon)
                 .setCategory(Notification.CATEGORY_CALL)
                 .setOngoing(true)
                 .setAutoCancel(false);
@@ -129,6 +128,7 @@ public final class InCallNotificationController {
         mNotificationBuilder
                 .setLargeIcon((Icon) null)
                 .setContentTitle(TelecomUtils.getBidiWrappedNumber(number))
+                .setContentText(mContext.getString(R.string.notification_incoming_call))
                 .setActions(
                         getAction(call, R.string.answer_call,
                                 NotificationService.ACTION_ANSWER_CALL),
@@ -194,6 +194,7 @@ public final class InCallNotificationController {
 
     private Intent getIntent(String action, Call call) {
         Intent intent = new Intent(action, null, mContext, NotificationService.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(NotificationService.EXTRA_CALL_ID, call.getDetails().getTelecomCallId());
         return intent;
     }

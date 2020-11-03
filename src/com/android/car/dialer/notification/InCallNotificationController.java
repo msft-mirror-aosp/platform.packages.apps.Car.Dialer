@@ -179,7 +179,8 @@ public final class InCallNotificationController {
 
     private PendingIntent getFullscreenIntent(Call call) {
         Intent intent = getIntent(NotificationService.ACTION_SHOW_FULLSCREEN_UI, call);
-        return PendingIntent.getService(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getService(mContext, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     private Notification.Action getAction(Call call, @StringRes int actionText,
@@ -189,7 +190,7 @@ public final class InCallNotificationController {
                 mContext,
                 0,
                 getIntent(intentAction, call),
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         return new Notification.Action.Builder(null, text, intent).build();
     }
 

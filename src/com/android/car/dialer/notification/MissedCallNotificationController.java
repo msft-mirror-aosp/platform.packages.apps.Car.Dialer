@@ -195,7 +195,7 @@ public final class MissedCallNotificationController {
         intent.putExtra(Constants.Intents.EXTRA_SHOW_PAGE, TelecomPageTab.Page.CALL_HISTORY);
         intent.putExtra(Constants.Intents.EXTRA_ACTION_READ_MISSED, true);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         return pendingIntent;
     }
 

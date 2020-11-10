@@ -16,9 +16,11 @@
 
 package com.android.car.dialer.servicelocator;
 
+import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 
 import com.android.car.dialer.framework.AndroidFramework;
+import com.android.car.dialer.framework.AndroidFrameworkImpl;
 
 /**
  * Locates all kinds of services that Dialer app needs.
@@ -52,7 +54,7 @@ public class DialerServiceLocator {
     /**
      * Initials the service locator with all dependencies.
      */
-    public void init(AndroidFramework androidFramework) {
-        mAndroidFramework = androidFramework;
+    public void init(Application applicationContext) {
+        mAndroidFramework = AndroidFrameworkImpl.get(applicationContext);
     }
 }

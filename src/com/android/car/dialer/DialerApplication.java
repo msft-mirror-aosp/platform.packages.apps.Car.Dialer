@@ -20,7 +20,6 @@ import android.app.Application;
 
 import com.android.car.dialer.bluetooth.CallHistoryManager;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
-import com.android.car.dialer.framework.AndroidFrameworkImpl;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.dialer.notification.MissedCallNotificationController;
 import com.android.car.dialer.servicelocator.DialerServiceLocator;
@@ -32,7 +31,7 @@ public class DialerApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        DialerServiceLocator.get().init(AndroidFrameworkImpl.get());
+        DialerServiceLocator.get().init(this);
         InMemoryPhoneBook.init(this);
         UiCallManager.init(this);
         UiBluetoothMonitor.init(this);

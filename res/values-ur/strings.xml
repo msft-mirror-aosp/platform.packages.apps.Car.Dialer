@@ -76,10 +76,8 @@
     <string name="pref_connected_phone_title" msgid="5472866963149472593">"منسلک کردہ فون"</string>
     <string name="pref_no_incoming_call_hun_title" msgid="2314257779205958332">"رازداری"</string>
     <string name="pref_no_incoming_call_hun_summary" msgid="8833377984331845097">"صرف کلسٹر میں کال الرٹس دکھائیں"</string>
-    <!-- no translation found for pref_show_fullscreen_active_call_ui_title (6924304583510509581) -->
-    <skip />
-    <!-- no translation found for pref_show_fullscreen_active_call_ui_summary (1629142960991476502) -->
-    <skip />
+    <string name="pref_show_fullscreen_active_call_ui_title" msgid="6924304583510509581">"فعال کال"</string>
+    <string name="pref_show_fullscreen_active_call_ui_summary" msgid="1629142960991476502">"کال کا جواب دیتے وقت فعال کال منظر دکھائیں"</string>
     <string name="given_name_first_title" msgid="8072187841056104968">"پہلا نام"</string>
     <string name="family_name_first_title" msgid="7721976826282427987">"آخری نام"</string>
     <!-- no translation found for sort_order_default_value (5876201942256731358) -->

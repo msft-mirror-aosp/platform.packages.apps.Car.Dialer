@@ -76,10 +76,8 @@
     <string name="pref_connected_phone_title" msgid="5472866963149472593">"ಕನೆಕ್ಟ್ ಮಾಡಿರುವ ಫೋನ್"</string>
     <string name="pref_no_incoming_call_hun_title" msgid="2314257779205958332">"ಗೌಪ್ಯತೆ"</string>
     <string name="pref_no_incoming_call_hun_summary" msgid="8833377984331845097">"ಕಾರ್‌ನ ಕ್ಲಸ್ಟರ್ ಪರದೆಯಲ್ಲಿ ಕರೆಯ ಅಲರ್ಟ್‌ಗಳನ್ನು ಮಾತ್ರ ತೋರಿಸಿ"</string>
-    <!-- no translation found for pref_show_fullscreen_active_call_ui_title (6924304583510509581) -->
-    <skip />
-    <!-- no translation found for pref_show_fullscreen_active_call_ui_summary (1629142960991476502) -->
-    <skip />
+    <string name="pref_show_fullscreen_active_call_ui_title" msgid="6924304583510509581">"ಸಕ್ರಿಯ ಕರೆ"</string>
+    <string name="pref_show_fullscreen_active_call_ui_summary" msgid="1629142960991476502">"ಕರೆಗೆ ಉತ್ತರಿಸುವಾಗ ಸಕ್ರಿಯ ಕರೆ ಎಂಬ ವೀಕ್ಷಣೆಯನ್ನು ತೋರಿಸಿ"</string>
     <string name="given_name_first_title" msgid="8072187841056104968">"ಮೊದಲ ಹೆಸರು"</string>
     <string name="family_name_first_title" msgid="7721976826282427987">"ಕೊನೆಯ ಹೆಸರು"</string>
     <!-- no translation found for sort_order_default_value (5876201942256731358) -->

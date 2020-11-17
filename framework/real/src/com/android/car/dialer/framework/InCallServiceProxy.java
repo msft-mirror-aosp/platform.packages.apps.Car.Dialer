@@ -16,27 +16,20 @@
 
 package com.android.car.dialer.framework;
 
-import android.app.Application;
-import android.bluetooth.BluetoothAdapter;
-import android.telecom.TelecomManager;
+import android.telecom.Call;
+import android.telecom.InCallService;
+
+import java.util.List;
 
 /**
- * A provider which provides all kinds of Android framework services.
+ * Real implementation of InCallServiceProxy
  */
-public interface AndroidFramework {
+public abstract class InCallServiceProxy extends InCallService {
 
     /**
-     * Initializes the class with the given {@link Application} context.
+     * Returns the real call list from {@link InCallService}
      */
-    void init(Application applicationContext);
-
-    /**
-     * Returns a {@link BluetoothAdapter}.
-     */
-    BluetoothAdapter getBluetoothAdapter();
-
-    /**
-     * Returns a {@link TelecomManager}.
-     */
-    TelecomManager getTelecomManager();
+    public final List<Call> getCallList() {
+        return getCalls();
+    }
 }

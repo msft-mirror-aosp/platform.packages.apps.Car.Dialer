@@ -21,7 +21,9 @@ import static com.android.dx.mockito.inline.extended.ExtendedMockito.mock;
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
+import android.telecom.TelecomManager;
+
+import androidx.annotation.NonNull;
 
 /**
  * A fake implementation of Android framework services provider.
@@ -33,22 +35,28 @@ public class AndroidFrameworkImpl implements AndroidFramework {
     private FakeBluetoothAdapter mFakeBluetoothAdapter;
     private BluetoothAdapter mSpiedBluetoothAdapter;
 
+    private FakeTelecomManager mFakeTelecomManager;
+    private TelecomManager mSpiedTelecomManager;
+
     /**
      * Returns the single instance of {@link AndroidFrameworkImpl}.
-     *
-     * @param applicationContext {@link Application} context for the purposes of
-     * registering the broadcast receiver.
      */
-    public static AndroidFrameworkImpl get(Application applicationContext) {
+    public static AndroidFrameworkImpl get() {
         if (sFakeAndroidFramework == null) {
-            sFakeAndroidFramework = new AndroidFrameworkImpl(applicationContext);
+            sFakeAndroidFramework = new AndroidFrameworkImpl();
         }
         return sFakeAndroidFramework;
     }
 
-    private AndroidFrameworkImpl(Context applicationContext) {
+    private AndroidFrameworkImpl() {}
+
+    @Override
+    public void init(@NonNull Application applicationContext) {
         mFakeBluetoothAdapter = new FakeBluetoothAdapter();
         mSpiedBluetoothAdapter = mFakeBluetoothAdapter.getBluetoothAdapter();
+
+        mFakeTelecomManager = new FakeTelecomManager(applicationContext);
+        mSpiedTelecomManager = mFakeTelecomManager.getTelecomManager();
 
         AdbBroadcastReceiver adbBroadcastReceiver = new AdbBroadcastReceiver();
         adbBroadcastReceiver.registerReceiver(applicationContext);
@@ -65,5 +73,17 @@ public class AndroidFrameworkImpl implements AndroidFramework {
     @Override
     public BluetoothAdapter getBluetoothAdapter() {
         return mSpiedBluetoothAdapter;
+    }
+
+    @Override
+    public TelecomManager getTelecomManager() {
+        return mSpiedTelecomManager;
+    }
+
+    /**
+     * Returns the faked TelecomManager.
+     */
+    public FakeTelecomManager getFakeTelecomManager() {
+        return mFakeTelecomManager;
     }
 }

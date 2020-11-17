@@ -16,27 +16,8 @@
 
 package com.android.car.dialer.framework;
 
-import android.app.Application;
-import android.bluetooth.BluetoothAdapter;
-import android.telecom.TelecomManager;
-
 /**
- * A provider which provides all kinds of Android framework services.
+ * Manager class for creating and mocking calls
  */
-public interface AndroidFramework {
-
-    /**
-     * Initializes the class with the given {@link Application} context.
-     */
-    void init(Application applicationContext);
-
-    /**
-     * Returns a {@link BluetoothAdapter}.
-     */
-    BluetoothAdapter getBluetoothAdapter();
-
-    /**
-     * Returns a {@link TelecomManager}.
-     */
-    TelecomManager getTelecomManager();
+public class MockCallManager {
 }

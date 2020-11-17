@@ -20,11 +20,18 @@ import static com.android.dx.mockito.inline.extended.ExtendedMockito.doReturn;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.spy;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.when;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothHeadsetClient;
 import android.bluetooth.BluetoothProfile;
 import android.util.ArraySet;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -34,12 +41,21 @@ public class FakeBluetoothAdapter {
     private boolean mIsEnabled = true;
     private int mHfpProfileConnectionState = BluetoothProfile.STATE_DISCONNECTED;
     private Set<BluetoothDevice> mConnectedBluetoothDevices = new ArraySet<>();
+    private BluetoothHeadsetClient mMockedBluetoothHeadsetClient =
+            mock(BluetoothHeadsetClient.class);
 
     private BluetoothAdapter mSpiedBluetoothAdapter;
 
     public FakeBluetoothAdapter() {
         mSpiedBluetoothAdapter = spy(BluetoothAdapter.getDefaultAdapter());
         updateFake();
+        doAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            ((BluetoothProfile.ServiceListener) args[1]).onServiceConnected(
+                    BluetoothProfile.HEADSET_CLIENT, mMockedBluetoothHeadsetClient);
+            return null;
+        }).when(mSpiedBluetoothAdapter)
+                .getProfileProxy(any(), any(), eq(BluetoothProfile.HEADSET_CLIENT));
     }
 
     /**
@@ -59,6 +75,8 @@ public class FakeBluetoothAdapter {
     }
 
     private void updateFake() {
+        when(mMockedBluetoothHeadsetClient.getConnectedDevices())
+                .thenReturn(new ArrayList<>(mConnectedBluetoothDevices));
         when(mSpiedBluetoothAdapter.isEnabled()).thenReturn(mIsEnabled);
         doReturn(mHfpProfileConnectionState).when(mSpiedBluetoothAdapter)
                 .getProfileConnectionState(BluetoothProfile.HEADSET_CLIENT);

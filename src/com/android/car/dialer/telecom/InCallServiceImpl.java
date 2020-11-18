@@ -23,6 +23,7 @@ import android.telecom.Call;
 import android.telecom.CallAudioState;
 import android.telecom.InCallService;
 
+import com.android.car.dialer.framework.InCallServiceProxy;
 import com.android.car.dialer.log.L;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -35,7 +36,7 @@ import dagger.hilt.android.AndroidEntryPoint;
  * An implementation of {@link InCallService}. This service is bounded by android telecom and
  * {@link UiCallManager}. For incoming calls it will launch Dialer app.
  */
-@AndroidEntryPoint(InCallService.class)
+@AndroidEntryPoint(InCallServiceProxy.class)
 public class InCallServiceImpl extends Hilt_InCallServiceImpl {
     private static final String TAG = "CD.InCallService";
 

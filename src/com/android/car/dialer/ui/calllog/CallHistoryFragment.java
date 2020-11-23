@@ -51,6 +51,7 @@ public class CallHistoryFragment extends DialerListBaseFragment implements
                     getContext(), /* onShowContactDetailListener= */this);
         }
         getRecyclerView().setAdapter(mCallLogAdapter);
+        getUxrContentLimiter().setAdapter(mCallLogAdapter);
 
         CallHistoryViewModel viewModel = ViewModelProviders.of(this).get(
                 CallHistoryViewModel.class);
@@ -66,6 +67,8 @@ public class CallHistoryFragment extends DialerListBaseFragment implements
                 showContent();
             }
         });
+        viewModel.getSortOrderLiveData().observe(this,
+                v -> mCallLogAdapter.setSortMethod(v));
     }
 
     @Override

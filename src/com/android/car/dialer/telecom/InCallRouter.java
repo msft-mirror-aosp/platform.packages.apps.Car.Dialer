@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.telecom.Call;
 
 import androidx.annotation.MainThread;
+import androidx.preference.PreferenceManager;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
@@ -47,12 +48,8 @@ class InCallRouter {
             mActiveCallListChangedCallbacks = new ArrayList<>();
     private final ProjectionCallHandler mProjectionCallHandler;
 
-    private final boolean mShowFullscreenIncallUi;
-
     InCallRouter(Context context) {
         mContext = context;
-        mShowFullscreenIncallUi = context.getResources().getBoolean(
-                R.bool.config_show_fullscreen_incall_ui);
         mInCallNotificationController = InCallNotificationController.get();
         mProjectionCallHandler = new ProjectionCallHandler(context);
     }
@@ -83,11 +80,15 @@ class InCallRouter {
 
         int state = call.getState();
         if (state == Call.STATE_RINGING) {
-            routeToNotification(call);
+            if (shouldShowIncomingCallHun()) {
+                routeToNotification(call);
+            }
+            // Otherwise, no operations. Incoming call will be displayed outside of Dialer app
+            // such as cluster.
         } else if (state != Call.STATE_DISCONNECTED) {
             // Don't launch the in call page if state is disconnected.
             // Otherwise, the InCallActivity finishes right after onCreate() and flashes.
-            routeToInCallPage(false);
+            routeToFullScreenIncomingCallPage(false);
         }
     }
 
@@ -140,7 +141,7 @@ class InCallRouter {
                 if (call.getState() != Call.STATE_DISCONNECTED) {
                     // Don't launch the in call page if state is disconnected. Otherwise, the
                     // InCallActivity finishes right after onCreate() and flashes.
-                    routeToInCallPage(false);
+                    routeToFullScreenIncomingCallPage(false);
                 }
                 mInCallNotificationController.cancelInCallNotification(call);
                 call.unregisterCallback(this);
@@ -151,14 +152,31 @@ class InCallRouter {
     /**
      * Launches {@link InCallActivity} and presents the on going call in the in call page.
      */
-    void routeToInCallPage(boolean showDialpad) {
+    void routeToFullScreenIncomingCallPage(boolean showDialpad) {
         // It has been configured not to show the fullscreen incall ui.
-        if (!mShowFullscreenIncallUi) {
+        if (!shouldShowFullScreenUi()) {
             return;
         }
 
         Intent launchIntent = new Intent(mContext, InCallActivity.class);
+        launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         launchIntent.putExtra(Constants.Intents.EXTRA_SHOW_INCOMING_CALL, showDialpad);
         mContext.startActivity(launchIntent);
+    }
+
+    private boolean shouldShowIncomingCallHun() {
+        boolean shouldSuppressHunByDefault =
+                mContext.getResources().getBoolean(R.bool.config_should_suppress_incoming_call_hun);
+        return !PreferenceManager.getDefaultSharedPreferences(mContext)
+                .getBoolean(mContext.getString(R.string.pref_no_incoming_call_hun_key),
+                        shouldSuppressHunByDefault);
+    }
+
+    private boolean shouldShowFullScreenUi() {
+        boolean shouldShowFullScreenUiByDefault =
+                mContext.getResources().getBoolean(R.bool.config_show_fullscreen_incall_ui);
+        return PreferenceManager.getDefaultSharedPreferences(mContext)
+                .getBoolean(mContext.getString(R.string.pref_no_fullscreen_active_call_ui_key),
+                        shouldShowFullScreenUiByDefault);
     }
 }

@@ -35,6 +35,7 @@ import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
+import com.android.car.dialer.Constants;
 import com.android.car.dialer.TestDialerApplication;
 import com.android.car.dialer.testutils.ShadowServiceManagerOverride;
 import com.android.internal.telephony.ITelephony;
@@ -187,7 +188,7 @@ public class UiCallManagerTest {
         PhoneAccountHandle mockPhoneAccountHandle = mock(PhoneAccountHandle.class);
         ComponentName mockComponentName = mock(ComponentName.class);
         when(mockComponentName.getClassName()).thenReturn(
-                UiCallManager.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME);
+                Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME);
         when(mockPhoneAccountHandle.getComponentName()).thenReturn(mockComponentName);
         when(mMockTelecomManager.getUserSelectedOutgoingPhoneAccount())
                 .thenReturn(mockPhoneAccountHandle);

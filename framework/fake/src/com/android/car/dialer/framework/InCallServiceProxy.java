@@ -22,18 +22,17 @@ import android.os.IBinder;
 import android.telecom.Call;
 import android.telecom.InCallService;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
- * Fake implementation of InCallServiceProxy
+ * Fake implementation of InCallServiceProxy.
  */
 public abstract class InCallServiceProxy extends InCallService {
-
-    private static final String TAG = "CD.InCallServiceProxy";
     private static final String ACTION_PROXY_BIND = "proxy_bind";
 
-    private List<Call> mCallList = new ArrayList<>();
+    @Inject MockCallManager mMockCallManager;
 
     /**
      * Returns the mocked call list.
@@ -42,7 +41,34 @@ public abstract class InCallServiceProxy extends InCallService {
      * fake implementation. The mocked call list is self managed.
      */
     public final List<Call> getCallList() {
-        return mCallList;
+        return mMockCallManager.getCallList();
+    }
+
+    /**
+     * Places a call with id
+     */
+    public void addCall(String id) {
+        mMockCallManager.addCall(id);
+    }
+
+    /**
+     * Merges current ongoing calls into a conference
+     */
+    public void mergeCalls() {
+        mMockCallManager.mergeCalls();
+    }
+
+    /**
+     * Disconnect all ongoing calls
+     */
+    public void clearCalls() {
+        mMockCallManager.clearCalls();
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mMockCallManager.registerInCallService(this);
     }
 
     @Override

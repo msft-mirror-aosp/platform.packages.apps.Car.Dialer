@@ -37,6 +37,7 @@ android_library {
 
     static_libs: [
         "mockito-target-extended-minus-junit4",
+        "androidx.annotation_annotation",
     ],
 
 }

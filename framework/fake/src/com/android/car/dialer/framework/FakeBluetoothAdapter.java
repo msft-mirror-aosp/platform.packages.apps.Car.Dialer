@@ -29,6 +29,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadsetClient;
 import android.bluetooth.BluetoothProfile;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.ArraySet;
 
 import java.util.ArrayList;
@@ -40,19 +42,21 @@ import java.util.Set;
 public class FakeBluetoothAdapter {
     private boolean mIsEnabled = true;
     private int mHfpProfileConnectionState = BluetoothProfile.STATE_DISCONNECTED;
-    private Set<BluetoothDevice> mConnectedBluetoothDevices = new ArraySet<>();
-    private BluetoothHeadsetClient mMockedBluetoothHeadsetClient =
+    private final Set<BluetoothDevice> mConnectedBluetoothDevices = new ArraySet<>();
+    private final BluetoothHeadsetClient mMockedBluetoothHeadsetClient =
             mock(BluetoothHeadsetClient.class);
 
-    private BluetoothAdapter mSpiedBluetoothAdapter;
+    private final BluetoothAdapter mSpiedBluetoothAdapter;
+    private BluetoothProfile.ServiceListener mServiceListener;
 
     public FakeBluetoothAdapter() {
         mSpiedBluetoothAdapter = spy(BluetoothAdapter.getDefaultAdapter());
         updateFake();
         doAnswer(invocation -> {
             Object[] args = invocation.getArguments();
-            ((BluetoothProfile.ServiceListener) args[1]).onServiceConnected(
-                    BluetoothProfile.HEADSET_CLIENT, mMockedBluetoothHeadsetClient);
+            mServiceListener = ((BluetoothProfile.ServiceListener) args[1]);
+            mServiceListener.onServiceConnected(BluetoothProfile.HEADSET_CLIENT,
+                    mMockedBluetoothHeadsetClient);
             return null;
         }).when(mSpiedBluetoothAdapter)
                 .getProfileProxy(any(), any(), eq(BluetoothProfile.HEADSET_CLIENT));
@@ -62,9 +66,15 @@ public class FakeBluetoothAdapter {
      * Virtually connect a BluetoothDevice. Calling this function will update the Bluetooth state.
      */
     public void connectHfpDevice(BluetoothDevice device) {
-        mHfpProfileConnectionState = BluetoothProfile.STATE_CONNECTED;
-        mConnectedBluetoothDevices.add(device);
-        updateFake();
+        new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> {
+            mHfpProfileConnectionState = BluetoothProfile.STATE_CONNECTED;
+            mConnectedBluetoothDevices.add(device);
+            updateFake();
+            if (mServiceListener != null) {
+                mServiceListener.onServiceConnected(BluetoothProfile.HEADSET_CLIENT,
+                        mMockedBluetoothHeadsetClient);
+            }
+        });
     }
 
     /**

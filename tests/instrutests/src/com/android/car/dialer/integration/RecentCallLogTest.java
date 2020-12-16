@@ -16,10 +16,16 @@
 
 package com.android.car.dialer.integration;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 import androidx.test.rule.ActivityTestRule;
 
+import com.android.car.dialer.R;
 import com.android.car.dialer.framework.AndroidFrameworkImpl;
 import com.android.car.dialer.servicelocator.DialerServiceLocator;
 import com.android.car.dialer.ui.TelecomActivity;
@@ -46,6 +52,7 @@ public class RecentCallLogTest {
 
     @Test
     public void verifyRecentCallScreen() {
+        onView(withText(R.string.call_history_title)).check(matches(isDisplayed()));
         // TODO implement the test.
     }
 }

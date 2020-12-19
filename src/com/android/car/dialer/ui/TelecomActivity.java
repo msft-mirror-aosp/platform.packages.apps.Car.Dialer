@@ -30,7 +30,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.preference.PreferenceManager;
 
 import com.android.car.apps.common.util.Themes;
 import com.android.car.dialer.Constants;
@@ -52,6 +51,10 @@ import com.android.car.ui.toolbar.ToolbarController;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Main activity for the Dialer app. It hosts most of the fragments for the app.
  *
@@ -59,9 +62,12 @@ import java.util.List;
  *
  * <p>Based on call and connectivity status, it will choose the right page to display.
  */
-public class TelecomActivity extends FragmentActivity implements
+@AndroidEntryPoint(FragmentActivity.class)
+public class TelecomActivity extends Hilt_TelecomActivity implements
         DialerBaseFragment.DialerFragmentParent, InsetsChangedListener {
     private static final String TAG = "CD.TelecomActivity";
+
+    @Inject SharedPreferences mSharedPreferences;
     private LiveData<List<Call>> mOngoingCallListLiveData;
     private LiveData<Boolean> mRefreshUiLiveData;
     // View objects for this activity.
@@ -323,8 +329,7 @@ public class TelecomActivity extends FragmentActivity implements
     private int getTabFromSharedPreference() {
         String key = getResources().getString(R.string.pref_start_page_key);
         String defaultValue = getResources().getString(R.string.tab_config_default_value);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        return mTabFactory.getTabIndex(sharedPreferences.getString(key, defaultValue));
+        return mTabFactory.getTabIndex(mSharedPreferences.getString(key, defaultValue));
     }
 
     @Override

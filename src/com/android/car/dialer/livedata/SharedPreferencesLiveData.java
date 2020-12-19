@@ -22,9 +22,16 @@ import android.text.TextUtils;
 
 import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
-import androidx.preference.PreferenceManager;
 
+import com.android.car.dialer.ComponentFetcher;
 import com.android.car.dialer.log.L;
+
+import javax.inject.Inject;
+
+import dagger.hilt.EntryPoint;
+import dagger.hilt.InstallIn;
+import dagger.hilt.android.components.ApplicationComponent;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Provides SharedPreferences.
@@ -32,14 +39,14 @@ import com.android.car.dialer.log.L;
 public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
     private static final String TAG = "CD.PreferenceLiveData";
 
-    private final SharedPreferences mSharedPreferences;
+    @Inject SharedPreferences mSharedPreferences;
     private final String mKey;
 
     private final SharedPreferences.OnSharedPreferenceChangeListener
             mOnSharedPreferenceChangeListener;
 
-    public SharedPreferencesLiveData(Context context, String key) {
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    public SharedPreferencesLiveData(@ApplicationContext Context context, String key) {
+        ComponentFetcher.from(context, SharedPreferencesLiveDataComponent.class).inject(this);
         mKey = key;
 
         mOnSharedPreferenceChangeListener = (sharedPreferences, k) -> {
@@ -76,5 +83,13 @@ public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
      */
     public String getKey() {
         return mKey;
+    }
+
+    /** Component for injecting {@link SharedPreferencesLiveData}. */
+    @EntryPoint
+    @InstallIn(ApplicationComponent.class)
+    public interface SharedPreferencesLiveDataComponent {
+        /** Inject dependencies to the {@link SharedPreferencesLiveData}. */
+        void inject(SharedPreferencesLiveData sharedPreferencesLiveData);
     }
 }

@@ -27,11 +27,16 @@ import com.android.car.dialer.log.L;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * An implementation of {@link InCallService}. This service is bounded by android telecom and
  * {@link UiCallManager}. For incoming calls it will launch Dialer app.
  */
-public class InCallServiceImpl extends InCallService {
+@AndroidEntryPoint(InCallService.class)
+public class InCallServiceImpl extends Hilt_InCallServiceImpl {
     private static final String TAG = "CD.InCallService";
 
     /** An action which indicates a bind is from local component. */
@@ -40,7 +45,7 @@ public class InCallServiceImpl extends InCallService {
     private CopyOnWriteArrayList<CallAudioStateCallback> mCallAudioStateCallbacks =
             new CopyOnWriteArrayList<>();
 
-    private InCallRouter mInCallRouter;
+    @Inject InCallRouter mInCallRouter;
 
     /** Listens to active call list changes. Callbacks will be called on main thread. */
     public interface ActiveCallListChangedCallback {
@@ -71,7 +76,6 @@ public class InCallServiceImpl extends InCallService {
     @Override
     public void onCreate() {
         super.onCreate();
-        mInCallRouter = new InCallRouter(getApplicationContext());
         mInCallRouter.start();
     }
 
@@ -79,7 +83,6 @@ public class InCallServiceImpl extends InCallService {
     public void onDestroy() {
         super.onDestroy();
         mInCallRouter.stop();
-        mInCallRouter = null;
     }
 
     @Override

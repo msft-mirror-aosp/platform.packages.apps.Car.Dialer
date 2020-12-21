@@ -12,9 +12,10 @@ android_test {
 
     static_libs: [
         "androidx.test.ext.junit",
-        "androidx.test.ext.junit",
         "androidx.test.runner",
         "androidx.test.rules",
+        "androidx.test.espresso.core",
+        "androidx.test.espresso.contrib",
         "mockito-target-extended",
     ],
 

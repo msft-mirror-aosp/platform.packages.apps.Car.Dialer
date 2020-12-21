@@ -20,7 +20,6 @@ import android.app.Application;
 
 import com.android.car.dialer.bluetooth.CallHistoryManager;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
-import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.dialer.notification.MissedCallNotificationController;
 import com.android.car.dialer.servicelocator.DialerServiceLocator;
 import com.android.car.dialer.telecom.UiCallManager;
@@ -40,7 +39,6 @@ public final class DialerApplication extends Hilt_DialerApplication {
         UiCallManager.init(this);
         UiBluetoothMonitor.init(this);
         CallHistoryManager.init(this);
-        InCallNotificationController.init(this);
         MissedCallNotificationController.init(this);
     }
 }

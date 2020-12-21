@@ -35,9 +35,16 @@ import com.android.car.dialer.log.L;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.telephony.common.CallDetail;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** Activity for ongoing call and incoming call. */
-public class InCallActivity extends FragmentActivity {
+@AndroidEntryPoint(FragmentActivity.class)
+public class InCallActivity extends Hilt_InCallActivity {
     private static final String TAG = "CD.InCallActivity";
+
+    @Inject InCallNotificationController mInCallNotificationController;
     private Fragment mOngoingCallFragment;
     private Fragment mOngoingConfCallFragment;
     private Fragment mIncomingCallFragment;
@@ -82,8 +89,7 @@ public class InCallActivity extends FragmentActivity {
         super.onStop();
         L.d(TAG, "onStop");
         if (mIncomingCallLiveData.getValue() != null) {
-            InCallNotificationController.get()
-                    .showInCallNotification(mIncomingCallLiveData.getValue());
+            mInCallNotificationController.showInCallNotification(mIncomingCallLiveData.getValue());
         }
     }
 

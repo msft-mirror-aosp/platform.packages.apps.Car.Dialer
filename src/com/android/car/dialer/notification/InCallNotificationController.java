@@ -37,47 +37,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /** Controller that manages the heads up notification for incoming calls. */
+@Singleton
 public final class InCallNotificationController {
     private static final String TAG = "CD.InCallNotificationController";
     private static final String CHANNEL_ID = "com.android.car.dialer.incoming";
     // A random number that is used for notification id.
     private static final int NOTIFICATION_ID = 20181105;
 
-    private static InCallNotificationController sInCallNotificationController;
-
     private boolean mShowFullscreenIncallUi;
-
-    /**
-     * Initialized a globally accessible {@link InCallNotificationController} which can be retrieved
-     * by {@link #get}. If this function is called a second time before calling {@link #tearDown()},
-     * an {@link IllegalStateException} will be thrown.
-     *
-     * @param applicationContext Application context.
-     */
-    public static void init(Context applicationContext) {
-        if (sInCallNotificationController == null) {
-            sInCallNotificationController = new InCallNotificationController(applicationContext);
-        } else {
-            throw new IllegalStateException("InCallNotificationController has been initialized.");
-        }
-    }
-
-    /**
-     * Gets the global {@link InCallNotificationController} instance. Make sure
-     * {@link #init(Context)} is called before calling this method.
-     */
-    public static InCallNotificationController get() {
-        if (sInCallNotificationController == null) {
-            throw new IllegalStateException(
-                    "Call InCallNotificationController.init(Context) before calling this function");
-        }
-        return sInCallNotificationController;
-    }
-
-    public static void tearDown() {
-        sInCallNotificationController = null;
-    }
 
     private final Context mContext;
     private final NotificationManager mNotificationManager;
@@ -85,7 +58,8 @@ public final class InCallNotificationController {
     private final Set<String> mActiveInCallNotifications;
     private CompletableFuture<Void> mNotificationFuture;
 
-    private InCallNotificationController(Context context) {
+    @Inject
+    public InCallNotificationController(@ApplicationContext Context context) {
         mContext = context;
 
         mShowFullscreenIncallUi = mContext.getResources().getBoolean(

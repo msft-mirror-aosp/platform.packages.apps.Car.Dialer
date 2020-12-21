@@ -56,10 +56,13 @@ class InCallRouter {
     private final ProjectionCallHandler mProjectionCallHandler;
 
     @Inject
-    InCallRouter(@ApplicationContext Context context, SharedPreferences sharedPreferences) {
+    InCallRouter(
+            @ApplicationContext Context context,
+            SharedPreferences sharedPreferences,
+            InCallNotificationController inCallNotificationController) {
         mContext = context;
         mSharedPreferences = sharedPreferences;
-        mInCallNotificationController = InCallNotificationController.get();
+        mInCallNotificationController = inCallNotificationController;
         mProjectionCallHandler = new ProjectionCallHandler(context);
     }
 

@@ -34,7 +34,6 @@ import androidx.core.util.Pair;
 
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.TestDialerApplication;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.telecom.InCallServiceImpl;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
@@ -87,7 +86,6 @@ public class InCallViewModelTest {
         Context context = RuntimeEnvironment.application;
 
         ((TestDialerApplication) context).setupInCallServiceImpl(mInCallService);
-        UiBluetoothMonitor.init(context);
 
         when(mMockActiveCall.getState()).thenReturn(Call.STATE_ACTIVE);
         when(mMockDialingCall.getState()).thenReturn(Call.STATE_DIALING);
@@ -126,7 +124,6 @@ public class InCallViewModelTest {
 
     @After
     public void tearDown() {
-        UiBluetoothMonitor.get().tearDown();
         UiCallManager.set(null);
     }
 

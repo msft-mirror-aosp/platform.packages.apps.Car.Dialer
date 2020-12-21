@@ -25,20 +25,28 @@ import com.android.car.dialer.servicelocator.DialerServiceLocator;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.HiltAndroidApp;
 
 /** Application for Dialer app. */
 @HiltAndroidApp(Application.class)
 public final class DialerApplication extends Hilt_DialerApplication {
+    // Explicit injection for components that need to init on application create.
+    @Inject
+    UiBluetoothMonitor mUiBluetoothMonitor;
+    @Inject
+    CallHistoryManager mCallHistoryManager;
+    @Inject
+    MissedCallNotificationController mMissedCallNotificationController;
 
     @Override
     public void onCreate() {
-        super.onCreate();
+        // A temporary workaround for NPE in injected objects that access the DialerServiceLocator.
+        // TODO: inject DialerServiceLocator and its components.
         DialerServiceLocator.get().init(this);
+        super.onCreate();
         InMemoryPhoneBook.init(this);
         UiCallManager.init(this);
-        UiBluetoothMonitor.init(this);
-        CallHistoryManager.init(this);
-        MissedCallNotificationController.init(this);
     }
 }

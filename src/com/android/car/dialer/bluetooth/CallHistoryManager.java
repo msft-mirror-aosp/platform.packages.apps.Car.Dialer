@@ -28,10 +28,16 @@ import com.android.car.telephony.common.PhoneCallLog;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * A class that monitors the call history data change.
  */
-public class CallHistoryManager {
+@Singleton
+public final class CallHistoryManager {
     private static final String TAG = "CD.CallHistoryManager";
 
     private static CallHistoryManager sCallHistoryManager;
@@ -40,34 +46,11 @@ public class CallHistoryManager {
 
     private Observer mCallHistoryObserver;
 
-    /**
-     * Initializes a globally accessible {@link CallHistoryManager} which can be retrieved by {@link
-     * #get}. Must be called after {@link UiBluetoothMonitor} has been initiated.
-     *
-     * @param applicationContext Application context.
-     */
-    public static CallHistoryManager init(Context applicationContext) {
-        if (sCallHistoryManager == null) {
-            sCallHistoryManager = new CallHistoryManager(applicationContext);
-        }
-
-        return sCallHistoryManager;
-    }
-
-    /**
-     * Gets the global {@link CallHistoryManager} instance. Make sure {@link #init(Context)} is
-     * called before calling this method.
-     */
-    public static CallHistoryManager get() {
-        if (sCallHistoryManager == null) {
-            L.e(TAG, "Call CallHistoryManager.init(Context) before calling this function");
-        }
-        return sCallHistoryManager;
-    }
-
-    private CallHistoryManager(Context applicationContext) {
+    @Inject
+    CallHistoryManager(@ApplicationContext Context applicationContext,
+            UiBluetoothMonitor uiBluetoothMonitor) {
         mCallHistoryLiveData = LiveDataFunctions.switchMapNonNull(
-                UiBluetoothMonitor.get().getFirstHfpConnectedDevice(),
+                uiBluetoothMonitor.getFirstHfpConnectedDevice(),
                 device -> CallHistoryLiveData.newInstance(applicationContext, device.getAddress()));
 
         mCallHistoryObserver = o -> L.i(TAG, "Call history is updated");
@@ -78,8 +61,7 @@ public class CallHistoryManager {
     }
 
     /**
-     * Tears down the {@link CallHistoryManager}. Calling this function will null out the global
-     * accessible {@link CallHistoryManager} instance.
+     * Tears down the {@link CallHistoryManager}.
      */
     public void tearDown() {
         if (mCallHistoryLiveData != null && mCallHistoryLiveData.hasObservers()) {

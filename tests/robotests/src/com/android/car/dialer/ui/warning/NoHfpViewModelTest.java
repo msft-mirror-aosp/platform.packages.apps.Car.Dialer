@@ -66,7 +66,6 @@ public class NoHfpViewModelTest {
 
     @After
     public void tearDown() {
-        UiBluetoothMonitor.get().tearDown();
         UiCallManager.get().tearDown();
     }
 
@@ -150,11 +149,11 @@ public class NoHfpViewModelTest {
     }
 
     private void initializeViewModel() {
-        UiBluetoothMonitor.init(mContext);
-        mHfpDeviceListLiveData = UiBluetoothMonitor.get().getHfpDeviceListLiveData();
-        mPairedListLiveData = UiBluetoothMonitor.get().getPairListLiveData();
-        mBluetoothStateLiveData = UiBluetoothMonitor.get().getBluetoothStateLiveData();
         mNoHfpViewModel = new NoHfpViewModel((Application) mContext);
+        mNoHfpViewModel.mUiBluetoothMonitor = new UiBluetoothMonitor(mContext);
+        mHfpDeviceListLiveData = mNoHfpViewModel.mUiBluetoothMonitor.getHfpDeviceListLiveData();
+        mPairedListLiveData = mNoHfpViewModel.mUiBluetoothMonitor.getPairListLiveData();
+        mBluetoothStateLiveData = mNoHfpViewModel.mUiBluetoothMonitor.getBluetoothStateLiveData();
         // Observers needed so that the liveData's internal initialization is triggered
         mNoHfpViewModel.getBluetoothErrorStringLiveData().observeForever(o -> {
         });

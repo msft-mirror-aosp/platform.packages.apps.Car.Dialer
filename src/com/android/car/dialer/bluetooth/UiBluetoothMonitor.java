@@ -30,13 +30,17 @@ import com.android.car.dialer.log.L;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * Class that responsible for getting status of bluetooth connections.
  */
-public class UiBluetoothMonitor {
+@Singleton
+public final class UiBluetoothMonitor {
     private static final String TAG = "CD.BtMonitor";
-
-    private static UiBluetoothMonitor sUiBluetoothMonitor;
 
     private final Context mContext;
 
@@ -48,34 +52,10 @@ public class UiBluetoothMonitor {
     private Observer mBluetoothStateObserver;
     private Observer mHfpDeviceListObserver;
 
-    /**
-     * Initialized a globally accessible {@link UiBluetoothMonitor} which can be retrieved by {@link
-     * #get}.
-     *
-     * @param applicationContext Application context.
-     */
-    public static UiBluetoothMonitor init(Context applicationContext) {
-        if (sUiBluetoothMonitor == null) {
-            sUiBluetoothMonitor = new UiBluetoothMonitor(applicationContext);
-        }
-
-        return get();
-    }
-
-    /**
-     * Gets the global {@link UiBluetoothMonitor} instance. Make sure {@link #init(Context)} is
-     * called before calling this method.
-     */
-    public static UiBluetoothMonitor get() {
-        if (sUiBluetoothMonitor == null) {
-            throw new IllegalStateException(
-                    "Call UiBluetoothMonitor.init(Context) before calling this function");
-        }
-        return sUiBluetoothMonitor;
-    }
-
-    private UiBluetoothMonitor(Context applicationContext) {
+    @Inject
+    public UiBluetoothMonitor(@ApplicationContext Context applicationContext) {
         mContext = applicationContext;
+
         mPairListLiveData = new BluetoothPairListLiveData(mContext);
         mBluetoothStateLiveData = new BluetoothStateLiveData(mContext);
         mHfpDeviceListLiveData = new HfpDeviceListLiveData(mContext);
@@ -91,14 +71,11 @@ public class UiBluetoothMonitor {
 
     /**
      * Stops the {@link UiBluetoothMonitor}. Call this function when Dialer goes to background.
-     * {@link #get()} won't return a valid {@link UiBluetoothMonitor} after calling this function.
      */
     public void tearDown() {
         removeObserver(mPairListLiveData, mPairListObserver);
         removeObserver(mBluetoothStateLiveData, mBluetoothStateObserver);
         removeObserver(mHfpDeviceListLiveData, mHfpDeviceListObserver);
-
-        sUiBluetoothMonitor = null;
     }
 
     /**

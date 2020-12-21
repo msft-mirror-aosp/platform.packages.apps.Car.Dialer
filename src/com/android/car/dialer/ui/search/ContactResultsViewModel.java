@@ -23,24 +23,35 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.android.car.dialer.ComponentFetcher;
+import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * {link AndroidViewModel} used for search functionality.
  */
 public class ContactResultsViewModel extends DialerListViewModel {
 
+    @Inject
+    UiBluetoothMonitor mUiBluetoothMonitor;
     private final ContactResultsLiveData mContactSearchResultsLiveData;
     private final MutableLiveData<String> mSearchQueryLiveData;
 
     public ContactResultsViewModel(@NonNull Application application) {
         super(application);
+        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
         mSearchQueryLiveData = new MutableLiveData<>();
-        mContactSearchResultsLiveData = new ContactResultsLiveData(application,
-                mSearchQueryLiveData, getSharedPreferencesLiveData());
+        mContactSearchResultsLiveData = new ContactResultsLiveData(
+                application,
+                mSearchQueryLiveData,
+                mUiBluetoothMonitor.getFirstHfpConnectedDevice(),
+                getSharedPreferencesLiveData());
     }
 
     /**

@@ -30,7 +30,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.dialer.ComponentFetcher;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
 import com.android.car.dialer.livedata.CallDetailLiveData;
 import com.android.car.dialer.livedata.CallStateLiveData;
@@ -46,12 +48,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * View model for {@link InCallActivity} and {@link OngoingCallFragment}. UI that doesn't belong to
  * in call page should use a different ViewModel.
  */
 public class InCallViewModel extends AndroidViewModel {
     private static final String TAG = "CD.InCallViewModel";
+
+    @Inject
+    UiBluetoothMonitor mUiBluetoothMonitor;
 
     private final LocalCallHandler mLocalCallHandler;
 
@@ -98,6 +105,7 @@ public class InCallViewModel extends AndroidViewModel {
 
     public InCallViewModel(@NonNull Application application) {
         super(application);
+        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
         mContext = application.getApplicationContext();
 
         mLocalCallHandler = new LocalCallHandler(mContext);
@@ -157,7 +165,7 @@ public class InCallViewModel extends AndroidViewModel {
                 mSecondaryCallLiveData);
 
         mAudioRouteLiveData = new AudioRouteLiveData(
-                mContext, UiBluetoothMonitor.get(), UiCallManager.get());
+                mContext, mUiBluetoothMonitor, UiCallManager.get());
 
         mDialpadIsOpen = new MutableLiveData<>();
         // Set initial value to avoid NPE

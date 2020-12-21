@@ -24,7 +24,6 @@ import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.FragmentTestActivity;
 import com.android.car.dialer.R;
 import com.android.car.dialer.TestDialerApplication;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.telecom.UiCallManager;
 
 import org.junit.After;
@@ -46,7 +45,6 @@ public class NoHfpFragmentTest {
         MockitoAnnotations.initMocks(this);
 
         ((TestDialerApplication) RuntimeEnvironment.application).initUiCallManager();
-        UiBluetoothMonitor.init(RuntimeEnvironment.application);
 
         mNoHfpFragment = new NoHfpFragment();
         mFragmentTestActivity = Robolectric.buildActivity(
@@ -69,7 +67,6 @@ public class NoHfpFragmentTest {
 
     @After
     public void tearDown() {
-        UiBluetoothMonitor.get().tearDown();
         UiCallManager.get().tearDown();
     }
 }

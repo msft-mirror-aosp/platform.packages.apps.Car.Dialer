@@ -30,7 +30,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.telecom.CallAudioState;
 
-import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.dialer.notification.MissedCallNotificationController;
 import com.android.car.dialer.telecom.InCallServiceImpl;
 import com.android.car.dialer.telecom.UiCallManager;
@@ -51,7 +50,6 @@ public class TestDialerApplication extends Application {
         super.onCreate();
         shadowOf(this).setSystemService(
                 Context.NOTIFICATION_SERVICE, mock(NotificationManager.class));
-        InCallNotificationController.init(this);
         MissedCallNotificationController.init(this);
 
         mLocalBinder = mock(InCallServiceImpl.LocalBinder.class);
@@ -89,7 +87,6 @@ public class TestDialerApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
-        InCallNotificationController.tearDown();
         MissedCallNotificationController.get().tearDown();
         ShadowCar.setCar(null);
     }

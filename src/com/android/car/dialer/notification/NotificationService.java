@@ -30,12 +30,17 @@ import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A {@link Service} that is used to handle actions from notifications to:
  * <ul><li>answer or inject an incoming call.
  * <li>call back or message to a missed call.
  */
-public class NotificationService extends Service {
+@AndroidEntryPoint(Service.class)
+public class NotificationService extends Hilt_NotificationService {
     static final String ACTION_ANSWER_CALL = "CD.ACTION_ANSWER_CALL";
     static final String ACTION_DECLINE_CALL = "CD.ACTION_DECLINE_CALL";
     static final String ACTION_SHOW_FULLSCREEN_UI = "CD.ACTION_SHOW_FULLSCREEN_UI";
@@ -44,6 +49,8 @@ public class NotificationService extends Service {
     static final String ACTION_READ_MISSED = "CD.ACTION_READ_MISSED";
     static final String EXTRA_PHONE_NUMBER = "CD.EXTRA_PHONE_NUMBER";
     static final String EXTRA_CALL_LOG_ID = "CD.EXTRA_CALL_LOG_ID";
+
+    @Inject InCallNotificationController mInCallNotificationController;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -64,11 +71,11 @@ public class NotificationService extends Service {
         switch (action) {
             case ACTION_ANSWER_CALL:
                 answerCall(phoneNumber);
-                InCallNotificationController.get().cancelInCallNotification(phoneNumber);
+                mInCallNotificationController.cancelInCallNotification(phoneNumber);
                 break;
             case ACTION_DECLINE_CALL:
                 declineCall(phoneNumber);
-                InCallNotificationController.get().cancelInCallNotification(phoneNumber);
+                mInCallNotificationController.cancelInCallNotification(phoneNumber);
                 break;
             case ACTION_SHOW_FULLSCREEN_UI:
                 Intent inCallActivityIntent = new Intent(getApplicationContext(),
@@ -76,7 +83,7 @@ public class NotificationService extends Service {
                 inCallActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 inCallActivityIntent.putExtra(Constants.Intents.EXTRA_SHOW_INCOMING_CALL, true);
                 startActivity(inCallActivityIntent);
-                InCallNotificationController.get().cancelInCallNotification(phoneNumber);
+                mInCallNotificationController.cancelInCallNotification(phoneNumber);
                 break;
             case ACTION_CALL_BACK_MISSED:
                 UiCallManager.get().placeCall(phoneNumber);

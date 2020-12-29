@@ -31,7 +31,6 @@ import androidx.lifecycle.Transformations;
 
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
 import com.android.car.dialer.livedata.CallDetailLiveData;
@@ -57,8 +56,8 @@ import javax.inject.Inject;
 public class InCallViewModel extends AndroidViewModel {
     private static final String TAG = "CD.InCallViewModel";
 
-    @Inject
-    UiBluetoothMonitor mUiBluetoothMonitor;
+    @Inject UiCallManager mUiCallManager;
+    @Inject AudioRouteLiveData mAudioRouteLiveData;
 
     private final LocalCallHandler mLocalCallHandler;
 
@@ -74,7 +73,6 @@ public class InCallViewModel extends AndroidViewModel {
     private final LiveData<Call> mSecondaryCallLiveData;
     private final CallDetailLiveData mSecondaryCallDetailLiveData;
     private final LiveData<Pair<Call, Call>> mOngoingCallPairLiveData;
-    private final LiveData<Integer> mAudioRouteLiveData;
     private final MutableLiveData<Boolean> mDialpadIsOpen;
     private final ShowOnholdCallLiveData mShowOnholdCall;
     private LiveData<Long> mCallConnectTimeLiveData;
@@ -163,9 +161,6 @@ public class InCallViewModel extends AndroidViewModel {
 
         mOngoingCallPairLiveData = LiveDataFunctions.pair(mPrimaryCallLiveData,
                 mSecondaryCallLiveData);
-
-        mAudioRouteLiveData = new AudioRouteLiveData(
-                mContext, mUiBluetoothMonitor, UiCallManager.get());
 
         mDialpadIsOpen = new MutableLiveData<>();
         // Set initial value to avoid NPE

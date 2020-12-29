@@ -30,14 +30,11 @@ import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.R;
-import com.android.car.dialer.TestDialerApplication;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.livedata.BluetoothPairListLiveData;
 import com.android.car.dialer.livedata.BluetoothStateLiveData;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testutils.ShadowBluetoothAdapterForDialer;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,12 +58,6 @@ public class NoHfpViewModelTest {
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.application;
-        ((TestDialerApplication) RuntimeEnvironment.application).initUiCallManager();
-    }
-
-    @After
-    public void tearDown() {
-        UiCallManager.get().tearDown();
     }
 
     @Test

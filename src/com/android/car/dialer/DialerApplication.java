@@ -34,6 +34,8 @@ import dagger.hilt.android.HiltAndroidApp;
 public final class DialerApplication extends Hilt_DialerApplication {
     // Explicit injection for components that need to init on application create.
     @Inject
+    UiCallManager mUiCallManager;
+    @Inject
     UiBluetoothMonitor mUiBluetoothMonitor;
     @Inject
     CallHistoryManager mCallHistoryManager;
@@ -47,6 +49,5 @@ public final class DialerApplication extends Hilt_DialerApplication {
         DialerServiceLocator.get().init(this);
         super.onCreate();
         InMemoryPhoneBook.init(this);
-        UiCallManager.init(this);
     }
 }

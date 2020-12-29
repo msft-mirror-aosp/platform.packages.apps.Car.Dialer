@@ -31,7 +31,6 @@ import android.content.Context;
 import android.telecom.CallAudioState;
 
 import com.android.car.dialer.telecom.InCallServiceImpl;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testutils.ShadowCar;
 
 /** Robolectric runtime application for Dialer. Must be Test + application class name. */
@@ -64,10 +63,6 @@ public class TestDialerApplication extends Application {
         mMockCarProjectionManager = mock(CarProjectionManager.class);
         when(mMockCar.getCarManager(Car.PROJECTION_SERVICE)).thenReturn(mMockCarProjectionManager);
         ShadowCar.setCar(mMockCar);
-    }
-
-    public void initUiCallManager() {
-        UiCallManager.init(this);
     }
 
     public void setupInCallServiceImpl() {

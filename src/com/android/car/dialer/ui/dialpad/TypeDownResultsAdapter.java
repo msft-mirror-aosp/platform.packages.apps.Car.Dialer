@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.car.dialer.R;
+import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.search.ContactResultViewHolder;
 import com.android.car.dialer.ui.search.ContactResultsAdapter;
 
@@ -29,8 +30,11 @@ import com.android.car.dialer.ui.search.ContactResultsAdapter;
  */
 public class TypeDownResultsAdapter extends ContactResultsAdapter {
 
-    public TypeDownResultsAdapter() {
+    private final UiCallManager mUiCallManager;
+
+    public TypeDownResultsAdapter(UiCallManager uiCallManager) {
         super(null);
+        mUiCallManager = uiCallManager;
     }
 
     @Override
@@ -42,7 +46,8 @@ public class TypeDownResultsAdapter extends ContactResultsAdapter {
 
     @Override
     public void onBindViewHolderImpl(ContactResultViewHolder holder, int position) {
-        holder.bindTypeDownResult(getContactResults().get(position), getSortMethod());
+        holder.bindTypeDownResult(getContactResults().get(position), mUiCallManager,
+                getSortMethod());
     }
 
     @Override

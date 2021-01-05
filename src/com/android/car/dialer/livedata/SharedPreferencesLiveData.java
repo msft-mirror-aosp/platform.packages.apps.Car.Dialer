@@ -23,14 +23,11 @@ import android.text.TextUtils;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 
-import com.android.car.dialer.ComponentFetcher;
 import com.android.car.dialer.log.L;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import dagger.hilt.EntryPoint;
-import dagger.hilt.InstallIn;
-import dagger.hilt.android.components.ApplicationComponent;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
@@ -39,25 +36,26 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
     private static final String TAG = "CD.PreferenceLiveData";
 
-    @Inject SharedPreferences mSharedPreferences;
+    private final SharedPreferences mSharedPreferences;
     private final String mKey;
 
     private final SharedPreferences.OnSharedPreferenceChangeListener
             mOnSharedPreferenceChangeListener;
 
-    public SharedPreferencesLiveData(@ApplicationContext Context context, String key) {
-        ComponentFetcher.from(context, SharedPreferencesLiveDataComponent.class).inject(this);
+    private SharedPreferencesLiveData(SharedPreferences sharedPreferences, String key) {
+        mSharedPreferences = sharedPreferences;
         mKey = key;
 
-        mOnSharedPreferenceChangeListener = (sharedPreferences, k) -> {
+        mOnSharedPreferenceChangeListener = (preferences, k) -> {
             if (TextUtils.equals(k, mKey)) {
                 updateSharedPreferences();
             }
         };
     }
 
-    public SharedPreferencesLiveData(Context context, @StringRes int key) {
-        this(context, context.getString(key));
+    private SharedPreferencesLiveData(Context context, SharedPreferences sharedPreferences,
+            @StringRes int key) {
+        this(sharedPreferences, context.getString(key));
     }
 
     @Override
@@ -85,11 +83,26 @@ public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
         return mKey;
     }
 
-    /** Component for injecting {@link SharedPreferencesLiveData}. */
-    @EntryPoint
-    @InstallIn(ApplicationComponent.class)
-    public interface SharedPreferencesLiveDataComponent {
-        /** Inject dependencies to the {@link SharedPreferencesLiveData}. */
-        void inject(SharedPreferencesLiveData sharedPreferencesLiveData);
+    /** Factory class that creates {@link SharedPreferencesLiveData} instances. */
+    @Singleton
+    public static class Factory {
+        private final Context mContext;
+        private final SharedPreferences mSharedPreferences;
+
+        @Inject
+        public Factory(@ApplicationContext Context context, SharedPreferences sharedPreferences) {
+            mContext = context;
+            mSharedPreferences = sharedPreferences;
+        }
+
+        /** Creates {@link SharedPreferencesLiveData} from given string resource id as key. */
+        public SharedPreferencesLiveData create(@StringRes int keyResId) {
+            return new SharedPreferencesLiveData(mContext, mSharedPreferences, keyResId);
+        }
+
+        /** Creates {@link SharedPreferencesLiveData} from given string as key. */
+        public SharedPreferencesLiveData create(String key) {
+            return new SharedPreferencesLiveData(mSharedPreferences, key);
+        }
     }
 }

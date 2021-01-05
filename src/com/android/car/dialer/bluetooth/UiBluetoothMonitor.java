@@ -17,7 +17,6 @@
 package com.android.car.dialer.bluetooth;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
@@ -38,8 +37,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import dagger.hilt.android.qualifiers.ApplicationContext;
-
 /**
  * Class that responsible for getting status of bluetooth connections.
  */
@@ -47,7 +44,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 public final class UiBluetoothMonitor {
     private static final String TAG = "CD.BtMonitor";
 
-    private final Context mContext;
     private final TelecomManager mTelecomManager;
 
     private BluetoothPairListLiveData mPairListLiveData;
@@ -59,13 +55,15 @@ public final class UiBluetoothMonitor {
     private Observer<List<BluetoothDevice>> mHfpDeviceListObserver;
 
     @Inject
-    public UiBluetoothMonitor(@ApplicationContext Context applicationContext) {
-        mContext = applicationContext;
-        mTelecomManager = mContext.getSystemService(TelecomManager.class);
-
-        mPairListLiveData = new BluetoothPairListLiveData(mContext);
-        mBluetoothStateLiveData = new BluetoothStateLiveData(mContext);
-        mHfpDeviceListLiveData = new HfpDeviceListLiveData(mContext);
+    public UiBluetoothMonitor(
+            TelecomManager telecomManager,
+            BluetoothPairListLiveData bluetoothPairListLiveData,
+            BluetoothStateLiveData bluetoothStateLiveData,
+            HfpDeviceListLiveData hfpDeviceListLiveData) {
+        mTelecomManager = telecomManager;
+        mPairListLiveData = bluetoothPairListLiveData;
+        mBluetoothStateLiveData = bluetoothStateLiveData;
+        mHfpDeviceListLiveData = hfpDeviceListLiveData;
 
         mPairListObserver = o -> L.i(TAG, "PairList is updated");
         mBluetoothStateObserver = o -> L.i(TAG, "BluetoothState is updated");

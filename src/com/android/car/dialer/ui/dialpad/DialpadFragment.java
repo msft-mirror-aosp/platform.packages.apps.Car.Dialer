@@ -51,10 +51,15 @@ import com.android.car.uxr.UxrContentLimiterImpl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Fragment that controls the dialpad.
  */
-public class DialpadFragment extends AbstractDialpadFragment {
+@AndroidEntryPoint(AbstractDialpadFragment.class)
+public class DialpadFragment extends Hilt_DialpadFragment {
     private static final String TAG = "CD.DialpadFragment";
 
     private static final String DIALPAD_MODE_KEY = "DIALPAD_MODE_KEY";
@@ -81,7 +86,10 @@ public class DialpadFragment extends AbstractDialpadFragment {
                     .put(KeyEvent.KEYCODE_STAR, ToneGenerator.TONE_DTMF_S)
                     .put(KeyEvent.KEYCODE_POUND, ToneGenerator.TONE_DTMF_P)
                     .build();
-    private final TypeDownResultsAdapter mAdapter = new TypeDownResultsAdapter();
+
+    @Inject UiCallManager mUiCallManager;
+
+    private TypeDownResultsAdapter mAdapter;
 
     private TypeDownResultsViewModel mTypeDownResultsViewModel;
     private TextView mTitleView;
@@ -132,6 +140,9 @@ public class DialpadFragment extends AbstractDialpadFragment {
         L.d(TAG, "onCreate mode: %s", mMode);
         mToneGenerator = new ToneGenerator(AudioManager.STREAM_DTMF, TONE_RELATIVE_VOLUME);
 
+        if (mAdapter == null) {
+            mAdapter = new TypeDownResultsAdapter(mUiCallManager);
+        }
         mTypeDownResultsViewModel = ViewModelProviders.of(this).get(
                 TypeDownResultsViewModel.class);
         mTypeDownResultsViewModel.getContactSearchResults().observe(this,
@@ -169,7 +180,7 @@ public class DialpadFragment extends AbstractDialpadFragment {
         View callButton = rootView.findViewById(R.id.call_button);
         callButton.setOnClickListener(v -> {
             if (!TextUtils.isEmpty(getNumber().toString())) {
-                UiCallManager.get().placeCall(getNumber().toString());
+                mUiCallManager.placeCall(getNumber().toString());
                 // Update dialed number UI later in onResume() when in call intent is handled.
                 getNumber().setLength(0);
             } else {
@@ -225,7 +236,7 @@ public class DialpadFragment extends AbstractDialpadFragment {
                 appendDialedNumber(",");
                 break;
             case KeyEvent.KEYCODE_1:
-                UiCallManager.get().callVoicemail();
+                mUiCallManager.callVoicemail();
                 break;
             default:
                 break;

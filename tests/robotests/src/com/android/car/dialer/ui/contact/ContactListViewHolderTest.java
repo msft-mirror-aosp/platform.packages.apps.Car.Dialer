@@ -38,7 +38,6 @@ import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.PostalAddress;
 import com.android.car.telephony.common.TelecomUtils;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,12 +78,8 @@ public class ContactListViewHolderTest {
 
         mItemView = LayoutInflater.from(mContext)
                 .inflate(R.layout.contact_list_item, null, false);
-        mContactListViewHolder = new ContactListViewHolder(mItemView, mMockListener);
-    }
-
-    @After
-    public void tearDown() {
-        UiCallManager.set(null);
+        mContactListViewHolder = new ContactListViewHolder(mItemView, mMockUiCallManager,
+                mMockListener);
     }
 
     @Test
@@ -195,7 +190,6 @@ public class ContactListViewHolderTest {
 
     @Test
     public void testClickCallActionButton_ContactHasOneNumber_placeCall() {
-        UiCallManager.set(mMockUiCallManager);
         PhoneNumber phoneNumber = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
         when(mMockContact.getNumbers()).thenReturn(Arrays.asList(phoneNumber));
@@ -213,7 +207,6 @@ public class ContactListViewHolderTest {
 
     @Test
     public void testClickCallActionButton_HasMultipleNumbersAndNoPrimaryNumber_showAlertDialog() {
-        UiCallManager.set(mMockUiCallManager);
         PhoneNumber phoneNumber1 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
         PhoneNumber phoneNumber2 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_2, 0, LABEL_2,
@@ -233,7 +226,6 @@ public class ContactListViewHolderTest {
 
     @Test
     public void testClickCallActionButton_HasMultipleNumbersAndPrimaryNumber_callPrimaryNumber() {
-        UiCallManager.set(mMockUiCallManager);
         PhoneNumber phoneNumber1 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
         PhoneNumber phoneNumber2 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_2, 0, LABEL_2,

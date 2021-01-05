@@ -34,12 +34,10 @@ import androidx.core.util.Pair;
 
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.TestDialerApplication;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.telecom.InCallServiceImpl;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -87,7 +85,6 @@ public class InCallViewModelTest {
         Context context = RuntimeEnvironment.application;
 
         ((TestDialerApplication) context).setupInCallServiceImpl(mInCallService);
-        UiBluetoothMonitor.init(context);
 
         when(mMockActiveCall.getState()).thenReturn(Call.STATE_ACTIVE);
         when(mMockDialingCall.getState()).thenReturn(Call.STATE_DIALING);
@@ -111,10 +108,10 @@ public class InCallViewModelTest {
         mListForMockCalls.add(mMockHoldingCall);
         mListForMockCalls.add(mMockRingingCall);
         when(mInCallService.getCalls()).thenReturn(mListForMockCalls);
-        UiCallManager.set(mMockUiCallManager);
         when(mMockUiCallManager.getAudioRoute()).thenReturn(CallAudioState.ROUTE_BLUETOOTH);
 
         mInCallViewModel = new InCallViewModel((Application) context);
+        mInCallViewModel.mUiCallManager = mMockUiCallManager;
         mInCallViewModel.getIncomingCall().observeForever(s -> { });
         mInCallViewModel.getOngoingCallList().observeForever(s -> { });
         mInCallViewModel.getPrimaryCall().observeForever(s -> { });
@@ -122,12 +119,6 @@ public class InCallViewModelTest {
         mInCallViewModel.getPrimaryCallDetail().observeForever(s -> { });
         mInCallViewModel.getCallStateAndConnectTime().observeForever(s -> { });
         mInCallViewModel.getAudioRoute().observeForever(s -> { });
-    }
-
-    @After
-    public void tearDown() {
-        UiBluetoothMonitor.get().tearDown();
-        UiCallManager.set(null);
     }
 
     @Test

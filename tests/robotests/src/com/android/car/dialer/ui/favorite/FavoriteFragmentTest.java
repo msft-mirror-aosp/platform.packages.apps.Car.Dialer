@@ -38,7 +38,6 @@ import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 import com.android.car.ui.recyclerview.CarUiRecyclerView;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -72,8 +71,6 @@ public class FavoriteFragmentTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        UiCallManager.set(mMockUiCallManager);
-
         when(mMockPhoneNumber.getRawNumber()).thenReturn(RAW_NUMBER);
         MutableLiveData<FutureData<List<Object>>> favoriteContacts = new MutableLiveData<>();
         favoriteContacts.setValue(new FutureData<>(false, Arrays.asList(mMockContact)));
@@ -83,6 +80,7 @@ public class FavoriteFragmentTest {
                 LiveDataFunctions.dataOf(TelecomUtils.SORT_BY_FIRST_NAME));
 
         mFavoriteFragment = FavoriteFragment.newInstance();
+        mFavoriteFragment.mUiCallManager = mMockUiCallManager;
         FragmentTestActivity fragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().resume().get();
         fragmentTestActivity.setFragment(mFavoriteFragment);
@@ -91,11 +89,6 @@ public class FavoriteFragmentTest {
         // set up layout for recyclerView
         recyclerView.layout(0, 0, 100, 1000);
         mViewHolder = (FavoriteContactViewHolder) recyclerView.findViewHolderForLayoutPosition(0);
-    }
-
-    @After
-    public void tearDown() {
-        UiCallManager.set(null);
     }
 
     @Test

@@ -47,14 +47,13 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
     private BluetoothPairListLiveData mPairListLiveData;
     private BluetoothStateLiveData mBluetoothStateLiveData;
 
-    BluetoothErrorStringLiveData(Context context) {
+    BluetoothErrorStringLiveData(Context context, UiBluetoothMonitor uiBluetoothMonitor) {
         mContext = context.getApplicationContext();
 
         if (DialerServiceLocator.get().getAndroidFramework().getBluetoothAdapter() == null) {
             setValue(mContext.getString(R.string.bluetooth_unavailable));
         } else {
             setValue(NO_BT_ERROR);
-            UiBluetoothMonitor uiBluetoothMonitor = UiBluetoothMonitor.get();
             mHfpDeviceListLiveData = uiBluetoothMonitor.getHfpDeviceListLiveData();
             mPairListLiveData = uiBluetoothMonitor.getPairListLiveData();
             mBluetoothStateLiveData = uiBluetoothMonitor.getBluetoothStateLiveData();

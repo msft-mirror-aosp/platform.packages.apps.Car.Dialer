@@ -83,8 +83,6 @@ public class ContactDetailsFragmentTest {
         when(mMockContact.getNumbers()).thenReturn(
                 Arrays.asList(mMockPhoneNumber1, mMockPhoneNumber2));
 
-        UiCallManager.set(mMockUiCallManager);
-
         MutableLiveData<FutureData<Contact>> contactDetails = new MutableLiveData<>();
         contactDetails.setValue(new FutureData<>(false, mMockContact));
         ShadowAndroidViewModelFactory.add(ContactDetailsViewModel.class,
@@ -95,7 +93,6 @@ public class ContactDetailsFragmentTest {
 
     @After
     public void tearDown() {
-        UiCallManager.set(null);
         InMemoryPhoneBook.tearDown();
     }
 
@@ -113,6 +110,7 @@ public class ContactDetailsFragmentTest {
     private void setUpFragment() {
         mFragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().resume().get();
+        mContactDetailsFragment.mUiCallManager = mMockUiCallManager;
         mFragmentTestActivity.setFragment(mContactDetailsFragment);
 
         mListView = mContactDetailsFragment.getView().findViewById(R.id.list_view);

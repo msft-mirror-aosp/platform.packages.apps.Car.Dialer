@@ -27,7 +27,6 @@ import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.FragmentTestActivity;
 import com.android.car.dialer.R;
 import com.android.car.dialer.TestDialerApplication;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 
 import org.junit.After;
@@ -52,7 +51,6 @@ public class OngoingCallFragmentTest {
 
         Context context = RuntimeEnvironment.application;
         ((TestDialerApplication) context).setupInCallServiceImpl();
-        ((TestDialerApplication) context).initUiCallManager();
         InMemoryPhoneBook.init(context);
 
         mOngoingCallFragment = new OngoingCallFragment();
@@ -68,7 +66,6 @@ public class OngoingCallFragmentTest {
 
     @After
     public void tearDown() {
-        UiCallManager.get().tearDown();
         InMemoryPhoneBook.tearDown();
     }
 

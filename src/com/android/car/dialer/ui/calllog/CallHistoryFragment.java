@@ -25,15 +25,22 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
+import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
 import com.android.car.telephony.common.Contact;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** Fragment for call history page. */
-public class CallHistoryFragment extends DialerListBaseFragment implements
+@AndroidEntryPoint(DialerListBaseFragment.class)
+public class CallHistoryFragment extends Hilt_CallHistoryFragment implements
         CallLogAdapter.OnShowContactDetailListener {
     private static final String CONTACT_DETAIL_FRAGMENT_TAG = "CONTACT_DETAIL_FRAGMENT_TAG";
 
+    @Inject UiCallManager mUiCallManager;
     private CallLogAdapter mCallLogAdapter;
 
     public static CallHistoryFragment newInstance() {
@@ -48,7 +55,7 @@ public class CallHistoryFragment extends DialerListBaseFragment implements
         // immediately, we won't remember our scroll position.
         if (mCallLogAdapter == null) {
             mCallLogAdapter = new CallLogAdapter(
-                    getContext(), /* onShowContactDetailListener= */this);
+                    getContext(), mUiCallManager, /* onShowContactDetailListener= */this);
         }
         getRecyclerView().setAdapter(mCallLogAdapter);
         getUxrContentLimiter().setAdapter(mCallLogAdapter);

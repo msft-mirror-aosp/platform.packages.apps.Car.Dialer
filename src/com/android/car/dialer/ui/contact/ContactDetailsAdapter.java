@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
+import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.PostalAddress;
@@ -46,6 +47,7 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
     }
 
     private final Context mContext;
+    private final UiCallManager mUiCallManager;
     private final PhoneNumberPresenter mPhoneNumberPresenter;
     private final ArrayList<Object> mItems = new ArrayList<>();
     private Contact mContact;
@@ -53,9 +55,11 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
     ContactDetailsAdapter(
             @NonNull Context context,
             @Nullable Contact contact,
+            UiCallManager uiCallManager,
             @NonNull PhoneNumberPresenter phoneNumberPresenter) {
         super();
         mContext = context;
+        mUiCallManager = uiCallManager;
         mPhoneNumberPresenter = phoneNumberPresenter;
         setContact(contact);
     }
@@ -121,7 +125,7 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
 
         View view = LayoutInflater.from(parent.getContext()).inflate(layoutResId, parent,
                 false);
-        return new ContactDetailsViewHolder(view, mPhoneNumberPresenter);
+        return new ContactDetailsViewHolder(view, mUiCallManager, mPhoneNumberPresenter);
     }
 
     @Override

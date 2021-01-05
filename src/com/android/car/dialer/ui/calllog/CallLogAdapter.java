@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
+import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.DialerUtils;
 import com.android.car.dialer.ui.common.entity.HeaderViewHolder;
 import com.android.car.dialer.ui.common.entity.UiCallLog;
@@ -60,6 +61,7 @@ public class CallLogAdapter extends ContentLimitingAdapter {
         void onShowContactDetail(Contact contact);
     }
 
+    private final UiCallManager mUiCallManager;
     private List<Object> mUiCallLogs = new ArrayList<>();
     private Context mContext;
     private CallLogAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
@@ -67,8 +69,10 @@ public class CallLogAdapter extends ContentLimitingAdapter {
     private int mLimitingAnchorIndex = 0;
 
     public CallLogAdapter(Context context,
+            UiCallManager uiCallManager,
             CallLogAdapter.OnShowContactDetailListener onShowContactDetailListener) {
         mContext = context;
+        mUiCallManager = uiCallManager;
         mOnShowContactDetailListener = onShowContactDetailListener;
     }
 
@@ -101,7 +105,7 @@ public class CallLogAdapter extends ContentLimitingAdapter {
         if (viewType == EntryType.TYPE_CALLLOG) {
             View rootView = LayoutInflater.from(mContext)
                     .inflate(R.layout.call_history_list_item, parent, false);
-            return new CallLogViewHolder(rootView, mOnShowContactDetailListener);
+            return new CallLogViewHolder(rootView, mUiCallManager, mOnShowContactDetailListener);
         }
 
         View rootView = LayoutInflater.from(mContext)

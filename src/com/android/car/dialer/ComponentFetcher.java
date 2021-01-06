@@ -16,6 +16,7 @@
 
 package com.android.car.dialer;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -27,20 +28,29 @@ import dagger.hilt.internal.GeneratedComponentManager;
 public final class ComponentFetcher {
 
     /** Fetches the component {@code T} from context. */
-    public static <T> T from(Context context, Class<T> componentClass) {
-        T component = componentClass.cast(from(context));
+    public static <T> T from(@NonNull Context context, Class<T> componentClass) {
+        return fromObject(context, componentClass);
+    }
+
+    /** Fetches the component {@code T} from application. */
+    public static <T> T from(@NonNull Application application, Class<T> componentClass) {
+        return fromObject(application, componentClass);
+    }
+
+    private static <T> T fromObject(@NonNull Object object, Class<T> componentClass) {
+        T component = componentClass.cast(from(object));
         if (component == null) {
             throw new IllegalArgumentException(
-                    "Given context doesn't have the component installed: "
+                    "Given object doesn't have the component installed: "
                             + componentClass.getName());
         }
         return component;
     }
 
     @Nullable
-    private static <T> T from(@NonNull Context context) {
-        if (context instanceof GeneratedComponentManager<?>) {
-            return (T) ((GeneratedComponentManager<?>) context).generatedComponent();
+    private static <T> T from(@NonNull Object object) {
+        if (object instanceof GeneratedComponentManager<?>) {
+            return (T) ((GeneratedComponentManager<?>) object).generatedComponent();
         }
         return null;
     }

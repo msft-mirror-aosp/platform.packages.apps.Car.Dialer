@@ -64,17 +64,12 @@ public class UiBluetoothMonitorTest {
         // Sets up Bluetooth Hfp connected devices
         shadowBluetoothAdapter.setHfpDevices(Collections.singletonList(mMockbluetoothDevice));
 
-        mUiBluetoothMonitor = UiBluetoothMonitor.init(mContext);
+        mUiBluetoothMonitor = new UiBluetoothMonitor(mContext);
     }
 
     @Test
     public void testInit() {
         assertNotNull(mUiBluetoothMonitor);
-    }
-
-    @Test
-    public void testGet() {
-        assertThat(UiBluetoothMonitor.get()).isEqualTo(mUiBluetoothMonitor);
     }
 
     @Test

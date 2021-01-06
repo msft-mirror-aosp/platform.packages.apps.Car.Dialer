@@ -21,22 +21,32 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
+import com.android.car.dialer.ComponentFetcher;
+import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.search.ContactResultsViewModel;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * {link AndroidViewModel} used for type down functionality.
  */
 public class TypeDownResultsViewModel extends ContactResultsViewModel {
 
+    @Inject
+    UiBluetoothMonitor mUiBluetoothMonitor;
     private final ContactResultsLiveData mContactSearchResultsLiveData;
 
     public TypeDownResultsViewModel(@NonNull Application application) {
         super(application);
+        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
         mContactSearchResultsLiveData = new ContactResultsLiveData(application,
-                getSearchQueryLiveData(), getSharedPreferencesLiveData(),
+                getSearchQueryLiveData(),
+                mUiBluetoothMonitor.getFirstHfpConnectedDevice(),
+                getSharedPreferencesLiveData(),
                 /* showOnlyOneEntry */ false);
     }
 

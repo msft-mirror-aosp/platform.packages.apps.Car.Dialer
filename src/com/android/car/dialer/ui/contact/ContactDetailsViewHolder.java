@@ -52,6 +52,8 @@ import com.bumptech.glide.request.transition.Transition;
 class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "CD.ContactDetailsVH";
 
+    private final UiCallManager mUiCallManager;
+
     // Applies to all
     @NonNull
     private final TextView mTitle;
@@ -83,8 +85,10 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
 
     ContactDetailsViewHolder(
             View v,
+            UiCallManager uiCallManager,
             @NonNull ContactDetailsAdapter.PhoneNumberPresenter phoneNumberPresenter) {
         super(v);
+        mUiCallManager = uiCallManager;
         mCallActionView = v.findViewById(R.id.call_action_id);
         mFavoriteActionView = v.findViewById(R.id.contact_details_favorite_button);
         mAddressView = v.findViewById(R.id.address_button);
@@ -170,7 +174,7 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
         }
 
         mCallActionView.setOnClickListener(
-                v -> UiCallManager.get().placeCall(phoneNumber.getRawNumber()));
+                v -> mUiCallManager.placeCall(phoneNumber.getRawNumber()));
 
         if (phoneNumber.isFavorite() || !contact.isStarred()) {
             // If the phone number is marked as favorite locally, enable the action button to

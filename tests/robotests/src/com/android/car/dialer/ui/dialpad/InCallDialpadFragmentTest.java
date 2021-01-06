@@ -24,12 +24,10 @@ import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.FragmentTestActivity;
 import com.android.car.dialer.R;
 import com.android.car.dialer.TestDialerApplication;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testutils.ShadowCallLogCalls;
 import com.android.car.dialer.testutils.ShadowInMemoryPhoneBook;
 import com.android.car.dialer.ui.activecall.OngoingCallFragment;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +44,6 @@ public class InCallDialpadFragmentTest {
     @Before
     public void setup() {
         ((TestDialerApplication) RuntimeEnvironment.application).setupInCallServiceImpl();
-        ((TestDialerApplication) RuntimeEnvironment.application).initUiCallManager();
     }
 
     @Test
@@ -65,11 +62,6 @@ public class InCallDialpadFragmentTest {
         mInCallDialpadFragment =
                 (InCallDialpadFragment) ongoingCallFragment.getChildFragmentManager()
                         .findFragmentById(R.id.incall_dialpad_fragment);
-    }
-
-    @After
-    public void tearDown() {
-        UiCallManager.get().tearDown();
     }
 
 }

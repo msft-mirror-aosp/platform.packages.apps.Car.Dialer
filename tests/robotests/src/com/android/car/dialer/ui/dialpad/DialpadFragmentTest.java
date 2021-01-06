@@ -35,7 +35,6 @@ import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.FragmentTestActivity;
 import com.android.car.dialer.R;
 import com.android.car.dialer.TestDialerApplication;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testutils.ShadowAndroidViewModelFactory;
 import com.android.car.dialer.testutils.ShadowCallLogCalls;
 import com.android.car.dialer.testutils.ShadowInMemoryPhoneBook;
@@ -83,7 +82,6 @@ public class DialpadFragmentTest {
 
         mContext = RuntimeEnvironment.application;
         ((TestDialerApplication) mContext).setupInCallServiceImpl();
-        ((TestDialerApplication) mContext).initUiCallManager();
         InMemoryPhoneBook.init(mContext);
 
         mTypeDownResultsLiveData = new MutableLiveData<>();
@@ -97,7 +95,6 @@ public class DialpadFragmentTest {
 
     @After
     public void tearDown() {
-        UiCallManager.get().tearDown();
         InMemoryPhoneBook.tearDown();
     }
 

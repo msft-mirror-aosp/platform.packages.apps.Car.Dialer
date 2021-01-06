@@ -54,8 +54,13 @@ import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** A Fragment of the bar which controls on going call. */
-public class OnGoingCallControllerBarFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallControllerBarFragment {
     private static final String TAG = "CD.OngoingCallCtlFrg";
 
     private static final ImmutableMap<Integer, AudioRouteInfo> AUDIO_ROUTES =
@@ -78,6 +83,7 @@ public class OnGoingCallControllerBarFragment extends Fragment {
                             R.drawable.ic_audio_route_speaker_activatable))
                     .build();
 
+    @Inject UiCallManager mUiCallManager;
     private InCallViewModel mInCallViewModel;
 
     private AlertDialog mAudioRouteSelectionDialog;
@@ -103,8 +109,8 @@ public class OnGoingCallControllerBarFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAvailableRoutes = UiCallManager.get().getSupportedAudioRoute();
-        mActiveRoute = UiCallManager.get().getAudioRoute();
+        mAvailableRoutes = mUiCallManager.getSupportedAudioRoute();
+        mActiveRoute = mUiCallManager.getAudioRoute();
 
         if (mAvailableRoutes.contains(CallAudioState.ROUTE_EARPIECE)
                 && mAvailableRoutes.contains(CallAudioState.ROUTE_WIRED_HEADSET)) {
@@ -196,7 +202,7 @@ public class OnGoingCallControllerBarFragment extends Fragment {
         View endCallButton = fragmentView.findViewById(R.id.end_call_button);
         endCallButton.setOnClickListener(v -> onEndCall());
 
-        List<Integer> audioRoutes = UiCallManager.get().getSupportedAudioRoute();
+        List<Integer> audioRoutes = mUiCallManager.getSupportedAudioRoute();
         mAudioRouteView = fragmentView.findViewById(R.id.voice_channel_view);
         mAudioRouteButton = fragmentView.findViewById(R.id.voice_channel_button);
         mAudioRouteText = fragmentView.findViewById(R.id.voice_channel_text);
@@ -278,11 +284,11 @@ public class OnGoingCallControllerBarFragment extends Fragment {
     }
 
     private void onMuteMic() {
-        UiCallManager.get().setMuted(true);
+        mUiCallManager.setMuted(true);
     }
 
     private void onUnmuteMic() {
-        UiCallManager.get().setMuted(false);
+        mUiCallManager.setMuted(false);
     }
 
     private void onHoldCall() {
@@ -304,7 +310,7 @@ public class OnGoingCallControllerBarFragment extends Fragment {
     }
 
     private void onSetAudioRoute(int audioRoute) {
-        UiCallManager.get().setAudioRoute(audioRoute);
+        mUiCallManager.setAudioRoute(audioRoute);
         mActiveRoute = audioRoute;
         updateAudioRouteListItems();
         mAudioRouteSelectionDialog.dismiss();
@@ -330,7 +336,7 @@ public class OnGoingCallControllerBarFragment extends Fragment {
     private void updateMuteButtonEnabledState(Integer audioRoute) {
         if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
             mMuteButton.setEnabled(true);
-            mMuteButton.setActivated(UiCallManager.get().getMuted());
+            mMuteButton.setActivated(mUiCallManager.getMuted());
         } else {
             mMuteButton.setEnabled(false);
         }

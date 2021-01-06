@@ -48,49 +48,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /** Controller that manages the missed call notifications. */
+@Singleton
 public final class MissedCallNotificationController {
     private static final String TAG = "CD.MissedCallNotification";
     private static final String CHANNEL_ID = "com.android.car.dialer.missedcall";
     // A random number that is used for notification id.
     private static final int NOTIFICATION_ID = 20190520;
 
-    private static MissedCallNotificationController sMissedCallNotificationController;
-
-    /**
-     * Initialized a globally accessible {@link MissedCallNotificationController} which can be
-     * retrieved by {@link #get}. If this function is called a second time before calling {@link
-     * #tearDown()}, an {@link IllegalStateException} will be thrown.
-     *
-     * @param applicationContext Application context.
-     */
-    public static void init(Context applicationContext) {
-        if (sMissedCallNotificationController == null) {
-            sMissedCallNotificationController = new MissedCallNotificationController(
-                    applicationContext);
-        } else {
-            throw new IllegalStateException(
-                    "MissedCallNotificationController has been initialized.");
-        }
-    }
-
-    /**
-     * Gets the global {@link MissedCallNotificationController} instance. Make sure {@link
-     * #init(Context)} is called before calling this method.
-     */
-    public static MissedCallNotificationController get() {
-        if (sMissedCallNotificationController == null) {
-            throw new IllegalStateException(
-                    "Call MissedCallNotificationController.init(Context) before calling this "
-                            + "function");
-        }
-        return sMissedCallNotificationController;
-    }
-
     /** Tear down the global missed call notification controller. */
     public void tearDown() {
         mUnreadMissedCallLiveData.removeObserver(mUnreadMissedCallObserver);
-        sMissedCallNotificationController = null;
     }
 
     private final Context mContext;
@@ -100,7 +73,10 @@ public final class MissedCallNotificationController {
     private final List<PhoneCallLog> mCurrentPhoneCallLogList;
     private final Map<String, CompletableFuture<Void>> mUpdateFutures = new HashMap<>();
 
-    private MissedCallNotificationController(Context context) {
+    @Inject
+    MissedCallNotificationController(@ApplicationContext Context context,
+            // TODO: inject firstHfpConnectedDevice directly
+            UiBluetoothMonitor uiBluetoothMonitor) {
         mContext = context;
         mNotificationManager =
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -111,7 +87,7 @@ public final class MissedCallNotificationController {
 
         mCurrentPhoneCallLogList = new ArrayList<>();
         mUnreadMissedCallLiveData = LiveDataFunctions.switchMapNonNull(
-                UiBluetoothMonitor.get().getFirstHfpConnectedDevice(),
+                uiBluetoothMonitor.getFirstHfpConnectedDevice(),
                 device-> UnreadMissedCallLiveData.newInstance(context, device.getAddress()));
         mUnreadMissedCallObserver = this::updateNotifications;
         mUnreadMissedCallLiveData.observeForever(mUnreadMissedCallObserver);

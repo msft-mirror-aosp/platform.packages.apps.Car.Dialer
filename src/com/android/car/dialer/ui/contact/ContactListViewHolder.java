@@ -40,6 +40,7 @@ import java.util.List;
  * the UI on recycle.
  */
 public class ContactListViewHolder extends RecyclerView.ViewHolder {
+    private final UiCallManager mUiCallManager;
     private final ContactListAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
     private final TextView mHeaderView;
     private final ImageView mAvatarView;
@@ -49,8 +50,10 @@ public class ContactListViewHolder extends RecyclerView.ViewHolder {
     private final View mCallActionView;
 
     public ContactListViewHolder(@NonNull View itemView,
+            UiCallManager uiCallManager,
             ContactListAdapter.OnShowContactDetailListener onShowContactDetailListener) {
         super(itemView);
+        mUiCallManager = uiCallManager;
         mOnShowContactDetailListener = onShowContactDetailListener;
         mHeaderView = itemView.findViewById(R.id.header);
         mAvatarView = itemView.findViewById(R.id.icon);
@@ -115,7 +118,7 @@ public class ContactListViewHolder extends RecyclerView.ViewHolder {
         if (hasPhoneNumbers) {
             ViewUtils.setOnClickListener(mCallActionView, view -> {
                 DialerUtils.promptForPrimaryNumber(itemView.getContext(), contact,
-                        (phoneNumber, always) -> UiCallManager.get().placeCall(
+                        (phoneNumber, always) -> mUiCallManager.placeCall(
                                 phoneNumber.getRawNumber()));
             });
         } else {

@@ -26,14 +26,21 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
+import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;
 import com.android.car.telephony.common.Contact;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * Contact Fragment.
  */
-public class ContactListFragment extends DialerListBaseFragment implements
+@AndroidEntryPoint(DialerListBaseFragment.class)
+public class ContactListFragment extends Hilt_ContactListFragment implements
         ContactListAdapter.OnShowContactDetailListener {
+    @Inject UiCallManager mUiCallManager;
     private ContactListAdapter mContactListAdapter;
 
     public static ContactListFragment newInstance() {
@@ -48,7 +55,7 @@ public class ContactListFragment extends DialerListBaseFragment implements
         // immediately, we won't remember our scroll position.
         if (mContactListAdapter == null) {
             mContactListAdapter = new ContactListAdapter(
-                    getContext(), /* onShowContactDetailListener= */this);
+                    getContext(), mUiCallManager, /* onShowContactDetailListener= */this);
         }
         getRecyclerView().setAdapter(mContactListAdapter);
         getUxrContentLimiter().setAdapter(mContactListAdapter);

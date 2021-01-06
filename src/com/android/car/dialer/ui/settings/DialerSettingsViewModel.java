@@ -24,20 +24,28 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
+import com.android.car.dialer.ComponentFetcher;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.ViewModelComponent;
+
+import javax.inject.Inject;
 
 /**
  * ViewModel for {@link DialerSettingsFragment}
  */
 public class DialerSettingsViewModel extends AndroidViewModel {
     private static final String EMPTY_STRING = "";
+
+    @Inject
+    UiBluetoothMonitor mUiBluetoothMonitor;
     private final LiveData<BluetoothDevice> mFirstHfpDeviceLiveData;
     private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
     public DialerSettingsViewModel(@NonNull Application application) {
         super(application);
-        mFirstHfpDeviceLiveData = UiBluetoothMonitor.get().getFirstHfpConnectedDevice();
-        mHasHfpDeviceConnectedLiveData = UiBluetoothMonitor.get().hasHfpDeviceConnected();
+        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
+        mFirstHfpDeviceLiveData = mUiBluetoothMonitor.getFirstHfpConnectedDevice();
+        mHasHfpDeviceConnectedLiveData = mUiBluetoothMonitor.hasHfpDeviceConnected();
     }
 
     /**

@@ -51,6 +51,7 @@ public class NotificationService extends Hilt_NotificationService {
     static final String EXTRA_CALL_LOG_ID = "CD.EXTRA_CALL_LOG_ID";
 
     @Inject InCallNotificationController mInCallNotificationController;
+    @Inject UiCallManager mUiCallManager;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -86,7 +87,7 @@ public class NotificationService extends Hilt_NotificationService {
                 mInCallNotificationController.cancelInCallNotification(phoneNumber);
                 break;
             case ACTION_CALL_BACK_MISSED:
-                UiCallManager.get().placeCall(phoneNumber);
+                mUiCallManager.placeCall(phoneNumber);
                 TelecomUtils.markCallLogAsRead(getApplicationContext(), phoneNumber);
                 break;
             case ACTION_MESSAGE_MISSED:
@@ -109,7 +110,7 @@ public class NotificationService extends Hilt_NotificationService {
     }
 
     private void answerCall(String callId) {
-        List<Call> callList = UiCallManager.get().getCallList();
+        List<Call> callList = mUiCallManager.getCallList();
         for (Call call : callList) {
             if (call.getDetails() != null
                     && TextUtils.equals(call.getDetails().getTelecomCallId(), callId)) {
@@ -120,7 +121,7 @@ public class NotificationService extends Hilt_NotificationService {
     }
 
     private void declineCall(String callId) {
-        List<Call> callList = UiCallManager.get().getCallList();
+        List<Call> callList = mUiCallManager.getCallList();
         for (Call call : callList) {
             if (call.getDetails() != null
                     && TextUtils.equals(call.getDetails().getTelecomCallId(), callId)) {

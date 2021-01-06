@@ -27,7 +27,9 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.arch.common.FutureData;
 import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.dialer.ComponentFetcher;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
@@ -41,21 +43,28 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.inject.Inject;
+
 /**
  * View model for {@link ContactListFragment}.
  */
 public class ContactListViewModel extends DialerListViewModel {
+
+    @Inject
+    UiBluetoothMonitor mUiBluetoothMonitor;
     private final Context mContext;
     private final LiveData<Pair<Integer, List<Contact>>> mSortedContactListLiveData;
     private final LiveData<FutureData<Pair<Integer, List<Contact>>>> mContactList;
 
     public ContactListViewModel(@NonNull Application application) {
         super(application);
+        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
+
         mContext = application.getApplicationContext();
 
         SharedPreferencesLiveData preferencesLiveData = getSharedPreferencesLiveData();
         LiveData<List<Contact>> contactListLiveData = LiveDataFunctions.switchMapNonNull(
-                UiBluetoothMonitor.get().getFirstHfpConnectedDevice(),
+                mUiBluetoothMonitor.getFirstHfpConnectedDevice(),
                 device -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(
                         device.getAddress()));
         mSortedContactListLiveData = new SortedContactListLiveData(

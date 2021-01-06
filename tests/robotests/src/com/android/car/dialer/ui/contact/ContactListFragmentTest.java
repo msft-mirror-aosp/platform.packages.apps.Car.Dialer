@@ -44,7 +44,6 @@ import com.android.car.telephony.common.PostalAddress;
 import com.android.car.telephony.common.TelecomUtils;
 import com.android.car.ui.recyclerview.CarUiRecyclerView;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -108,14 +107,8 @@ public class ContactListFragmentTest {
         when(mMockFavoriteViewModel.getFavoriteContacts()).thenReturn(new MutableLiveData<>());
     }
 
-    @After
-    public void tearDown() {
-        UiCallManager.set(null);
-    }
-
     @Test
     public void testClickCallActionButton_ContactHasOneNumber_placeCall() {
-        UiCallManager.set(mMockUiCallManager);
         when(mMockContact1.getNumbers()).thenReturn(Arrays.asList(mMockPhoneNumber));
         when(mMockPhoneNumber.getRawNumber()).thenReturn(RAW_NUMBNER);
         setUpFragment();
@@ -219,6 +212,7 @@ public class ContactListFragmentTest {
         mContactListFragment = ContactListFragment.newInstance();
         mFragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().resume().get();
+        mContactListFragment.mUiCallManager = mMockUiCallManager;
         mFragmentTestActivity.setFragment(mContactListFragment);
 
         CarUiRecyclerView recyclerView = mContactListFragment.getView()

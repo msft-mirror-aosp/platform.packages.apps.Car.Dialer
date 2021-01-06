@@ -31,6 +31,10 @@ import com.android.car.dialer.telecom.UiCallManager;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * Provides the current connecting audio route.
  */
@@ -48,8 +52,9 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
         }
     };
 
+    @Inject
     public AudioRouteLiveData(
-            Context context,
+            @ApplicationContext Context context,
             UiBluetoothMonitor bluetoothMonitor,
             UiCallManager callManager) {
         mContext = context;

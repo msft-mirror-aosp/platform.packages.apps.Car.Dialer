@@ -40,6 +40,7 @@ import com.android.car.telephony.common.TelecomUtils;
  */
 public class CallLogViewHolder extends RecyclerView.ViewHolder {
 
+    private final UiCallManager mUiCallManager;
     private CallLogAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
     private View mPlaceCallView;
     private ImageView mAvatarView;
@@ -51,8 +52,10 @@ public class CallLogViewHolder extends RecyclerView.ViewHolder {
     private View mDivider;
 
     public CallLogViewHolder(@NonNull View itemView,
+            UiCallManager uiCallManager,
             CallLogAdapter.OnShowContactDetailListener onShowContactDetailListener) {
         super(itemView);
+        mUiCallManager = uiCallManager;
         mOnShowContactDetailListener = onShowContactDetailListener;
         mPlaceCallView = itemView.findViewById(R.id.call_action_id);
         mAvatarView = itemView.findViewById(R.id.icon);
@@ -99,7 +102,7 @@ public class CallLogViewHolder extends RecyclerView.ViewHolder {
         }
 
         ViewUtils.setOnClickListener(mPlaceCallView,
-                view -> UiCallManager.get().placeCall(uiCallLog.getNumber()));
+                view -> mUiCallManager.placeCall(uiCallLog.getNumber()));
 
         setUpActionButton(contact);
     }

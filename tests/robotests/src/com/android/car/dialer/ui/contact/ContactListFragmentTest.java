@@ -212,7 +212,12 @@ public class ContactListFragmentTest {
         mContactListFragment = ContactListFragment.newInstance();
         mFragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().resume().get();
-        mContactListFragment.mUiCallManager = mMockUiCallManager;
+
+        ContactListViewHolderFactory viewHolderFactory = new ContactListViewHolderFactory(
+                () -> mMockUiCallManager);
+        mContactListFragment.mContactListAdapterFactory = new ContactListAdapterFactory(
+                () -> mFragmentTestActivity,
+                () -> viewHolderFactory);
         mFragmentTestActivity.setFragment(mContactListFragment);
 
         CarUiRecyclerView recyclerView = mContactListFragment.getView()

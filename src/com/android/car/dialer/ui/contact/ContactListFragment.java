@@ -26,7 +26,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;
 import com.android.car.telephony.common.Contact;
 
@@ -40,7 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint(DialerListBaseFragment.class)
 public class ContactListFragment extends Hilt_ContactListFragment implements
         ContactListAdapter.OnShowContactDetailListener {
-    @Inject UiCallManager mUiCallManager;
+    @Inject ContactListAdapterFactory mContactListAdapterFactory;
     private ContactListAdapter mContactListAdapter;
 
     public static ContactListFragment newInstance() {
@@ -54,8 +53,8 @@ public class ContactListFragment extends Hilt_ContactListFragment implements
         // will display immediately upon the view being recreated. If they're not displayed
         // immediately, we won't remember our scroll position.
         if (mContactListAdapter == null) {
-            mContactListAdapter = new ContactListAdapter(
-                    getContext(), mUiCallManager, /* onShowContactDetailListener= */this);
+            mContactListAdapter =
+                    mContactListAdapterFactory.create(/* onShowContactDetailListener= */this);
         }
         getRecyclerView().setAdapter(mContactListAdapter);
         getUxrContentLimiter().setAdapter(mContactListAdapter);

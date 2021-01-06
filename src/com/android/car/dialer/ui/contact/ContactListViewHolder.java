@@ -33,13 +33,17 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 
+import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
+
 import java.util.List;
 
 /**
  * {@link RecyclerView.ViewHolder} for contact list item, responsible for presenting and resetting
  * the UI on recycle.
  */
-public class ContactListViewHolder extends RecyclerView.ViewHolder {
+@AutoFactory
+class ContactListViewHolder extends RecyclerView.ViewHolder {
     private final UiCallManager mUiCallManager;
     private final ContactListAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
     private final TextView mHeaderView;
@@ -49,9 +53,10 @@ public class ContactListViewHolder extends RecyclerView.ViewHolder {
     private final View mShowContactDetailView;
     private final View mCallActionView;
 
-    public ContactListViewHolder(@NonNull View itemView,
-            UiCallManager uiCallManager,
-            ContactListAdapter.OnShowContactDetailListener onShowContactDetailListener) {
+    ContactListViewHolder(
+            @NonNull View itemView,
+            ContactListAdapter.OnShowContactDetailListener onShowContactDetailListener,
+            @Provided UiCallManager uiCallManager) {
         super(itemView);
         mUiCallManager = uiCallManager;
         mOnShowContactDetailListener = onShowContactDetailListener;

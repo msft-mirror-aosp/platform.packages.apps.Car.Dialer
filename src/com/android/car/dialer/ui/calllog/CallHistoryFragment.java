@@ -25,7 +25,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
 import com.android.car.telephony.common.Contact;
@@ -40,7 +39,7 @@ public class CallHistoryFragment extends Hilt_CallHistoryFragment implements
         CallLogAdapter.OnShowContactDetailListener {
     private static final String CONTACT_DETAIL_FRAGMENT_TAG = "CONTACT_DETAIL_FRAGMENT_TAG";
 
-    @Inject UiCallManager mUiCallManager;
+    @Inject CallLogAdapterFactory mCallLogAdapterFactory;
     private CallLogAdapter mCallLogAdapter;
 
     public static CallHistoryFragment newInstance() {
@@ -54,8 +53,7 @@ public class CallHistoryFragment extends Hilt_CallHistoryFragment implements
         // will display immediately upon the view being recreated. If they're not displayed
         // immediately, we won't remember our scroll position.
         if (mCallLogAdapter == null) {
-            mCallLogAdapter = new CallLogAdapter(
-                    getContext(), mUiCallManager, /* onShowContactDetailListener= */this);
+            mCallLogAdapter = mCallLogAdapterFactory.create(/* onShowContactDetailListener= */this);
         }
         getRecyclerView().setAdapter(mCallLogAdapter);
         getUxrContentLimiter().setAdapter(mCallLogAdapter);

@@ -43,16 +43,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * The entry point for all interactions between UI and telecom.
  */
-public class UiCallManager {
+@Singleton
+public final class UiCallManager {
     private static String TAG = "CD.TelecomMgr";
 
     @VisibleForTesting
     static final String HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME
             = "com.android.bluetooth.hfpclient.connserv.HfpClientConnectionService";
-    private static UiCallManager sUiCallManager;
 
     private Context mContext;
 
@@ -60,43 +65,8 @@ public class UiCallManager {
     private InCallServiceImpl mInCallService;
     private BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
 
-    /**
-     * Initialized a globally accessible {@link UiCallManager} which can be retrieved by
-     * {@link #get}. If this function is called a second time before calling {@link #tearDown()},
-     * an exception will be thrown.
-     *
-     * @param applicationContext Application context.
-     */
-    public static UiCallManager init(Context applicationContext) {
-        if (sUiCallManager == null) {
-            sUiCallManager = new UiCallManager(applicationContext);
-        } else {
-            throw new IllegalStateException("UiCallManager has been initialized.");
-        }
-        return sUiCallManager;
-    }
-
-    /**
-     * Gets the global {@link UiCallManager} instance. Make sure
-     * {@link #init(Context)} is called before calling this method.
-     */
-    public static UiCallManager get() {
-        if (sUiCallManager == null) {
-            throw new IllegalStateException(
-                    "Call UiCallManager.init(Context) before calling this function");
-        }
-        return sUiCallManager;
-    }
-
-    /**
-     * This is used only for testing
-     */
-    @VisibleForTesting
-    public static void set(UiCallManager uiCallManager) {
-        sUiCallManager = uiCallManager;
-    }
-
-    private UiCallManager(Context context) {
+    @Inject
+    UiCallManager(@ApplicationContext Context context) {
         L.d(TAG, "SetUp");
         mContext = context;
 
@@ -135,7 +105,6 @@ public class UiCallManager {
         }
         // Clear out the mContext reference to avoid memory leak.
         mContext = null;
-        sUiCallManager = null;
     }
 
     public boolean getMuted() {

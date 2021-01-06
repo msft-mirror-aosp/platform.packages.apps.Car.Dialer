@@ -18,8 +18,6 @@ package com.android.car.dialer.telecom;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -88,30 +86,14 @@ public class UiCallManagerTest {
 
     private void initUiCallManager() {
         ((TestDialerApplication) mContext).setupInCallServiceImpl(mMockInCallService);
-        ((TestDialerApplication) mContext).initUiCallManager();
 
-        mUiCallManager = UiCallManager.get();
+        mUiCallManager = new UiCallManager(mContext);
     }
 
     private void initUiCallManager_InCallServiceIsNull() {
         ((TestDialerApplication) mContext).setupInCallServiceImpl(null);
-        ((TestDialerApplication) mContext).initUiCallManager();
 
-        mUiCallManager = UiCallManager.get();
-    }
-
-    @Test
-    public void testInit_initTwice_ThrowException() {
-        initUiCallManager();
-
-        assertNotNull(mUiCallManager);
-
-        try {
-            UiCallManager.init(mContext);
-            fail();
-        } catch (IllegalStateException e) {
-            // This is expected.
-        }
+        mUiCallManager = new UiCallManager(mContext);
     }
 
     @Test

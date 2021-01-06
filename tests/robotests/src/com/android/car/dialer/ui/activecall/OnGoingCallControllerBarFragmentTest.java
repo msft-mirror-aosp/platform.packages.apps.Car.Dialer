@@ -42,7 +42,6 @@ import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testutils.ShadowAndroidViewModelFactory;
 import com.android.car.telephony.common.CallDetail;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -104,11 +103,6 @@ public class OnGoingCallControllerBarFragmentTest {
         ShadowContextImpl shadowContext = Shadow.extract(
                 RuntimeEnvironment.application.getBaseContext());
         shadowContext.setSystemService(Context.TELECOM_SERVICE, mMockTelecomManager);
-    }
-
-    @After
-    public void tearDown() {
-        UiCallManager.set(null);
     }
 
     @Test
@@ -240,7 +234,6 @@ public class OnGoingCallControllerBarFragmentTest {
     private void addFragment(int callState) {
         mAudioRouteList.add(CallAudioState.ROUTE_SPEAKER);
         when(mMockUiCallManager.getSupportedAudioRoute()).thenReturn(mAudioRouteList);
-        UiCallManager.set(mMockUiCallManager);
 
         mCallStateLiveData.setValue(callState);
         when(mMockInCallViewModel.getPrimaryCall()).thenReturn(mCallLiveData);
@@ -265,6 +258,7 @@ public class OnGoingCallControllerBarFragmentTest {
         FragmentTestActivity fragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().start().resume().get();
         mOnGoingCallControllerBarFragment = new OnGoingCallControllerBarFragment();
+        mOnGoingCallControllerBarFragment.mUiCallManager = mMockUiCallManager;
         fragmentTestActivity.setFragment(mOnGoingCallControllerBarFragment);
     }
 }

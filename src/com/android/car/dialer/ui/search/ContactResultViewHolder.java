@@ -89,7 +89,9 @@ public class ContactResultViewHolder extends RecyclerView.ViewHolder {
      * Populates the view that is represented by this ViewHolder with the information in the
      * provided {@link Contact}.
      */
-    public void bindTypeDownResult(ContactResultsLiveData.ContactResultListItem contactResult,
+    public void bindTypeDownResult(
+            ContactResultsLiveData.ContactResultListItem contactResult,
+            UiCallManager uiCallManager,
             Integer sortMethod) {
         Contact contact = contactResult.getContact();
         String number = contactResult.getNumber();
@@ -99,7 +101,7 @@ public class ContactResultViewHolder extends RecyclerView.ViewHolder {
                 TelecomUtils.isSortByFirstName(sortMethod) ? contact.getDisplayName()
                         : contact.getDisplayNameAlt());
         mContactCard.setOnClickListener(
-                v -> UiCallManager.get().placeCall(mContactNumber.getText().toString()));
+                v -> uiCallManager.placeCall(mContactNumber.getText().toString()));
         TelecomUtils.setContactBitmapAsync(mContext, mContactPicture, contact, sortMethod);
     }
 

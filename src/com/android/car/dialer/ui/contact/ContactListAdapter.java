@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
+import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.DialerUtils;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.TelecomUtils;
@@ -46,6 +47,7 @@ public class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHo
     }
 
     private final Context mContext;
+    private final UiCallManager mUiCallManager;
     private final List<Contact> mContactList = new ArrayList<>();
     private final OnShowContactDetailListener mOnShowContactDetailListener;
 
@@ -53,9 +55,12 @@ public class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHo
     private LinearLayoutManager mLinearLayoutManager;
     private int mLimitingAnchorIndex = 0;
 
-    public ContactListAdapter(Context context,
+    public ContactListAdapter(
+            Context context,
+            UiCallManager uiCallManager,
             OnShowContactDetailListener onShowContactDetailListener) {
         mContext = context;
+        mUiCallManager = uiCallManager;
         mOnShowContactDetailListener = onShowContactDetailListener;
     }
 
@@ -84,7 +89,7 @@ public class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHo
     public ContactListViewHolder onCreateViewHolderImpl(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.contact_list_item, parent,
                 false);
-        return new ContactListViewHolder(itemView, mOnShowContactDetailListener);
+        return new ContactListViewHolder(itemView, mUiCallManager, mOnShowContactDetailListener);
     }
 
     @Override

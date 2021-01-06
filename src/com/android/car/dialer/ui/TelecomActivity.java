@@ -68,6 +68,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
     private static final String TAG = "CD.TelecomActivity";
 
     @Inject SharedPreferences mSharedPreferences;
+    @Inject UiCallManager mUiCallManager;
     private LiveData<List<Call>> mOngoingCallListLiveData;
     private LiveData<Boolean> mRefreshUiLiveData;
     // View objects for this activity.
@@ -132,7 +133,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
 
             case Intent.ACTION_CALL:
                 number = PhoneNumberUtils.getNumberFromIntent(intent, this);
-                UiCallManager.get().placeCall(number);
+                mUiCallManager.placeCall(number);
                 break;
 
             case Intent.ACTION_SEARCH:

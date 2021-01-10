@@ -18,11 +18,16 @@ package com.android.car.dialer.bluetooth;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.telecom.PhoneAccountHandle;
+import android.telecom.TelecomManager;
+import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
+import com.android.car.dialer.Constants;
 import com.android.car.dialer.livedata.BluetoothPairListLiveData;
 import com.android.car.dialer.livedata.BluetoothStateLiveData;
 import com.android.car.dialer.livedata.HfpDeviceListLiveData;
@@ -43,6 +48,7 @@ public final class UiBluetoothMonitor {
     private static final String TAG = "CD.BtMonitor";
 
     private final Context mContext;
+    private final TelecomManager mTelecomManager;
 
     private BluetoothPairListLiveData mPairListLiveData;
     private BluetoothStateLiveData mBluetoothStateLiveData;
@@ -50,11 +56,12 @@ public final class UiBluetoothMonitor {
 
     private Observer mPairListObserver;
     private Observer mBluetoothStateObserver;
-    private Observer mHfpDeviceListObserver;
+    private Observer<List<BluetoothDevice>> mHfpDeviceListObserver;
 
     @Inject
     public UiBluetoothMonitor(@ApplicationContext Context applicationContext) {
         mContext = applicationContext;
+        mTelecomManager = mContext.getSystemService(TelecomManager.class);
 
         mPairListLiveData = new BluetoothPairListLiveData(mContext);
         mBluetoothStateLiveData = new BluetoothStateLiveData(mContext);
@@ -62,7 +69,13 @@ public final class UiBluetoothMonitor {
 
         mPairListObserver = o -> L.i(TAG, "PairList is updated");
         mBluetoothStateObserver = o -> L.i(TAG, "BluetoothState is updated");
-        mHfpDeviceListObserver = o -> L.i(TAG, "HfpDeviceList is updated");
+        mHfpDeviceListObserver = deviceList -> {
+            L.i(TAG, "HfpDeviceList is updated");
+            BluetoothDevice bluetoothDevice =
+                    deviceList == null || deviceList.isEmpty() ? null : deviceList.get(0);
+            PhoneAccountHandle phoneAccountHandle = getPhoneAccountHandleForDevice(bluetoothDevice);
+            mTelecomManager.setUserSelectedOutgoingPhoneAccount(phoneAccountHandle);
+        };
 
         mPairListLiveData.observeForever(mPairListObserver);
         mBluetoothStateLiveData.observeForever(mBluetoothStateObserver);
@@ -120,5 +133,24 @@ public final class UiBluetoothMonitor {
         if (liveData != null && liveData.hasObservers()) {
             liveData.removeObserver(observer);
         }
+    }
+
+    private PhoneAccountHandle getPhoneAccountHandleForDevice(
+            @Nullable BluetoothDevice bluetoothDevice) {
+        if (bluetoothDevice == null) {
+            return null;
+        }
+
+        List<PhoneAccountHandle> phoneAccountHandleList =
+                mTelecomManager.getCallCapablePhoneAccounts();
+        for (PhoneAccountHandle phoneAccountHandle : phoneAccountHandleList) {
+            if (Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME.equals(
+                    phoneAccountHandle.getComponentName().getClassName())) {
+                if (TextUtils.equals(phoneAccountHandle.getId(), bluetoothDevice.getAddress())) {
+                    return phoneAccountHandle;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -25,14 +25,15 @@ import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.log.L;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Provides SharedPreferences.
  */
+@AutoFactory
 public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
     private static final String TAG = "CD.PreferenceLiveData";
 
@@ -42,7 +43,9 @@ public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
     private final SharedPreferences.OnSharedPreferenceChangeListener
             mOnSharedPreferenceChangeListener;
 
-    private SharedPreferencesLiveData(SharedPreferences sharedPreferences, String key) {
+    SharedPreferencesLiveData(
+            @Provided SharedPreferences sharedPreferences,
+            String key) {
         mSharedPreferences = sharedPreferences;
         mKey = key;
 
@@ -53,7 +56,9 @@ public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
         };
     }
 
-    private SharedPreferencesLiveData(Context context, SharedPreferences sharedPreferences,
+    SharedPreferencesLiveData(
+            @Provided @ApplicationContext Context context,
+            @Provided SharedPreferences sharedPreferences,
             @StringRes int key) {
         this(sharedPreferences, context.getString(key));
     }
@@ -81,28 +86,5 @@ public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
      */
     public String getKey() {
         return mKey;
-    }
-
-    /** Factory class that creates {@link SharedPreferencesLiveData} instances. */
-    @Singleton
-    public static class Factory {
-        private final Context mContext;
-        private final SharedPreferences mSharedPreferences;
-
-        @Inject
-        public Factory(@ApplicationContext Context context, SharedPreferences sharedPreferences) {
-            mContext = context;
-            mSharedPreferences = sharedPreferences;
-        }
-
-        /** Creates {@link SharedPreferencesLiveData} from given string resource id as key. */
-        public SharedPreferencesLiveData create(@StringRes int keyResId) {
-            return new SharedPreferencesLiveData(mContext, mSharedPreferences, keyResId);
-        }
-
-        /** Creates {@link SharedPreferencesLiveData} from given string as key. */
-        public SharedPreferencesLiveData create(String key) {
-            return new SharedPreferencesLiveData(mSharedPreferences, key);
-        }
     }
 }

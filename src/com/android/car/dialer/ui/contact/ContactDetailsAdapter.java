@@ -27,13 +27,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.PostalAddress;
 
+import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
+
 import java.util.ArrayList;
 
+import dagger.hilt.android.qualifiers.ActivityContext;
+
+@AutoFactory
 class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolder> {
 
     private static final String TAG = "CD.ContactDetailsAdapter";
@@ -47,19 +52,19 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
     }
 
     private final Context mContext;
-    private final UiCallManager mUiCallManager;
+    private final ContactDetailsViewHolderFactory mViewHolderFactory;
     private final PhoneNumberPresenter mPhoneNumberPresenter;
     private final ArrayList<Object> mItems = new ArrayList<>();
     private Contact mContact;
 
     ContactDetailsAdapter(
-            @NonNull Context context,
+            @Provided @ActivityContext @NonNull Context context,
+            @Provided ContactDetailsViewHolderFactory viewHolderFactory,
             @Nullable Contact contact,
-            UiCallManager uiCallManager,
             @NonNull PhoneNumberPresenter phoneNumberPresenter) {
         super();
         mContext = context;
-        mUiCallManager = uiCallManager;
+        mViewHolderFactory = viewHolderFactory;
         mPhoneNumberPresenter = phoneNumberPresenter;
         setContact(contact);
     }
@@ -125,7 +130,7 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
 
         View view = LayoutInflater.from(parent.getContext()).inflate(layoutResId, parent,
                 false);
-        return new ContactDetailsViewHolder(view, mUiCallManager, mPhoneNumberPresenter);
+        return mViewHolderFactory.create(view, mPhoneNumberPresenter);
     }
 
     @Override

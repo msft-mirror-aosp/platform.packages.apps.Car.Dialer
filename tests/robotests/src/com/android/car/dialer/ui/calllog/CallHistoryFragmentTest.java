@@ -101,7 +101,10 @@ public class CallHistoryFragmentTest {
         mCallHistoryFragment = CallHistoryFragment.newInstance();
         FragmentTestActivity mFragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().resume().get();
-        mCallHistoryFragment.mUiCallManager = mMockUiCallManager;
+        CallLogViewHolderFactory viewHolderFactory = new CallLogViewHolderFactory(
+                () -> mMockUiCallManager);
+        mCallHistoryFragment.mCallLogAdapterFactory = new CallLogAdapterFactory(
+                () -> mFragmentTestActivity, () -> viewHolderFactory);
         mFragmentTestActivity.setFragment(mCallHistoryFragment);
 
         CarUiRecyclerView recyclerView = mCallHistoryFragment.getView()

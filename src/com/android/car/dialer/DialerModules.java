@@ -29,14 +29,22 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
-/** Application level module. */
-@InstallIn(SingletonComponent.class)
-@Module
-public final class DialerModule {
+/**Dialer modules.*/
+public final class DialerModules {
 
-    @Singleton
-    @Provides
-    static SharedPreferences provideSharedPreferences(@ApplicationContext Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context);
+    /** Application level module. */
+    @InstallIn(SingletonComponent.class)
+    @Module
+    public static final class BaseModule {
+
+        @Singleton
+        @Provides
+        static SharedPreferences provideSharedPreferences(@ApplicationContext Context context) {
+            return PreferenceManager.getDefaultSharedPreferences(context);
+        }
+    }
+
+    /** Do not initialize. */
+    private DialerModules() {
     }
 }

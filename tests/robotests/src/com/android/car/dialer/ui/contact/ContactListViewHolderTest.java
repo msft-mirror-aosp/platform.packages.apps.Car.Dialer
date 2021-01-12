@@ -78,8 +78,8 @@ public class ContactListViewHolderTest {
 
         mItemView = LayoutInflater.from(mContext)
                 .inflate(R.layout.contact_list_item, null, false);
-        mContactListViewHolder = new ContactListViewHolder(mItemView, mMockUiCallManager,
-                mMockListener);
+        mContactListViewHolder = new ContactListViewHolder(mItemView, mMockListener,
+                mMockUiCallManager);
     }
 
     @Test

@@ -27,18 +27,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.DialerUtils;
 import com.android.car.dialer.ui.common.entity.HeaderViewHolder;
 import com.android.car.dialer.ui.common.entity.UiCallLog;
 import com.android.car.telephony.common.Contact;
 import com.android.car.ui.recyclerview.ContentLimitingAdapter;
 
+import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.qualifiers.ActivityContext;
+
 /** Adapter for call history list. */
-public class CallLogAdapter extends ContentLimitingAdapter {
+@AutoFactory
+class CallLogAdapter extends ContentLimitingAdapter {
 
     private static final String TAG = "CD.CallLogAdapter";
 
@@ -61,18 +66,19 @@ public class CallLogAdapter extends ContentLimitingAdapter {
         void onShowContactDetail(Contact contact);
     }
 
-    private final UiCallManager mUiCallManager;
+    private final CallLogViewHolderFactory mViewHolderFactory;
     private List<Object> mUiCallLogs = new ArrayList<>();
     private Context mContext;
     private CallLogAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
     private LinearLayoutManager mLayoutManager;
     private int mLimitingAnchorIndex = 0;
 
-    public CallLogAdapter(Context context,
-            UiCallManager uiCallManager,
+    CallLogAdapter(
+            @Provided @ActivityContext Context context,
+            @Provided CallLogViewHolderFactory viewHolderFactory,
             CallLogAdapter.OnShowContactDetailListener onShowContactDetailListener) {
         mContext = context;
-        mUiCallManager = uiCallManager;
+        mViewHolderFactory = viewHolderFactory;
         mOnShowContactDetailListener = onShowContactDetailListener;
     }
 
@@ -105,7 +111,7 @@ public class CallLogAdapter extends ContentLimitingAdapter {
         if (viewType == EntryType.TYPE_CALLLOG) {
             View rootView = LayoutInflater.from(mContext)
                     .inflate(R.layout.call_history_list_item, parent, false);
-            return new CallLogViewHolder(rootView, mUiCallManager, mOnShowContactDetailListener);
+            return mViewHolderFactory.create(rootView, mOnShowContactDetailListener);
         }
 
         View rootView = LayoutInflater.from(mContext)

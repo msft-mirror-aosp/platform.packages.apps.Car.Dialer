@@ -26,6 +26,7 @@ import com.android.car.dialer.ComponentFetcher;
 import com.android.car.dialer.R;
 import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
+import com.android.car.dialer.livedata.SharedPreferencesLiveDataFactory;
 import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
 
 import javax.inject.Inject;
@@ -35,8 +36,7 @@ import javax.inject.Inject;
  */
 public class DialerListViewModel extends AndroidViewModel {
 
-    @Inject
-    SharedPreferencesLiveData.Factory mSharedPreferencesFactory;
+    @Inject SharedPreferencesLiveDataFactory mSharedPreferencesFactory;
 
     private final SharedPreferencesLiveData mSharedPreferencesLiveData;
     private final LiveData<Integer> mSortOrderLiveData;

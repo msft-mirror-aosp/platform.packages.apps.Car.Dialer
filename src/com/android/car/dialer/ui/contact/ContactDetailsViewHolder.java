@@ -45,10 +45,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
 
 /**
  * ViewHolder for {@link ContactDetailsFragment}.
  */
+@AutoFactory
 class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "CD.ContactDetailsVH";
 
@@ -85,8 +88,8 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
 
     ContactDetailsViewHolder(
             View v,
-            UiCallManager uiCallManager,
-            @NonNull ContactDetailsAdapter.PhoneNumberPresenter phoneNumberPresenter) {
+            @NonNull ContactDetailsAdapter.PhoneNumberPresenter phoneNumberPresenter,
+            @Provided UiCallManager uiCallManager) {
         super(v);
         mUiCallManager = uiCallManager;
         mCallActionView = v.findViewById(R.id.call_action_id);

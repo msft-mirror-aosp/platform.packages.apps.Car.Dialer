@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,14 @@ package com.android.car.dialer.framework.testdata;
 /**
  * A class represents the call log raw data.
  */
-public class CallLogRawData {
+public class CallLogRawData extends RawData {
 
-    private String mId;
     private String mNumber;
     private Integer mNumberType;
     /**
      * This is the time interval from when the call occurs to the current time.
      */
-    private Integer mTimeStamp;
-
-    /**
-     * The constructor for {@link CallLogRawData}.
-     */
-    public CallLogRawData(String id) {
-        mId = id;
-    }
+    private Integer mInterval;
 
     /**
      * Sets the number;
@@ -51,17 +43,10 @@ public class CallLogRawData {
     }
 
     /**
-     * Sets the time stamp;
+     * Sets the time interval;
      */
-    public void setTimeStamp(Integer timeStamp) {
-        mTimeStamp = timeStamp;
-    }
-
-    /**
-     * Gets the id;
-     */
-    public String getId() {
-        return mId;
+    public void setInterval(Integer interval) {
+        mInterval = interval;
     }
 
     /**
@@ -79,9 +64,24 @@ public class CallLogRawData {
     }
 
     /**
-     * Gets the time stamp for the phone call;
+     * Gets the time interval for the phone call;
      */
-    public Integer getTimeStamp() {
-        return mTimeStamp;
+    public Integer getInterval() {
+        return mInterval;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[id: ");
+        builder.append(getId());
+        builder.append(", number: ");
+        builder.append(mNumber);
+        builder.append(", number type: ");
+        builder.append(mNumberType);
+        builder.append(", time interval: ");
+        builder.append(mInterval);
+        builder.append("]");
+        return  builder.toString();
     }
 }

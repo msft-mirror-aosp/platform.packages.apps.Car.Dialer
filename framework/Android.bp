@@ -35,9 +35,16 @@ android_library {
 
     srcs: ["src/**/*.java", "fake/src/**/*java"],
 
+    asset_dirs: [
+        "fake/assets",
+    ],
+
     static_libs: [
         "mockito-target-extended-minus-junit4",
         "androidx.annotation_annotation",
+        "androidx.legacy_legacy-support-v4",
+        "car-apps-common",
+        "gson-prebuilt-jar",
     ],
 
 }

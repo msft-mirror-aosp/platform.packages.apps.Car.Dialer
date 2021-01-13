@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,22 +21,14 @@ import androidx.annotation.Nullable;
 /**
  * A class represents the contact raw data.
  */
-public class ContactRawData {
+public class ContactRawData extends RawData {
 
-    private String mId;
     private String mDisplayName;
     private String mNumber;
     private Integer mNumberType;
     private String mNumberLabel;
     private String mAddress;
-    private Integer mStarred = 0;
-
-    /**
-     * The constructor for {@link ContactRawData}.
-     */
-    public ContactRawData(String id) {
-        mId = id;
-    }
+    private Integer mStarred;
 
     /**
      * Sets display name.
@@ -46,14 +38,14 @@ public class ContactRawData {
     }
 
     /**
-     * Sets phone number.
+     * Sets the number;
      */
     public void setNumber(String number) {
         mNumber = number;
     }
 
     /**
-     * Sets phone number type.
+     * Sets the number type;
      */
     public void setNumberType(Integer numberType) {
         mNumberType = numberType;
@@ -78,13 +70,6 @@ public class ContactRawData {
      */
     public void setStarred(boolean starred) {
         mStarred = starred ? 1 : 0;
-    }
-
-    /**
-     * Gets the id;
-     */
-    public String getId() {
-        return mId;
     }
 
     /**
@@ -128,5 +113,26 @@ public class ContactRawData {
      */
     public Integer getStarred() {
         return mStarred;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[id: ");
+        builder.append(getId());
+        builder.append(", display name: ");
+        builder.append(mDisplayName);
+        builder.append(", number: ");
+        builder.append(mNumber);
+        builder.append(", number label: ");
+        builder.append(mNumberLabel);
+        builder.append(", number type: ");
+        builder.append(mNumberType);
+        builder.append(", is starred: ");
+        builder.append(mStarred);
+        builder.append(", address: ");
+        builder.append(mAddress);
+        builder.append("]");
+        return  builder.toString();
     }
 }

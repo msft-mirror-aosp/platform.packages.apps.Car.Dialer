@@ -16,8 +16,11 @@
 
 package com.android.car.dialer.framework;
 
+import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
+import android.telecom.TelecomManager;
+
+import androidx.annotation.NonNull;
 
 /**
  * A real implementation of Android framework services provider.
@@ -25,25 +28,35 @@ import android.content.Context;
 public class AndroidFrameworkImpl implements AndroidFramework {
     private static AndroidFrameworkImpl sRealAndroidFramework;
 
-    private Context mContext;
+    private Application mApplicationContext;
 
     /**
      * Returns the single instance of AndroidFrameworkImpl.
      */
-    public static AndroidFrameworkImpl get(Context context) {
+    public static AndroidFrameworkImpl get() {
         if (sRealAndroidFramework == null) {
-            sRealAndroidFramework = new AndroidFrameworkImpl(context);
+            sRealAndroidFramework = new AndroidFrameworkImpl();
         }
 
         return sRealAndroidFramework;
     }
 
-    private AndroidFrameworkImpl(Context context) {
-        mContext = context;
+    private AndroidFrameworkImpl() {
+
+    }
+
+    @Override
+    public void init(@NonNull Application applicationContext) {
+        mApplicationContext = applicationContext;
     }
 
     @Override
     public BluetoothAdapter getBluetoothAdapter() {
         return BluetoothAdapter.getDefaultAdapter();
+    }
+
+    @Override
+    public TelecomManager getTelecomManager() {
+        return mApplicationContext.getSystemService(TelecomManager.class);
     }
 }

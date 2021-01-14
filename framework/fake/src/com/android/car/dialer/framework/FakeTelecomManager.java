@@ -16,27 +16,32 @@
 
 package com.android.car.dialer.framework;
 
-import android.app.Application;
-import android.bluetooth.BluetoothAdapter;
+import static org.mockito.Mockito.spy;
+
+import android.content.Context;
 import android.telecom.TelecomManager;
+import android.util.Log;
 
 /**
- * A provider which provides all kinds of Android framework services.
+ * A fake TelecomManager implementation
  */
-public interface AndroidFramework {
+public class FakeTelecomManager {
+    private static final String TAG = "CD.FakeTelecomManager";
+
+    private Context mContext;
+    private TelecomManager mSpiedTelecomManager;
+
+    public FakeTelecomManager(Context context) {
+        Log.d(TAG, "Create FakeTelecomManager");
+
+        mContext = context;
+        mSpiedTelecomManager = spy(context.getSystemService(TelecomManager.class));
+    }
 
     /**
-     * Initializes the class with the given {@link Application} context.
+     * Gets a fake TelecomManager.
      */
-    void init(Application applicationContext);
-
-    /**
-     * Returns a {@link BluetoothAdapter}.
-     */
-    BluetoothAdapter getBluetoothAdapter();
-
-    /**
-     * Returns a {@link TelecomManager}.
-     */
-    TelecomManager getTelecomManager();
+    public TelecomManager getTelecomManager() {
+        return mSpiedTelecomManager;
+    }
 }

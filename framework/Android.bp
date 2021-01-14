@@ -23,6 +23,11 @@ android_library {
     platform_apis: true,
 
     srcs: ["src/**/*.java", "real/src/**/*java"],
+
+    static_libs: [
+        "androidx.core_core",
+        "androidx.annotation_annotation",
+    ],
 }
 
 // A library that connects with a fake Android Framework implementation.
@@ -45,6 +50,8 @@ android_library {
         "androidx.legacy_legacy-support-v4",
         "car-apps-common",
         "gson-prebuilt-jar",
+        "androidx.core_core",
+        "guava",
     ],
 
 }

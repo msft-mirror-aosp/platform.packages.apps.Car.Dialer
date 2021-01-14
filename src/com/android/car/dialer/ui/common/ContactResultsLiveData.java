@@ -59,6 +59,7 @@ public class ContactResultsLiveData extends
     private final LiveData<String> mSearchQueryLiveData;
     private final LiveData<List<Contact>> mContactListLiveData;
     private final SharedPreferencesLiveData mSortOrderPreferenceLiveData;
+    private String mSearchQuery;
     private boolean mShowOnlyOneEntry;
 
     /**
@@ -115,6 +116,7 @@ public class ContactResultsLiveData extends
     }
 
     private void onSearchQueryChanged(String searchQuery) {
+        mSearchQuery = searchQuery;
         if (TextUtils.isEmpty(searchQuery)) {
             mObservableAsyncQuery.stopQuery();
             setValue(Collections.emptyList());
@@ -142,7 +144,7 @@ public class ContactResultsLiveData extends
             String number = cursor.getString(numberIdx);
             List<Contact> lookupResults = InMemoryPhoneBook.get().lookupContactByKey(lookupKey);
             for (Contact contact : lookupResults) {
-                contactResults.add(new ContactResultListItem(contact, number));
+                contactResults.add(new ContactResultListItem(contact, number, mSearchQuery));
             }
         }
 
@@ -194,10 +196,12 @@ public class ContactResultsLiveData extends
     public static class ContactResultListItem {
         private final Contact mContact;
         private final String mNumber;
+        private final String mSearchQuery;
 
-        public ContactResultListItem(Contact contact, String number) {
+        public ContactResultListItem(Contact contact, String number, String searchQuery) {
             mContact = contact;
             mNumber = number;
+            mSearchQuery = searchQuery;
         }
 
         /**
@@ -213,6 +217,13 @@ public class ContactResultsLiveData extends
          */
         public String getNumber() {
             return mNumber;
+        }
+
+        /**
+         * Returns the search query that initiates the search.
+         */
+        public String getSearchQuery() {
+            return mSearchQuery;
         }
     }
 }

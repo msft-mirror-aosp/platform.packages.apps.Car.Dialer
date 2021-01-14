@@ -76,7 +76,7 @@ public class LocalCallHandler {
         public void onServiceConnected(ComponentName name, IBinder binder) {
             L.d(TAG, "onServiceConnected: %s, service: %s", name, binder);
             mInCallService = ((InCallServiceImpl.LocalBinder) binder).getService();
-            for (Call call : mInCallService.getCalls()) {
+            for (Call call : mInCallService.getCallList()) {
                 notifyCallAdded(call);
             }
             mInCallService.addActiveCallListChangedCallback(mActiveCallListChangedCallback);
@@ -146,7 +146,7 @@ public class LocalCallHandler {
     public void tearDown() {
         mApplicationContext.unbindService(mInCallServiceConnection);
         if (mInCallService != null) {
-            for (Call call : mInCallService.getCalls()) {
+            for (Call call : mInCallService.getCallList()) {
                 notifyCallRemoved(call);
             }
             mInCallService.removeActiveCallListChangedCallback(mActiveCallListChangedCallback);
@@ -165,7 +165,7 @@ public class LocalCallHandler {
      * </ul>
      */
     private void notifyCallListChanged() {
-        List<Call> callList = new ArrayList<>(mInCallService.getCalls());
+        List<Call> callList = new ArrayList<>(mInCallService.getCallList());
 
         List<Call> activeCallList = filter(callList,
                 call -> call != null && call.getState() != Call.STATE_RINGING);

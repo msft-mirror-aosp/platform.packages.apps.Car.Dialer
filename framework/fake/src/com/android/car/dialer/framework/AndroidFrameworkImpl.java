@@ -18,48 +18,32 @@ package com.android.car.dialer.framework;
 
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mock;
 
-import android.app.Application;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.telecom.TelecomManager;
+import android.content.Context;
 
-import androidx.annotation.NonNull;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * A fake implementation of Android framework services provider.
  */
+@Singleton
 public class AndroidFrameworkImpl implements AndroidFramework {
 
-    private static AndroidFrameworkImpl sFakeAndroidFramework;
+    private final Context mContext;
+    private final FakeBluetoothAdapter mFakeBluetoothAdapter;
+    private final AdbBroadcastReceiver mAdbBroadcastReceiver;
 
-    private FakeBluetoothAdapter mFakeBluetoothAdapter;
-    private BluetoothAdapter mSpiedBluetoothAdapter;
-
-    private FakeTelecomManager mFakeTelecomManager;
-    private TelecomManager mSpiedTelecomManager;
-
-    /**
-     * Returns the single instance of {@link AndroidFrameworkImpl}.
-     */
-    public static AndroidFrameworkImpl get() {
-        if (sFakeAndroidFramework == null) {
-            sFakeAndroidFramework = new AndroidFrameworkImpl();
-        }
-        return sFakeAndroidFramework;
-    }
-
-    private AndroidFrameworkImpl() {}
-
-    @Override
-    public void init(@NonNull Application applicationContext) {
-        mFakeBluetoothAdapter = new FakeBluetoothAdapter();
-        mSpiedBluetoothAdapter = mFakeBluetoothAdapter.getBluetoothAdapter();
-
-        mFakeTelecomManager = new FakeTelecomManager(applicationContext);
-        mSpiedTelecomManager = mFakeTelecomManager.getTelecomManager();
-
-        AdbBroadcastReceiver adbBroadcastReceiver = new AdbBroadcastReceiver();
-        adbBroadcastReceiver.registerReceiver(applicationContext);
+    @Inject
+    AndroidFrameworkImpl(
+            @ApplicationContext Context context,
+            FakeBluetoothAdapter fakeBluetoothAdapter,
+            AdbBroadcastReceiver adbBroadcastReceiver) {
+        mContext = context;
+        mFakeBluetoothAdapter = fakeBluetoothAdapter;
+        mAdbBroadcastReceiver = adbBroadcastReceiver;
     }
 
     /**
@@ -71,19 +55,7 @@ public class AndroidFrameworkImpl implements AndroidFramework {
     }
 
     @Override
-    public BluetoothAdapter getBluetoothAdapter() {
-        return mSpiedBluetoothAdapter;
-    }
-
-    @Override
-    public TelecomManager getTelecomManager() {
-        return mSpiedTelecomManager;
-    }
-
-    /**
-     * Returns the faked TelecomManager.
-     */
-    public FakeTelecomManager getFakeTelecomManager() {
-        return mFakeTelecomManager;
+    public void start() {
+        mAdbBroadcastReceiver.registerReceiver(mContext);
     }
 }

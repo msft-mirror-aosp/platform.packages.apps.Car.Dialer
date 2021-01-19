@@ -37,6 +37,7 @@ import androidx.lifecycle.LifecycleRegistry;
 
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.LiveDataObserver;
+import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.testutils.BroadcastReceiverVerifier;
 import com.android.car.dialer.testutils.ShadowBluetoothAdapterForDialer;
 
@@ -67,12 +68,15 @@ public class HfpDeviceListLiveDataTest {
     private LiveDataObserver<Integer> mMockObserver;
     @Mock
     private BluetoothDevice mMockBluetoothDevice;
+    @Mock
+    private BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        mHfpDeviceListLiveData = new HfpDeviceListLiveData(RuntimeEnvironment.application);
+        mHfpDeviceListLiveData = new HfpDeviceListLiveData(RuntimeEnvironment.application,
+                BluetoothAdapter.getDefaultAdapter(), mBluetoothHeadsetClientProvider);
         mLifecycleRegistry = new LifecycleRegistry(mMockLifecycleOwner);
         when(mMockLifecycleOwner.getLifecycle()).thenReturn(mLifecycleRegistry);
 

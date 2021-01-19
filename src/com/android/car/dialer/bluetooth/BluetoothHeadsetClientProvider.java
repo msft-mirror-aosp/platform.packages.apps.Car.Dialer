@@ -26,31 +26,30 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.log.L;
-import com.android.car.dialer.servicelocator.DialerServiceLocator;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Binds {@link BluetoothHeadsetClient profile}. It provides the connected {@link
  * BluetoothHeadsetClient profile object} and the connected state {@link LiveData}.
  */
+@Singleton
 public class BluetoothHeadsetClientProvider {
     private static final String TAG = "CD.BHCProvider";
-    private static BluetoothHeadsetClientProvider sInstance;
+
     private final MutableLiveData<Boolean> mIsBluetoothHeadsetClientConnected;
     private BluetoothHeadsetClient mBluetoothHeadsetClient;
 
-    /** Returns the singleton instance of the {@link BluetoothHeadsetClientProvider} */
-    public static BluetoothHeadsetClientProvider singleton(Context context) {
-        if (sInstance == null) {
-            sInstance = new BluetoothHeadsetClientProvider(context);
-        }
-        return sInstance;
-    }
-
-    private BluetoothHeadsetClientProvider(Context context) {
+    @Inject
+    BluetoothHeadsetClientProvider(
+            @ApplicationContext Context context,
+            BluetoothAdapter bluetoothAdapter) {
         mIsBluetoothHeadsetClientConnected = new MutableLiveData<>();
         mIsBluetoothHeadsetClientConnected.observeForever(
                 isConnected -> L.d(TAG, "BluetoothHeadsetClient is connected."));
-        BluetoothAdapter bluetoothAdapter = DialerServiceLocator.get().getBluetoothAdapter();
         if (bluetoothAdapter != null) {
             bluetoothAdapter.getProfileProxy(context, new BluetoothProfile.ServiceListener() {
                 @Override

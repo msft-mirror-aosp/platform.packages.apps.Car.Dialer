@@ -28,16 +28,20 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
-import com.android.car.dialer.servicelocator.DialerServiceLocator;
 
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /** {@link LiveData} that monitors the hfp connected devices. */
+@Singleton
 public class HfpDeviceListLiveData extends MediatorLiveData<List<BluetoothDevice>> {
     private final Context mContext;
-    private final BluetoothAdapter mBluetoothAdapter =
-            DialerServiceLocator.get().getBluetoothAdapter();
+    private final BluetoothAdapter mBluetoothAdapter;
     private final BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
     private final IntentFilter mIntentFilter;
 
@@ -49,10 +53,15 @@ public class HfpDeviceListLiveData extends MediatorLiveData<List<BluetoothDevice
     };
 
     /** Creates a new {@link HfpDeviceListLiveData}. Call on main thread. */
-    public HfpDeviceListLiveData(Context context) {
+    @Inject
+    public HfpDeviceListLiveData(
+            @ApplicationContext Context context,
+            BluetoothAdapter bluetoothAdapter,
+            BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider) {
         mContext = context;
+        mBluetoothAdapter = bluetoothAdapter;
 
-        mBluetoothHeadsetClientProvider = BluetoothHeadsetClientProvider.singleton(context);
+        mBluetoothHeadsetClientProvider = bluetoothHeadsetClientProvider;
         addSource(mBluetoothHeadsetClientProvider.isBluetoothHeadsetClientConnected(),
                 isConnected -> update());
 

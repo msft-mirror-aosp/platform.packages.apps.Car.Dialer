@@ -36,7 +36,7 @@ public class DialerSettingsFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         LiveData<String> connectedDeviceName = ViewModelProviders.of(this)
                 .get(DialerSettingsViewModel.class)
-                .getFirstHfpConnectedDeviceName();
+                .getCurrentHfpConnectedDeviceName();
         connectedDeviceName.observe(this, (name) -> {
             Preference preference = findPreference(getString((R.string.pref_connected_phone_key)));
             if (preference != null) {

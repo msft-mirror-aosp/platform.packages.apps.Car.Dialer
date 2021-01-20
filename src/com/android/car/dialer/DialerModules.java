@@ -16,10 +16,18 @@
 
 package com.android.car.dialer;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.lifecycle.LiveData;
 import androidx.preference.PreferenceManager;
+
+import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.Qualifiers;
+
+import java.util.List;
+import java.util.Set;
 
 import javax.inject.Singleton;
 
@@ -29,7 +37,7 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
-/**Dialer modules.*/
+/** Dialer modules. */
 public final class DialerModules {
 
     /** Application level module. */
@@ -41,6 +49,51 @@ public final class DialerModules {
         @Provides
         static SharedPreferences provideSharedPreferences(@ApplicationContext Context context) {
             return PreferenceManager.getDefaultSharedPreferences(context);
+        }
+    }
+
+    /** Module providing dependencies for single hfp connection. */
+    @InstallIn(SingletonComponent.class)
+    @Module
+    public static final class SingleHfpModule {
+        @Singleton
+        @Qualifiers.Bluetooth
+        @Provides
+        static LiveData<Integer> provideBluetoothStateLiveData(
+                UiBluetoothMonitor uiBluetoothMonitor) {
+            return uiBluetoothMonitor.getBluetoothStateLiveData();
+        }
+
+        @Singleton
+        @Qualifiers.Bluetooth
+        @Provides
+        static LiveData<Set<BluetoothDevice>> provideBluetoothPairListLiveData(
+                UiBluetoothMonitor uiBluetoothMonitor) {
+            return uiBluetoothMonitor.getPairListLiveData();
+        }
+
+        @Singleton
+        @Qualifiers.Hfp
+        @Provides
+        static LiveData<List<BluetoothDevice>> provideHfpDeviceListLiveData(
+                UiBluetoothMonitor uiBluetoothMonitor) {
+            return uiBluetoothMonitor.getHfpDeviceListLiveData();
+        }
+
+        @Singleton
+        @Qualifiers.Hfp
+        @Provides
+        static LiveData<BluetoothDevice> provideCurrentHfpDeviceLiveData(
+                UiBluetoothMonitor uiBluetoothMonitor) {
+            return uiBluetoothMonitor.getFirstHfpConnectedDevice();
+        }
+
+        @Singleton
+        @Qualifiers.Hfp
+        @Provides
+        static LiveData<Boolean> hasHfpDeviceConnectedLiveData(
+                UiBluetoothMonitor uiBluetoothMonitor) {
+            return uiBluetoothMonitor.hasHfpDeviceConnected();
         }
     }
 

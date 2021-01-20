@@ -31,7 +31,7 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
@@ -47,17 +47,15 @@ import javax.inject.Inject;
 public class TelecomActivityViewModel extends AndroidViewModel {
     private static final String TAG = "CD.TelecomActivityViewModel";
 
-    @Inject UiBluetoothMonitor mUiBluetoothMonitor;
     @Inject LocalCallHandler mLocalCallHandler;
+    @Inject @Qualifiers.Hfp LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
+    @Inject @Qualifiers.Hfp LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
     private final Context mApplicationContext;
     private RefreshUiEvent mRefreshTabsLiveData;
 
     private final ToolbarTitleLiveData mToolbarTitleLiveData;
     private final MutableLiveData<Integer> mToolbarTitleMode;
-
-    private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
-
 
     public TelecomActivityViewModel(Application application) {
         super(application);
@@ -66,14 +64,11 @@ public class TelecomActivityViewModel extends AndroidViewModel {
 
         mToolbarTitleMode = new MediatorLiveData<>();
         mToolbarTitleLiveData = new ToolbarTitleLiveData(mApplicationContext, mToolbarTitleMode,
-                mUiBluetoothMonitor.getHfpDeviceListLiveData());
+                mHfpDeviceListLiveData);
 
         if (BluetoothAdapter.getDefaultAdapter() != null) {
-            mRefreshTabsLiveData = new RefreshUiEvent(
-                    mUiBluetoothMonitor.getHfpDeviceListLiveData());
+            mRefreshTabsLiveData = new RefreshUiEvent(mHfpDeviceListLiveData);
         }
-
-        mHasHfpDeviceConnectedLiveData = mUiBluetoothMonitor.hasHfpDeviceConnected();
     }
 
     /**

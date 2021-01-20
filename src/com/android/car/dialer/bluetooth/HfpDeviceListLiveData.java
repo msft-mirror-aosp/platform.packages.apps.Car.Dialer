@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The Android Open Source Project
+ * Copyright (C) 2019 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,73 +14,66 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.livedata;
+package com.android.car.dialer.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothHeadsetClient;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import androidx.annotation.IntDef;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 
-import com.android.car.dialer.log.L;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
-/**
- * Provides the device Bluetooth availability. Updates client with {@link BluetoothState}.
- */
+/** {@link LiveData} that monitors the hfp connected devices. */
 @Singleton
-public class BluetoothStateLiveData extends LiveData<Integer> {
-    private static final String TAG = "CD.BluetoothStateLiveData";
-
-    @IntDef({
-            BluetoothState.UNKNOWN,
-            BluetoothState.DISABLED,
-            BluetoothState.ENABLED,
-    })
-    public @interface BluetoothState {
-        /** Bluetooth is not supported on the current device */
-        int UNKNOWN = 0;
-        /** Bluetooth is disabled */
-        int DISABLED = 1;
-        /** Bluetooth is enabled */
-        int ENABLED = 2;
-    }
-
-    private final BluetoothAdapter mBluetoothAdapter;
+class HfpDeviceListLiveData extends MediatorLiveData<List<BluetoothDevice>> {
     private final Context mContext;
-    private final IntentFilter mIntentFilter = new IntentFilter();
+    private final BluetoothAdapter mBluetoothAdapter;
+    private final BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
+    private final IntentFilter mIntentFilter;
 
     private BroadcastReceiver mBluetoothStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateState();
+            update();
         }
     };
 
-    /** Creates a new {@link BluetoothStateLiveData}. Call on main thread. */
+    /** Creates a new {@link HfpDeviceListLiveData}. Call on main thread. */
     @Inject
-    public BluetoothStateLiveData(
+    HfpDeviceListLiveData(
             @ApplicationContext Context context,
-            BluetoothAdapter bluetoothAdapter) {
+            BluetoothAdapter bluetoothAdapter,
+            BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider) {
         mContext = context;
         mBluetoothAdapter = bluetoothAdapter;
-        mIntentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+
+        mBluetoothHeadsetClientProvider = bluetoothHeadsetClientProvider;
+        addSource(mBluetoothHeadsetClientProvider.isBluetoothHeadsetClientConnected(),
+                isConnected -> update());
+
+        mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction(BluetoothHeadsetClient.ACTION_CONNECTION_STATE_CHANGED);
     }
 
     @Override
     protected void onActive() {
+        super.onActive();
         if (mBluetoothAdapter != null) {
-            updateState();
+            update();
             mContext.registerReceiver(mBluetoothStateReceiver, mIntentFilter);
         }
-
     }
 
     @Override
@@ -88,18 +81,14 @@ public class BluetoothStateLiveData extends LiveData<Integer> {
         if (mBluetoothAdapter != null) {
             mContext.unregisterReceiver(mBluetoothStateReceiver);
         }
+        super.onInactive();
     }
 
-    private void updateState() {
-        @BluetoothState int state = BluetoothState.UNKNOWN;
-        if (mBluetoothAdapter != null) {
-            state = mBluetoothAdapter.isEnabled() ? BluetoothState.ENABLED
-                    : BluetoothState.DISABLED;
-        }
-
-        if (getValue() == null || state != getValue()) {
-            L.d(TAG, "updateState to %s", state);
-            setValue(state);
+    private void update() {
+        if (mBluetoothHeadsetClientProvider.get() != null) {
+            setValue(mBluetoothHeadsetClientProvider.get().getConnectedDevices());
+        } else {
+            setValue(Collections.emptyList());
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.framework;
+package com.android.car.dialer.integration;
+
+import android.app.Application;
+
+import com.android.car.telephony.common.InMemoryPhoneBook;
 
 /**
- * A provider which provides all kinds of Android framework services.
+ * Application used for testing. A {@link dagger.hilt.android.HiltAndroidApp} annotated class can
+ * not be used in tests.
  */
-public interface AndroidFramework {
-
-    /** Starts all fundamental components. */
-    void start();
+public class TestDialerApplication extends Application {
+    public void onCreate() {
+        super.onCreate();
+        // TODO: remove once we can inject the InMemoryPhoneBook.
+        InMemoryPhoneBook.init(this);
+    }
 }

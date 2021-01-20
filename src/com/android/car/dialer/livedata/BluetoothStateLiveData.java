@@ -26,11 +26,16 @@ import androidx.annotation.IntDef;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.log.L;
-import com.android.car.dialer.servicelocator.DialerServiceLocator;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Provides the device Bluetooth availability. Updates client with {@link BluetoothState}.
  */
+@Singleton
 public class BluetoothStateLiveData extends LiveData<Integer> {
     private static final String TAG = "CD.BluetoothStateLiveData";
 
@@ -48,8 +53,7 @@ public class BluetoothStateLiveData extends LiveData<Integer> {
         int ENABLED = 2;
     }
 
-    private final BluetoothAdapter mBluetoothAdapter =
-            DialerServiceLocator.get().getBluetoothAdapter();
+    private final BluetoothAdapter mBluetoothAdapter;
     private final Context mContext;
     private final IntentFilter mIntentFilter = new IntentFilter();
 
@@ -61,8 +65,12 @@ public class BluetoothStateLiveData extends LiveData<Integer> {
     };
 
     /** Creates a new {@link BluetoothStateLiveData}. Call on main thread. */
-    public BluetoothStateLiveData(Context context) {
+    @Inject
+    public BluetoothStateLiveData(
+            @ApplicationContext Context context,
+            BluetoothAdapter bluetoothAdapter) {
         mContext = context;
+        mBluetoothAdapter = bluetoothAdapter;
         mIntentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
     }
 

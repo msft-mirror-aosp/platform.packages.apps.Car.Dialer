@@ -25,25 +25,27 @@ import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-
-import androidx.lifecycle.LiveData;
+import android.telecom.TelecomManager;
 
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.R;
+import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.livedata.BluetoothPairListLiveData;
 import com.android.car.dialer.livedata.BluetoothStateLiveData;
+import com.android.car.dialer.livedata.HfpDeviceListLiveData;
 import com.android.car.dialer.testutils.ShadowBluetoothAdapterForDialer;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 
 import java.util.Collections;
-import java.util.List;
 
 @RunWith(CarDialerRobolectricTestRunner.class)
 @Config(shadows = ShadowBluetoothAdapterForDialer.class)
@@ -51,12 +53,16 @@ public class NoHfpViewModelTest {
 
     private NoHfpViewModel mNoHfpViewModel;
     private Context mContext;
-    private LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
+    private HfpDeviceListLiveData mHfpDeviceListLiveData;
     private BluetoothPairListLiveData mPairedListLiveData;
     private BluetoothStateLiveData mBluetoothStateLiveData;
+    @Mock
+    private BluetoothHeadsetClientProvider mMockBluetoothHeadsetClientProvider;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+
         mContext = RuntimeEnvironment.application;
     }
 
@@ -141,10 +147,14 @@ public class NoHfpViewModelTest {
 
     private void initializeViewModel() {
         mNoHfpViewModel = new NoHfpViewModel((Application) mContext);
-        mNoHfpViewModel.mUiBluetoothMonitor = new UiBluetoothMonitor(mContext);
-        mHfpDeviceListLiveData = mNoHfpViewModel.mUiBluetoothMonitor.getHfpDeviceListLiveData();
-        mPairedListLiveData = mNoHfpViewModel.mUiBluetoothMonitor.getPairListLiveData();
-        mBluetoothStateLiveData = mNoHfpViewModel.mUiBluetoothMonitor.getBluetoothStateLiveData();
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mHfpDeviceListLiveData = new HfpDeviceListLiveData(mContext, bluetoothAdapter,
+                mMockBluetoothHeadsetClientProvider);
+        mPairedListLiveData = new BluetoothPairListLiveData(mContext, bluetoothAdapter);
+        mBluetoothStateLiveData = new BluetoothStateLiveData(mContext, bluetoothAdapter);
+        mNoHfpViewModel.mUiBluetoothMonitor = new UiBluetoothMonitor(
+                mContext.getSystemService(TelecomManager.class), mPairedListLiveData,
+                mBluetoothStateLiveData, mHfpDeviceListLiveData);
         // Observers needed so that the liveData's internal initialization is triggered
         mNoHfpViewModel.getBluetoothErrorStringLiveData().observeForever(o -> {
         });

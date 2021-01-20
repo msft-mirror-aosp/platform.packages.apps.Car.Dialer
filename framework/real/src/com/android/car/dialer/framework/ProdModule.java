@@ -16,37 +16,31 @@
 
 package com.android.car.dialer.framework;
 
-import static org.mockito.Mockito.spy;
-
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.telecom.TelecomManager;
-import android.util.Log;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import dagger.Binds;
+import dagger.Module;
+import dagger.Provides;
+import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.components.SingletonComponent;
 
-/**
- * A fake TelecomManager implementation
- */
-@Singleton
-public class FakeTelecomManager {
-    private static final String TAG = "CD.FakeTelecomManager";
-
-    private TelecomManager mSpiedTelecomManager;
-
-    @Inject
-    public FakeTelecomManager(@ApplicationContext Context context) {
-        Log.d(TAG, "Create FakeTelecomManager");
-
-        mSpiedTelecomManager = spy(context.getSystemService(TelecomManager.class));
+/** Dependencies for production build. */
+@InstallIn(SingletonComponent.class)
+@Module
+public abstract class ProdModule {
+    @Provides
+    static BluetoothAdapter provideBluetoothAdapter() {
+        return BluetoothAdapter.getDefaultAdapter();
     }
 
-    /**
-     * Gets a fake TelecomManager.
-     */
-    public TelecomManager getTelecomManager() {
-        return mSpiedTelecomManager;
+    @Provides
+    static TelecomManager provideTelecomManager(@ApplicationContext Context context) {
+        return context.getSystemService(TelecomManager.class);
     }
+
+    @Binds
+    abstract AndroidFramework bindAndroidFramework(AndroidFrameworkImpl androidFramework);
 }

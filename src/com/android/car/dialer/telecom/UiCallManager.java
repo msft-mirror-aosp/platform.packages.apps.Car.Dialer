@@ -36,7 +36,6 @@ import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.log.L;
-import com.android.car.dialer.servicelocator.DialerServiceLocator;
 import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.ArrayList;
@@ -56,22 +55,23 @@ public final class UiCallManager {
     private static String TAG = "CD.TelecomMgr";
 
     private Context mContext;
-
-    private TelecomManager mTelecomManager;
+    private final TelecomManager mTelecomManager;
+    private final BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
     private InCallServiceImpl mInCallService;
-    private BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
 
     @Inject
-    UiCallManager(@ApplicationContext Context context) {
+    UiCallManager(
+            @ApplicationContext Context context,
+            TelecomManager telecomManager,
+            BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider) {
         L.d(TAG, "SetUp");
         mContext = context;
+        mTelecomManager = telecomManager;
+        mBluetoothHeadsetClientProvider = bluetoothHeadsetClientProvider;
 
-        mTelecomManager = DialerServiceLocator.get().getTelecomManager();
         Intent intent = new Intent(context, InCallServiceImpl.class);
         intent.setAction(InCallServiceImpl.ACTION_LOCAL_BIND);
         context.bindService(intent, mInCallServiceConnection, Context.BIND_AUTO_CREATE);
-
-        mBluetoothHeadsetClientProvider = BluetoothHeadsetClientProvider.singleton(context);
     }
 
     private final ServiceConnection mInCallServiceConnection = new ServiceConnection() {

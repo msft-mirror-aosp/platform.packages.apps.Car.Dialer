@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.framework;
+package com.android.car.dialer.integration;
+
+import dagger.hilt.android.testing.CustomTestApplication;
 
 /**
- * A provider which provides all kinds of Android framework services.
+ * Used to generate test application used for a {@link dagger.hilt.android.testing.HiltAndroidTest}.
  */
-public interface AndroidFramework {
-
-    /** Starts all fundamental components. */
-    void start();
+@CustomTestApplication(TestDialerApplication.class)
+public interface TestDialer {
 }

@@ -26,26 +26,35 @@ import androidx.test.filters.SmallTest;
 import androidx.test.rule.ActivityTestRule;
 
 import com.android.car.dialer.R;
+import com.android.car.dialer.framework.AndroidFramework;
 import com.android.car.dialer.framework.AndroidFrameworkImpl;
-import com.android.car.dialer.servicelocator.DialerServiceLocator;
 import com.android.car.dialer.ui.TelecomActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
 @SmallTest
 @RunWith(AndroidJUnit4.class)
+@HiltAndroidTest
 public class RecentCallLogTest {
+    @Inject AndroidFramework mAndroidFramework;
 
+    @Rule
+    public final HiltAndroidRule mHiltAndroidRule = new HiltAndroidRule(this);
     @Rule
     public final ActivityTestRule<TelecomActivity> mActivityTestRule =
             new ActivityTestRule<TelecomActivity>(TelecomActivity.class) {
                 @Override
                 protected void afterActivityLaunched() {
                     super.afterActivityLaunched();
-                    AndroidFrameworkImpl framework =
-                            (AndroidFrameworkImpl) DialerServiceLocator.get().getAndroidFramework();
+                    mHiltAndroidRule.inject();
+                    AndroidFrameworkImpl framework = (AndroidFrameworkImpl) mAndroidFramework;
                     framework.connectBluetoothPhone();
                 }
             };

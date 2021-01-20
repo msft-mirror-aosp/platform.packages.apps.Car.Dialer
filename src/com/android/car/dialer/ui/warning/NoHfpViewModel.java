@@ -31,17 +31,14 @@ import javax.inject.Inject;
 /** View model for {@link NoHfpFragment} */
 public class NoHfpViewModel extends AndroidViewModel {
 
-    @Inject
-    UiBluetoothMonitor mUiBluetoothMonitor;
+    @Inject UiBluetoothMonitor mUiBluetoothMonitor;
+    @Inject BluetoothErrorStringLiveData mBluetoothErrorStringLiveData;
     private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
-    private final LiveData<String> mBluetoothErrorStringLiveData;
 
     public NoHfpViewModel(@NonNull Application application) {
         super(application);
         ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
         mHasHfpDeviceConnectedLiveData = mUiBluetoothMonitor.hasHfpDeviceConnected();
-        mBluetoothErrorStringLiveData = new BluetoothErrorStringLiveData(application,
-                mUiBluetoothMonitor);
     }
 
     public LiveData<String> getBluetoothErrorStringLiveData() {

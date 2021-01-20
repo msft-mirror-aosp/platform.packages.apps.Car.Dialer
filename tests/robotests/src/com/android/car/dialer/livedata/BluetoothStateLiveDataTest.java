@@ -63,7 +63,8 @@ public class BluetoothStateLiveDataTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        mBluetoothStateLiveData = new BluetoothStateLiveData(RuntimeEnvironment.application);
+        mBluetoothStateLiveData = new BluetoothStateLiveData(RuntimeEnvironment.application,
+                BluetoothAdapter.getDefaultAdapter());
         mLifecycleRegistry = new LifecycleRegistry(mMockLifecycleOwner);
         when(mMockLifecycleOwner.getLifecycle()).thenReturn(mLifecycleRegistry);
 

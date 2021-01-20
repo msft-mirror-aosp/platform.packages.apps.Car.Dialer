@@ -37,6 +37,7 @@ import android.telecom.TelecomManager;
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.TestDialerApplication;
+import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.testutils.ShadowServiceManagerOverride;
 import com.android.internal.telephony.ITelephony;
 
@@ -62,6 +63,7 @@ public class UiCallManagerTest {
 
     private Context mContext;
     private UiCallManager mUiCallManager;
+    private TelecomManager mTelecomManager;
     @Mock
     private TelecomManager mMockTelecomManager;
     @Mock
@@ -70,12 +72,15 @@ public class UiCallManagerTest {
     private IBinder mMockBinder;
     @Mock
     private ITelephony mMockITelephony;
+    @Mock
+    private BluetoothHeadsetClientProvider mMockBluetoothHeadsetClientProvider;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
         mContext = RuntimeEnvironment.application;
+        mTelecomManager = mContext.getSystemService(TelecomManager.class);
 
         ShadowContextImpl shadowContext = Shadow.extract(((Application) mContext).getBaseContext());
         shadowContext.setSystemService(Context.TELECOM_SERVICE, mMockTelecomManager);
@@ -88,13 +93,15 @@ public class UiCallManagerTest {
     private void initUiCallManager() {
         ((TestDialerApplication) mContext).setupInCallServiceImpl(mMockInCallService);
 
-        mUiCallManager = new UiCallManager(mContext);
+        mUiCallManager = new UiCallManager(mContext, mTelecomManager,
+                mMockBluetoothHeadsetClientProvider);
     }
 
     private void initUiCallManager_InCallServiceIsNull() {
         ((TestDialerApplication) mContext).setupInCallServiceImpl(null);
 
-        mUiCallManager = new UiCallManager(mContext);
+        mUiCallManager = new UiCallManager(mContext, mTelecomManager,
+                mMockBluetoothHeadsetClientProvider);
     }
 
     @Test

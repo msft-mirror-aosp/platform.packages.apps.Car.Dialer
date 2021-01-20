@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.framework;
+package com.android.car.dialer.integration;
 
-/**
- * A provider which provides all kinds of Android framework services.
- */
-public interface AndroidFramework {
+import android.app.Application;
+import android.content.Context;
 
-    /** Starts all fundamental components. */
-    void start();
+import androidx.test.runner.AndroidJUnitRunner;
+
+/** A customized {@link AndroidJUnitRunner} used for Hilt android tests. */
+public class DialerHiltTestRunner extends AndroidJUnitRunner {
+    @Override
+    public Application newApplication(ClassLoader cl, String className, Context context)
+            throws InstantiationException, IllegalAccessException,
+            ClassNotFoundException  {
+        return super.newApplication(cl, TestDialer_Application.class.getName(), context);
+    }
 }

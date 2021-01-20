@@ -22,14 +22,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Broadcast receiver for receiving Dialer debug commands from ADB.
  */
+@Singleton
 public class AdbBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = "CD.ADBHandler";
     private static final String INTENT_ACTION = "com.android.car.dialer.intent.action.adb";
     private static final String ACTION_TAG = "action";
+
+    @Inject
+    AdbBroadcastReceiver() {}
 
     /**
      * Registers this class to a context

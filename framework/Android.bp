@@ -22,11 +22,12 @@ android_library {
     // required to access any private API.
     platform_apis: true,
 
-    srcs: ["src/**/*.java", "real/src/**/*java"],
+    srcs: ["src/**/*.java", "real/src/**/*.java"],
 
     static_libs: [
-        "androidx.core_core",
         "androidx.annotation_annotation",
+        "androidx.core_core",
+        "hilt_android",
     ],
 }
 
@@ -38,20 +39,21 @@ android_library {
     // required to access any private API and spy() on any framework class.
     platform_apis: true,
 
-    srcs: ["src/**/*.java", "fake/src/**/*java"],
+    srcs: ["src/**/*.java", "fake/src/**/*.java"],
 
     asset_dirs: [
         "fake/assets",
     ],
 
     static_libs: [
-        "mockito-target-extended-minus-junit4",
-        "androidx.annotation_annotation",
-        "androidx.legacy_legacy-support-v4",
         "car-apps-common",
-        "gson-prebuilt-jar",
+        "androidx.annotation_annotation",
         "androidx.core_core",
+        "androidx.legacy_legacy-support-v4",
+        "gson-prebuilt-jar",
         "guava",
+        "hilt_android",
+        "mockito-target-extended-minus-junit4",
     ],
 
 }

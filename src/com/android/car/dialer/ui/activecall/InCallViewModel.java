@@ -58,8 +58,7 @@ public class InCallViewModel extends AndroidViewModel {
 
     @Inject UiCallManager mUiCallManager;
     @Inject AudioRouteLiveData mAudioRouteLiveData;
-
-    private final LocalCallHandler mLocalCallHandler;
+    @Inject LocalCallHandler mLocalCallHandler;
 
     private final MutableLiveData<Boolean> mHasOngoingCallChangedLiveData;
     private final MediatorLiveData<List<Call>> mOngoingCallListLiveData;

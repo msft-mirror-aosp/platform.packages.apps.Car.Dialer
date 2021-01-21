@@ -37,13 +37,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * Binds to the {@link InCallServiceImpl}, and upon establishing a connection, handles call list
  * change and call audio state change.
  */
 public class LocalCallHandler {
     private static final String TAG = "CD.CallHandler";
-    private final Context mApplicationContext;
+    private final Context mContext;
     private final Call.Callback mRingingCallStateChangeCallback;
 
     private final MutableLiveData<CallAudioState> mCallAudioStateLiveData = new MutableLiveData<>();
@@ -94,10 +98,11 @@ public class LocalCallHandler {
     /**
      * Initiate a LocalCallHandler.
      *
-     * @param applicationContext Application context.
+     * @param context Application context.
      */
-    public LocalCallHandler(Context applicationContext) {
-        mApplicationContext = applicationContext;
+    @Inject
+    public LocalCallHandler(@ApplicationContext Context context) {
+        mContext = context;
 
         mCallListLiveData = new MutableLiveData<>();
         mIncomingCallLiveData = new MutableLiveData<>();
@@ -114,9 +119,9 @@ public class LocalCallHandler {
             }
         };
 
-        Intent intent = new Intent(mApplicationContext, InCallServiceImpl.class);
+        Intent intent = new Intent(mContext, InCallServiceImpl.class);
         intent.setAction(InCallServiceImpl.ACTION_LOCAL_BIND);
-        mApplicationContext.bindService(intent, mInCallServiceConnection, Context.BIND_AUTO_CREATE);
+        mContext.bindService(intent, mInCallServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     /** Returns the {@link LiveData} which monitors the call audio state change. */
@@ -144,7 +149,7 @@ public class LocalCallHandler {
 
     /** Disconnects the {@link InCallServiceImpl} and cleanup. */
     public void tearDown() {
-        mApplicationContext.unbindService(mInCallServiceConnection);
+        mContext.unbindService(mInCallServiceConnection);
         if (mInCallService != null) {
             for (Call call : mInCallService.getCallList()) {
                 notifyCallRemoved(call);

@@ -47,8 +47,8 @@ import javax.inject.Inject;
 public class TelecomActivityViewModel extends AndroidViewModel {
     private static final String TAG = "CD.TelecomActivityViewModel";
 
-    @Inject
-    UiBluetoothMonitor mUiBluetoothMonitor;
+    @Inject UiBluetoothMonitor mUiBluetoothMonitor;
+    @Inject LocalCallHandler mLocalCallHandler;
 
     private final Context mApplicationContext;
     private RefreshUiEvent mRefreshTabsLiveData;
@@ -58,7 +58,6 @@ public class TelecomActivityViewModel extends AndroidViewModel {
 
     private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
-    private final LocalCallHandler mLocalCallHandler;
 
     public TelecomActivityViewModel(Application application) {
         super(application);
@@ -75,8 +74,6 @@ public class TelecomActivityViewModel extends AndroidViewModel {
         }
 
         mHasHfpDeviceConnectedLiveData = mUiBluetoothMonitor.hasHfpDeviceConnected();
-
-        mLocalCallHandler = new LocalCallHandler(mApplicationContext);
     }
 
     /**

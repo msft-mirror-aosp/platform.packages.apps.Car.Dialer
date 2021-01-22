@@ -25,7 +25,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.inject.ViewModelComponent;
 
 import javax.inject.Inject;
@@ -36,24 +36,20 @@ import javax.inject.Inject;
 public class DialerSettingsViewModel extends AndroidViewModel {
     private static final String EMPTY_STRING = "";
 
-    @Inject
-    UiBluetoothMonitor mUiBluetoothMonitor;
-    private final LiveData<BluetoothDevice> mFirstHfpDeviceLiveData;
-    private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
+    @Inject @Qualifiers.Hfp LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
+    @Inject @Qualifiers.Hfp LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
     public DialerSettingsViewModel(@NonNull Application application) {
         super(application);
         ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
-        mFirstHfpDeviceLiveData = mUiBluetoothMonitor.getFirstHfpConnectedDevice();
-        mHasHfpDeviceConnectedLiveData = mUiBluetoothMonitor.hasHfpDeviceConnected();
     }
 
     /**
-     * Returns the LiveData for the first HFP device's name.  Returns an empty string if there's no
+     * Returns the LiveData for the current HFP device's name. Returns an empty string if there's no
      * device connected.
      */
-    public LiveData<String> getFirstHfpConnectedDeviceName() {
-        return Transformations.map(mFirstHfpDeviceLiveData, (device) ->
+    public LiveData<String> getCurrentHfpConnectedDeviceName() {
+        return Transformations.map(mCurrentHfpDeviceLiveData, (device) ->
                 device != null ? device.getName() : EMPTY_STRING);
     }
 

@@ -35,7 +35,6 @@ import androidx.lifecycle.Observer;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.telecom.UiCallManager;
 
 import org.junit.Before;
@@ -61,8 +60,6 @@ public class AudioRouteLiveDataTest {
     private Observer<Integer> mMockObserver;
     @Mock
     private UiCallManager mMockUiCallManager;
-    @Mock
-    private UiBluetoothMonitor mMockUiBluetoothMonitor;
 
     @Captor
     private ArgumentCaptor<IntentFilter> mIntentFilterCaptor;
@@ -74,10 +71,8 @@ public class AudioRouteLiveDataTest {
         MockitoAnnotations.initMocks(this);
         when(mMockUiCallManager.getAudioRoute()).thenReturn(CallAudioState.ROUTE_EARPIECE);
         mHfpDeviceListLiveData = new MutableLiveData<>();
-        when(mMockUiBluetoothMonitor.getHfpDeviceListLiveData())
-                .thenReturn(mHfpDeviceListLiveData);
         mAudioRouteLiveData = new AudioRouteLiveData(
-                mMockContext, mMockUiBluetoothMonitor, mMockUiCallManager);
+                mMockContext, mHfpDeviceListLiveData, mMockUiCallManager);
     }
 
     @Test

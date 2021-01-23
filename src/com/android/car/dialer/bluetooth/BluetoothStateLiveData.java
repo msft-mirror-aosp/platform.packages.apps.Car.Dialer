@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.livedata;
+package com.android.car.dialer.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import androidx.annotation.MainThread;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.log.L;
-
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -36,52 +32,59 @@ import javax.inject.Singleton;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
- * Provides a list of paired Bluetooth devices.
+ * Provides the device Bluetooth availability. Updates client with {@link BluetoothState}.
  */
 @Singleton
-public class BluetoothPairListLiveData extends LiveData<Set<BluetoothDevice>> {
-    private static final String TAG = "CD.BluetoothPairListLiveData";
+class BluetoothStateLiveData extends LiveData<Integer> {
+    private static final String TAG = "CD.BluetoothStateLiveData";
 
     private final BluetoothAdapter mBluetoothAdapter;
     private final Context mContext;
     private final IntentFilter mIntentFilter = new IntentFilter();
 
-    private BroadcastReceiver mBluetoothPairListReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mBluetoothStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            updateList();
+            updateState();
         }
     };
 
-    /** Creates a new {@link BluetoothPairListLiveData}. Call on main thread. */
-    @MainThread
+    /** Creates a new {@link BluetoothStateLiveData}. Call on main thread. */
     @Inject
-    public BluetoothPairListLiveData(
+    BluetoothStateLiveData(
             @ApplicationContext Context context,
             BluetoothAdapter bluetoothAdapter) {
         mContext = context;
         mBluetoothAdapter = bluetoothAdapter;
-        mIntentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        mIntentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
     }
 
     @Override
     protected void onActive() {
         if (mBluetoothAdapter != null) {
-            updateList();
-            mContext.registerReceiver(mBluetoothPairListReceiver, mIntentFilter);
+            updateState();
+            mContext.registerReceiver(mBluetoothStateReceiver, mIntentFilter);
         }
+
     }
 
     @Override
     protected void onInactive() {
         if (mBluetoothAdapter != null) {
-            mContext.unregisterReceiver(mBluetoothPairListReceiver);
+            mContext.unregisterReceiver(mBluetoothStateReceiver);
         }
     }
 
-    private void updateList() {
-        Set<BluetoothDevice> devices = mBluetoothAdapter.getBondedDevices();
-        L.d(TAG, "updateList to %s", devices);
-        setValue(devices);
+    private void updateState() {
+        @BluetoothState int state = BluetoothState.UNKNOWN;
+        if (mBluetoothAdapter != null) {
+            state = mBluetoothAdapter.isEnabled() ? BluetoothState.ENABLED
+                    : BluetoothState.DISABLED;
+        }
+
+        if (getValue() == null || state != getValue()) {
+            L.d(TAG, "updateState to %s", state);
+            setValue(state);
+        }
     }
 }

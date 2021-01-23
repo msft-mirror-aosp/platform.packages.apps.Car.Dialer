@@ -23,7 +23,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.inject.ViewModelComponent;
 
 import javax.inject.Inject;
@@ -31,14 +31,12 @@ import javax.inject.Inject;
 /** View model for {@link NoHfpFragment} */
 public class NoHfpViewModel extends AndroidViewModel {
 
-    @Inject UiBluetoothMonitor mUiBluetoothMonitor;
+    @Inject @Qualifiers.Hfp LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
     @Inject BluetoothErrorStringLiveData mBluetoothErrorStringLiveData;
-    private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
     public NoHfpViewModel(@NonNull Application application) {
         super(application);
         ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
-        mHasHfpDeviceConnectedLiveData = mUiBluetoothMonitor.hasHfpDeviceConnected();
     }
 
     public LiveData<String> getBluetoothErrorStringLiveData() {

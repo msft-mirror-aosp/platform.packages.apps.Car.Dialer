@@ -17,6 +17,7 @@
 package com.android.car.dialer.ui.search;
 
 import android.app.Application;
+import android.bluetooth.BluetoothDevice;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -24,7 +25,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.common.DialerListViewModel;
@@ -38,8 +39,7 @@ import javax.inject.Inject;
  */
 public class ContactResultsViewModel extends DialerListViewModel {
 
-    @Inject
-    UiBluetoothMonitor mUiBluetoothMonitor;
+    @Inject @Qualifiers.Hfp LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     private final ContactResultsLiveData mContactSearchResultsLiveData;
     private final MutableLiveData<String> mSearchQueryLiveData;
 
@@ -50,7 +50,7 @@ public class ContactResultsViewModel extends DialerListViewModel {
         mContactSearchResultsLiveData = new ContactResultsLiveData(
                 application,
                 mSearchQueryLiveData,
-                mUiBluetoothMonitor.getFirstHfpConnectedDevice(),
+                mCurrentHfpDeviceLiveData,
                 getSharedPreferencesLiveData());
     }
 

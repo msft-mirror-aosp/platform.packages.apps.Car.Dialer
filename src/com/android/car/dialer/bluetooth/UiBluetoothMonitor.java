@@ -27,12 +27,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.Transformations;
 
 import com.android.car.dialer.Constants;
-import com.android.car.dialer.livedata.BluetoothPairListLiveData;
-import com.android.car.dialer.livedata.BluetoothStateLiveData;
-import com.android.car.dialer.livedata.HfpDeviceListLiveData;
 import com.android.car.dialer.log.L;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -92,14 +90,14 @@ public final class UiBluetoothMonitor {
     /**
      * Returns a LiveData which monitors the paired device list changes.
      */
-    public BluetoothPairListLiveData getPairListLiveData() {
+    public LiveData<Set<BluetoothDevice>> getPairListLiveData() {
         return mPairListLiveData;
     }
 
     /**
      * Returns a LiveData which monitors the Bluetooth state changes.
      */
-    public BluetoothStateLiveData getBluetoothStateLiveData() {
+    public LiveData<Integer> getBluetoothStateLiveData() {
         return mBluetoothStateLiveData;
     }
 

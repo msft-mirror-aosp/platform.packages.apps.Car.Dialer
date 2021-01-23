@@ -16,12 +16,14 @@
 
 package com.android.car.dialer.bluetooth;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
 import com.android.car.dialer.log.L;
 import com.android.car.telephony.common.PhoneCallLog;
@@ -47,10 +49,11 @@ public final class CallHistoryManager {
     private Observer mCallHistoryObserver;
 
     @Inject
-    CallHistoryManager(@ApplicationContext Context applicationContext,
-            UiBluetoothMonitor uiBluetoothMonitor) {
+    CallHistoryManager(
+            @ApplicationContext Context applicationContext,
+            @Qualifiers.Hfp LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
         mCallHistoryLiveData = LiveDataFunctions.switchMapNonNull(
-                uiBluetoothMonitor.getFirstHfpConnectedDevice(),
+                currentHfpDeviceLiveData,
                 device -> CallHistoryLiveData.newInstance(applicationContext, device.getAddress()));
 
         mCallHistoryObserver = o -> L.i(TAG, "Call history is updated");

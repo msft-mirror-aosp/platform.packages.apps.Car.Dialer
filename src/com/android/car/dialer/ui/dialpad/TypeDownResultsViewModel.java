@@ -17,12 +17,13 @@
 package com.android.car.dialer.ui.dialpad;
 
 import android.app.Application;
+import android.bluetooth.BluetoothDevice;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.search.ContactResultsViewModel;
@@ -36,8 +37,7 @@ import javax.inject.Inject;
  */
 public class TypeDownResultsViewModel extends ContactResultsViewModel {
 
-    @Inject
-    UiBluetoothMonitor mUiBluetoothMonitor;
+    @Inject @Qualifiers.Hfp LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     private final ContactResultsLiveData mContactSearchResultsLiveData;
 
     public TypeDownResultsViewModel(@NonNull Application application) {
@@ -45,7 +45,7 @@ public class TypeDownResultsViewModel extends ContactResultsViewModel {
         ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
         mContactSearchResultsLiveData = new ContactResultsLiveData(application,
                 getSearchQueryLiveData(),
-                mUiBluetoothMonitor.getFirstHfpConnectedDevice(),
+                mCurrentHfpDeviceLiveData,
                 getSharedPreferencesLiveData(),
                 /* showOnlyOneEntry */ false);
     }

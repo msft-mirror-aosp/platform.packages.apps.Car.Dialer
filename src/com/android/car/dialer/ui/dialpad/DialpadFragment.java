@@ -143,6 +143,8 @@ public class DialpadFragment extends Hilt_DialpadFragment {
         if (mAdapter == null) {
             mAdapter = new TypeDownResultsAdapter(mUiCallManager);
         }
+
+        mAdapter.setOnItemClickedListener(item -> clearDialedNumber());
         mTypeDownResultsViewModel = ViewModelProviders.of(this).get(
                 TypeDownResultsViewModel.class);
         mTypeDownResultsViewModel.getContactSearchResults().observe(this,

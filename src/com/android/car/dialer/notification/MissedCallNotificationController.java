@@ -20,6 +20,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -33,7 +34,7 @@ import androidx.lifecycle.Observer;
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.livedata.UnreadMissedCallLiveData;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.ui.TelecomActivity;
@@ -74,9 +75,9 @@ public final class MissedCallNotificationController {
     private final Map<String, CompletableFuture<Void>> mUpdateFutures = new HashMap<>();
 
     @Inject
-    MissedCallNotificationController(@ApplicationContext Context context,
-            // TODO: inject firstHfpConnectedDevice directly
-            UiBluetoothMonitor uiBluetoothMonitor) {
+    MissedCallNotificationController(
+            @ApplicationContext Context context,
+            @Qualifiers.Hfp LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
         mContext = context;
         mNotificationManager =
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -87,7 +88,7 @@ public final class MissedCallNotificationController {
 
         mCurrentPhoneCallLogList = new ArrayList<>();
         mUnreadMissedCallLiveData = LiveDataFunctions.switchMapNonNull(
-                uiBluetoothMonitor.getFirstHfpConnectedDevice(),
+                currentHfpDeviceLiveData,
                 device-> UnreadMissedCallLiveData.newInstance(context, device.getAddress()));
         mUnreadMissedCallObserver = this::updateNotifications;
         mUnreadMissedCallLiveData.observeForever(mUnreadMissedCallObserver);

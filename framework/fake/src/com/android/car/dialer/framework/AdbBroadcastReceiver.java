@@ -16,6 +16,9 @@
 
 package com.android.car.dialer.framework;
 
+import static org.mockito.Mockito.mock;
+
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +27,8 @@ import android.util.Log;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Broadcast receiver for receiving Dialer debug commands from ADB.
@@ -34,23 +39,37 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "CD.ADBHandler";
     private static final String INTENT_ACTION = "com.android.car.dialer.intent.action.adb";
     private static final String ACTION_TAG = "action";
+    private static final String ACTION_CONNECT = "connect";
+    private static final String ACTION_ADDCALL = "addCall";
+    private static final String ACTION_ADDCALL_ID = "id";
+    private static final String ACTION_CLEARALL = "clearAll";
+    private static final String ACTION_MERGE = "merge";
+
+    private final FakeTelecomManager mFakeTelecomManager;
+    private final FakeBluetoothAdapter mFakeBluetoothAdapter;
 
     @Inject
-    AdbBroadcastReceiver() {}
+    AdbBroadcastReceiver(FakeTelecomManager fakeTelecomManager,
+            FakeBluetoothAdapter fakeBluetoothAdapter) {
+        mFakeTelecomManager = fakeTelecomManager;
+        mFakeBluetoothAdapter = fakeBluetoothAdapter;
+    }
 
     /**
-     * Registers this class to a context
+     * Registers this class to an application context
      */
-    public void registerReceiver(Context context) {
+    public void registerReceiver(@ApplicationContext Context context) {
+        Log.d(TAG, "Registered to " + context);
         IntentFilter filter = new IntentFilter();
         filter.addAction(INTENT_ACTION);
         context.registerReceiver(this, filter);
     }
 
     /**
-     * Unregisters this class from the context
+     * Unregisters this class from the application context
      */
-    public void unregisterReceiver(Context context) {
+    public void unregisterReceiver(@ApplicationContext Context context) {
+        Log.d(TAG, "Unregistered from " + context);
         context.unregisterReceiver(this);
     }
 
@@ -62,6 +81,24 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
         String action = intent.getStringExtra(ACTION_TAG);
 
         switch(action) {
+            case ACTION_ADDCALL:
+                String id = intent.getStringExtra(ACTION_ADDCALL_ID);
+                Log.d(TAG, action + id);
+                mFakeTelecomManager.placeCall(id);
+                break;
+            case ACTION_CLEARALL:
+                Log.d(TAG, action);
+                mFakeTelecomManager.clearCalls();
+                break;
+            case ACTION_MERGE:
+                Log.d(TAG, action);
+                mFakeTelecomManager.mergeCalls();
+                break;
+            case ACTION_CONNECT:
+                Log.d(TAG, action);
+                BluetoothDevice device = mock(BluetoothDevice.class);
+                mFakeBluetoothAdapter.connectHfpDevice(device);
+                break;
             default:
                 Log.d(TAG, "Unknown command " + action);
         }

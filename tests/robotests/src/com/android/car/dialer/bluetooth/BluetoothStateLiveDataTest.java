@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.livedata;
+package com.android.car.dialer.bluetooth;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -24,10 +24,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothHeadsetClient;
 import android.content.Context;
 import android.content.Intent;
 
@@ -38,7 +37,6 @@ import androidx.lifecycle.LifecycleRegistry;
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.LiveDataObserver;
 import com.android.car.dialer.testutils.BroadcastReceiverVerifier;
-import com.android.car.dialer.testutils.ShadowBluetoothAdapterForDialer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,32 +45,26 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadow.api.Shadow;
-
-import java.util.Collections;
+import org.robolectric.shadows.ShadowBluetoothAdapter;
 
 @RunWith(CarDialerRobolectricTestRunner.class)
-@Config(shadows = ShadowBluetoothAdapterForDialer.class)
-public class HfpDeviceListLiveDataTest {
-    private static final String INTENT_ACTION =
-            BluetoothHeadsetClient.ACTION_CONNECTION_STATE_CHANGED;
+public class BluetoothStateLiveDataTest {
+    private static final String INTENT_ACTION = BluetoothAdapter.ACTION_STATE_CHANGED;
 
-    private HfpDeviceListLiveData mHfpDeviceListLiveData;
+    private BluetoothStateLiveData mBluetoothStateLiveData;
     private LifecycleRegistry mLifecycleRegistry;
     private BroadcastReceiverVerifier mReceiverVerifier;
     @Mock
     private LifecycleOwner mMockLifecycleOwner;
     @Mock
     private LiveDataObserver<Integer> mMockObserver;
-    @Mock
-    private BluetoothDevice mMockBluetoothDevice;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        mHfpDeviceListLiveData = new HfpDeviceListLiveData(RuntimeEnvironment.application);
+        mBluetoothStateLiveData = new BluetoothStateLiveData(RuntimeEnvironment.application,
+                BluetoothAdapter.getDefaultAdapter());
         mLifecycleRegistry = new LifecycleRegistry(mMockLifecycleOwner);
         when(mMockLifecycleOwner.getLifecycle()).thenReturn(mLifecycleRegistry);
 
@@ -81,7 +73,7 @@ public class HfpDeviceListLiveDataTest {
 
     @Test
     public void testOnActive() {
-        mHfpDeviceListLiveData.observe(mMockLifecycleOwner,
+        mBluetoothStateLiveData.observe(mMockLifecycleOwner,
                 (value) -> mMockObserver.onChanged(value));
         verify(mMockObserver, never()).onChanged(any());
 
@@ -91,28 +83,29 @@ public class HfpDeviceListLiveDataTest {
     }
 
     @Test
-    public void testOnBluetoothHfpStateChange() {
+    public void testOnBluetoothAdapterStateChange() {
         ArgumentCaptor<Integer> valueCaptor = ArgumentCaptor.forClass(Integer.class);
         doNothing().when(mMockObserver).onChanged(valueCaptor.capture());
 
-        ShadowBluetoothAdapterForDialer shadowBluetoothAdapter = Shadow.extract(
+        ShadowBluetoothAdapter shadowBluetoothAdapter = shadowOf(
                 BluetoothAdapter.getDefaultAdapter());
+        shadowBluetoothAdapter.setEnabled(false);
 
-        shadowBluetoothAdapter.setHfpDevices(Collections.singletonList(mMockBluetoothDevice));
-        mHfpDeviceListLiveData.observe(mMockLifecycleOwner,
+        mBluetoothStateLiveData.observe(mMockLifecycleOwner,
                 (value) -> mMockObserver.onChanged(value));
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
-        assertThat(mHfpDeviceListLiveData.getValue()).isNotEmpty();
+        assertThat(valueCaptor.getValue()).isEqualTo(BluetoothState.DISABLED);
 
-        shadowBluetoothAdapter.setHfpDevices(Collections.emptyList());
+        shadowBluetoothAdapter.setEnabled(true);
         mReceiverVerifier.getBroadcastReceiverFor(INTENT_ACTION)
                 .onReceive(mock(Context.class), mock(Intent.class));
-        assertThat(mHfpDeviceListLiveData.getValue()).isEmpty();
+        assertThat(mBluetoothStateLiveData.getValue()).isEqualTo(BluetoothState.ENABLED);
+        assertThat(valueCaptor.getValue()).isEqualTo(BluetoothState.ENABLED);
     }
 
     @Test
     public void testOnInactiveUnregister() {
-        mHfpDeviceListLiveData.observe(mMockLifecycleOwner,
+        mBluetoothStateLiveData.observe(mMockLifecycleOwner,
                 (value) -> mMockObserver.onChanged(value));
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         int preNumber = mReceiverVerifier.getReceiverNumber();

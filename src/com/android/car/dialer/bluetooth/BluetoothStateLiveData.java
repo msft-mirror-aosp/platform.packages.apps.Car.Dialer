@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.livedata;
+package com.android.car.dialer.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -22,34 +22,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import androidx.annotation.IntDef;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.log.L;
-import com.android.car.dialer.servicelocator.DialerServiceLocator;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Provides the device Bluetooth availability. Updates client with {@link BluetoothState}.
  */
-public class BluetoothStateLiveData extends LiveData<Integer> {
+@Singleton
+class BluetoothStateLiveData extends LiveData<Integer> {
     private static final String TAG = "CD.BluetoothStateLiveData";
 
-    @IntDef({
-            BluetoothState.UNKNOWN,
-            BluetoothState.DISABLED,
-            BluetoothState.ENABLED,
-    })
-    public @interface BluetoothState {
-        /** Bluetooth is not supported on the current device */
-        int UNKNOWN = 0;
-        /** Bluetooth is disabled */
-        int DISABLED = 1;
-        /** Bluetooth is enabled */
-        int ENABLED = 2;
-    }
-
-    private final BluetoothAdapter mBluetoothAdapter =
-            DialerServiceLocator.get().getBluetoothAdapter();
+    private final BluetoothAdapter mBluetoothAdapter;
     private final Context mContext;
     private final IntentFilter mIntentFilter = new IntentFilter();
 
@@ -61,8 +50,12 @@ public class BluetoothStateLiveData extends LiveData<Integer> {
     };
 
     /** Creates a new {@link BluetoothStateLiveData}. Call on main thread. */
-    public BluetoothStateLiveData(Context context) {
+    @Inject
+    BluetoothStateLiveData(
+            @ApplicationContext Context context,
+            BluetoothAdapter bluetoothAdapter) {
         mContext = context;
+        mBluetoothAdapter = bluetoothAdapter;
         mIntentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
     }
 

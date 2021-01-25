@@ -23,9 +23,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
 
@@ -55,14 +56,14 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
     @Inject
     public AudioRouteLiveData(
             @ApplicationContext Context context,
-            UiBluetoothMonitor bluetoothMonitor,
+            @Qualifiers.Hfp LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
             UiCallManager callManager) {
         mContext = context;
         mAudioRouteChangeFilter =
                 new IntentFilter(BluetoothHeadsetClient.ACTION_AUDIO_STATE_CHANGED);
         mUiCallManager = callManager;
         // TODO: introduce a new AudioStateChanged listener for listening to the audio state change.
-        addSource(bluetoothMonitor.getHfpDeviceListLiveData(), this::onHfpDeviceListChange);
+        addSource(hfpDeviceListLiveData, this::onHfpDeviceListChange);
     }
 
     @Override

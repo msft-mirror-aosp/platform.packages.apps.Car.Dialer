@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.livedata;
+package com.android.car.dialer.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -27,18 +27,22 @@ import androidx.annotation.MainThread;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.log.L;
-import com.android.car.dialer.servicelocator.DialerServiceLocator;
 
 import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Provides a list of paired Bluetooth devices.
  */
-public class BluetoothPairListLiveData extends LiveData<Set<BluetoothDevice>> {
+@Singleton
+class BluetoothPairListLiveData extends LiveData<Set<BluetoothDevice>> {
     private static final String TAG = "CD.BluetoothPairListLiveData";
 
-    private final BluetoothAdapter mBluetoothAdapter =
-            DialerServiceLocator.get().getBluetoothAdapter();
+    private final BluetoothAdapter mBluetoothAdapter;
     private final Context mContext;
     private final IntentFilter mIntentFilter = new IntentFilter();
 
@@ -51,8 +55,12 @@ public class BluetoothPairListLiveData extends LiveData<Set<BluetoothDevice>> {
 
     /** Creates a new {@link BluetoothPairListLiveData}. Call on main thread. */
     @MainThread
-    public BluetoothPairListLiveData(Context context) {
+    @Inject
+    BluetoothPairListLiveData(
+            @ApplicationContext Context context,
+            BluetoothAdapter bluetoothAdapter) {
         mContext = context;
+        mBluetoothAdapter = bluetoothAdapter;
         mIntentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
     }
 

@@ -16,15 +16,11 @@
 
 package com.android.car.dialer.framework;
 
-import android.bluetooth.BluetoothAdapter;
-
 /**
  * A provider which provides all kinds of Android framework services.
  */
 public interface AndroidFramework {
 
-    /**
-     * Returns a {@link BluetoothAdapter}.
-     */
-    BluetoothAdapter getBluetoothAdapter();
+    /** Starts all fundamental components. */
+    void start();
 }

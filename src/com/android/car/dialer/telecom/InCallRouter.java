@@ -59,11 +59,12 @@ class InCallRouter {
     InCallRouter(
             @ApplicationContext Context context,
             SharedPreferences sharedPreferences,
-            InCallNotificationController inCallNotificationController) {
+            InCallNotificationController inCallNotificationController,
+            ProjectionCallHandler projectionCallHandler) {
         mContext = context;
         mSharedPreferences = sharedPreferences;
         mInCallNotificationController = inCallNotificationController;
-        mProjectionCallHandler = new ProjectionCallHandler(context);
+        mProjectionCallHandler = projectionCallHandler;
     }
 
     void start() {

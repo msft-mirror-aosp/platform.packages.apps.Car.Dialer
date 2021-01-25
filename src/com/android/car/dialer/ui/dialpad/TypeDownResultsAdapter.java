@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.search.ContactResultViewHolder;
 import com.android.car.dialer.ui.search.ContactResultsAdapter;
 
@@ -32,16 +33,22 @@ public class TypeDownResultsAdapter extends ContactResultsAdapter {
 
     private final UiCallManager mUiCallManager;
 
+    private OnItemClickedListener mOnItemClickedListener;
+
     public TypeDownResultsAdapter(UiCallManager uiCallManager) {
         super(null);
         mUiCallManager = uiCallManager;
+    }
+
+    public void setOnItemClickedListener(OnItemClickedListener onItemClickedListener) {
+        mOnItemClickedListener = onItemClickedListener;
     }
 
     @Override
     public ContactResultViewHolder onCreateViewHolderImpl(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.type_down_list_item, parent, false);
-        return new ContactResultViewHolder(view, null);
+        return new ContactResultViewHolder(view, null, mOnItemClickedListener);
     }
 
     @Override

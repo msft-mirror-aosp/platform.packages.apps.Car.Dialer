@@ -55,22 +55,23 @@ public final class UiCallManager {
     private static String TAG = "CD.TelecomMgr";
 
     private Context mContext;
-
-    private TelecomManager mTelecomManager;
+    private final TelecomManager mTelecomManager;
+    private final BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
     private InCallServiceImpl mInCallService;
-    private BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
 
     @Inject
-    UiCallManager(@ApplicationContext Context context) {
+    UiCallManager(
+            @ApplicationContext Context context,
+            TelecomManager telecomManager,
+            BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider) {
         L.d(TAG, "SetUp");
         mContext = context;
+        mTelecomManager = telecomManager;
+        mBluetoothHeadsetClientProvider = bluetoothHeadsetClientProvider;
 
-        mTelecomManager = context.getSystemService(TelecomManager.class);
         Intent intent = new Intent(context, InCallServiceImpl.class);
         intent.setAction(InCallServiceImpl.ACTION_LOCAL_BIND);
         context.bindService(intent, mInCallServiceConnection, Context.BIND_AUTO_CREATE);
-
-        mBluetoothHeadsetClientProvider = BluetoothHeadsetClientProvider.singleton(context);
     }
 
     private final ServiceConnection mInCallServiceConnection = new ServiceConnection() {

@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer;
+package com.android.car.dialer.framework;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.bluetooth.BluetoothAdapter;
+import android.telecom.TelecomManager;
 
-import androidx.preference.PreferenceManager;
-
-import javax.inject.Singleton;
-
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
-import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
-/** Application level module. */
+/** Dependencies used in testing app. */
 @InstallIn(SingletonComponent.class)
 @Module
-public final class DialerModule {
-
-    @Singleton
+public abstract class FakeModule {
     @Provides
-    static SharedPreferences provideSharedPreferences(@ApplicationContext Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context);
+    static BluetoothAdapter provideBluetoothAdapter(FakeBluetoothAdapter fakeBluetoothAdapter) {
+        return fakeBluetoothAdapter.getBluetoothAdapter();
     }
+
+    @Provides
+    static TelecomManager provideTelecomManager(FakeTelecomManager fakeTelecomManager) {
+        return fakeTelecomManager.getTelecomManager();
+    }
+
+    @Binds
+    abstract AndroidFramework bindAndroidFramework(AndroidFrameworkImpl androidFramework);
 }

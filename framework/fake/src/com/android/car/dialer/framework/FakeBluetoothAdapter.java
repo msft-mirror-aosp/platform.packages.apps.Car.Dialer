@@ -36,10 +36,14 @@ import android.util.ArraySet;
 import java.util.ArrayList;
 import java.util.Set;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * A fake BluetoothAdapter implementation.
  */
-public class FakeBluetoothAdapter {
+@Singleton
+public final class FakeBluetoothAdapter {
     private boolean mIsEnabled = true;
     private int mHfpProfileConnectionState = BluetoothProfile.STATE_DISCONNECTED;
     private final Set<BluetoothDevice> mConnectedBluetoothDevices = new ArraySet<>();
@@ -49,6 +53,7 @@ public class FakeBluetoothAdapter {
     private final BluetoothAdapter mSpiedBluetoothAdapter;
     private BluetoothProfile.ServiceListener mServiceListener;
 
+    @Inject
     public FakeBluetoothAdapter() {
         mSpiedBluetoothAdapter = spy(BluetoothAdapter.getDefaultAdapter());
         updateFake();

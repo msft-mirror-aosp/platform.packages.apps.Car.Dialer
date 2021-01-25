@@ -20,8 +20,8 @@ import android.app.Application;
 
 import com.android.car.dialer.bluetooth.CallHistoryManager;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.framework.AndroidFramework;
 import com.android.car.dialer.notification.MissedCallNotificationController;
-import com.android.car.dialer.servicelocator.DialerServiceLocator;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 
@@ -42,12 +42,13 @@ public final class DialerApplication extends Hilt_DialerApplication {
     @Inject
     MissedCallNotificationController mMissedCallNotificationController;
 
+    @Inject
+    AndroidFramework mAndroidFramework;
+
     @Override
     public void onCreate() {
-        // A temporary workaround for NPE in injected objects that access the DialerServiceLocator.
-        // TODO: inject DialerServiceLocator and its components.
-        DialerServiceLocator.get().init(this);
         super.onCreate();
+        mAndroidFramework.start();
         InMemoryPhoneBook.init(this);
     }
 }

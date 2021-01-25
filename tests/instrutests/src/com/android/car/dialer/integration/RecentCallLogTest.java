@@ -21,32 +21,44 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.Mockito.mock;
+
+import android.bluetooth.BluetoothDevice;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 import androidx.test.rule.ActivityTestRule;
 
 import com.android.car.dialer.R;
-import com.android.car.dialer.framework.AndroidFrameworkImpl;
-import com.android.car.dialer.servicelocator.DialerServiceLocator;
+import com.android.car.dialer.framework.FakeBluetoothAdapter;
 import com.android.car.dialer.ui.TelecomActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
 @SmallTest
 @RunWith(AndroidJUnit4.class)
+@HiltAndroidTest
 public class RecentCallLogTest {
+    @Inject
+    FakeBluetoothAdapter mFakeBluetoothAdapter;
 
+    @Rule
+    public final HiltAndroidRule mHiltAndroidRule = new HiltAndroidRule(this);
     @Rule
     public final ActivityTestRule<TelecomActivity> mActivityTestRule =
             new ActivityTestRule<TelecomActivity>(TelecomActivity.class) {
                 @Override
                 protected void afterActivityLaunched() {
                     super.afterActivityLaunched();
-                    AndroidFrameworkImpl framework =
-                            (AndroidFrameworkImpl) DialerServiceLocator.get().getAndroidFramework();
-                    framework.connectBluetoothPhone();
+                    mHiltAndroidRule.inject();
+                    mFakeBluetoothAdapter.connectHfpDevice(mock(BluetoothDevice.class));
                 }
             };
 

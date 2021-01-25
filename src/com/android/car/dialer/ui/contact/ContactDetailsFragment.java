@@ -32,7 +32,6 @@ import androidx.lifecycle.ViewModelProviders;
 import com.android.car.apps.common.LetterTileDrawable;
 import com.android.car.arch.common.FutureData;
 import com.android.car.dialer.R;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
@@ -64,7 +63,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
     // Key to load and save the contact entity instance.
     private static final String KEY_CONTACT_ENTITY = "ContactEntity";
 
-    @Inject UiCallManager mUiCallManager;
+    @Inject ContactDetailsAdapterFactory mContactDetailsAdapterFactory;
     private Contact mContact;
     private LiveData<FutureData<Contact>> mContactDetailsLiveData;
     private ContactDetailsViewModel mContactDetailsViewModel;
@@ -104,8 +103,8 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ContactDetailsAdapter contactDetailsAdapter = new ContactDetailsAdapter(getContext(),
-                mContact, mUiCallManager, this);
+        ContactDetailsAdapter contactDetailsAdapter = mContactDetailsAdapterFactory.create(mContact,
+                this);
         getRecyclerView().setAdapter(contactDetailsAdapter);
         mContactDetailsLiveData.observe(this, contact -> {
             if (contact.isLoading()) {

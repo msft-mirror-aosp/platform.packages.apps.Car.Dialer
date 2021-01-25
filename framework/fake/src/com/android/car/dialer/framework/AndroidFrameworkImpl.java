@@ -16,9 +16,6 @@
 
 package com.android.car.dialer.framework;
 
-import static com.android.dx.mockito.inline.extended.ExtendedMockito.mock;
-
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
 import javax.inject.Inject;
@@ -35,23 +32,19 @@ public class AndroidFrameworkImpl implements AndroidFramework {
     private final Context mContext;
     private final FakeBluetoothAdapter mFakeBluetoothAdapter;
     private final AdbBroadcastReceiver mAdbBroadcastReceiver;
+    private final MockCallManager mMockCallManager;
 
     @Inject
     AndroidFrameworkImpl(
             @ApplicationContext Context context,
             FakeBluetoothAdapter fakeBluetoothAdapter,
-            AdbBroadcastReceiver adbBroadcastReceiver) {
+            AdbBroadcastReceiver adbBroadcastReceiver,
+            MockCallManager mockCallManager) {
+
         mContext = context;
         mFakeBluetoothAdapter = fakeBluetoothAdapter;
         mAdbBroadcastReceiver = adbBroadcastReceiver;
-    }
-
-    /**
-     * Virtually connect a Bluetooth phone to the fake framework.
-     */
-    public void connectBluetoothPhone() {
-        BluetoothDevice device = mock(BluetoothDevice.class);
-        mFakeBluetoothAdapter.connectHfpDevice(device);
+        mMockCallManager = mockCallManager;
     }
 
     @Override

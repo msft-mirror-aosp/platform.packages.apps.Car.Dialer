@@ -21,13 +21,16 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.Mockito.mock;
+
+import android.bluetooth.BluetoothDevice;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 import androidx.test.rule.ActivityTestRule;
 
 import com.android.car.dialer.R;
-import com.android.car.dialer.framework.AndroidFramework;
-import com.android.car.dialer.framework.AndroidFrameworkImpl;
+import com.android.car.dialer.framework.FakeBluetoothAdapter;
 import com.android.car.dialer.ui.TelecomActivity;
 
 import org.junit.Rule;
@@ -43,7 +46,8 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 @RunWith(AndroidJUnit4.class)
 @HiltAndroidTest
 public class RecentCallLogTest {
-    @Inject AndroidFramework mAndroidFramework;
+    @Inject
+    FakeBluetoothAdapter mFakeBluetoothAdapter;
 
     @Rule
     public final HiltAndroidRule mHiltAndroidRule = new HiltAndroidRule(this);
@@ -54,8 +58,7 @@ public class RecentCallLogTest {
                 protected void afterActivityLaunched() {
                     super.afterActivityLaunched();
                     mHiltAndroidRule.inject();
-                    AndroidFrameworkImpl framework = (AndroidFrameworkImpl) mAndroidFramework;
-                    framework.connectBluetoothPhone();
+                    mFakeBluetoothAdapter.connectHfpDevice(mock(BluetoothDevice.class));
                 }
             };
 

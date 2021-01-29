@@ -20,7 +20,7 @@
     <string name="no_hfp" msgid="7371139867234667691">"Ukuze uqedele ikholi yakho, qala ngokuxhuma ifoni yakho emotweni yakho nge-Bluetooth."</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"I-Bluetooth ayitholakali."</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"Ukuze wenze noma wamukele amakholi, vula i-Bluetooth."</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Ukuze wenze noma wamukele amakholi, bhanqa ifoni yakho nemoto."</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Ukuze wenze noma wamukele amakholi, bhangqa ifoni yakho nemoto."</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Xhumeka ku-Bluetooth"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Isimo esiphuthumayo"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Ikholi ephuthumayo"</string>
@@ -71,6 +71,11 @@
     <string name="setting_title" msgid="1296639422364732365">"Izilungiselelo"</string>
     <string name="pref_start_page_title" msgid="1953465507368478503">"Isikrini sokuqala"</string>
     <string name="sort_order_title" msgid="975104366728292702">"I-oda loxhumana naye"</string>
+    <string name="pref_connected_phone_title" msgid="5472866963149472593">"Ifoni Exhunyiwe"</string>
+    <string name="pref_no_incoming_call_hun_title" msgid="2314257779205958332">"Ubumfihlo"</string>
+    <string name="pref_no_incoming_call_hun_summary" msgid="8833377984331845097">"Bonisa izexwayiso zekholi ku-cluster"</string>
+    <string name="pref_no_fullscreen_active_call_ui_title" msgid="5306041252780754725">"Ikholi Esebenzayo"</string>
+    <string name="pref_no_fullscreen_active_call_ui_summary" msgid="2316908551231937870">"Bonisa ukubuka kwekholi esebenzayo uma uphendula ikholi"</string>
     <string name="given_name_first_title" msgid="8072187841056104968">"Igama"</string>
     <string name="family_name_first_title" msgid="7721976826282427987">"Isibongo"</string>
     <string name="audio_route_dialog_title" msgid="2904553846970171054">"Khiphela umsindo wekholi kulokhu:"</string>

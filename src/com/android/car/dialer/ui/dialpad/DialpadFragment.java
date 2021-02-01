@@ -45,6 +45,8 @@ import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 import com.android.car.ui.recyclerview.CarUiRecyclerView;
 import com.android.car.ui.toolbar.ToolbarController;
+import com.android.car.uxr.LifeCycleObserverUxrContentLimiter;
+import com.android.car.uxr.UxrContentLimiterImpl;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
@@ -97,6 +99,8 @@ public class DialpadFragment extends AbstractDialpadFragment {
 
     private ToneGenerator mToneGenerator;
 
+    private LifeCycleObserverUxrContentLimiter mUxrContentLimiter;
+
     /**
      * Creates a new instance of the {@link DialpadFragment} which is used for dialing a number.
      */
@@ -132,6 +136,12 @@ public class DialpadFragment extends AbstractDialpadFragment {
                 TypeDownResultsViewModel.class);
         mTypeDownResultsViewModel.getContactSearchResults().observe(this,
                 contactResults -> mAdapter.setData(contactResults));
+        mTypeDownResultsViewModel.getSortOrderLiveData().observe(this,
+                v -> mAdapter.setSortMethod(v));
+
+        mUxrContentLimiter = new LifeCycleObserverUxrContentLimiter(
+                new UxrContentLimiterImpl(getContext(), R.xml.uxr_config));
+        getLifecycle().addObserver(mUxrContentLimiter);
     }
 
     @Override
@@ -187,6 +197,8 @@ public class DialpadFragment extends AbstractDialpadFragment {
             clearDialedNumber();
             return true;
         });
+
+        mUxrContentLimiter.setAdapter(mAdapter);
 
         return rootView;
     }
@@ -284,7 +296,8 @@ public class DialpadFragment extends AbstractDialpadFragment {
                 R.string.primary_number_description, readableLabel) : readableLabel);
         ViewUtils.setVisible(mLabel, true);
 
-        TelecomUtils.setContactBitmapAsync(getContext(), mAvatar, contact);
+        TelecomUtils.setContactBitmapAsync(getContext(), mAvatar, contact,
+                mAdapter.getSortMethod());
         ViewUtils.setVisible(mAvatar, true);
     }
 

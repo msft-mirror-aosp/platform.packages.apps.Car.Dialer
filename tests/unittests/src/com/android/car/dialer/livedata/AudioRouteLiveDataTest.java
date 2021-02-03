@@ -23,7 +23,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadsetClient;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -35,6 +34,7 @@ import androidx.lifecycle.Observer;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.telecom.UiCallManager;
 
 import org.junit.Before;
@@ -45,13 +45,10 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
-import java.util.List;
-
 @RunWith(AndroidJUnit4.class)
 public class AudioRouteLiveDataTest {
     private AudioRouteLiveData mAudioRouteLiveData;
-    private MutableLiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
+    private MutableLiveData<Boolean> mBluetoothConnectedLiveData;
 
     @Mock
     private Context mMockContext;
@@ -60,6 +57,8 @@ public class AudioRouteLiveDataTest {
     private Observer<Integer> mMockObserver;
     @Mock
     private UiCallManager mMockUiCallManager;
+    @Mock
+    private BluetoothHeadsetClientProvider mMockHeadsetClientProvider;
 
     @Captor
     private ArgumentCaptor<IntentFilter> mIntentFilterCaptor;
@@ -69,10 +68,13 @@ public class AudioRouteLiveDataTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(mMockUiCallManager.getAudioRoute()).thenReturn(CallAudioState.ROUTE_EARPIECE);
-        mHfpDeviceListLiveData = new MutableLiveData<>();
+        when(mMockUiCallManager.getAudioRoute(any())).thenReturn(CallAudioState.ROUTE_EARPIECE);
+        mBluetoothConnectedLiveData = new MutableLiveData<>();
+        when(mMockHeadsetClientProvider.isBluetoothHeadsetClientConnected()).thenReturn(
+                mBluetoothConnectedLiveData);
         mAudioRouteLiveData = new AudioRouteLiveData(
-                mMockContext, mHfpDeviceListLiveData, mMockUiCallManager);
+                mMockContext, new CallDetailLiveData(), mMockHeadsetClientProvider,
+                mMockUiCallManager);
     }
 
     @Test
@@ -93,9 +95,9 @@ public class AudioRouteLiveDataTest {
         mAudioRouteLiveData.observeForever(mMockObserver);
         assertThat(mAudioRouteLiveData.getValue()).isEqualTo(CallAudioState.ROUTE_EARPIECE);
 
-        when(mMockUiCallManager.getAudioRoute()).thenReturn(CallAudioState.ROUTE_BLUETOOTH);
+        when(mMockUiCallManager.getAudioRoute(any())).thenReturn(CallAudioState.ROUTE_BLUETOOTH);
+        mBluetoothConnectedLiveData.setValue(Boolean.TRUE);
 
-        mHfpDeviceListLiveData.setValue(Collections.emptyList());
         verify(mMockObserver).onChanged(CallAudioState.ROUTE_BLUETOOTH);
         assertThat(mAudioRouteLiveData.getValue()).isEqualTo(CallAudioState.ROUTE_BLUETOOTH);
     }

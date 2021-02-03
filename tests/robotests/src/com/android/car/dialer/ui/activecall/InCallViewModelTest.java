@@ -19,6 +19,7 @@ package com.android.car.dialer.ui.activecall;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -108,7 +109,7 @@ public class InCallViewModelTest {
         mListForMockCalls.add(mMockHoldingCall);
         mListForMockCalls.add(mMockRingingCall);
         when(mInCallService.getCalls()).thenReturn(mListForMockCalls);
-        when(mMockUiCallManager.getAudioRoute()).thenReturn(CallAudioState.ROUTE_BLUETOOTH);
+        when(mMockUiCallManager.getAudioRoute(any())).thenReturn(CallAudioState.ROUTE_BLUETOOTH);
 
         mInCallViewModel = new InCallViewModel((Application) context);
         mInCallViewModel.mUiCallManager = mMockUiCallManager;

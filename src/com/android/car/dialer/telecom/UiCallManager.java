@@ -159,6 +159,10 @@ public final class UiCallManager {
     public boolean isBluetoothCall() {
         PhoneAccountHandle phoneAccountHandle =
                 mTelecomManager.getUserSelectedOutgoingPhoneAccount();
+        return isBluetoothCall(phoneAccountHandle);
+    }
+
+    private boolean isBluetoothCall(PhoneAccountHandle phoneAccountHandle) {
         if (phoneAccountHandle != null && phoneAccountHandle.getComponentName() != null) {
             return Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME.equals(
                     phoneAccountHandle.getComponentName().getClassName());
@@ -168,31 +172,33 @@ public final class UiCallManager {
     }
 
     /**
-     * Returns the current audio route. If {@link BluetoothHeadsetClient} hasn't been connected,
-     * return {@link CallAudioState#ROUTE_EARPIECE}.
+     * Returns the current audio route for given {@link PhoneAccountHandle}. If {@link
+     * BluetoothHeadsetClient} hasn't been connected, return {@link CallAudioState#ROUTE_EARPIECE}.
      * The available routes are defined in {@link CallAudioState}.
+     *
+     * @param phoneAccountHandle the account handle for the primary ongoing call.
      */
-    public int getAudioRoute() {
-        if (isBluetoothCall()) {
+    public int getAudioRoute(PhoneAccountHandle phoneAccountHandle) {
+        if (isBluetoothCall(phoneAccountHandle)) {
             BluetoothHeadsetClient bluetoothHeadsetClient = mBluetoothHeadsetClientProvider.get();
-            List<BluetoothDevice> devices = bluetoothHeadsetClient != null
-                    ? bluetoothHeadsetClient.getConnectedDevices()
-                    : Collections.emptyList();
             // BluetoothHeadsetClient might haven't been initialized that the proxy object hasn't
             // been bind by calling BluetoothAdapter#getProfileProxy.
-            if (devices.isEmpty()) {
+            if (bluetoothHeadsetClient == null) {
                 return CallAudioState.ROUTE_EARPIECE;
             }
 
-            // TODO: Make this handle multiple devices
-            BluetoothDevice device = devices.get(0);
-            int audioState = bluetoothHeadsetClient.getAudioState(device);
-
-            if (audioState == BluetoothHeadsetClient.STATE_AUDIO_CONNECTED) {
-                return CallAudioState.ROUTE_BLUETOOTH;
-            } else {
-                return CallAudioState.ROUTE_EARPIECE;
+            for (BluetoothDevice bluetoothDevice : bluetoothHeadsetClient.getConnectedDevices()) {
+                if (TextUtils.equals(phoneAccountHandle.getId(), bluetoothDevice.getAddress())) {
+                    int audioState = bluetoothHeadsetClient.getAudioState(bluetoothDevice);
+                    if (audioState == BluetoothHeadsetClient.STATE_AUDIO_CONNECTED) {
+                        return CallAudioState.ROUTE_BLUETOOTH;
+                    } else {
+                        return CallAudioState.ROUTE_EARPIECE;
+                    }
+                }
             }
+            // Not likely to happen.
+            return CallAudioState.ROUTE_EARPIECE;
         } else {
             CallAudioState audioState = getCallAudioStateOrNull();
             int audioRoute = audioState != null ? audioState.getRoute() : 0;
@@ -288,7 +294,6 @@ public final class UiCallManager {
         }
         return false;
     }
-
 
     /** Return the current active call list from delegated {@link InCallServiceImpl} */
     public List<Call> getCallList() {

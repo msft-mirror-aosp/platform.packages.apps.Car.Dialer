@@ -110,7 +110,6 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
         super.onCreate(savedInstanceState);
 
         mAvailableRoutes = mUiCallManager.getSupportedAudioRoute();
-        mActiveRoute = mUiCallManager.getAudioRoute();
 
         if (mAvailableRoutes.contains(CallAudioState.ROUTE_EARPIECE)
                 && mAvailableRoutes.contains(CallAudioState.ROUTE_WIRED_HEADSET)) {
@@ -128,9 +127,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
             drawable.setTintList(
                     getResources().getColorStateList(R.color.icon_accent_activatable, null));
             item.setIcon(drawable);
-            item.setOnItemClickedListener((i) -> {
-                onSetAudioRoute(audioRoute);
-            });
+            item.setOnItemClickedListener(audioRouteItem -> onSetAudioRoute(audioRoute));
             String routeTitle = getString(routeInfo.mLabel);
             item.setTitle(mActiveRoute == audioRoute ? withAccentColor(routeTitle) : routeTitle);
             item.setActivated(mActiveRoute == audioRoute);

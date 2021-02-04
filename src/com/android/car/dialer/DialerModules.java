@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 import androidx.preference.PreferenceManager;
 
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
@@ -84,16 +85,20 @@ public final class DialerModules {
         @Qualifiers.Hfp
         @Provides
         static LiveData<BluetoothDevice> provideCurrentHfpDeviceLiveData(
-                UiBluetoothMonitor uiBluetoothMonitor) {
-            return uiBluetoothMonitor.getFirstHfpConnectedDevice();
+                @Qualifiers.Hfp LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
+            return Transformations.map(hfpDeviceListLiveData, (devices) ->
+                    devices != null && !devices.isEmpty()
+                            ? devices.get(0)
+                            : null);
         }
 
         @Singleton
         @Qualifiers.Hfp
         @Provides
         static LiveData<Boolean> hasHfpDeviceConnectedLiveData(
-                UiBluetoothMonitor uiBluetoothMonitor) {
-            return uiBluetoothMonitor.hasHfpDeviceConnected();
+                @Qualifiers.Hfp LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
+            return Transformations.map(hfpDeviceListLiveData,
+                    devices -> devices != null && !devices.isEmpty());
         }
     }
 

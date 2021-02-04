@@ -33,6 +33,7 @@ import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.ComponentFetcher;
 import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
+import com.android.car.dialer.livedata.AudioRouteLiveDataFactory;
 import com.android.car.dialer.livedata.CallDetailLiveData;
 import com.android.car.dialer.livedata.CallStateLiveData;
 import com.android.car.dialer.log.L;
@@ -57,8 +58,8 @@ public class InCallViewModel extends AndroidViewModel {
     private static final String TAG = "CD.InCallViewModel";
 
     @Inject UiCallManager mUiCallManager;
-    @Inject AudioRouteLiveData mAudioRouteLiveData;
     @Inject LocalCallHandler mLocalCallHandler;
+    @Inject AudioRouteLiveDataFactory mAudioRouteLiveDataFactory;
 
     private final MutableLiveData<Boolean> mHasOngoingCallChangedLiveData;
     private final MediatorLiveData<List<Call>> mOngoingCallListLiveData;
@@ -77,6 +78,8 @@ public class InCallViewModel extends AndroidViewModel {
     private LiveData<Long> mCallConnectTimeLiveData;
     private LiveData<Long> mSecondaryCallConnectTimeLiveData;
     private LiveData<Pair<Integer, Long>> mCallStateAndConnectTimeLiveData;
+
+    private final AudioRouteLiveData mAudioRouteLiveData;
     private final Context mContext;
 
     // Reuse the same instance so the callback won't be registered more than once.
@@ -131,6 +134,7 @@ public class InCallViewModel extends AndroidViewModel {
             mCallDetailLiveData.setTelecomCall(call);
             return call;
         });
+        mAudioRouteLiveData = mAudioRouteLiveDataFactory.create(mCallDetailLiveData);
 
         mCallStateLiveData = Transformations.switchMap(mPrimaryCallLiveData,
                 input -> input != null ? new CallStateLiveData(input) : null);

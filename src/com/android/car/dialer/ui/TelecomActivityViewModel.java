@@ -49,6 +49,7 @@ public class TelecomActivityViewModel extends AndroidViewModel {
 
     @Inject LocalCallHandler mLocalCallHandler;
     @Inject @Qualifiers.Hfp LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
+    @Inject @Qualifiers.Hfp LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     @Inject @Qualifiers.Hfp LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
     private final Context mApplicationContext;
@@ -64,7 +65,7 @@ public class TelecomActivityViewModel extends AndroidViewModel {
 
         mToolbarTitleMode = new MediatorLiveData<>();
         mToolbarTitleLiveData = new ToolbarTitleLiveData(mApplicationContext, mToolbarTitleMode,
-                mHfpDeviceListLiveData);
+                mCurrentHfpDeviceLiveData);
 
         if (BluetoothAdapter.getDefaultAdapter() != null) {
             mRefreshTabsLiveData = new RefreshUiEvent(mHfpDeviceListLiveData);

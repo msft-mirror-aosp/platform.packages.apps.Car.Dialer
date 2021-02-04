@@ -103,6 +103,14 @@ public class MockCallManager {
     }
 
     /**
+     * Ends a call tied to the id.
+     */
+    public void endCall(String id) {
+        Call call = findCallById(id);
+        disconnect(call);
+    }
+
+    /**
      * Places a hold on a call
      */
     private void hold(Call call) {
@@ -270,6 +278,20 @@ public class MockCallManager {
         if (mOngoingCallList.size() > 1) {
             mSecondaryCall = mOngoingCallList.get(1);
         }
+    }
+
+    /**
+     * Finds the {@link Call} in mCallList by its id
+     */
+    private Call findCallById(String id) {
+        for (Call call : mCallList) {
+            CallDetail detail = CallDetail.fromTelecomCallDetail(call.getDetails());
+            if (detail.getNumber().equals(id)) {
+                return call;
+            }
+        }
+
+        return null;
     }
 
     /**

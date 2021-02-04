@@ -18,6 +18,8 @@ package com.android.car.dialer.framework;
 
 import android.content.Context;
 
+import com.android.car.dialer.framework.testdata.CallLogDataHandler;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -33,18 +35,21 @@ public class AndroidFrameworkImpl implements AndroidFramework {
     private final FakeBluetoothAdapter mFakeBluetoothAdapter;
     private final AdbBroadcastReceiver mAdbBroadcastReceiver;
     private final MockCallManager mMockCallManager;
+    private final CallLogDataHandler mCallLogDataHandler;
 
     @Inject
     AndroidFrameworkImpl(
             @ApplicationContext Context context,
             FakeBluetoothAdapter fakeBluetoothAdapter,
             AdbBroadcastReceiver adbBroadcastReceiver,
-            MockCallManager mockCallManager) {
+            MockCallManager mockCallManager,
+            CallLogDataHandler callLogDataHandler) {
 
         mContext = context;
         mFakeBluetoothAdapter = fakeBluetoothAdapter;
         mAdbBroadcastReceiver = adbBroadcastReceiver;
         mMockCallManager = mockCallManager;
+        mCallLogDataHandler = callLogDataHandler;
     }
 
     @Override

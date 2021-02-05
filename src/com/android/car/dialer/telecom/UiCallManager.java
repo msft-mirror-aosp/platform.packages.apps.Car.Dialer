@@ -297,6 +297,6 @@ public final class UiCallManager {
 
     /** Return the current active call list from delegated {@link InCallServiceImpl} */
     public List<Call> getCallList() {
-        return mInCallService == null ? Collections.emptyList() : mInCallService.getCalls();
+        return mInCallService == null ? Collections.emptyList() : mInCallService.getCallList();
     }
 }

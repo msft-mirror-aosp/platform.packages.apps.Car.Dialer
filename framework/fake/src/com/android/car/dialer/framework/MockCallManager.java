@@ -17,6 +17,9 @@
 package com.android.car.dialer.framework;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -91,7 +94,7 @@ public class MockCallManager {
     /**
      * Adds a call to the call list. Mocks call placement.
      */
-    public void addCall(String id) {
+    public void addCall(String id, int direction, int state) {
         Log.d(TAG, "Adding " + id);
         // Only allow two ongoing calls at once (primary and secondary). A conference call is
         // considered as a single call.
@@ -101,7 +104,7 @@ public class MockCallManager {
         }
 
         // Create a mock call and hold the existing call.
-        Call call = createMockCall(id, false, Call.Details.DIRECTION_OUTGOING);
+        Call call = createMockCall(id, direction, state);
         if (mPrimaryCall != null) {
             hold(mPrimaryCall);
         }
@@ -243,7 +246,7 @@ public class MockCallManager {
         // If no conference call exists, create it.
         if (mConferenceCall == null) {
             created = true;
-            mConferenceCall = createMockCall("Conference", true);
+            mConferenceCall = createMockConference();
             mCallList.add(mConferenceCall);
             Log.d(TAG, "conf" + mConferenceCall + mConferenceCall.getChildren() + mConferenceList);
         }
@@ -270,6 +273,30 @@ public class MockCallManager {
             Log.d(TAG, "created conf" + mConferenceCall);
             mInCallService.onCallAdded(mConferenceCall);
         }
+    }
+
+    /**
+     * Answers a received call.
+     */
+    private void answerCall(Call call) {
+        Log.d(TAG, "answering call: " + call);
+
+        when(call.getState()).thenReturn(Call.STATE_ACTIVE);
+        updateList();
+
+        List<Call.Callback> callbacks = mCallbacks.get(call);
+        for (Call.Callback callback : callbacks) {
+            callback.onStateChanged(call, Call.STATE_ACTIVE);
+        }
+    }
+
+    /**
+     * Rejects a received call.
+     */
+    private void rejectCall(Call call) {
+        Log.d(TAG, "rejecting call: " + call);
+
+        disconnect(call);
     }
 
     /**
@@ -389,18 +416,19 @@ public class MockCallManager {
         }
     }
 
-    private Call createMockCall(String number, boolean isConference) {
+    private Call createMockConference() {
         return new Builder()
-                .setPhoneNumber(number)
-                .setIsConference(isConference)
+                .setPhoneNumber("Conference")
+                .setIsConference(true)
+                .setInitialState(Call.STATE_ACTIVE)
                 .buildMock();
     }
 
-    private Call createMockCall(String number, boolean isConference, int callDirection) {
+    private Call createMockCall(String number, int callDirection, int callState) {
         return new Builder()
                 .setPhoneNumber(number)
-                .setIsConference(isConference)
                 .setCallDirection(callDirection)
+                .setInitialState(callState)
                 .buildMock();
     }
 
@@ -414,6 +442,7 @@ public class MockCallManager {
         private String mNumber;
         private boolean mIsConference;
         private int mCallDirection = Call.Details.DIRECTION_UNKNOWN;
+        private int mCallState = Call.STATE_NEW;
 
         public Builder() {
             mCall = mock(Call.class);
@@ -453,6 +482,14 @@ public class MockCallManager {
             return this;
         }
 
+        /**
+         * Sets the initial call state
+         */
+        public Builder setInitialState(int callState) {
+            mCallState = callState;
+            return this;
+        }
+
         private void updateCallDetails() {
             // Set up updated details
             Uri uri = Uri.fromParts("tel", mNumber, null);
@@ -461,6 +498,7 @@ public class MockCallManager {
             DisconnectCause disconnectCause = new DisconnectCause(1, label, null, "");
             long connectTimeMillis = System.currentTimeMillis();
 
+            when(mDetails.getTelecomCallId()).thenReturn(mNumber);
             when(mDetails.getCallDirection()).thenReturn(mCallDirection);
             when(mDetails.getHandle()).thenReturn(uri);
             when(mDetails.getDisconnectCause()).thenReturn(disconnectCause);
@@ -471,7 +509,7 @@ public class MockCallManager {
             }
 
             when(mCall.getDetails()).thenReturn(mDetails);
-            when(mCall.getState()).thenReturn(Call.STATE_ACTIVE);
+            when(mCall.getState()).thenReturn(mCallState);
         }
 
         private void mockCallFunctions() {
@@ -524,6 +562,22 @@ public class MockCallManager {
                     return null;
                 }
             }).when(mCall).conference(any(Call.class));
+
+            doAnswer(new Answer<Void>() {
+                @Override
+                public Void answer(InvocationOnMock inv) {
+                    answerCall(mCall);
+                    return null;
+                }
+            }).when(mCall).answer(anyInt());
+
+            doAnswer(new Answer<Void>() {
+                @Override
+                public Void answer(InvocationOnMock inv) {
+                    rejectCall(mCall);
+                    return null;
+                }
+            }).when(mCall).reject(anyBoolean(), anyString());
         }
     }
 }

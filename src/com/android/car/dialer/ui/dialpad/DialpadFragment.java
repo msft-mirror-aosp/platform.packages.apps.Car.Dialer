@@ -147,12 +147,15 @@ public class DialpadFragment extends Hilt_DialpadFragment {
         mToneGenerator = new ToneGenerator(AudioManager.STREAM_DTMF, TONE_RELATIVE_VOLUME);
 
         if (mAdapter == null) {
-            mAdapter = new TypeDownResultsAdapter(mUiCallManager);
+            mAdapter = new TypeDownResultsAdapter(
+                    contactResult -> {
+                        clearDialedNumber();
+                        mUiCallManager.placeCall(contactResult.getNumber());
+                    });
         }
-
         int limit = getResources().getInteger(R.integer.config_type_down_list_limit);
         mAdapter.setUnrestrictedItemCount(limit);
-        mAdapter.setOnItemClickedListener(item -> clearDialedNumber());
+
         mTypeDownResultsViewModel = ViewModelProviders.of(this).get(
                 TypeDownResultsViewModel.class);
         mTypeDownResultsViewModel.getContactSearchResults().observe(this,

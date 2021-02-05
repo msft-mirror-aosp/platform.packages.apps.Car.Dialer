@@ -48,7 +48,8 @@
                   android:theme="@style/Theme.Dialer.Telecom"
                   android:label="@string/phone_app_name"
                   android:exported="true"
-                  android:resizeableActivity="true">
+                  android:resizeableActivity="true"
+                  android:windowSoftInputMode="adjustPan|adjustResize">
             <meta-data android:name="distractionOptimized" android:value="true"/>
             <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
             <intent-filter>

@@ -34,7 +34,6 @@ import androidx.lifecycle.Observer;
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
-import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.livedata.UnreadMissedCallLiveData;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.ui.TelecomActivity;
@@ -50,6 +49,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
@@ -77,7 +77,7 @@ public final class MissedCallNotificationController {
     @Inject
     MissedCallNotificationController(
             @ApplicationContext Context context,
-            @Qualifiers.Hfp LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
         mContext = context;
         mNotificationManager =
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);

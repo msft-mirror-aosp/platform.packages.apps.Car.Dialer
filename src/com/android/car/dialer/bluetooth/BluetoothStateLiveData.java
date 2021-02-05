@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.log.L;
@@ -53,7 +54,7 @@ class BluetoothStateLiveData extends LiveData<Integer> {
     @Inject
     BluetoothStateLiveData(
             @ApplicationContext Context context,
-            BluetoothAdapter bluetoothAdapter) {
+            @Nullable BluetoothAdapter bluetoothAdapter) {
         mContext = context;
         mBluetoothAdapter = bluetoothAdapter;
         mIntentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);

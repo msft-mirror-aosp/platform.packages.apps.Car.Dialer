@@ -23,15 +23,15 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.inject.ViewModelComponent;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /** View model for {@link NoHfpFragment} */
 public class NoHfpViewModel extends AndroidViewModel {
 
-    @Inject @Qualifiers.Hfp LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
+    @Inject @Named("Hfp") LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
     @Inject BluetoothErrorStringLiveData mBluetoothErrorStringLiveData;
 
     public NoHfpViewModel(@NonNull Application application) {

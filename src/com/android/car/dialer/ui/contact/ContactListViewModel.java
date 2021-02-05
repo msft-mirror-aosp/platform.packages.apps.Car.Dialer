@@ -29,7 +29,6 @@ import androidx.lifecycle.MediatorLiveData;
 import com.android.car.arch.common.FutureData;
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.DialerListViewModel;
@@ -45,13 +44,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * View model for {@link ContactListFragment}.
  */
 public class ContactListViewModel extends DialerListViewModel {
 
-    @Inject @Qualifiers.Hfp LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
+    @Inject @Named("Hfp") LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     private final Context mContext;
     private final LiveData<Pair<Integer, List<Contact>>> mSortedContactListLiveData;
     private final LiveData<FutureData<Pair<Integer, List<Contact>>>> mContactList;

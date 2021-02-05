@@ -39,13 +39,16 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 public class CallLogDataHandler {
     private static final String TAG = "CD.CallLogDataHandler";
 
-    private Context mContext;
-    private WorkerExecutor mWorkerExecutor;
+    private final Context mContext;
+    private final WorkerExecutor mWorkerExecutor;
+    private final DataParser mDataParser;
 
     @Inject
-    public CallLogDataHandler(@ApplicationContext Context context) {
+    CallLogDataHandler(@ApplicationContext Context context, WorkerExecutor workerExecutor,
+            DataParser dataParser) {
         mContext = context;
-        mWorkerExecutor = WorkerExecutor.getInstance();
+        mWorkerExecutor = workerExecutor;
+        mDataParser = dataParser;
     }
 
     /**
@@ -53,7 +56,7 @@ public class CallLogDataHandler {
      */
     public void addCallLogsAsync(String file) {
         // TODO: add thread here later.
-        List<CallLogRawData> list = DataParser.getInstance().parseCallLogData(mContext, file);
+        List<CallLogRawData> list = mDataParser.parseCallLogData(mContext, file);
         addCallLogsAsync(list);
     }
 

@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
@@ -54,7 +55,7 @@ class HfpDeviceListLiveData extends MediatorLiveData<List<BluetoothDevice>> {
     @Inject
     HfpDeviceListLiveData(
             @ApplicationContext Context context,
-            BluetoothAdapter bluetoothAdapter,
+            @Nullable BluetoothAdapter bluetoothAdapter,
             BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider) {
         mContext = context;
         mBluetoothAdapter = bluetoothAdapter;

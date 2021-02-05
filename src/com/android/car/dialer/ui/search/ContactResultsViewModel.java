@@ -25,7 +25,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.common.DialerListViewModel;
@@ -33,13 +32,14 @@ import com.android.car.dialer.ui.common.DialerListViewModel;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * {link AndroidViewModel} used for search functionality.
  */
 public class ContactResultsViewModel extends DialerListViewModel {
 
-    @Inject @Qualifiers.Hfp LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
+    @Inject @Named("Hfp") LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     private final ContactResultsLiveData mContactSearchResultsLiveData;
     private final MutableLiveData<String> mSearchQueryLiveData;
 

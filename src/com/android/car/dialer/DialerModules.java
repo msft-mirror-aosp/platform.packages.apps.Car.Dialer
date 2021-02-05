@@ -25,11 +25,11 @@ import androidx.lifecycle.Transformations;
 import androidx.preference.PreferenceManager;
 
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
-import com.android.car.dialer.inject.Qualifiers;
 
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -58,7 +58,7 @@ public final class DialerModules {
     @Module
     public static final class SingleHfpModule {
         @Singleton
-        @Qualifiers.Bluetooth
+        @Named("Bluetooth")
         @Provides
         static LiveData<Integer> provideBluetoothStateLiveData(
                 UiBluetoothMonitor uiBluetoothMonitor) {
@@ -66,7 +66,7 @@ public final class DialerModules {
         }
 
         @Singleton
-        @Qualifiers.Bluetooth
+        @Named("Bluetooth")
         @Provides
         static LiveData<Set<BluetoothDevice>> provideBluetoothPairListLiveData(
                 UiBluetoothMonitor uiBluetoothMonitor) {
@@ -74,7 +74,7 @@ public final class DialerModules {
         }
 
         @Singleton
-        @Qualifiers.Hfp
+        @Named("Hfp")
         @Provides
         static LiveData<List<BluetoothDevice>> provideHfpDeviceListLiveData(
                 UiBluetoothMonitor uiBluetoothMonitor) {
@@ -82,10 +82,10 @@ public final class DialerModules {
         }
 
         @Singleton
-        @Qualifiers.Hfp
+        @Named("Hfp")
         @Provides
         static LiveData<BluetoothDevice> provideCurrentHfpDeviceLiveData(
-                @Qualifiers.Hfp LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
+                @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
             return Transformations.map(hfpDeviceListLiveData, (devices) ->
                     devices != null && !devices.isEmpty()
                             ? devices.get(0)
@@ -93,10 +93,10 @@ public final class DialerModules {
         }
 
         @Singleton
-        @Qualifiers.Hfp
+        @Named("Hfp")
         @Provides
         static LiveData<Boolean> hasHfpDeviceConnectedLiveData(
-                @Qualifiers.Hfp LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
+                @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
             return Transformations.map(hfpDeviceListLiveData,
                     devices -> devices != null && !devices.isEmpty());
         }

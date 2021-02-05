@@ -81,8 +81,8 @@ public class ContactResultsLiveData extends
 
         mContactListLiveData = LiveDataFunctions.switchMapNonNull(
                 firstConnectedHfpDevice,
-                device -> InMemoryPhoneBook.get()
-                        .getContactsLiveDataByAccount(device.getAddress()));
+                device -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(
+                        device.getAddress()));
         addSource(mContactListLiveData, this::onContactsChange);
         mSearchQueryLiveData = searchQueryLiveData;
         addSource(mSearchQueryLiveData, this::onSearchQueryChanged);

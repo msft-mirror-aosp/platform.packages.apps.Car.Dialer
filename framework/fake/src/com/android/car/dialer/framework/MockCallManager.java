@@ -22,11 +22,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.net.Uri;
+import android.provider.CallLog;
 import android.telecom.Call;
 import android.telecom.DisconnectCause;
 import android.telecom.GatewayInfo;
 import android.telecom.InCallService;
 import android.util.Log;
+
+import com.android.car.dialer.framework.testdata.CallLogDataHandler;
+import com.android.car.dialer.framework.testdata.CallLogRawData;
+import com.android.car.telephony.common.CallDetail;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
@@ -53,6 +58,7 @@ public class MockCallManager {
     private static final String TAG = "CD.MockCallManager";
 
     private InCallService mInCallService;
+    private final CallLogDataHandler mCallLogDataHandler;
 
     private List<Call> mCallList = new ArrayList<>();
     private List<Call> mConferenceList = new ArrayList<>();
@@ -64,7 +70,9 @@ public class MockCallManager {
     private Map<Call, List<Call.Callback>> mCallbacks = new HashMap<>();
 
     @Inject
-    public MockCallManager() {}
+    public MockCallManager(CallLogDataHandler callLogDataHandler) {
+        mCallLogDataHandler = callLogDataHandler;
+    }
 
     /**
      * Registers an InCallService.
@@ -93,13 +101,21 @@ public class MockCallManager {
         }
 
         // Create a mock call and hold the existing call.
-        Call call = createMockCall(id, false);
+        Call call = createMockCall(id, false, Call.Details.DIRECTION_OUTGOING);
         if (mPrimaryCall != null) {
             hold(mPrimaryCall);
         }
         mCallList.add(call);
         mInCallService.onCallAdded(call);
         updateList();
+    }
+
+    /**
+     * Ends a call tied to the id.
+     */
+    public void endCall(String id) {
+        Call call = findCallById(id);
+        disconnect(call);
     }
 
     /**
@@ -158,7 +174,8 @@ public class MockCallManager {
         }
 
         // If the call is a conference, remove the reference
-        if (call.equals(mConferenceCall)) {
+        boolean isConference = call.equals(mConferenceCall);
+        if (isConference) {
             mConferenceCall = null;
         }
         Call parent = call.getParent();
@@ -180,6 +197,22 @@ public class MockCallManager {
             mCallList.remove(mConferenceCall);
             mInCallService.onCallRemoved(mConferenceCall);
             updateList();
+        }
+
+        // Add call log if direction is defined (All calls except conference)
+        if (!isConference) {
+            CallDetail detail = CallDetail.fromTelecomCallDetail(call.getDetails());
+            int callDuration = (int) (System.currentTimeMillis() - detail.getConnectTimeMillis());
+
+            CallLogRawData data = new CallLogRawData();
+            data.setNumberType(
+                    // See CallLog.Calls#TYPE and Call.Details#CallDirections
+                    call.getDetails().getDisconnectCause().getCode() == DisconnectCause.MISSED
+                            ? CallLog.Calls.MISSED_TYPE
+                            : call.getDetails().getCallDirection() + 1);
+            data.setNumber(detail.getNumber());
+            data.setInterval(callDuration);
+            mCallLogDataHandler.addOneCallLog(data);
         }
     }
 
@@ -273,6 +306,20 @@ public class MockCallManager {
     }
 
     /**
+     * Finds the {@link Call} in mCallList by its id
+     */
+    private Call findCallById(String id) {
+        for (Call call : mCallList) {
+            CallDetail detail = CallDetail.fromTelecomCallDetail(call.getDetails());
+            if (detail.getNumber().equals(id)) {
+                return call;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Registers a {@link Call.Callback} to a {@link Call}
      */
     private void registerCallback(Call call, Call.Callback callback) {
@@ -349,6 +396,14 @@ public class MockCallManager {
                 .buildMock();
     }
 
+    private Call createMockCall(String number, boolean isConference, int callDirection) {
+        return new Builder()
+                .setPhoneNumber(number)
+                .setIsConference(isConference)
+                .setCallDirection(callDirection)
+                .buildMock();
+    }
+
     /**
      * Builder class for mocked Calls.
      */
@@ -358,6 +413,7 @@ public class MockCallManager {
 
         private String mNumber;
         private boolean mIsConference;
+        private int mCallDirection = Call.Details.DIRECTION_UNKNOWN;
 
         public Builder() {
             mCall = mock(Call.class);
@@ -389,6 +445,14 @@ public class MockCallManager {
             return this;
         }
 
+        /**
+         * Sets the call direction
+         */
+        public Builder setCallDirection(int callDirection) {
+            mCallDirection = callDirection;
+            return this;
+        }
+
         private void updateCallDetails() {
             // Set up updated details
             Uri uri = Uri.fromParts("tel", mNumber, null);
@@ -397,6 +461,7 @@ public class MockCallManager {
             DisconnectCause disconnectCause = new DisconnectCause(1, label, null, "");
             long connectTimeMillis = System.currentTimeMillis();
 
+            when(mDetails.getCallDirection()).thenReturn(mCallDirection);
             when(mDetails.getHandle()).thenReturn(uri);
             when(mDetails.getDisconnectCause()).thenReturn(disconnectCause);
             when(mDetails.getGatewayInfo()).thenReturn(gatewayInfo);

@@ -27,42 +27,24 @@ import com.android.car.apps.common.log.L;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * A handler for adding call log data
  */
+@Singleton
 public class CallLogDataHandler {
     private static final String TAG = "CD.CallLogDataHandler";
-
-    private static CallLogDataHandler sCallLogDataHandler;
 
     private Context mContext;
     private WorkerExecutor mWorkerExecutor;
 
-    /**
-     * Initialized a globally accessible {@link CallLogDataHandler} which can be retrieved by {@link
-     * #get}.
-     *
-     * @param applicationContext Application context.
-     */
-    public static void init(Context applicationContext) {
-        if (sCallLogDataHandler == null) {
-            sCallLogDataHandler = new CallLogDataHandler(applicationContext);
-        }
-    }
-
-    /**
-     * Returns the single instance of {@link CallLogDataHandler}.
-     */
-    public static CallLogDataHandler get() {
-        if (sCallLogDataHandler == null) {
-            throw new IllegalStateException(
-                    "Call CallLogDataHandler.init(Context) before calling this function");
-        }
-        return sCallLogDataHandler;
-    }
-
-    private CallLogDataHandler(Context applicationContext) {
-        mContext = applicationContext;
+    @Inject
+    public CallLogDataHandler(@ApplicationContext Context context) {
+        mContext = context;
         mWorkerExecutor = WorkerExecutor.getInstance();
     }
 
@@ -80,7 +62,6 @@ public class CallLogDataHandler {
      * calllog.db in Contacts Provider.
      */
     public void addCallLogsAsync(List<CallLogRawData> list) {
-
         Runnable runnable = () -> {
             for (CallLogRawData rawData : list) {
                 addOneCallLog(rawData);
@@ -94,7 +75,6 @@ public class CallLogDataHandler {
      * Adds a single call log to the database.
      */
     public void addOneCallLog(CallLogRawData callLogRawData) {
-
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
         String id = callLogRawData.getId();
@@ -127,7 +107,6 @@ public class CallLogDataHandler {
      */
     public void tearDown() {
         removeAddedCalllogsAsync();
-        sCallLogDataHandler = null;
     }
 
     /**

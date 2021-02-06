@@ -52,6 +52,13 @@ public abstract class InCallServiceProxy extends InCallService {
     }
 
     /**
+     * Disconnects a call with id
+     */
+    public void endCall(String id) {
+        mMockCallManager.endCall(id);
+    }
+
+    /**
      * Merges current ongoing calls into a conference
      */
     public void mergeCalls() {

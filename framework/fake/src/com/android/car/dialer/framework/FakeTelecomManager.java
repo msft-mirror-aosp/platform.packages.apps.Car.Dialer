@@ -102,17 +102,36 @@ public class FakeTelecomManager {
     }
 
     /**
+     * Ends a call.
+     */
+    public void endCall(String id) {
+        if (mInCallService != null) {
+            mInCallService.endCall(id);
+        } else {
+            Log.d(TAG, "null service");
+        }
+    }
+
+    /**
      * Removes all current calls.
      */
     public void clearCalls() {
-        mInCallService.clearCalls();
+        if (mInCallService != null) {
+            mInCallService.clearCalls();
+        } else {
+            Log.d(TAG, "null service");
+        }
     }
 
     /**
      * Merges the primary and secondary calls.
      */
     public void mergeCalls() {
-        mInCallService.mergeCalls();
+        if (mInCallService != null) {
+            mInCallService.mergeCalls();
+        } else {
+            Log.d(TAG, "null service");
+        }
     }
 
     /**

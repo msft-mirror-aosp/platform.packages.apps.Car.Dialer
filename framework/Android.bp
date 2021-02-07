@@ -46,6 +46,7 @@ android_library {
     ],
 
     static_libs: [
+        "car-telephony-common",
         "car-apps-common",
         "androidx.annotation_annotation",
         "androidx.core_core",

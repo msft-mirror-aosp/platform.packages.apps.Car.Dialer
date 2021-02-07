@@ -150,6 +150,8 @@ public class DialpadFragment extends Hilt_DialpadFragment {
             mAdapter = new TypeDownResultsAdapter(mUiCallManager);
         }
 
+        int limit = getResources().getInteger(R.integer.config_type_down_list_limit);
+        mAdapter.setUnrestrictedItemCount(limit);
         mAdapter.setOnItemClickedListener(item -> clearDialedNumber());
         mTypeDownResultsViewModel = ViewModelProviders.of(this).get(
                 TypeDownResultsViewModel.class);

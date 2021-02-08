@@ -17,7 +17,6 @@
 package com.android.car.dialer.ui.contact;
 
 import android.app.Application;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.util.Pair;
 
@@ -34,7 +33,6 @@ import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
 import com.android.car.telephony.common.Contact;
-import com.android.car.telephony.common.InMemoryPhoneBook;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,14 +42,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * View model for {@link ContactListFragment}.
  */
 public class ContactListViewModel extends DialerListViewModel {
 
-    @Inject @Named("Hfp") LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
+    @Inject LiveData<List<Contact>> mContactListLiveData;
     private final Context mContext;
     private final LiveData<Pair<Integer, List<Contact>>> mSortedContactListLiveData;
     private final LiveData<FutureData<Pair<Integer, List<Contact>>>> mContactList;
@@ -63,12 +60,8 @@ public class ContactListViewModel extends DialerListViewModel {
         mContext = application.getApplicationContext();
 
         SharedPreferencesLiveData preferencesLiveData = getSharedPreferencesLiveData();
-        LiveData<List<Contact>> contactListLiveData = LiveDataFunctions.switchMapNonNull(
-                mCurrentHfpDeviceLiveData,
-                device -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(
-                        device.getAddress()));
         mSortedContactListLiveData = new SortedContactListLiveData(
-                mContext, contactListLiveData, preferencesLiveData);
+                mContext, mContactListLiveData, preferencesLiveData);
         mContactList = LiveDataFunctions.loadingSwitchMap(mSortedContactListLiveData,
                 input -> LiveDataFunctions.dataOf(input));
     }

@@ -24,7 +24,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import androidx.preference.PreferenceManager;
 
+import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.livedata.CallHistoryLiveData;
+import com.android.car.telephony.common.Contact;
+import com.android.car.telephony.common.InMemoryPhoneBook;
+import com.android.car.telephony.common.PhoneCallLog;
 
 import java.util.List;
 import java.util.Set;
@@ -100,6 +105,23 @@ public final class DialerModules {
             return Transformations.map(hfpDeviceListLiveData,
                     devices -> devices != null && !devices.isEmpty());
         }
+
+        @Provides
+        static LiveData<List<PhoneCallLog>> provideCallHistoryLiveData(
+                @ApplicationContext Context context,
+                @Named("Hfp") LiveData<BluetoothDevice> currentHfpDevice) {
+            return LiveDataFunctions.switchMapNonNull(currentHfpDevice,
+                    device -> CallHistoryLiveData.newInstance(context, device.getAddress()));
+        }
+
+        @Provides
+        static LiveData<List<Contact>> provideContactListLiveData(
+                @Named("Hfp") LiveData<BluetoothDevice> currentHfpDevice) {
+            return LiveDataFunctions.switchMapNonNull(currentHfpDevice,
+                    device -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(
+                            device.getAddress()));
+        }
+
     }
 
     /** Do not initialize. */

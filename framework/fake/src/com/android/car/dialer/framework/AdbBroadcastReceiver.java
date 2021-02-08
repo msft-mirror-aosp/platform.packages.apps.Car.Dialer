@@ -41,9 +41,10 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     private static final String ACTION_TAG = "action";
     private static final String ACTION_CONNECT = "connect";
     private static final String ACTION_ADDCALL = "addCall";
-    private static final String ACTION_ADDCALL_ID = "id";
+    private static final String ACTION_ENDCALL = "endCall";
     private static final String ACTION_CLEARALL = "clearAll";
     private static final String ACTION_MERGE = "merge";
+    private static final String EXTRA_CALL_ID = "id";
 
     private final FakeTelecomManager mFakeTelecomManager;
     private final FakeBluetoothAdapter mFakeBluetoothAdapter;
@@ -79,12 +80,18 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getStringExtra(ACTION_TAG);
+        String id;
 
         switch(action) {
             case ACTION_ADDCALL:
-                String id = intent.getStringExtra(ACTION_ADDCALL_ID);
+                id = intent.getStringExtra(EXTRA_CALL_ID);
                 Log.d(TAG, action + id);
                 mFakeTelecomManager.placeCall(id);
+                break;
+            case ACTION_ENDCALL:
+                id = intent.getStringExtra(EXTRA_CALL_ID);
+                Log.d(TAG, action + id);
+                mFakeTelecomManager.endCall(id);
                 break;
             case ACTION_CLEARALL:
                 Log.d(TAG, action);

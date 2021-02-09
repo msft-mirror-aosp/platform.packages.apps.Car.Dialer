@@ -41,6 +41,7 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     private static final String ACTION_TAG = "action";
     private static final String ACTION_CONNECT = "connect";
     private static final String ACTION_ADDCALL = "addCall";
+    private static final String ACTION_RECEIVECALL = "receiveCall";
     private static final String ACTION_ENDCALL = "endCall";
     private static final String ACTION_CLEARALL = "clearAll";
     private static final String ACTION_MERGE = "merge";
@@ -92,6 +93,11 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
                 id = intent.getStringExtra(EXTRA_CALL_ID);
                 Log.d(TAG, action + id);
                 mFakeTelecomManager.endCall(id);
+                break;
+            case ACTION_RECEIVECALL:
+                id = intent.getStringExtra(EXTRA_CALL_ID);
+                Log.d(TAG, action + id);
+                mFakeTelecomManager.receiveCall(id);
                 break;
             case ACTION_CLEARALL:
                 Log.d(TAG, action);

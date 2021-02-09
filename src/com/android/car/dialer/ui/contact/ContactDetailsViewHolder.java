@@ -19,6 +19,7 @@ package com.android.car.dialer.ui.contact;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -49,6 +50,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.auto.factory.AutoFactory;
 import com.google.auto.factory.Provided;
+
+import java.util.List;
 
 /**
  * ViewHolder for {@link ContactDetailsFragment}.
@@ -209,8 +212,16 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
 
         mAddressView.setOnClickListener(
                 v -> openMapWithMapIntent(context, postalAddress.getAddressIntent(resources)));
-        mNavigationButton.setOnClickListener(
-                v -> openMapWithMapIntent(context, postalAddress.getNavigationIntent(resources)));
+
+        Intent intent = postalAddress.getNavigationIntent(resources);
+        List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
+
+        if (infos.size() > 0) {
+            mNavigationButton.setVisibility(View.VISIBLE);
+            mNavigationButton.setOnClickListener(v -> openMapWithMapIntent(context, intent));
+        } else {
+            mNavigationButton.setVisibility(View.GONE);
+        }
     }
 
     private void openMapWithMapIntent(Context context, Intent mapIntent) {

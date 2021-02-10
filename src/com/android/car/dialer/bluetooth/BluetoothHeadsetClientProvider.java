@@ -46,7 +46,7 @@ public class BluetoothHeadsetClientProvider {
     @Inject
     BluetoothHeadsetClientProvider(
             @ApplicationContext Context context,
-            BluetoothAdapter bluetoothAdapter) {
+            @Nullable BluetoothAdapter bluetoothAdapter) {
         mIsBluetoothHeadsetClientConnected = new MutableLiveData<>();
         mIsBluetoothHeadsetClientConnected.observeForever(
                 isConnected -> L.d(TAG, "BluetoothHeadsetClient is connected."));

@@ -47,8 +47,8 @@ public abstract class InCallServiceProxy extends InCallService {
     /**
      * Places a call with id
      */
-    public void addCall(String id) {
-        mMockCallManager.addCall(id);
+    public void addCall(String id, int direction, int state) {
+        mMockCallManager.addCall(id, direction, state);
     }
 
     /**

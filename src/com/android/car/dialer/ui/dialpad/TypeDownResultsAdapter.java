@@ -21,7 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.car.dialer.R;
-import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.search.ContactResultViewHolder;
 import com.android.car.dialer.ui.search.ContactResultsAdapter;
@@ -30,20 +30,15 @@ import com.android.car.dialer.ui.search.ContactResultsAdapter;
  * An adapter used for type down functionality.
  */
 public class TypeDownResultsAdapter extends ContactResultsAdapter {
-
-    private final UiCallManager mUiCallManager;
-
-    private OnItemClickedListener mOnItemClickedListener;
+    private OnItemClickedListener<ContactResultsLiveData.ContactResultListItem>
+            mOnItemClickedListener;
 
     private int mUnrestrictedItemCount = Integer.MAX_VALUE;
 
-    public TypeDownResultsAdapter(UiCallManager uiCallManager) {
-        super(null);
-        mUiCallManager = uiCallManager;
-    }
-
-    public void setOnItemClickedListener(OnItemClickedListener onItemClickedListener) {
-        mOnItemClickedListener = onItemClickedListener;
+    public TypeDownResultsAdapter(
+            OnItemClickedListener<ContactResultsLiveData.ContactResultListItem> listener) {
+        super(listener);
+        mOnItemClickedListener = listener;
     }
 
     /**
@@ -62,13 +57,12 @@ public class TypeDownResultsAdapter extends ContactResultsAdapter {
     public ContactResultViewHolder onCreateViewHolderImpl(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.type_down_list_item, parent, false);
-        return new ContactResultViewHolder(view, null, mOnItemClickedListener);
+        return new ContactResultViewHolder(view, mOnItemClickedListener);
     }
 
     @Override
     public void onBindViewHolderImpl(ContactResultViewHolder holder, int position) {
-        holder.bindTypeDownResult(getContactResults().get(position), mUiCallManager,
-                getSortMethod());
+        holder.bindTypeDownResult(getContactResults().get(position), getSortMethod());
     }
 
     @Override

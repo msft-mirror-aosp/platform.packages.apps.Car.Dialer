@@ -29,6 +29,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.telecom.Call;
 import android.telecom.InCallService;
 import android.telecom.TelecomManager;
 import android.util.Log;
@@ -95,7 +96,18 @@ public class FakeTelecomManager {
      */
     public void placeCall(String id) {
         if (mInCallService != null) {
-            mInCallService.addCall(id);
+            mInCallService.addCall(id, Call.Details.DIRECTION_OUTGOING, Call.STATE_ACTIVE);
+        } else {
+            Log.d(TAG, "null service");
+        }
+    }
+
+    /**
+     * Receive a call.
+     */
+    public void receiveCall(String id) {
+        if (mInCallService != null) {
+            mInCallService.addCall(id, Call.Details.DIRECTION_INCOMING, Call.STATE_RINGING);
         } else {
             Log.d(TAG, "null service");
         }

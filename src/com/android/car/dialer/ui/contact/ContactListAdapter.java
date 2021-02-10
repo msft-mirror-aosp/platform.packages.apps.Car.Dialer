@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.common.DialerUtils;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.TelecomUtils;
 import com.android.car.ui.recyclerview.ContentLimitingAdapter;
@@ -47,14 +48,10 @@ import dagger.hilt.android.qualifiers.ActivityContext;
 class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
     private static final String TAG = "CD.ContactListAdapter";
 
-    interface OnShowContactDetailListener {
-        void onShowContactDetail(Contact contact);
-    }
-
     private final Context mContext;
     private final ContactListViewHolderFactory mViewHolderFactory;
     private final List<Contact> mContactList = new ArrayList<>();
-    private final OnShowContactDetailListener mOnShowContactDetailListener;
+    private final OnItemClickedListener<Contact> mOnItemClickedListener;
 
     private Integer mSortMethod;
     private LinearLayoutManager mLinearLayoutManager;
@@ -63,10 +60,10 @@ class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
     ContactListAdapter(
             @Provided @ActivityContext Context context,
             @Provided ContactListViewHolderFactory viewHolderFactory,
-            OnShowContactDetailListener onShowContactDetailListener) {
+            OnItemClickedListener<Contact> onItemClickedListener) {
         mContext = context;
         mViewHolderFactory = viewHolderFactory;
-        mOnShowContactDetailListener = onShowContactDetailListener;
+        mOnItemClickedListener = onItemClickedListener;
     }
 
     /**
@@ -94,7 +91,7 @@ class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
     public ContactListViewHolder onCreateViewHolderImpl(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.contact_list_item, parent,
                 false);
-        return  mViewHolderFactory.create(itemView, mOnShowContactDetailListener);
+        return  mViewHolderFactory.create(itemView, mOnItemClickedListener);
     }
 
     @Override

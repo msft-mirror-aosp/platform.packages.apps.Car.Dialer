@@ -20,18 +20,19 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.BluetoothState;
-import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.log.L;
 
 import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
@@ -53,10 +54,10 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
     @Inject
     BluetoothErrorStringLiveData(
             @ApplicationContext Context context,
-            @Qualifiers.Hfp LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
-            @Qualifiers.Bluetooth LiveData<Set<BluetoothDevice>> pairListLiveData,
-            @Qualifiers.Bluetooth LiveData<Integer> bluetoothStateLiveData,
-            BluetoothAdapter bluetoothAdapter) {
+            @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
+            @Named("Bluetooth") LiveData<Set<BluetoothDevice>> pairListLiveData,
+            @Named("Bluetooth") LiveData<Integer> bluetoothStateLiveData,
+            @Nullable BluetoothAdapter bluetoothAdapter) {
         mContext = context;
 
         if (bluetoothAdapter == null) {

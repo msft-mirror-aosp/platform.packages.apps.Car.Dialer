@@ -28,50 +28,35 @@ import com.android.car.apps.common.log.L;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * A handler for adding contact data
  */
+@Singleton
 public class ContactDataHandler {
     private static final String TAG = "CD.ContactDataHandler";
 
-    private static ContactDataHandler sContactDataHandler;
+    private final Context mContext;
+    private final WorkerExecutor mWorkerExecutor;
+    private final DataParser mDataParser;
 
-    private Context mContext;
-    private WorkerExecutor mWorkerExecutor;
-
-    /**
-     * Initialized a globally accessible {@link ContactDataHandler} which can be retrieved by
-     * {@link #get}.
-     *
-     * @param applicationContext Application context.
-     */
-    public static void init(Context applicationContext) {
-        if (sContactDataHandler == null) {
-            sContactDataHandler = new ContactDataHandler(applicationContext);
-        }
-    }
-
-    /**
-     * Returns the single instance of {@link ContactDataHandler}.
-     */
-    public static ContactDataHandler get() {
-        if (sContactDataHandler == null) {
-            throw new IllegalStateException(
-                    "Call ContactDataHandler.init(Context) before calling this function");
-        }
-        return sContactDataHandler;
-    }
-
-    private ContactDataHandler(Context applicationContext) {
-        mContext = applicationContext;
-        mWorkerExecutor = WorkerExecutor.getInstance();
+    @Inject
+    ContactDataHandler(@ApplicationContext Context context, WorkerExecutor workerExecutor,
+            DataParser dataParser) {
+        mContext = context;
+        mWorkerExecutor = workerExecutor;
+        mDataParser = dataParser;
     }
 
     /**
      * Adds contact data in a json file to contact database contacts2.db in Contacts Provider.
      */
     public void addContactsAsync(String file, String accountName, String accountType) {
-        List<ContactRawData> list = DataParser.getInstance().parseContactData(mContext, file);
+        List<ContactRawData> list = mDataParser.parseContactData(mContext, file);
         addContactsAsync(list, accountName, accountType);
     }
 
@@ -159,8 +144,6 @@ public class ContactDataHandler {
      */
     public void tearDown() {
         removeAddedContactsAsync();
-
-        sContactDataHandler = null;
     }
 
     /**

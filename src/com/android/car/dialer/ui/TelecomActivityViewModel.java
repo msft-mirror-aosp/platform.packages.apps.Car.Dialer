@@ -17,7 +17,6 @@
 package com.android.car.dialer.ui;
 
 import android.app.Application;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.telecom.Call;
@@ -31,7 +30,6 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
@@ -40,6 +38,7 @@ import com.android.car.dialer.ui.common.SingleLiveEvent;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * View model for {@link TelecomActivity}.
@@ -48,9 +47,10 @@ public class TelecomActivityViewModel extends AndroidViewModel {
     private static final String TAG = "CD.TelecomActivityViewModel";
 
     @Inject LocalCallHandler mLocalCallHandler;
-    @Inject @Qualifiers.Hfp LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
-    @Inject @Qualifiers.Hfp LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
-    @Inject @Qualifiers.Hfp LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
+    @Inject @Named("Hfp") LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
+    @Inject @Named("Hfp") LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
+    @Inject @Named("Hfp") LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
+    @Inject ToolbarTitleLiveDataFactory mToolbarTitleLiveDataFactory;
 
     private final Context mApplicationContext;
     private RefreshUiEvent mRefreshTabsLiveData;
@@ -64,12 +64,9 @@ public class TelecomActivityViewModel extends AndroidViewModel {
         mApplicationContext = application.getApplicationContext();
 
         mToolbarTitleMode = new MediatorLiveData<>();
-        mToolbarTitleLiveData = new ToolbarTitleLiveData(mApplicationContext, mToolbarTitleMode,
-                mCurrentHfpDeviceLiveData);
+        mToolbarTitleLiveData = mToolbarTitleLiveDataFactory.create(mToolbarTitleMode);
 
-        if (BluetoothAdapter.getDefaultAdapter() != null) {
-            mRefreshTabsLiveData = new RefreshUiEvent(mHfpDeviceListLiveData);
-        }
+        mRefreshTabsLiveData = new RefreshUiEvent(mHfpDeviceListLiveData);
     }
 
     /**

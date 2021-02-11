@@ -37,8 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint;
  * Contact Fragment.
  */
 @AndroidEntryPoint(DialerListBaseFragment.class)
-public class ContactListFragment extends Hilt_ContactListFragment implements
-        ContactListAdapter.OnShowContactDetailListener {
+public class ContactListFragment extends Hilt_ContactListFragment {
     @Inject ContactListAdapterFactory mContactListAdapterFactory;
     private ContactListAdapter mContactListAdapter;
 
@@ -54,7 +53,7 @@ public class ContactListFragment extends Hilt_ContactListFragment implements
         // immediately, we won't remember our scroll position.
         if (mContactListAdapter == null) {
             mContactListAdapter =
-                    mContactListAdapterFactory.create(/* onShowContactDetailListener= */this);
+                    mContactListAdapterFactory.create(contact->onShowContactDetail(contact));
         }
         getRecyclerView().setAdapter(mContactListAdapter);
         getUxrContentLimiter().setAdapter(mContactListAdapter);
@@ -74,8 +73,7 @@ public class ContactListFragment extends Hilt_ContactListFragment implements
         });
     }
 
-    @Override
-    public void onShowContactDetail(Contact contact) {
+    private void onShowContactDetail(Contact contact) {
         Fragment contactDetailsFragment = ContactDetailsFragment.newInstance(contact);
         pushContentFragment(contactDetailsFragment, ContactDetailsFragment.FRAGMENT_TAG);
     }

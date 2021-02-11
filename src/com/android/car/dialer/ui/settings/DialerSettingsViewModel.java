@@ -25,10 +25,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.Qualifiers;
 import com.android.car.dialer.inject.ViewModelComponent;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * ViewModel for {@link DialerSettingsFragment}
@@ -36,8 +36,8 @@ import javax.inject.Inject;
 public class DialerSettingsViewModel extends AndroidViewModel {
     private static final String EMPTY_STRING = "";
 
-    @Inject @Qualifiers.Hfp LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
-    @Inject @Qualifiers.Hfp LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
+    @Inject @Named("Hfp") LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
+    @Inject @Named("Hfp") LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
     public DialerSettingsViewModel(@NonNull Application application) {
         super(application);

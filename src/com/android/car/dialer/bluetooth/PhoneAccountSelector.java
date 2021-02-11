@@ -25,11 +25,11 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.Constants;
-import com.android.car.dialer.inject.Qualifiers;
 
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /** Monitors the current hfp device and set it as the user selected outgoing phone account. */
@@ -40,7 +40,7 @@ public class PhoneAccountSelector {
     @Inject
     public PhoneAccountSelector(
             TelecomManager telecomManager,
-            @Qualifiers.Hfp LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
         mTelecomManager = telecomManager;
         currentHfpDeviceLiveData.observeForever(device -> {
             PhoneAccountHandle phoneAccountHandle = getPhoneAccountHandleForDevice(device);

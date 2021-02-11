@@ -28,6 +28,7 @@ import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.DialerUtils;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
@@ -45,7 +46,7 @@ import java.util.List;
 @AutoFactory
 class ContactListViewHolder extends RecyclerView.ViewHolder {
     private final UiCallManager mUiCallManager;
-    private final ContactListAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
+    private final OnItemClickedListener<Contact> mOnItemClickedListener;
     private final TextView mHeaderView;
     private final ImageView mAvatarView;
     private final TextView mTitleView;
@@ -55,11 +56,11 @@ class ContactListViewHolder extends RecyclerView.ViewHolder {
 
     ContactListViewHolder(
             @NonNull View itemView,
-            ContactListAdapter.OnShowContactDetailListener onShowContactDetailListener,
+            OnItemClickedListener<Contact> onItemClickedListener,
             @Provided UiCallManager uiCallManager) {
         super(itemView);
         mUiCallManager = uiCallManager;
-        mOnShowContactDetailListener = onShowContactDetailListener;
+        mOnItemClickedListener = onItemClickedListener;
         mHeaderView = itemView.findViewById(R.id.header);
         mAvatarView = itemView.findViewById(R.id.icon);
         mAvatarView.setOutlineProvider(ContactAvatarOutputlineProvider.get());
@@ -143,7 +144,7 @@ class ContactListViewHolder extends RecyclerView.ViewHolder {
 
         if (hasContactDetail) {
             ViewUtils.setOnClickListener(mShowContactDetailView,
-                    view -> mOnShowContactDetailListener.onShowContactDetail(contact));
+                    view -> mOnItemClickedListener.onItemClicked(contact));
         } else {
             ViewUtils.setOnClickListener(mShowContactDetailView, null);
         }

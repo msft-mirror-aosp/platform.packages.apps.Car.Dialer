@@ -42,7 +42,7 @@ import com.android.car.uxr.UxrContentLimiterImpl;
  * results as a list.
  */
 public class ContactResultsFragment extends DialerListBaseFragment implements
-        ContactResultsAdapter.OnShowContactDetailListener, Toolbar.OnSearchListener {
+        Toolbar.OnSearchListener {
 
     /**
      * Creates a new instance of the {@link ContactResultsFragment}.
@@ -64,7 +64,8 @@ public class ContactResultsFragment extends DialerListBaseFragment implements
     private static final String SEARCH_QUERY = "SearchQuery";
 
     private ContactResultsViewModel mContactResultsViewModel;
-    private final ContactResultsAdapter mAdapter = new ContactResultsAdapter(this);
+    private final ContactResultsAdapter mAdapter = new ContactResultsAdapter(
+            contactResult -> onShowContactDetail(contactResult.getContact()));
 
     private RecyclerView.OnScrollListener mOnScrollChangeListener;
     private ToolbarController mToolbar;
@@ -174,8 +175,7 @@ public class ContactResultsFragment extends DialerListBaseFragment implements
         mContactResultsViewModel.setSearchQuery(newQuery);
     }
 
-    @Override
-    public void onShowContactDetail(Contact contact) {
+    protected void onShowContactDetail(Contact contact) {
         Fragment contactDetailsFragment = ContactDetailsFragment.newInstance(contact);
         pushContentFragment(contactDetailsFragment, ContactDetailsFragment.FRAGMENT_TAG);
     }

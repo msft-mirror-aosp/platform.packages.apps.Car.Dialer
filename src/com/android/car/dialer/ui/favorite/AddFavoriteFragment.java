@@ -136,7 +136,7 @@ public class AddFavoriteFragment extends ContactResultsFragment {
     }
 
     @Override
-    public void onShowContactDetail(Contact contact) {
+    protected void onShowContactDetail(Contact contact) {
         if (contact == null) {
             mCurrentDialog.dismiss();
             return;

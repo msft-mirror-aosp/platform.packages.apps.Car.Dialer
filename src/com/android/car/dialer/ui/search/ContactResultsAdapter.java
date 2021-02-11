@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.common.DialerUtils;
-import com.android.car.telephony.common.Contact;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.ui.recyclerview.ContentLimitingAdapter;
 
 import java.util.ArrayList;
@@ -42,17 +42,15 @@ public class ContactResultsAdapter extends ContentLimitingAdapter<ContactResultV
 
     private Integer mSortMethod;
 
-    interface OnShowContactDetailListener {
-        void onShowContactDetail(Contact contact);
-    }
-
     private final List<ContactResultsLiveData.ContactResultListItem> mContactResults =
             new ArrayList<>();
-    private final OnShowContactDetailListener mOnShowContactDetailListener;
+    private final OnItemClickedListener<ContactResultsLiveData.ContactResultListItem>
+            mOnItemClickedListener;
     private LinearLayoutManager mLayoutManager;
 
-    public ContactResultsAdapter(OnShowContactDetailListener onShowContactDetailListener) {
-        mOnShowContactDetailListener = onShowContactDetailListener;
+    public ContactResultsAdapter(
+            OnItemClickedListener<ContactResultsLiveData.ContactResultListItem> listener) {
+        mOnItemClickedListener = listener;
     }
 
     /**
@@ -86,7 +84,7 @@ public class ContactResultsAdapter extends ContentLimitingAdapter<ContactResultV
     public ContactResultViewHolder onCreateViewHolderImpl(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.contact_result, parent, false);
-        return new ContactResultViewHolder(view, mOnShowContactDetailListener, null);
+        return new ContactResultViewHolder(view, mOnItemClickedListener);
     }
 
     @Override

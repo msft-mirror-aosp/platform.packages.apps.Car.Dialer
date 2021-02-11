@@ -30,22 +30,19 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * A data parser that reads Json arrays from a json file and returns a list of {@link
  * ContactRawData} or {@link CallLogRawData}.
  */
+@Singleton
 public class DataParser {
     private static final String TAG = "CD.DataParser";
 
-    private static DataParser sDataParser;
-
-    /** Returns the singleton DataParser for the application. */
-    public static DataParser getInstance() {
-        if (sDataParser == null) {
-            sDataParser = new DataParser();
-        }
-        return sDataParser;
-    }
+    @Inject
+    DataParser() {}
 
     /**
      * Parse the contact raw data from the json file. The json file should be one that is stored in
@@ -68,11 +65,6 @@ public class DataParser {
                 new TypeToken<List<CallLogRawData>>() {}.getType());
 
         return rawDatas;
-    }
-
-    /** Tears down the singleton DataParser for the application */
-    public void tearDown() {
-        sDataParser = null;
     }
 
     private <T extends RawData> List<T> getRawDataList(Context context, String file, Type type) {

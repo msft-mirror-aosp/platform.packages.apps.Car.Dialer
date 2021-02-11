@@ -19,24 +19,20 @@ package com.android.car.dialer.framework.testdata;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * WorkerExecutor is a singleton tied to the application to provide {@link ExecutorService} for
  * Dialer to run tasks in background.
  */
+@Singleton
 public class WorkerExecutor {
-    private static WorkerExecutor sWorkerExecutor;
 
     private ExecutorService mSingleThreadExecutor;
 
-    /** Returns the singleton WorkerExecutor for the application. */
-    public static WorkerExecutor getInstance() {
-        if (sWorkerExecutor == null) {
-            sWorkerExecutor = new WorkerExecutor();
-        }
-        return sWorkerExecutor;
-    }
-
-    private WorkerExecutor() {
+    @Inject
+    WorkerExecutor() {
         mSingleThreadExecutor = Executors.newSingleThreadExecutor();
     }
 
@@ -55,6 +51,5 @@ public class WorkerExecutor {
     /** Tears down the singleton WorkerExecutor for the application */
     public void tearDown() {
         mSingleThreadExecutor.shutdown();
-        sWorkerExecutor = null;
     }
 }

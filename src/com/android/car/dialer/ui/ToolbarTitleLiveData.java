@@ -25,6 +25,13 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.dialer.R;
 
+import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
+
+import javax.inject.Named;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * LiveData for the toolbar title of the  {@link com.android.car.dialer.ui.TelecomActivity}. The
  * attribute {@link R.attr#toolbarTitleMode} is activity scope attribute. Supported values are:
@@ -33,6 +40,7 @@ import com.android.car.dialer.R;
  *     <li> none: 1
  *     <li> device_name: 2
  */
+@AutoFactory
 class ToolbarTitleLiveData extends MediatorLiveData<String> {
 
     @IntDef({
@@ -51,9 +59,9 @@ class ToolbarTitleLiveData extends MediatorLiveData<String> {
     private final Context mContext;
 
     ToolbarTitleLiveData(
-            Context context,
+            @Provided @ApplicationContext Context context,
             LiveData<Integer> toolbarTitleModeLiveData,
-            LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
+            @Provided @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
         mContext = context;
         mToolbarTitleModeLiveData = toolbarTitleModeLiveData;
         mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;

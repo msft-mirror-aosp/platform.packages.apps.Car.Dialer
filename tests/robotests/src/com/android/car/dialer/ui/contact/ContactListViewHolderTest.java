@@ -33,6 +33,7 @@ import android.widget.TextView;
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.R;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.PostalAddress;
@@ -69,7 +70,7 @@ public class ContactListViewHolderTest {
     @Mock
     private UiCallManager mMockUiCallManager;
     @Mock
-    private ContactListAdapter.OnShowContactDetailListener mMockListener;
+    private OnItemClickedListener<Contact> mMockListener;
 
     @Before
     public void setUp() {
@@ -257,7 +258,7 @@ public class ContactListViewHolderTest {
         showContactDetailActionView.performClick();
 
         ArgumentCaptor<Contact> captor = ArgumentCaptor.forClass(Contact.class);
-        verify(mMockListener).onShowContactDetail(captor.capture());
+        verify(mMockListener).onItemClicked(captor.capture());
         assertThat(captor.getValue()).isEqualTo(mMockContact);
     }
 
@@ -284,7 +285,7 @@ public class ContactListViewHolderTest {
             showContactDetailActionView.performClick();
 
             ArgumentCaptor<Contact> captor = ArgumentCaptor.forClass(Contact.class);
-            verify(mMockListener).onShowContactDetail(captor.capture());
+            verify(mMockListener).onItemClicked(captor.capture());
             assertThat(captor.getValue()).isEqualTo(mMockContact);
         }
     }

@@ -151,3 +151,67 @@ android_app {
 }
 
 //##################################################################################
+
+android_app {
+    name: "CarDialerAppEmulatorBuild",
+
+    srcs: ["src/**/*.java", "framework/emulator/src/**/*.java"],
+
+    exclude_srcs: ["src/com/android/car/dialer/DialerModules.java"],
+
+    resource_dirs: ["res"],
+
+    platform_apis: true,
+
+    required: ["allowed_privapp_com.android.car.dialer"],
+
+    overrides: ["Dialer"],
+
+    libs: ["android.car"],
+
+    static_libs: [
+        "car-dialer-framework-dep",
+        "car-apps-common",
+        "car-arch-common",
+        "car-telephony-common",
+        "car-theme-lib",
+        "car-ui-lib",
+        "car-uxr-client-lib",
+        "auto_factory_annotations",
+        "guava",
+        "glide-prebuilt",
+        "hilt_android",
+        "libphonenumber",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx-constraintlayout_constraintlayout-solver",
+        "androidx.cardview_cardview",
+        "androidx.legacy_legacy-support-v4",
+        "androidx.lifecycle_lifecycle-extensions",
+        "androidx.preference_preference",
+        "androidx.recyclerview_recyclerview",
+        "androidx.room_room-runtime",
+        "androidx.sqlite_sqlite",
+        "androidx.sqlite_sqlite-framework",
+    ],
+
+    plugins: [
+        "auto_factory_plugin",
+        "androidx.room_room-compiler-plugin",
+    ],
+
+    optimize: {
+        enabled: false,
+    },
+
+    privileged: true,
+
+    dex_preopt: {
+        enabled: false,
+    },
+
+    product_variables: {
+        pdk: {
+            enabled: false,
+        },
+    },
+}

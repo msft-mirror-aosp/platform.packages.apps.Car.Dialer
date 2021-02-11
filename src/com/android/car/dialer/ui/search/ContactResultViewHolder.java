@@ -21,12 +21,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.common.DialerUtils;
 import com.android.car.dialer.ui.common.OnItemClickedListener;
@@ -49,14 +48,13 @@ public class ContactResultViewHolder extends RecyclerView.ViewHolder {
     private final TextView mContactName;
     private final TextView mContactNumber;
     private final ImageView mContactPicture;
-    @Nullable
-    private final ContactResultsAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
-    @Nullable
-    private final OnItemClickedListener mOnItemClickedListener;
+    @NonNull
+    private final OnItemClickedListener<ContactResultsLiveData.ContactResultListItem>
+            mOnItemClickedListener;
 
-    public ContactResultViewHolder(View view,
-            @Nullable ContactResultsAdapter.OnShowContactDetailListener onShowContactDetailListener,
-            @Nullable OnItemClickedListener onItemClickedListener) {
+    public ContactResultViewHolder(
+            View view,
+            @NonNull OnItemClickedListener<ContactResultsLiveData.ContactResultListItem> listener) {
         super(view);
         mContext = view.getContext();
         mContactCard = view.findViewById(R.id.contact_result);
@@ -66,8 +64,7 @@ public class ContactResultViewHolder extends RecyclerView.ViewHolder {
         if (mContactPicture != null) {
             mContactPicture.setOutlineProvider(ContactAvatarOutputlineProvider.get());
         }
-        mOnShowContactDetailListener = onShowContactDetailListener;
-        mOnItemClickedListener = onItemClickedListener;
+        mOnItemClickedListener = listener;
     }
 
     /**
@@ -85,11 +82,7 @@ public class ContactResultViewHolder extends RecyclerView.ViewHolder {
 
         if (DialerUtils.hasContactDetail(itemView.getResources(), contact)) {
             mContactCard.setOnClickListener(
-                    v -> {
-                        if (mOnShowContactDetailListener != null) {
-                            mOnShowContactDetailListener.onShowContactDetail(contact);
-                        }
-                    });
+                    view -> mOnItemClickedListener.onItemClicked(contactResult));
         } else {
             itemView.setEnabled(false);
         }
@@ -101,7 +94,6 @@ public class ContactResultViewHolder extends RecyclerView.ViewHolder {
      */
     public void bindTypeDownResult(
             ContactResultsLiveData.ContactResultListItem contactResult,
-            UiCallManager uiCallManager,
             Integer sortMethod) {
         Contact contact = contactResult.getContact();
 
@@ -113,12 +105,7 @@ public class ContactResultViewHolder extends RecyclerView.ViewHolder {
                 TelecomUtils.isSortByFirstName(sortMethod) ? contact.getDisplayName()
                         : contact.getDisplayNameAlt());
         mContactCard.setOnClickListener(
-                v -> {
-                    if (mOnItemClickedListener != null) {
-                        mOnItemClickedListener.onItemClicked(contactResult);
-                    }
-                    uiCallManager.placeCall(mContactNumber.getText().toString());
-                });
+                v -> mOnItemClickedListener.onItemClicked(contactResult));
         TelecomUtils.setContactBitmapAsync(mContext, mContactPicture, contact, sortMethod);
     }
 

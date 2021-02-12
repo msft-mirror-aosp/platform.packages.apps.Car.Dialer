@@ -44,6 +44,7 @@ import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.telephony.common.CallDetail;
 import com.android.car.ui.AlertDialogBuilder;
 import com.android.car.ui.recyclerview.CarUiContentListItem;
 import com.android.car.ui.recyclerview.CarUiListItem;
@@ -97,6 +98,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     private View mMergeButton;
     private View mPauseButton;
     private LiveData<Call> mPrimaryCallLiveData;
+    private LiveData<CallDetail> mPrimaryCallDetailLiveData;
     private LiveData<List<Call>> mOngoingCallListLiveData;
     private LiveData<Pair<Call, Call>> mOngoingCallPairLiveData;
     private MutableLiveData<Boolean> mDialpadState;
@@ -149,6 +151,9 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
 
         mInCallViewModel.getPrimaryCallState().observe(this, this::setCallState);
         mPrimaryCallLiveData = mInCallViewModel.getPrimaryCall();
+        mPrimaryCallDetailLiveData = mInCallViewModel.getPrimaryCallDetail();
+        mPrimaryCallDetailLiveData.observe(this,
+                primaryCallDetail -> mAudioRouteButton.setEnabled(primaryCallDetail != null));
         mOngoingCallPairLiveData = mInCallViewModel.getOngoingCallPair();
 
         mOngoingCallListLiveData = mInCallViewModel.getOngoingCallList();
@@ -307,7 +312,12 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     }
 
     private void onSetAudioRoute(int audioRoute) {
-        mUiCallManager.setAudioRoute(audioRoute);
+        CallDetail primaryCallDetail = mPrimaryCallDetailLiveData.getValue();
+        if (primaryCallDetail == null) {
+            // AudioRouteButton is disabled if it is null. Simply ignore it.
+            return;
+        }
+        mUiCallManager.setAudioRoute(audioRoute, primaryCallDetail.getPhoneAccountHandle());
         mActiveRoute = audioRoute;
         updateAudioRouteListItems();
         mAudioRouteSelectionDialog.dismiss();

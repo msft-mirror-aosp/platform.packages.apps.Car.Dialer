@@ -17,7 +17,6 @@ package com.android.car.dialer.telecom;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadsetClient;
-import android.bluetooth.BluetoothHeadsetClientCall;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +30,8 @@ import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
@@ -162,7 +163,7 @@ public final class UiCallManager {
         return isBluetoothCall(phoneAccountHandle);
     }
 
-    private boolean isBluetoothCall(PhoneAccountHandle phoneAccountHandle) {
+    private boolean isBluetoothCall(@Nullable PhoneAccountHandle phoneAccountHandle) {
         if (phoneAccountHandle != null && phoneAccountHandle.getComponentName() != null) {
             return Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME.equals(
                     phoneAccountHandle.getComponentName().getClassName());
@@ -178,7 +179,7 @@ public final class UiCallManager {
      *
      * @param phoneAccountHandle the account handle for the primary ongoing call.
      */
-    public int getAudioRoute(PhoneAccountHandle phoneAccountHandle) {
+    public int getAudioRoute(@Nullable PhoneAccountHandle phoneAccountHandle) {
         if (isBluetoothCall(phoneAccountHandle)) {
             BluetoothHeadsetClient bluetoothHeadsetClient = mBluetoothHeadsetClientProvider.get();
             // BluetoothHeadsetClient might haven't been initialized that the proxy object hasn't
@@ -210,13 +211,11 @@ public final class UiCallManager {
     /**
      * Re-route the audio out phone of the ongoing phone call.
      */
-    public void setAudioRoute(int audioRoute) {
+    public void setAudioRoute(int audioRoute, @Nullable PhoneAccountHandle phoneAccountHandle) {
         BluetoothHeadsetClient bluetoothHeadsetClient = mBluetoothHeadsetClientProvider.get();
-        if (bluetoothHeadsetClient != null && isBluetoothCall()) {
+        if (bluetoothHeadsetClient != null && isBluetoothCall(phoneAccountHandle)) {
             for (BluetoothDevice device : bluetoothHeadsetClient.getConnectedDevices()) {
-                List<BluetoothHeadsetClientCall> currentCalls =
-                        bluetoothHeadsetClient.getCurrentCalls(device);
-                if (currentCalls != null && !currentCalls.isEmpty()) {
+                if (TextUtils.equals(phoneAccountHandle.getId(), device.getAddress())) {
                     if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
                         bluetoothHeadsetClient.connectAudio(device);
                     } else if ((audioRoute & CallAudioState.ROUTE_WIRED_OR_EARPIECE) != 0) {

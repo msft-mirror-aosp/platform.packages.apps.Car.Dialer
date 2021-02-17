@@ -19,22 +19,31 @@ package com.android.car.dialer.ui.favorite;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.car.telephony.common.AsyncQueryLiveData;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.QueryParam;
 
+import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /** Presents the favorite contacts downloaded from phone. It reads the contacts provider. */
-class BluetoothFavoriteContactsLiveData extends AsyncQueryLiveData<List<Contact>> {
+@AutoFactory
+public class BluetoothFavoriteContactsLiveData extends AsyncQueryLiveData<List<Contact>> {
     private final Context mContext;
 
-    BluetoothFavoriteContactsLiveData(Context context) {
-        super(context, QueryParam.of(new FavoriteQueryParam()));
+    BluetoothFavoriteContactsLiveData(
+            @Provided @ApplicationContext Context context, @Nullable String accountName) {
+        super(context, QueryParam.of(getFavoriteQueryParam(accountName)));
         mContext = context;
     }
 
@@ -61,16 +70,24 @@ class BluetoothFavoriteContactsLiveData extends AsyncQueryLiveData<List<Contact>
         return resultList;
     }
 
-    private static class FavoriteQueryParam extends QueryParam {
-        FavoriteQueryParam() {
-            super(ContactsContract.Data.CONTENT_URI,
-                    null,
-                    ContactsContract.Data.MIMETYPE + " = ? AND "
-                            + ContactsContract.CommonDataKinds.Phone.STARRED + " = ? ",
-                    new String[]{
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
-                            String.valueOf(1)},
-                    ContactsContract.Contacts.DISPLAY_NAME + " ASC ");
+    private static QueryParam getFavoriteQueryParam(String accountName) {
+        StringBuilder where = new StringBuilder();
+        List<String> selectionArgs = new ArrayList<>();
+
+        where.append(String.format("%s = ?", ContactsContract.Data.MIMETYPE));
+        selectionArgs.add(ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+        where.append(String.format(" AND %s = 1", ContactsContract.CommonDataKinds.Phone.STARRED));
+        if (TextUtils.isEmpty(accountName)) {
+            where.append(
+                    String.format(" AND %s IS NULL", ContactsContract.RawContacts.ACCOUNT_NAME));
+        } else {
+            where.append(String.format(" AND %s = ?", ContactsContract.RawContacts.ACCOUNT_NAME));
+            selectionArgs.add(accountName);
         }
+        return new QueryParam(ContactsContract.Data.CONTENT_URI,
+                null,
+                where.toString(),
+                selectionArgs.toArray(new String[0]),
+                ContactsContract.Contacts.DISPLAY_NAME + " ASC");
     }
 }

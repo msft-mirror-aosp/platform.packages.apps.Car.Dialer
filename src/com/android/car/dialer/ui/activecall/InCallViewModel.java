@@ -40,6 +40,7 @@ import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
+import com.android.car.telephony.common.Contact;
 
 import com.google.common.collect.Lists;
 
@@ -60,6 +61,7 @@ public class InCallViewModel extends AndroidViewModel {
     @Inject UiCallManager mUiCallManager;
     @Inject LocalCallHandler mLocalCallHandler;
     @Inject AudioRouteLiveDataFactory mAudioRouteLiveDataFactory;
+    @Inject LiveData<List<Contact>> mContactListLiveData;
 
     private final MutableLiveData<Boolean> mHasOngoingCallChangedLiveData;
     private final MediatorLiveData<List<Call>> mOngoingCallListLiveData;
@@ -269,6 +271,13 @@ public class InCallViewModel extends AndroidViewModel {
      */
     public LiveData<Integer> getAudioRoute() {
         return mAudioRouteLiveData;
+    }
+
+    /**
+     * Returns contact list.
+     */
+    public LiveData<List<Contact>> getContactListLiveData() {
+        return mContactListLiveData;
     }
 
     /**

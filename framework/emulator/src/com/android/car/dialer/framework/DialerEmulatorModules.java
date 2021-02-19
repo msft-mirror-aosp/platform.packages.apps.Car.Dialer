@@ -25,6 +25,8 @@ import androidx.preference.PreferenceManager;
 
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
+import com.android.car.dialer.storage.FavoriteNumberRepository;
+import com.android.car.dialer.ui.favorite.BluetoothFavoriteContactsLiveDataFactory;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneCallLog;
@@ -103,6 +105,20 @@ public final class DialerEmulatorModules {
         @Provides
         static LiveData<List<Contact>> provideContactListLiveData() {
             return InMemoryPhoneBook.get().getContactsLiveDataByAccount(null);
+        }
+
+        @Provides
+        @Named("BluetoothFavorite")
+        static LiveData<List<Contact>> provideBluetoothFavoriteContactListLiveData(
+                BluetoothFavoriteContactsLiveDataFactory bluetoothFavoriteContactsLiveDataFactory) {
+            return bluetoothFavoriteContactsLiveDataFactory.create(null);
+        }
+
+        @Provides
+        @Named("LocalFavorite")
+        static LiveData<List<Contact>> provideLocalFavoriteContactListLiveData(
+                FavoriteNumberRepository favoriteNumberRepository) {
+            return favoriteNumberRepository.getFavoriteContacts(null);
         }
     }
 

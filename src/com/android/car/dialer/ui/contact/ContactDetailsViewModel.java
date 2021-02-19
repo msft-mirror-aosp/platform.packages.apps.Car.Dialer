@@ -29,6 +29,8 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.arch.common.FutureData;
 import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.dialer.ComponentFetcher;
+import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
@@ -38,15 +40,17 @@ import com.android.car.telephony.common.WorkerExecutor;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import javax.inject.Inject;
+
 /**
  * View model for the contact details page.
  */
 public class ContactDetailsViewModel extends AndroidViewModel {
-    private final FavoriteNumberRepository mFavoriteNumberRepository;
+    @Inject FavoriteNumberRepository mFavoriteNumberRepository;
 
     public ContactDetailsViewModel(@NonNull Application application) {
         super(application);
-        mFavoriteNumberRepository = FavoriteNumberRepository.getRepository(application);
+        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
     }
 
     /**

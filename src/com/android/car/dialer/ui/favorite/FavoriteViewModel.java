@@ -23,7 +23,9 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.arch.common.FutureData;
 import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.dialer.ComponentFetcher;
 import com.android.car.dialer.R;
+import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 import com.android.car.dialer.ui.common.entity.ActionButton;
@@ -34,21 +36,24 @@ import com.android.car.telephony.common.PhoneNumber;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 /**
  * View model for {@link FavoriteFragment}.
  */
 public class FavoriteViewModel extends DialerListViewModel {
-    private final FavoriteNumberRepository mFavoriteNumberRepository;
+    @Inject FavoriteNumberRepository mFavoriteNumberRepository;
+    @Inject @Named("BluetoothFavorite") LiveData<List<Contact>> mBluetoothFavoriteContacts;
+    @Inject @Named("LocalFavorite") LiveData<List<Contact>> mLocalFavoriteContacts;
     private final LiveData<FutureData<List<Object>>> mFavoriteContacts;
-    private final LiveData<List<Contact>> mBluetoothFavoriteContacts;
 
     public FavoriteViewModel(Application application) {
         super(application);
-        mFavoriteNumberRepository = FavoriteNumberRepository.getRepository(application);
-        mBluetoothFavoriteContacts = new BluetoothFavoriteContactsLiveData(application);
+        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
 
         MediatorLiveData<List<Object>> favoriteContacts = new MediatorLiveData<>();
-        favoriteContacts.addSource(mFavoriteNumberRepository.getFavoriteContacts(), contacts -> {
+        favoriteContacts.addSource(mLocalFavoriteContacts, contacts -> {
             List<Object> contactList = new ArrayList<>();
             if (mBluetoothFavoriteContacts.getValue() != null
                     && !mBluetoothFavoriteContacts.getValue().isEmpty()) {
@@ -69,8 +74,8 @@ public class FavoriteViewModel extends DialerListViewModel {
                 contactList.addAll(contacts);
             }
             contactList.add(new Header(application.getString(R.string.local_favorites)));
-            if (mFavoriteNumberRepository.getFavoriteContacts().getValue() != null) {
-                contactList.addAll(mFavoriteNumberRepository.getFavoriteContacts().getValue());
+            if (mLocalFavoriteContacts.getValue() != null) {
+                contactList.addAll(mLocalFavoriteContacts.getValue());
             }
             contactList.add(new ActionButton());
             favoriteContacts.setValue(contactList);

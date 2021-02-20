@@ -27,6 +27,8 @@ import androidx.preference.PreferenceManager;
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
+import com.android.car.dialer.storage.FavoriteNumberRepository;
+import com.android.car.dialer.ui.favorite.BluetoothFavoriteContactsLiveDataFactory;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneCallLog;
@@ -120,6 +122,24 @@ public final class DialerModules {
             return LiveDataFunctions.switchMapNonNull(currentHfpDevice,
                     device -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(
                             device.getAddress()));
+        }
+
+        @Provides
+        @Named("BluetoothFavorite")
+        static LiveData<List<Contact>> provideBluetoothFavoriteContactListLiveData(
+                @Named("Hfp") LiveData<BluetoothDevice> currentHfpDevice,
+                BluetoothFavoriteContactsLiveDataFactory bluetoothFavoriteContactsLiveDataFactory) {
+            return LiveDataFunctions.switchMapNonNull(currentHfpDevice,
+                    device -> bluetoothFavoriteContactsLiveDataFactory.create(device.getAddress()));
+        }
+
+        @Provides
+        @Named("LocalFavorite")
+        static LiveData<List<Contact>> provideLocalFavoriteContactListLiveData(
+                @Named("Hfp") LiveData<BluetoothDevice> currentHfpDevice,
+                FavoriteNumberRepository favoriteNumberRepository) {
+            return LiveDataFunctions.switchMapNonNull(currentHfpDevice,
+                    device -> favoriteNumberRepository.getFavoriteContacts(device.getAddress()));
         }
 
     }

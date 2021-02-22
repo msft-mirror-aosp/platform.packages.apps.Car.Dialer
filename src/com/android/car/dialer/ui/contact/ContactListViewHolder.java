@@ -56,7 +56,7 @@ class ContactListViewHolder extends RecyclerView.ViewHolder {
 
     ContactListViewHolder(
             @NonNull View itemView,
-            OnItemClickedListener<Contact> onItemClickedListener,
+            @Provided OnItemClickedListener<Contact> onItemClickedListener,
             @Provided UiCallManager uiCallManager) {
         super(itemView);
         mUiCallManager = uiCallManager;

@@ -161,7 +161,7 @@ android_app {
 
     srcs: ["src/**/*.java", "framework/emulator/src/**/*.java"],
 
-    exclude_srcs: ["src/com/android/car/dialer/DialerModules.java"],
+    exclude_srcs: ["src/com/android/car/dialer/inject/SingleHfpModule.java"],
 
     resource_dirs: ["res"],
 

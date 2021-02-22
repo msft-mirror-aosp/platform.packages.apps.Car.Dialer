@@ -21,13 +21,11 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;
-import com.android.car.telephony.common.Contact;
 
 import javax.inject.Inject;
 
@@ -38,8 +36,7 @@ import dagger.hilt.android.AndroidEntryPoint;
  */
 @AndroidEntryPoint(DialerListBaseFragment.class)
 public class ContactListFragment extends Hilt_ContactListFragment {
-    @Inject ContactListAdapterFactory mContactListAdapterFactory;
-    private ContactListAdapter mContactListAdapter;
+    @Inject ContactListAdapter mContactListAdapter;
 
     public static ContactListFragment newInstance() {
         return new ContactListFragment();
@@ -48,13 +45,7 @@ public class ContactListFragment extends Hilt_ContactListFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Don't recreate the adapter if we already have one, so that the list items
-        // will display immediately upon the view being recreated. If they're not displayed
-        // immediately, we won't remember our scroll position.
-        if (mContactListAdapter == null) {
-            mContactListAdapter =
-                    mContactListAdapterFactory.create(contact->onShowContactDetail(contact));
-        }
+
         getRecyclerView().setAdapter(mContactListAdapter);
         getUxrContentLimiter().setAdapter(mContactListAdapter);
 
@@ -71,10 +62,5 @@ public class ContactListFragment extends Hilt_ContactListFragment {
                 showContent();
             }
         });
-    }
-
-    private void onShowContactDetail(Contact contact) {
-        Fragment contactDetailsFragment = ContactDetailsFragment.newInstance(contact);
-        pushContentFragment(contactDetailsFragment, ContactDetailsFragment.FRAGMENT_TAG);
     }
 }

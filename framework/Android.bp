@@ -17,6 +17,10 @@
 // Choose only one dependency to depend on.
 
 // A library that wires Dialer with a real Android Framework implementation.
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
 android_library {
     name: "car-dialer-framework-dep",
     // required to access any private API.

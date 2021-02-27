@@ -18,7 +18,6 @@ package com.android.car.dialer.ui;
 
 import android.app.Application;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.telecom.Call;
 
 import androidx.annotation.NonNull;
@@ -26,7 +25,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.ComponentFetcher;
@@ -52,7 +50,6 @@ public class TelecomActivityViewModel extends AndroidViewModel {
     @Inject @Named("Hfp") LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
     @Inject ToolbarTitleLiveDataFactory mToolbarTitleLiveDataFactory;
 
-    private final Context mApplicationContext;
     private RefreshUiEvent mRefreshTabsLiveData;
 
     private final ToolbarTitleLiveData mToolbarTitleLiveData;
@@ -61,12 +58,12 @@ public class TelecomActivityViewModel extends AndroidViewModel {
     public TelecomActivityViewModel(Application application) {
         super(application);
         ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
-        mApplicationContext = application.getApplicationContext();
 
-        mToolbarTitleMode = new MediatorLiveData<>();
+        mToolbarTitleMode = new MutableLiveData<>();
         mToolbarTitleLiveData = mToolbarTitleLiveDataFactory.create(mToolbarTitleMode);
 
-        mRefreshTabsLiveData = new RefreshUiEvent(mHfpDeviceListLiveData);
+        mRefreshTabsLiveData = new RefreshUiEvent(mHfpDeviceListLiveData,
+                mCurrentHfpDeviceLiveData);
     }
 
     /**
@@ -112,10 +109,14 @@ public class TelecomActivityViewModel extends AndroidViewModel {
      */
     @VisibleForTesting
     static class RefreshUiEvent extends SingleLiveEvent<Boolean> {
+        private LiveData<BluetoothDevice> mCurrentHfpDevice;
         private BluetoothDevice mBluetoothDevice;
 
         @VisibleForTesting
-        RefreshUiEvent(LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
+        RefreshUiEvent(
+                LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
+                LiveData<BluetoothDevice> currentHfpDevice) {
+            mCurrentHfpDevice = currentHfpDevice;
             addSource(hfpDeviceListLiveData, v -> update(v));
         }
 
@@ -124,29 +125,16 @@ public class TelecomActivityViewModel extends AndroidViewModel {
             if (mBluetoothDevice != null && !listContainsDevice(hfpDeviceList, mBluetoothDevice)) {
                 setValue(true);
             }
-            mBluetoothDevice = getFirstDevice(hfpDeviceList);
-        }
-
-        private boolean deviceListIsEmpty(@Nullable List<BluetoothDevice> hfpDeviceList) {
-            return hfpDeviceList == null || hfpDeviceList.isEmpty();
+            mBluetoothDevice = mCurrentHfpDevice.getValue();
         }
 
         private boolean listContainsDevice(@Nullable List<BluetoothDevice> hfpDeviceList,
                 @NonNull BluetoothDevice device) {
-            if (!deviceListIsEmpty(hfpDeviceList) && hfpDeviceList.contains(device)) {
+            if (hfpDeviceList != null && hfpDeviceList.contains(device)) {
                 return true;
             }
 
             return false;
-        }
-
-        @Nullable
-        private BluetoothDevice getFirstDevice(@Nullable List<BluetoothDevice> hfpDeviceList) {
-            if (deviceListIsEmpty(hfpDeviceList)) {
-                return null;
-            } else {
-                return hfpDeviceList.get(0);
-            }
         }
     }
 }

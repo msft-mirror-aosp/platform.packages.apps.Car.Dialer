@@ -20,8 +20,8 @@ import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.telecom.Call;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -31,12 +31,10 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
-import com.android.car.dialer.livedata.BluetoothErrorStringLiveData;
 import com.android.car.dialer.log.L;
+import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.dialer.ui.common.SingleLiveEvent;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
@@ -44,28 +42,16 @@ import java.util.List;
  */
 public class TelecomActivityViewModel extends AndroidViewModel {
     private static final String TAG = "CD.TelecomActivityViewModel";
-    /**
-     * A constant which indicates that there's no Bluetooth error.
-     */
 
     private final Context mApplicationContext;
-    private final LiveData<String> mErrorStringLiveData;
     private RefreshUiEvent mRefreshTabsLiveData;
 
     private final ToolbarTitleLiveData mToolbarTitleLiveData;
     private final MutableLiveData<Integer> mToolbarTitleMode;
 
-    /**
-     * App state indicates if bluetooth is connected or it should just show the content fragments.
-     */
-    @IntDef({DialerAppState.DEFAULT, DialerAppState.BLUETOOTH_ERROR,
-            DialerAppState.EMERGENCY_DIALPAD})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface DialerAppState {
-        int DEFAULT = 0;
-        int BLUETOOTH_ERROR = 1;
-        int EMERGENCY_DIALPAD = 2;
-    }
+    private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
+
+    private final LocalCallHandler mLocalCallHandler;
 
     public TelecomActivityViewModel(Application application) {
         super(application);
@@ -73,12 +59,15 @@ public class TelecomActivityViewModel extends AndroidViewModel {
 
         mToolbarTitleMode = new MediatorLiveData<>();
         mToolbarTitleLiveData = new ToolbarTitleLiveData(mApplicationContext, mToolbarTitleMode);
-        mErrorStringLiveData = BluetoothErrorStringLiveData.get(mApplicationContext);
 
         if (BluetoothAdapter.getDefaultAdapter() != null) {
             mRefreshTabsLiveData = new RefreshUiEvent(
                     UiBluetoothMonitor.get().getHfpDeviceListLiveData());
         }
+
+        mHasHfpDeviceConnectedLiveData = UiBluetoothMonitor.get().hasHfpDeviceConnected();
+
+        mLocalCallHandler = new LocalCallHandler(mApplicationContext);
     }
 
     /**
@@ -98,18 +87,25 @@ public class TelecomActivityViewModel extends AndroidViewModel {
     }
 
     /**
-     * Returns a LiveData which provides the warning string based on Bluetooth states. Returns
-     * {@link BluetoothErrorStringLiveData#NO_BT_ERROR} if there's no error.
-     */
-    public LiveData<String> getErrorMessage() {
-        return mErrorStringLiveData;
-    }
-
-    /**
      * Returns the live data which monitors whether to refresh Dialer.
      */
     public LiveData<Boolean> getRefreshTabsLiveData() {
         return mRefreshTabsLiveData;
+    }
+
+    /** Returns a {@link LiveData} which monitors if there are any connected HFP devices. */
+    public LiveData<Boolean> hasHfpDeviceConnected() {
+        return mHasHfpDeviceConnectedLiveData;
+    }
+
+    /** Returns the live data which monitors the ongoing call list. */
+    public LiveData<List<Call>> getOngoingCallListLiveData() {
+        return mLocalCallHandler.getOngoingCallListLiveData();
+    }
+
+    @Override
+    protected void onCleared() {
+        mLocalCallHandler.tearDown();
     }
 
     /**

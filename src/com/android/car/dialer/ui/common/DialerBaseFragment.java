@@ -88,7 +88,7 @@ public abstract class DialerBaseFragment extends Fragment implements InsetsChang
     /**
      * Push a fragment to the back stack. Update action bar accordingly.
      */
-    protected void pushContentFragment(@NonNull Fragment fragment, String fragmentTag) {
+    public void pushContentFragment(@NonNull Fragment fragment, String fragmentTag) {
         Activity parentActivity = getActivity();
         if (parentActivity instanceof DialerFragmentParent) {
             ((DialerFragmentParent) parentActivity).pushContentFragment(fragment, fragmentTag);

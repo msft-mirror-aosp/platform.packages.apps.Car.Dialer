@@ -28,42 +28,37 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.common.DialerUtils;
-import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.TelecomUtils;
 import com.android.car.ui.recyclerview.ContentLimitingAdapter;
 
-import com.google.auto.factory.AutoFactory;
-import com.google.auto.factory.Provided;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.qualifiers.ActivityContext;
 
 /**
  * Adapter for contact list.
  */
-@AutoFactory
 class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
     private static final String TAG = "CD.ContactListAdapter";
 
     private final Context mContext;
     private final ContactListViewHolderFactory mViewHolderFactory;
     private final List<Contact> mContactList = new ArrayList<>();
-    private final OnItemClickedListener<Contact> mOnItemClickedListener;
 
     private Integer mSortMethod;
     private LinearLayoutManager mLinearLayoutManager;
     private int mLimitingAnchorIndex = 0;
 
+    @Inject
     ContactListAdapter(
-            @Provided @ActivityContext Context context,
-            @Provided ContactListViewHolderFactory viewHolderFactory,
-            OnItemClickedListener<Contact> onItemClickedListener) {
+            @ActivityContext Context context,
+            ContactListViewHolderFactory viewHolderFactory) {
         mContext = context;
         mViewHolderFactory = viewHolderFactory;
-        mOnItemClickedListener = onItemClickedListener;
     }
 
     /**
@@ -91,7 +86,7 @@ class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
     public ContactListViewHolder onCreateViewHolderImpl(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.contact_list_item, parent,
                 false);
-        return  mViewHolderFactory.create(itemView, mOnItemClickedListener);
+        return  mViewHolderFactory.create(itemView);
     }
 
     @Override

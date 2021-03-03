@@ -64,7 +64,7 @@ public class CallHistoryFragmentTest {
     private static final String HEADER = "TODAY";
     private static final String PHONE_NUMBER = "6502530000";
     private static final String UI_CALLOG_TITLE = "TITLE";
-    private static final String UI_CALLOG_TEXT = "TEXT";
+    private static final String RELATIVE_TIME = "1 day ago";
     private static final long TIME_STAMP_1 = System.currentTimeMillis();
     private static final long TIME_STAMP_2 = System.currentTimeMillis() - 10000;
 
@@ -88,8 +88,9 @@ public class CallHistoryFragmentTest {
                 CallHistoryLiveData.CallType.INCOMING_TYPE);
         PhoneCallLog.Record record2 = new PhoneCallLog.Record(TIME_STAMP_2,
                 CallHistoryLiveData.CallType.OUTGOING_TYPE);
-        UiCallLog uiCallLog = new UiCallLog(UI_CALLOG_TITLE, UI_CALLOG_TITLE, UI_CALLOG_TEXT,
+        UiCallLog uiCallLog = new UiCallLog(UI_CALLOG_TITLE, UI_CALLOG_TITLE,
                 PHONE_NUMBER, mMockContact, Arrays.asList(record1, record2));
+        uiCallLog.setRelativeTime(RELATIVE_TIME);
 
         MutableLiveData<FutureData<List<Object>>> callLog = new MutableLiveData<>();
         callLog.setValue(new FutureData<>(false, Arrays.asList(HEADER, uiCallLog)));
@@ -102,9 +103,9 @@ public class CallHistoryFragmentTest {
         FragmentTestActivity mFragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().resume().get();
         CallLogViewHolderFactory viewHolderFactory = new CallLogViewHolderFactory(
-                () -> mMockUiCallManager);
-        mCallHistoryFragment.mCallLogAdapterFactory = new CallLogAdapterFactory(
-                () -> mFragmentTestActivity, () -> viewHolderFactory);
+                () -> item -> {}, () -> mMockUiCallManager);
+        mCallHistoryFragment.mCallLogAdapter = new CallLogAdapter(mFragmentTestActivity,
+                viewHolderFactory);
         mFragmentTestActivity.setFragment(mCallHistoryFragment);
 
         CarUiRecyclerView recyclerView = mCallHistoryFragment.getView()
@@ -139,7 +140,7 @@ public class CallHistoryFragmentTest {
                 R.id.call_type_icons);
 
         assertThat(titleView.getText()).isEqualTo(UI_CALLOG_TITLE);
-        assertThat(textView.getText().toString()).isEqualTo(UI_CALLOG_TEXT);
+        assertThat(textView.getText().toString()).isEqualTo(RELATIVE_TIME);
         assertThat(callTypeIconsView.getCallType(0)).isEqualTo(
                 CallHistoryLiveData.CallType.INCOMING_TYPE);
         assertThat(callTypeIconsView.getCallType(1)).isEqualTo(

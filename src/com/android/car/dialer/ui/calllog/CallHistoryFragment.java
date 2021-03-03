@@ -20,14 +20,11 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;
-import com.android.car.dialer.ui.contact.ContactDetailsFragment;
-import com.android.car.telephony.common.Contact;
 
 import javax.inject.Inject;
 
@@ -35,12 +32,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment for call history page. */
 @AndroidEntryPoint(DialerListBaseFragment.class)
-public class CallHistoryFragment extends Hilt_CallHistoryFragment implements
-        CallLogAdapter.OnShowContactDetailListener {
-    private static final String CONTACT_DETAIL_FRAGMENT_TAG = "CONTACT_DETAIL_FRAGMENT_TAG";
-
-    @Inject CallLogAdapterFactory mCallLogAdapterFactory;
-    private CallLogAdapter mCallLogAdapter;
+public class CallHistoryFragment extends Hilt_CallHistoryFragment {
+    @Inject CallLogAdapter mCallLogAdapter;
 
     public static CallHistoryFragment newInstance() {
         return new CallHistoryFragment();
@@ -49,12 +42,7 @@ public class CallHistoryFragment extends Hilt_CallHistoryFragment implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Don't recreate the adapter if we already have one, so that the list items
-        // will display immediately upon the view being recreated. If they're not displayed
-        // immediately, we won't remember our scroll position.
-        if (mCallLogAdapter == null) {
-            mCallLogAdapter = mCallLogAdapterFactory.create(/* onShowContactDetailListener= */this);
-        }
+
         getRecyclerView().setAdapter(mCallLogAdapter);
         getUxrContentLimiter().setAdapter(mCallLogAdapter);
 
@@ -74,11 +62,5 @@ public class CallHistoryFragment extends Hilt_CallHistoryFragment implements
         });
         viewModel.getSortOrderLiveData().observe(this,
                 v -> mCallLogAdapter.setSortMethod(v));
-    }
-
-    @Override
-    public void onShowContactDetail(Contact contact) {
-        Fragment contactDetailsFragment = ContactDetailsFragment.newInstance(contact);
-        pushContentFragment(contactDetailsFragment, CONTACT_DETAIL_FRAGMENT_TAG);
     }
 }

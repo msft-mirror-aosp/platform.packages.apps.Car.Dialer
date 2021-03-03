@@ -214,10 +214,9 @@ public class ContactListFragmentTest {
                 FragmentTestActivity.class).create().resume().get();
 
         ContactListViewHolderFactory viewHolderFactory = new ContactListViewHolderFactory(
-                () -> mMockUiCallManager);
-        mContactListFragment.mContactListAdapterFactory = new ContactListAdapterFactory(
-                () -> mFragmentTestActivity,
-                () -> viewHolderFactory);
+                () -> item -> {}, () -> mMockUiCallManager);
+        mContactListFragment.mContactListAdapter = new ContactListAdapter(
+               mFragmentTestActivity, viewHolderFactory);
         mFragmentTestActivity.setFragment(mContactListFragment);
 
         CarUiRecyclerView recyclerView = mContactListFragment.getView()

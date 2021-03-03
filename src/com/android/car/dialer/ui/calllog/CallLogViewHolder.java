@@ -27,6 +27,7 @@ import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.common.entity.UiCallLog;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.dialer.widget.CallTypeIconsView;
@@ -45,7 +46,7 @@ import com.google.auto.factory.Provided;
 class CallLogViewHolder extends RecyclerView.ViewHolder {
 
     private final UiCallManager mUiCallManager;
-    private CallLogAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
+    private OnItemClickedListener<Contact> mOnShowContactDetailListener;
     private View mPlaceCallView;
     private ImageView mAvatarView;
     private TextView mTitleView;
@@ -57,7 +58,7 @@ class CallLogViewHolder extends RecyclerView.ViewHolder {
 
     CallLogViewHolder(
             @NonNull View itemView,
-            CallLogAdapter.OnShowContactDetailListener onShowContactDetailListener,
+            @Provided OnItemClickedListener<Contact> onShowContactDetailListener,
             @Provided UiCallManager uiCallManager) {
         super(itemView);
         mUiCallManager = uiCallManager;
@@ -94,7 +95,7 @@ class CallLogViewHolder extends RecyclerView.ViewHolder {
         mCallCountTextView.setText(mCallTypeIconsView.getCallCountText());
         mCallCountTextView.setVisibility(
                 mCallTypeIconsView.getCallCountText() == null ? View.GONE : View.VISIBLE);
-        mTextView.setText(uiCallLog.getText());
+        mTextView.setText(uiCallLog.getText(mTextView.getContext()));
 
         if (uiCallLog.getMostRecentCallType() == CallHistoryLiveData.CallType.MISSED_TYPE) {
             mTitleView.setTextAppearance(R.style.TextAppearance_CallLogTitleMissedCall);
@@ -134,7 +135,7 @@ class CallLogViewHolder extends RecyclerView.ViewHolder {
 
         if (contact != null) {
             ViewUtils.setOnClickListener(mActionButton,
-                    view -> mOnShowContactDetailListener.onShowContactDetail(contact));
+                    view -> mOnShowContactDetailListener.onItemClicked(contact));
         } else {
             ViewUtils.setOnClickListener(mActionButton, null);
         }

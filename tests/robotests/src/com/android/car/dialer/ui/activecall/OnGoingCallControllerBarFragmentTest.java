@@ -18,6 +18,7 @@ package com.android.car.dialer.ui.activecall;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -233,7 +234,7 @@ public class OnGoingCallControllerBarFragmentTest {
 
     private void addFragment(int callState) {
         mAudioRouteList.add(CallAudioState.ROUTE_SPEAKER);
-        when(mMockUiCallManager.getSupportedAudioRoute()).thenReturn(mAudioRouteList);
+        when(mMockUiCallManager.getSupportedAudioRoute(any())).thenReturn(mAudioRouteList);
 
         mCallStateLiveData.setValue(callState);
         when(mMockInCallViewModel.getPrimaryCall()).thenReturn(mCallLiveData);

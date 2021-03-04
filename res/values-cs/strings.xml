@@ -22,7 +22,7 @@
     <string name="bluetooth_disabled" msgid="1275246762067907843">"Chcete-li přijímat a uskutečňovat hovory, zapněte Bluetooth."</string>
     <string name="bluetooth_unpaired" msgid="1600552386483652892">"Chcete-li uskutečňovat a přijímat hovory, spárujte telefon s autem."</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Připojit k Bluetooth"</string>
-    <string name="emergency_button_text" msgid="3467659545392931727">"Tísňové volání"</string>
+    <string name="emergency_button_text" msgid="3467659545392931727">"Stav nouze"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Tísňové volání"</string>
     <string name="error_contact_deleted" msgid="6356539067659368396">"Tento kontakt byl zřejmě smazán."</string>
     <string name="error_invalid_phone_number" msgid="5349049631580646136">"Toto číslo nelze vytočit. Zkontrolujte ho a zkuste to znovu."</string>
@@ -68,20 +68,12 @@
       <item quantity="other">Zmeškané hovory (<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
       <item quantity="one">Zmeškaný hovor</item>
     </plurals>
-    <string name="onhold_call_separator" msgid="2357788035385100805">"•"</string>
-    <string name="swap_call_label" msgid="309322319645637302">"Přepnout hovory"</string>
+    <string name="onhold_call_label" msgid="1937027519810985499">"Podrženo"</string>
     <string name="setting_title" msgid="1296639422364732365">"Nastavení"</string>
     <string name="pref_start_page_title" msgid="1953465507368478503">"Úvodní obrazovka"</string>
     <string name="sort_order_title" msgid="975104366728292702">"Pořadí kontaktů"</string>
-    <string name="pref_connected_phone_title" msgid="5472866963149472593">"Připojený telefon"</string>
-    <string name="pref_no_incoming_call_hun_title" msgid="2314257779205958332">"Soukromí"</string>
-    <string name="pref_no_incoming_call_hun_summary" msgid="8833377984331845097">"Upozornění na hovory zobrazovat jen v clusteru"</string>
-    <string name="pref_no_fullscreen_active_call_ui_title" msgid="5306041252780754725">"Aktivní hovor"</string>
-    <string name="pref_no_fullscreen_active_call_ui_summary" msgid="2316908551231937870">"Při přijetí hovoru zobrazit přehled aktivního hovoru"</string>
     <string name="given_name_first_title" msgid="8072187841056104968">"Jméno"</string>
     <string name="family_name_first_title" msgid="7721976826282427987">"Příjmení"</string>
     <string name="audio_route_dialog_title" msgid="2904553846970171054">"Směrování zvuku odchozího hovoru:"</string>
     <string name="audio_route_dialog_subtitle" msgid="8780526104805330121"></string>
-    <string name="ongoing_conf_title" msgid="4161590966144000887">"Konference"</string>
-    <string name="ongoing_conf_title_format" msgid="7667048745156395220">"%1$s (%2$d) – "</string>
 </resources>

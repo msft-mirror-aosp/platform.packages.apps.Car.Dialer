@@ -22,10 +22,12 @@ import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.car.dialer.Constants;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -74,6 +76,21 @@ public class PhoneAccountManager {
             }
         }
         return null;
+    }
+
+    /** Returns the list of hfp {@link BluetoothDevice}s for current callable phone accounts. */
+    @NonNull
+    public List<BluetoothDevice> getHfpDeviceList() {
+        List<PhoneAccountHandle> phoneAccountHandles =
+                mTelecomManager.getCallCapablePhoneAccounts(true);
+        List<BluetoothDevice> hfpDeviceList = new ArrayList<>();
+        for (PhoneAccountHandle phoneAccountHandle : phoneAccountHandles) {
+            BluetoothDevice bluetoothDevice = getMatchingDevice(phoneAccountHandle);
+            if (bluetoothDevice != null) {
+                hfpDeviceList.add(bluetoothDevice);
+            }
+        }
+        return hfpDeviceList;
     }
 
     /** Returns the {@link PhoneAccountHandle} for the given bluetooth device. */

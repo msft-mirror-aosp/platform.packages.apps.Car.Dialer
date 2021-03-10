@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.BackgroundImageView;
 import com.android.car.apps.common.LetterTileDrawable;
@@ -49,8 +49,11 @@ import com.bumptech.glide.request.target.Target;
 
 import java.util.concurrent.CompletableFuture;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** A fragment that displays information about a call with actions. */
-public abstract class InCallFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public abstract class InCallFragment extends Hilt_InCallFragment {
     private static final String TAG = "CD.InCallFragment";
 
     private View mUserProfileContainerView;
@@ -106,7 +109,7 @@ public abstract class InCallFragment extends Fragment {
         mPhoneNumberView.setVisibility(View.GONE);
         mAvatarView.setImageDrawable(mDefaultAvatar);
 
-        InCallViewModel inCallViewModel = ViewModelProviders.of(this).get(
+        InCallViewModel inCallViewModel = new ViewModelProvider(this).get(
                 InCallViewModel.class);
         inCallViewModel.getContactListLiveData().observe(this, contacts -> updateProfile(number));
     }

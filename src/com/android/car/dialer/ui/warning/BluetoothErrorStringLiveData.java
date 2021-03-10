@@ -35,11 +35,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.android.scopes.ViewModelScoped;
 
 /**
  * A {@link androidx.lifecycle.LiveData<String>} that has a string describing the current bluetooth
  * error. If there is no error, its value will be {@link #NO_BT_ERROR}.
  */
+@ViewModelScoped
 public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
     private static final String TAG = "CD.BluetoothErrorStringLiveData";
 

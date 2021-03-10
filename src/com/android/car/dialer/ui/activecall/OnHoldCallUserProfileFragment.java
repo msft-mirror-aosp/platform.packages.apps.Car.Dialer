@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.LetterTileDrawable;
 import com.android.car.dialer.R;
@@ -40,10 +40,13 @@ import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.concurrent.CompletableFuture;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A fragment that displays information about onhold call.
  */
-public class OnHoldCallUserProfileFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFragment {
 
     private TextView mTitle;
     private ImageView mAvatarView;
@@ -72,7 +75,7 @@ public class OnHoldCallUserProfileFragment extends Fragment {
         mSwapCallsView = fragmentView.findViewById(R.id.swap_calls_view);
         mSwapCallsView.setOnClickListener(v -> swapCalls());
 
-        InCallViewModel inCallViewModel = ViewModelProviders.of(getActivity()).get(
+        InCallViewModel inCallViewModel = new ViewModelProvider(getActivity()).get(
                 InCallViewModel.class);
         inCallViewModel.getSecondaryCallDetail().observe(this, this::updateProfile);
         mPrimaryCallLiveData = inCallViewModel.getPrimaryCall();

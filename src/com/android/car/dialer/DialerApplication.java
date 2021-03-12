@@ -17,9 +17,11 @@
 package com.android.car.dialer;
 
 import android.app.Application;
+import android.bluetooth.BluetoothDevice;
+
+import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.bluetooth.CallHistoryManager;
-import com.android.car.dialer.bluetooth.PhoneAccountSelector;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.framework.AndroidFramework;
 import com.android.car.dialer.notification.MissedCallNotificationController;
@@ -27,6 +29,7 @@ import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import dagger.hilt.android.HiltAndroidApp;
 
@@ -38,8 +41,8 @@ public final class DialerApplication extends Hilt_DialerApplication {
     UiCallManager mUiCallManager;
     @Inject
     UiBluetoothMonitor mUiBluetoothMonitor;
-    @Inject
-    PhoneAccountSelector mPhoneAccountSelector;
+    @Inject @Named("Hfp")
+    LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     @Inject
     CallHistoryManager mCallHistoryManager;
     @Inject

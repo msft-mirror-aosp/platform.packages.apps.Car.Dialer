@@ -106,35 +106,14 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     private int mPrimaryCallState;
     private int mActiveRoute;
     private LiveData<CallAudioState> mCallAudioState;
+    private LiveData<List<Integer>> mAudioRoutes;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAvailableRoutes = mUiCallManager.getSupportedAudioRoute();
-
-        if (mAvailableRoutes.contains(CallAudioState.ROUTE_EARPIECE)
-                && mAvailableRoutes.contains(CallAudioState.ROUTE_WIRED_HEADSET)) {
-            // Keep either ROUTE_EARPIECE or ROUTE_WIRED_HEADSET, but not both of them.
-            mAvailableRoutes.remove(CallAudioState.ROUTE_WIRED_HEADSET);
-        }
-
         mAudioRouteListItems = new ArrayList<>();
         mAudioRouteAdapter = new CarUiListItemAdapter(mAudioRouteListItems);
-
-        for (Integer audioRoute : mAvailableRoutes) {
-            CarUiContentListItem item = new CarUiContentListItem(CarUiContentListItem.Action.NONE);
-            AudioRouteInfo routeInfo = getAudioRouteInfo(audioRoute);
-            Drawable drawable = getResources().getDrawable(routeInfo.mIcon, null);
-            drawable.setTintList(
-                    getResources().getColorStateList(R.color.icon_accent_activatable, null));
-            item.setIcon(drawable);
-            item.setOnItemClickedListener(audioRouteItem -> onSetAudioRoute(audioRoute));
-            String routeTitle = getString(routeInfo.mLabel);
-            item.setTitle(mActiveRoute == audioRoute ? withAccentColor(routeTitle) : routeTitle);
-            item.setActivated(mActiveRoute == audioRoute);
-            mAudioRouteListItems.add(item);
-        }
 
         AlertDialogBuilder audioRouteSelectionDialogBuilder = new AlertDialogBuilder(getContext())
                 .setAdapter(mAudioRouteAdapter)
@@ -157,9 +136,30 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
         mOngoingCallPairLiveData = mInCallViewModel.getOngoingCallPair();
 
         mOngoingCallListLiveData = mInCallViewModel.getOngoingCallList();
-        mInCallViewModel.getAudioRoute().observe(this, this::updateViewBasedOnAudioRoute);
         mDialpadState = mInCallViewModel.getDialpadOpenState();
         mCallAudioState = mInCallViewModel.getCallAudioState();
+        mAudioRoutes = mInCallViewModel.getSupportedAudioRoutes();
+        mAudioRoutes.observe(this, audioRoutes -> {
+            mAvailableRoutes = audioRoutes;
+            mAudioRouteListItems.clear();
+            for (Integer audioRoute : audioRoutes) {
+                CarUiContentListItem item = new CarUiContentListItem(
+                        CarUiContentListItem.Action.NONE);
+                AudioRouteInfo routeInfo = getAudioRouteInfo(audioRoute);
+                Drawable drawable = getResources().getDrawable(routeInfo.mIcon, null);
+                drawable.setTintList(
+                        getResources().getColorStateList(R.color.icon_accent_activatable, null));
+                item.setIcon(drawable);
+                item.setOnItemClickedListener(audioRouteItem -> onSetAudioRoute(audioRoute));
+                String routeTitle = getString(routeInfo.mLabel);
+                item.setTitle(
+                        mActiveRoute == audioRoute ? withAccentColor(routeTitle) : routeTitle);
+                item.setActivated(mActiveRoute == audioRoute);
+                mAudioRouteListItems.add(item);
+            }
+            mAudioRouteAdapter.notifyDataSetChanged();
+        });
+        mInCallViewModel.getAudioRoute().observe(this, this::updateViewBasedOnAudioRoute);
 
         mCallListLiveData = mInCallViewModel.getAllCallList();
         mCallListLiveData.observe(this, v -> updatePauseButtonEnabledState());
@@ -204,16 +204,17 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
         View endCallButton = fragmentView.findViewById(R.id.end_call_button);
         endCallButton.setOnClickListener(v -> onEndCall());
 
-        List<Integer> audioRoutes = mUiCallManager.getSupportedAudioRoute();
         mAudioRouteView = fragmentView.findViewById(R.id.voice_channel_view);
         mAudioRouteButton = fragmentView.findViewById(R.id.voice_channel_button);
         mAudioRouteText = fragmentView.findViewById(R.id.voice_channel_text);
-        if (audioRoutes.size() > 1) {
-            mAudioRouteView.setOnClickListener((v) -> {
-                mAudioRouteView.setActivated(true);
-                mAudioRouteSelectionDialog.show();
-            });
-        }
+        mAudioRoutes.observe(this, audioRoutes -> {
+            if (audioRoutes.size() > 1) {
+                mAudioRouteView.setOnClickListener((v) -> {
+                    mAudioRouteView.setActivated(true);
+                    mAudioRouteSelectionDialog.show();
+                });
+            }
+        });
 
         mAudioRouteSelectionDialog.setOnDismissListener(
                 (dialog) -> mAudioRouteView.setActivated(false));

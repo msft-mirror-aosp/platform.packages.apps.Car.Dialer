@@ -1,0 +1,74 @@
+/*
+ * Copyright (C) 2021 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.android.car.dialer.livedata;
+
+import android.telecom.PhoneAccountHandle;
+
+import androidx.lifecycle.MediatorLiveData;
+
+import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
+import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.telephony.common.CallDetail;
+
+import com.google.auto.factory.AutoFactory;
+import com.google.auto.factory.Provided;
+
+import java.util.List;
+
+/**
+ * Returns a list of {@link android.telecom.CallAudioState.CallAudioRoute}s for the primary ongoing
+ * call.
+ */
+@AutoFactory
+public class SupportedAudioRoutesLiveData extends MediatorLiveData<List<Integer>> {
+    private boolean mIsHfpConnection;
+    private final UiCallManager mUiCallManager;
+    private final PhoneAccountManager mPhoneAccountManager;
+
+    public SupportedAudioRoutesLiveData(
+            CallDetailLiveData primaryCallDetailLiveData,
+            @Provided PhoneAccountManager phoneAccountManager,
+            @Provided BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider,
+            @Provided UiCallManager uiCallManager) {
+        mPhoneAccountManager = phoneAccountManager;
+        mUiCallManager = uiCallManager;
+
+        mIsHfpConnection = false;
+        addSource(bluetoothHeadsetClientProvider.isBluetoothHeadsetClientConnected(),
+                connected -> updateOngoingCallSupportedAudioRoutes(
+                        primaryCallDetailLiveData.getValue()));
+        addSource(primaryCallDetailLiveData, this::updateOngoingCallSupportedAudioRoutes);
+    }
+
+    private void updateOngoingCallSupportedAudioRoutes(CallDetail callDetail) {
+        if (callDetail == null) {
+            // Phone call might have disconnected, no action.
+            return;
+        }
+        PhoneAccountHandle phoneAccountHandle = callDetail.getPhoneAccountHandle();
+        boolean isHfpConnection = mPhoneAccountManager.isHfpConnectionService(phoneAccountHandle);
+        // If it is the same type of phone account with a previous call, do nothing.
+        if (getValue() != null && isHfpConnection == mIsHfpConnection) {
+            return;
+        }
+        mIsHfpConnection = isHfpConnection;
+        List<Integer> audioRoutes = mUiCallManager.getSupportedAudioRoute(phoneAccountHandle);
+        setValue(audioRoutes);
+    }
+
+}

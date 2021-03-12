@@ -36,6 +36,8 @@ import com.android.car.dialer.livedata.AudioRouteLiveData;
 import com.android.car.dialer.livedata.AudioRouteLiveDataFactory;
 import com.android.car.dialer.livedata.CallDetailLiveData;
 import com.android.car.dialer.livedata.CallStateLiveData;
+import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
+import com.android.car.dialer.livedata.SupportedAudioRoutesLiveDataFactory;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.dialer.telecom.UiCallManager;
@@ -61,6 +63,7 @@ public class InCallViewModel extends AndroidViewModel {
     @Inject UiCallManager mUiCallManager;
     @Inject LocalCallHandler mLocalCallHandler;
     @Inject AudioRouteLiveDataFactory mAudioRouteLiveDataFactory;
+    @Inject SupportedAudioRoutesLiveDataFactory mSupportedAudioRouteLiveDataFactory;
     @Inject LiveData<List<Contact>> mContactListLiveData;
 
     private final MutableLiveData<Boolean> mHasOngoingCallChangedLiveData;
@@ -82,6 +85,7 @@ public class InCallViewModel extends AndroidViewModel {
     private LiveData<Pair<Integer, Long>> mCallStateAndConnectTimeLiveData;
 
     private final AudioRouteLiveData mAudioRouteLiveData;
+    private final SupportedAudioRoutesLiveData mSupportedAudioRoutesLiveData;
     private final Context mContext;
 
     // Reuse the same instance so the callback won't be registered more than once.
@@ -137,6 +141,8 @@ public class InCallViewModel extends AndroidViewModel {
             return call;
         });
         mAudioRouteLiveData = mAudioRouteLiveDataFactory.create(mCallDetailLiveData);
+        mSupportedAudioRoutesLiveData = mSupportedAudioRouteLiveDataFactory.create(
+                mCallDetailLiveData);
 
         mCallStateLiveData = Transformations.switchMap(mPrimaryCallLiveData,
                 input -> input != null ? new CallStateLiveData(input) : null);
@@ -271,6 +277,10 @@ public class InCallViewModel extends AndroidViewModel {
      */
     public LiveData<Integer> getAudioRoute() {
         return mAudioRouteLiveData;
+    }
+
+    public LiveData<List<Integer>> getSupportedAudioRoutes() {
+        return mSupportedAudioRoutesLiveData;
     }
 
     /**

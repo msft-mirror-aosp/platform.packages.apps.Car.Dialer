@@ -23,6 +23,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
@@ -75,11 +76,13 @@ public final class SingleHfpModule {
     @Named("Hfp")
     @Provides
     static LiveData<BluetoothDevice> provideCurrentHfpDeviceLiveData(
-            @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
-        return Transformations.map(hfpDeviceListLiveData, (devices) ->
-                devices != null && !devices.isEmpty()
-                        ? devices.get(0)
-                        : null);
+            @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
+            PhoneAccountManager phoneAccountManager) {
+        LiveData<BluetoothDevice> currentHfpDevice = Transformations.map(hfpDeviceListLiveData,
+                devices -> devices != null && !devices.isEmpty() ? devices.get(0) : null);
+        currentHfpDevice.observeForever(
+                device -> phoneAccountManager.setUserSelectedOutgoingDevice(device));
+        return currentHfpDevice;
     }
 
     @Singleton

@@ -33,9 +33,9 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.log.L;
 import com.android.car.telephony.common.TelecomUtils;
 
@@ -57,6 +57,7 @@ public final class UiCallManager {
 
     private Context mContext;
     private final TelecomManager mTelecomManager;
+    private final PhoneAccountManager mPhoneAccountManager;
     private final BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
     private InCallServiceImpl mInCallService;
 
@@ -64,10 +65,12 @@ public final class UiCallManager {
     UiCallManager(
             @ApplicationContext Context context,
             TelecomManager telecomManager,
+            PhoneAccountManager phoneAccountManager,
             BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider) {
         L.d(TAG, "SetUp");
         mContext = context;
         mTelecomManager = telecomManager;
+        mPhoneAccountManager = phoneAccountManager;
         mBluetoothHeadsetClientProvider = bluetoothHeadsetClientProvider;
 
         Intent intent = new Intent(context, InCallServiceImpl.class);
@@ -128,11 +131,12 @@ public final class UiCallManager {
         return audioState != null ? audioState.getSupportedRouteMask() : 0;
     }
 
-    public List<Integer> getSupportedAudioRoute() {
+    /** Returns a list of supported CallAudioRoute for the given {@link PhoneAccountHandle}. */
+    public List<Integer> getSupportedAudioRoute(@Nullable PhoneAccountHandle phoneAccountHandle) {
         List<Integer> audioRouteList = new ArrayList<>();
 
-        boolean isBluetoothPhoneCall = isBluetoothCall();
-        if (isBluetoothPhoneCall) {
+        BluetoothDevice device = mPhoneAccountManager.getMatchingDevice(phoneAccountHandle);
+        if (device != null) {
             // if this is bluetooth phone call, we can only select audio route between vehicle
             // and phone.
             // Vehicle speaker route.
@@ -145,31 +149,18 @@ public final class UiCallManager {
 
             if ((supportedAudioRouteMask & CallAudioState.ROUTE_EARPIECE) != 0) {
                 audioRouteList.add(CallAudioState.ROUTE_EARPIECE);
-            } else if ((supportedAudioRouteMask & CallAudioState.ROUTE_BLUETOOTH) != 0) {
-                audioRouteList.add(CallAudioState.ROUTE_BLUETOOTH);
             } else if ((supportedAudioRouteMask & CallAudioState.ROUTE_WIRED_HEADSET) != 0) {
                 audioRouteList.add(CallAudioState.ROUTE_WIRED_HEADSET);
-            } else if ((supportedAudioRouteMask & CallAudioState.ROUTE_SPEAKER) != 0) {
+            }
+            if ((supportedAudioRouteMask & CallAudioState.ROUTE_BLUETOOTH) != 0) {
+                audioRouteList.add(CallAudioState.ROUTE_BLUETOOTH);
+            }
+            if ((supportedAudioRouteMask & CallAudioState.ROUTE_SPEAKER) != 0) {
                 audioRouteList.add(CallAudioState.ROUTE_SPEAKER);
             }
         }
 
         return audioRouteList;
-    }
-
-    public boolean isBluetoothCall() {
-        PhoneAccountHandle phoneAccountHandle =
-                mTelecomManager.getUserSelectedOutgoingPhoneAccount();
-        return isBluetoothCall(phoneAccountHandle);
-    }
-
-    private boolean isBluetoothCall(@Nullable PhoneAccountHandle phoneAccountHandle) {
-        if (phoneAccountHandle != null && phoneAccountHandle.getComponentName() != null) {
-            return Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME.equals(
-                    phoneAccountHandle.getComponentName().getClassName());
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -180,26 +171,20 @@ public final class UiCallManager {
      * @param phoneAccountHandle the account handle for the primary ongoing call.
      */
     public int getAudioRoute(@Nullable PhoneAccountHandle phoneAccountHandle) {
-        if (isBluetoothCall(phoneAccountHandle)) {
+        BluetoothDevice device = mPhoneAccountManager.getMatchingDevice(phoneAccountHandle);
+        if (device != null) {
             BluetoothHeadsetClient bluetoothHeadsetClient = mBluetoothHeadsetClientProvider.get();
             // BluetoothHeadsetClient might haven't been initialized that the proxy object hasn't
             // been bind by calling BluetoothAdapter#getProfileProxy.
             if (bluetoothHeadsetClient == null) {
                 return CallAudioState.ROUTE_EARPIECE;
             }
-
-            for (BluetoothDevice bluetoothDevice : bluetoothHeadsetClient.getConnectedDevices()) {
-                if (TextUtils.equals(phoneAccountHandle.getId(), bluetoothDevice.getAddress())) {
-                    int audioState = bluetoothHeadsetClient.getAudioState(bluetoothDevice);
-                    if (audioState == BluetoothHeadsetClient.STATE_AUDIO_CONNECTED) {
-                        return CallAudioState.ROUTE_BLUETOOTH;
-                    } else {
-                        return CallAudioState.ROUTE_EARPIECE;
-                    }
-                }
+            int audioState = bluetoothHeadsetClient.getAudioState(device);
+            if (audioState == BluetoothHeadsetClient.STATE_AUDIO_CONNECTED) {
+                return CallAudioState.ROUTE_BLUETOOTH;
+            } else {
+                return CallAudioState.ROUTE_EARPIECE;
             }
-            // Not likely to happen.
-            return CallAudioState.ROUTE_EARPIECE;
         } else {
             CallAudioState audioState = getCallAudioStateOrNull();
             int audioRoute = audioState != null ? audioState.getRoute() : 0;
@@ -212,17 +197,13 @@ public final class UiCallManager {
      * Re-route the audio out phone of the ongoing phone call.
      */
     public void setAudioRoute(int audioRoute, @Nullable PhoneAccountHandle phoneAccountHandle) {
+        BluetoothDevice device = mPhoneAccountManager.getMatchingDevice(phoneAccountHandle);
         BluetoothHeadsetClient bluetoothHeadsetClient = mBluetoothHeadsetClientProvider.get();
-        if (bluetoothHeadsetClient != null && isBluetoothCall(phoneAccountHandle)) {
-            for (BluetoothDevice device : bluetoothHeadsetClient.getConnectedDevices()) {
-                if (TextUtils.equals(phoneAccountHandle.getId(), device.getAddress())) {
-                    if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
-                        bluetoothHeadsetClient.connectAudio(device);
-                        setMuted(false);
-                    } else if ((audioRoute & CallAudioState.ROUTE_WIRED_OR_EARPIECE) != 0) {
-                        bluetoothHeadsetClient.disconnectAudio(device);
-                    }
-                }
+        if (bluetoothHeadsetClient != null && device != null) {
+            if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
+                bluetoothHeadsetClient.connectAudio(device);
+            } else if ((audioRoute & CallAudioState.ROUTE_WIRED_OR_EARPIECE) != 0) {
+                bluetoothHeadsetClient.disconnectAudio(device);
             }
         }
         // TODO: Implement routing audio if current call is not a bluetooth call.

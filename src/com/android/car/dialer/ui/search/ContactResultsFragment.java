@@ -111,9 +111,9 @@ public class ContactResultsFragment extends DialerListBaseFragment implements
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 if (dy != 0) {
-                    // Clear the focus to dismiss the keyboard.
+                    // Clear the focus to dismiss the keyboard in touch mode.
                     View focusedView = getActivity().getCurrentFocus();
-                    if (focusedView != null) {
+                    if (focusedView != null && focusedView.isInTouchMode()) {
                         focusedView.clearFocus();
                     }
                 }
@@ -126,9 +126,9 @@ public class ContactResultsFragment extends DialerListBaseFragment implements
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         getRecyclerView().removeOnScrollListener(mOnScrollChangeListener);
         mToolbar.unregisterOnSearchListener(this);
+        super.onDestroyView();
     }
 
     @Override

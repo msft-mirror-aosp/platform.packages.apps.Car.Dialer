@@ -22,7 +22,7 @@ import android.os.Bundle;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
 import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
+import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -152,8 +152,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
                 item.setIcon(drawable);
                 item.setOnItemClickedListener(audioRouteItem -> onSetAudioRoute(audioRoute));
                 String routeTitle = getString(routeInfo.mLabel);
-                item.setTitle(
-                        mActiveRoute == audioRoute ? withAccentColor(routeTitle) : routeTitle);
+                item.setTitle(withAccentColor(routeTitle));
                 item.setActivated(mActiveRoute == audioRoute);
                 mAudioRouteListItems.add(item);
             }
@@ -254,16 +253,14 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
             int audioRoute = mAvailableRoutes.get(i);
             CarUiContentListItem item = (CarUiContentListItem) mAudioRouteListItems.get(i);
             boolean isActiveRoute = audioRoute == mActiveRoute;
-            String routeTitle = item.getTitle().toString();
             item.setActivated(isActiveRoute);
-            item.setTitle(isActiveRoute ? withAccentColor(routeTitle) : routeTitle);
         }
         mAudioRouteAdapter.notifyDataSetChanged();
     }
 
-    private CharSequence withAccentColor(String routeTitle) {
-        ForegroundColorSpan activeRouteSpan = new ForegroundColorSpan(
-                getResources().getColor(R.color.audio_output_accent, null));
+    private CharSequence withAccentColor(CharSequence routeTitle) {
+        TextAppearanceSpan activeRouteSpan = new TextAppearanceSpan(null, 0, -1,
+                getResources().getColorStateList(R.color.icon_accent_activatable, null), null);
         SpannableString spannableTitle = new SpannableString(routeTitle);
         spannableTitle.setSpan(activeRouteSpan, 0, routeTitle.length(), 0);
         return spannableTitle;

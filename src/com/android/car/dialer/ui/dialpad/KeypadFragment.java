@@ -154,7 +154,7 @@ public class KeypadFragment extends Fragment {
 
         @Override
         public boolean onKey(View v, int keyCode, KeyEvent event) {
-            if (mKeypadCallback != null && KeyEvent.isConfirmKey(keyCode)) {
+            if (mKeypadCallback != null && isConfirmKey(keyCode)) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN && !mIsKeyDown) {
                     mIsKeyDown = true;
                     mKeypadCallback.onKeypadKeyDown(mKeycode);
@@ -193,6 +193,18 @@ public class KeypadFragment extends Fragment {
         View rootView = getView();
         for (int i = 0; i < sRIdMap.size(); i++) {
             rootView.findViewById(sRIdMap.valueAt(i)).setEnabled(enabled);
+        }
+    }
+
+    private boolean isConfirmKey(int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+            case KeyEvent.KEYCODE_ENTER:
+            case KeyEvent.KEYCODE_SPACE:
+            case KeyEvent.KEYCODE_NUMPAD_ENTER:
+                return true;
+            default:
+                return false;
         }
     }
 }

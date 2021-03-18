@@ -28,7 +28,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
@@ -37,8 +37,11 @@ import com.android.car.dialer.ui.dialpad.DialpadRestrictionViewModel.DialpadUxrM
 import com.android.car.telephony.common.TelecomUtils;
 import com.android.car.ui.toolbar.ToolbarController;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** Dialpad fragment used in the ongoing call page. */
-public class InCallDialpadFragment extends AbstractDialpadFragment {
+@AndroidEntryPoint(AbstractDialpadFragment.class)
+public class InCallDialpadFragment extends Hilt_InCallDialpadFragment {
     private static final String TAG = "CD.InCallDialpadFragment";
 
     private TextView mTitleView;
@@ -59,7 +62,7 @@ public class InCallDialpadFragment extends AbstractDialpadFragment {
         mTitleView = rootView.findViewById(R.id.title);
         mCallStateView = rootView.findViewById(R.id.call_state);
 
-        InCallViewModel viewModel = ViewModelProviders.of(getActivity()).get(InCallViewModel.class);
+        InCallViewModel viewModel = new ViewModelProvider(getActivity()).get(InCallViewModel.class);
         viewModel.getCallStateAndConnectTime().observe(this, (pair) -> {
             if (mCallStateView == null) {
                 return;

@@ -26,7 +26,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.Constants;
@@ -75,7 +75,7 @@ public class InCallActivity extends Hilt_InCallActivity {
                 .commit();
 
         mShowIncomingCall = new MutableLiveData<>();
-        mInCallViewModel = ViewModelProviders.of(this).get(InCallViewModel.class);
+        mInCallViewModel = new ViewModelProvider(this).get(InCallViewModel.class);
         mIncomingCallLiveData = LiveDataFunctions.iff(mShowIncomingCall,
                 mInCallViewModel.getIncomingCall());
         LiveDataFunctions.pair(mInCallViewModel.getPrimaryCallDetail(),

@@ -22,15 +22,15 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.R;
 
-import com.google.auto.factory.AutoFactory;
-import com.google.auto.factory.Provided;
-
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.android.scopes.ViewModelScoped;
 
 /**
  * LiveData for the toolbar title of the  {@link com.android.car.dialer.ui.TelecomActivity}. The
@@ -40,7 +40,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
  *     <li> none: 1
  *     <li> device_name: 2
  */
-@AutoFactory
+@ViewModelScoped
 class ToolbarTitleLiveData extends MediatorLiveData<String> {
 
     @IntDef({
@@ -55,19 +55,24 @@ class ToolbarTitleLiveData extends MediatorLiveData<String> {
     }
 
     private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
-    private final LiveData<Integer> mToolbarTitleModeLiveData;
+    private final MutableLiveData<Integer> mToolbarTitleModeLiveData;
     private final Context mContext;
 
+    @Inject
     ToolbarTitleLiveData(
-            @Provided @ApplicationContext Context context,
-            LiveData<Integer> toolbarTitleModeLiveData,
-            @Provided @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
+            @ApplicationContext Context context,
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
         mContext = context;
-        mToolbarTitleModeLiveData = toolbarTitleModeLiveData;
+        mToolbarTitleModeLiveData = new MutableLiveData<>();
         mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
 
         addSource(mToolbarTitleModeLiveData, this::updateToolbarTitle);
         addSource(mCurrentHfpDeviceLiveData, this::updateDeviceName);
+    }
+
+    /** Exposes the {@link MutableLiveData} for the toolbar title mode. */
+    public MutableLiveData<Integer> getToolbarTitleModeLiveData() {
+        return mToolbarTitleModeLiveData;
     }
 
     private void updateToolbarTitle(int toolbarTitleMode) {

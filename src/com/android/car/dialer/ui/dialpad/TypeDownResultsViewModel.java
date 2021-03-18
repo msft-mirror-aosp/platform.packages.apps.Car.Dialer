@@ -16,13 +16,11 @@
 
 package com.android.car.dialer.ui.dialpad;
 
-import android.app.Application;
+import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
-import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.ViewModelComponent;
+import com.android.car.dialer.livedata.SharedPreferencesLiveDataFactory;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.common.ContactResultsLiveDataFactory;
 import com.android.car.dialer.ui.search.ContactResultsViewModel;
@@ -31,17 +29,24 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * {link AndroidViewModel} used for type down functionality.
  */
+@HiltViewModel
 public class TypeDownResultsViewModel extends ContactResultsViewModel {
 
-    @Inject ContactResultsLiveDataFactory mContactResultsLiveDataFactory;
+    private final ContactResultsLiveDataFactory mContactResultsLiveDataFactory;
     private final ContactResultsLiveData mContactSearchResultsLiveData;
 
-    public TypeDownResultsViewModel(@NonNull Application application) {
-        super(application);
-        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
+    @Inject
+    public TypeDownResultsViewModel(@ApplicationContext Context context,
+            SharedPreferencesLiveDataFactory sharedPreferencesFactory,
+            ContactResultsLiveDataFactory contactResultsLiveDataFactory) {
+        super(context, sharedPreferencesFactory, contactResultsLiveDataFactory);
+        mContactResultsLiveDataFactory = contactResultsLiveDataFactory;
         mContactSearchResultsLiveData = mContactResultsLiveDataFactory.create(
                 getSearchQueryLiveData(),
                 getSharedPreferencesLiveData(),

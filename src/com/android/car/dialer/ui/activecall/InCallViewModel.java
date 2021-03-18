@@ -16,22 +16,17 @@
 
 package com.android.car.dialer.ui.activecall;
 
-import android.app.Application;
-import android.content.Context;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
 
-import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 
 import com.android.car.arch.common.LiveDataFunctions;
-import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
 import com.android.car.dialer.livedata.AudioRouteLiveDataFactory;
 import com.android.car.dialer.livedata.CallDetailLiveData;
@@ -40,7 +35,6 @@ import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
 import com.android.car.dialer.livedata.SupportedAudioRoutesLiveDataFactory;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
 
@@ -53,18 +47,20 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
 /**
  * View model for {@link InCallActivity} and {@link OngoingCallFragment}. UI that doesn't belong to
  * in call page should use a different ViewModel.
  */
-public class InCallViewModel extends AndroidViewModel {
+@HiltViewModel
+public class InCallViewModel extends ViewModel {
     private static final String TAG = "CD.InCallViewModel";
 
-    @Inject UiCallManager mUiCallManager;
-    @Inject LocalCallHandler mLocalCallHandler;
-    @Inject AudioRouteLiveDataFactory mAudioRouteLiveDataFactory;
-    @Inject SupportedAudioRoutesLiveDataFactory mSupportedAudioRouteLiveDataFactory;
-    @Inject LiveData<List<Contact>> mContactListLiveData;
+    private final LocalCallHandler mLocalCallHandler;
+    private final AudioRouteLiveDataFactory mAudioRouteLiveDataFactory;
+    private final SupportedAudioRoutesLiveDataFactory mSupportedAudioRoutesLiveDataFactory;
+    private final LiveData<List<Contact>> mContactListLiveData;
 
     private final MutableLiveData<Boolean> mHasOngoingCallChangedLiveData;
     private final MediatorLiveData<List<Call>> mOngoingCallListLiveData;
@@ -86,7 +82,6 @@ public class InCallViewModel extends AndroidViewModel {
 
     private final AudioRouteLiveData mAudioRouteLiveData;
     private final SupportedAudioRoutesLiveData mSupportedAudioRoutesLiveData;
-    private final Context mContext;
 
     // Reuse the same instance so the callback won't be registered more than once.
     private final Call.Callback mCallStateChangedCallback = new Call.Callback() {
@@ -109,12 +104,17 @@ public class InCallViewModel extends AndroidViewModel {
         }
     };
 
-    public InCallViewModel(@NonNull Application application) {
-        super(application);
-        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
-        mContext = application.getApplicationContext();
+    @Inject
+    public InCallViewModel(
+            LocalCallHandler localCallHandler,
+            AudioRouteLiveDataFactory audioRouteLiveDataFactory,
+            SupportedAudioRoutesLiveDataFactory supportedAudioRouteLiveDataFactory,
+            LiveData<List<Contact>> contactListLiveData) {
+        mLocalCallHandler = localCallHandler;
+        mAudioRouteLiveDataFactory = audioRouteLiveDataFactory;
+        mSupportedAudioRoutesLiveDataFactory = supportedAudioRouteLiveDataFactory;
+        mContactListLiveData = contactListLiveData;
 
-        mLocalCallHandler = new LocalCallHandler(mContext);
         mCallComparator = new CallComparator();
 
         mConferenceCallListLiveData = new MutableLiveData<>();
@@ -141,7 +141,7 @@ public class InCallViewModel extends AndroidViewModel {
             return call;
         });
         mAudioRouteLiveData = mAudioRouteLiveDataFactory.create(mCallDetailLiveData);
-        mSupportedAudioRoutesLiveData = mSupportedAudioRouteLiveDataFactory.create(
+        mSupportedAudioRoutesLiveData = mSupportedAudioRoutesLiveDataFactory.create(
                 mCallDetailLiveData);
 
         mCallStateLiveData = Transformations.switchMap(mPrimaryCallLiveData,

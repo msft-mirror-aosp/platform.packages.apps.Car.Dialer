@@ -27,7 +27,7 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.LetterTileDrawable;
 import com.android.car.arch.common.FutureData;
@@ -90,7 +90,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
         if (mContact == null && savedInstanceState != null) {
             mContact = savedInstanceState.getParcelable(KEY_CONTACT_ENTITY);
         }
-        mContactDetailsViewModel = ViewModelProviders.of(this).get(
+        mContactDetailsViewModel = new ViewModelProvider(this).get(
                 ContactDetailsViewModel.class);
         mContactDetailsLiveData = mContactDetailsViewModel.getContactDetails(mContact);
 

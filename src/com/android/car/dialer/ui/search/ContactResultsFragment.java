@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.dialer.R;
@@ -37,11 +37,14 @@ import com.android.car.ui.toolbar.ToolbarController;
 import com.android.car.uxr.LifeCycleObserverUxrContentLimiter;
 import com.android.car.uxr.UxrContentLimiterImpl;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A fragment that will take a search query, look up contacts that match and display those
  * results as a list.
  */
-public class ContactResultsFragment extends DialerListBaseFragment implements
+@AndroidEntryPoint(DialerListBaseFragment.class)
+public class ContactResultsFragment extends Hilt_ContactResultsFragment implements
         Toolbar.OnSearchListener {
 
     /**
@@ -78,7 +81,7 @@ public class ContactResultsFragment extends DialerListBaseFragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mContactResultsViewModel = ViewModelProviders.of(this).get(
+        mContactResultsViewModel = new ViewModelProvider(this).get(
                 ContactResultsViewModel.class);
         mContactResultsViewModel.getContactSearchResults().observe(this,
                 contactResults -> {

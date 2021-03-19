@@ -16,19 +16,16 @@
 
 package com.android.car.dialer.ui;
 
-import android.app.Application;
 import android.bluetooth.BluetoothDevice;
 import android.telecom.Call;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
-import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.dialer.ui.common.SingleLiveEvent;
@@ -38,30 +35,39 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
 /**
  * View model for {@link TelecomActivity}.
  */
-public class TelecomActivityViewModel extends AndroidViewModel {
+@HiltViewModel
+public class TelecomActivityViewModel extends ViewModel {
     private static final String TAG = "CD.TelecomActivityViewModel";
 
-    @Inject LocalCallHandler mLocalCallHandler;
-    @Inject @Named("Hfp") LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
-    @Inject @Named("Hfp") LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
-    @Inject @Named("Hfp") LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
-    @Inject ToolbarTitleLiveDataFactory mToolbarTitleLiveDataFactory;
+    private final LocalCallHandler mLocalCallHandler;
+    private final LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
+    private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
+    private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
     private RefreshUiEvent mRefreshTabsLiveData;
 
     private final ToolbarTitleLiveData mToolbarTitleLiveData;
     private final MutableLiveData<Integer> mToolbarTitleMode;
 
-    public TelecomActivityViewModel(Application application) {
-        super(application);
-        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
+    @Inject
+    public TelecomActivityViewModel(
+            @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
+            @Named("Hfp") LiveData<Boolean> hasHfpDeviceConnectedLiveData,
+            LocalCallHandler localCallHandler,
+            ToolbarTitleLiveData toolbarTitleLiveData) {
+        mLocalCallHandler = localCallHandler;
+        mHfpDeviceListLiveData = hfpDeviceListLiveData;
+        mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
+        mHasHfpDeviceConnectedLiveData = hasHfpDeviceConnectedLiveData;
+        mToolbarTitleLiveData = toolbarTitleLiveData;
 
-        mToolbarTitleMode = new MutableLiveData<>();
-        mToolbarTitleLiveData = mToolbarTitleLiveDataFactory.create(mToolbarTitleMode);
-
+        mToolbarTitleMode = mToolbarTitleLiveData.getToolbarTitleModeLiveData();
         mRefreshTabsLiveData = new RefreshUiEvent(mHfpDeviceListLiveData,
                 mCurrentHfpDeviceLiveData);
     }

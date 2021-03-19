@@ -29,7 +29,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.util.Themes;
 import com.android.car.dialer.Constants;
@@ -87,7 +87,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
 
         setupTabLayout();
 
-        TelecomActivityViewModel viewModel = ViewModelProviders.of(this).get(
+        TelecomActivityViewModel viewModel = new ViewModelProvider(this).get(
                 TelecomActivityViewModel.class);
 
         mRefreshUiLiveData = viewModel.getRefreshTabsLiveData();

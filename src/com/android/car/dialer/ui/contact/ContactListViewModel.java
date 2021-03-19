@@ -16,7 +16,6 @@
 
 package com.android.car.dialer.ui.contact;
 
-import android.app.Application;
 import android.content.Context;
 import android.util.Pair;
 
@@ -27,9 +26,8 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.arch.common.FutureData;
 import com.android.car.arch.common.LiveDataFunctions;
-import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.ViewModelComponent;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
+import com.android.car.dialer.livedata.SharedPreferencesLiveDataFactory;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
 import com.android.car.telephony.common.Contact;
@@ -43,25 +41,29 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * View model for {@link ContactListFragment}.
  */
+@HiltViewModel
 public class ContactListViewModel extends DialerListViewModel {
 
-    @Inject LiveData<List<Contact>> mContactListLiveData;
-    private final Context mContext;
+    private final LiveData<List<Contact>> mContactListLiveData;
     private final LiveData<Pair<Integer, List<Contact>>> mSortedContactListLiveData;
     private final LiveData<FutureData<Pair<Integer, List<Contact>>>> mContactList;
 
-    public ContactListViewModel(@NonNull Application application) {
-        super(application);
-        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
-
-        mContext = application.getApplicationContext();
+    @Inject
+    public ContactListViewModel(@ApplicationContext Context context,
+            SharedPreferencesLiveDataFactory sharedPreferencesFactory,
+            LiveData<List<Contact>> contactListLiveData) {
+        super(context, sharedPreferencesFactory);
+        mContactListLiveData = contactListLiveData;
 
         SharedPreferencesLiveData preferencesLiveData = getSharedPreferencesLiveData();
-        mSortedContactListLiveData = new SortedContactListLiveData(
-                mContext, mContactListLiveData, preferencesLiveData);
+        mSortedContactListLiveData = new SortedContactListLiveData(context, mContactListLiveData,
+                preferencesLiveData);
         mContactList = LiveDataFunctions.loadingSwitchMap(mSortedContactListLiveData,
                 input -> LiveDataFunctions.dataOf(input));
     }

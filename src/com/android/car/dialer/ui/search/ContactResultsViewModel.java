@@ -16,15 +16,13 @@
 
 package com.android.car.dialer.ui.search;
 
-import android.app.Application;
+import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.ViewModelComponent;
+import com.android.car.dialer.livedata.SharedPreferencesLiveDataFactory;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.common.ContactResultsLiveDataFactory;
 import com.android.car.dialer.ui.common.DialerListViewModel;
@@ -33,18 +31,25 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * {link AndroidViewModel} used for search functionality.
  */
+@HiltViewModel
 public class ContactResultsViewModel extends DialerListViewModel {
 
-    @Inject ContactResultsLiveDataFactory mContactResultsLiveDataFactory;
+    private final ContactResultsLiveDataFactory mContactResultsLiveDataFactory;
     private final ContactResultsLiveData mContactSearchResultsLiveData;
     private final MutableLiveData<String> mSearchQueryLiveData;
 
-    public ContactResultsViewModel(@NonNull Application application) {
-        super(application);
-        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
+    @Inject
+    public ContactResultsViewModel(@ApplicationContext Context context,
+            SharedPreferencesLiveDataFactory sharedPreferencesFactory,
+            ContactResultsLiveDataFactory contactResultsLiveDataFactory) {
+        super(context, sharedPreferencesFactory);
+        mContactResultsLiveDataFactory = contactResultsLiveDataFactory;
         mSearchQueryLiveData = new MutableLiveData<>();
         mContactSearchResultsLiveData = mContactResultsLiveDataFactory.create(
                 mSearchQueryLiveData,

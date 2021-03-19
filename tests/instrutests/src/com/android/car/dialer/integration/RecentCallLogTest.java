@@ -22,23 +22,36 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 
+import androidx.lifecycle.MutableLiveData;
+import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
-import androidx.test.rule.ActivityTestRule;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.android.car.dialer.R;
+import com.android.car.dialer.bluetooth.CallHistoryManager;
 import com.android.car.dialer.framework.FakeBluetoothAdapter;
 import com.android.car.dialer.ui.TelecomActivity;
+import com.android.car.telephony.common.PhoneCallLog;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
@@ -46,25 +59,34 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 @RunWith(AndroidJUnit4.class)
 @HiltAndroidTest
 public class RecentCallLogTest {
-    @Inject
-    FakeBluetoothAdapter mFakeBluetoothAdapter;
+    @Inject FakeBluetoothAdapter mFakeBluetoothAdapter;
+    @BindValue @Mock CallHistoryManager mMockCallHistoryManager;
+    @Mock PhoneCallLog mMockPhoneCallLog;
+    @Mock PhoneCallLog.Record mRecord;
 
     @Rule
     public final HiltAndroidRule mHiltAndroidRule = new HiltAndroidRule(this);
-    @Rule
-    public final ActivityTestRule<TelecomActivity> mActivityTestRule =
-            new ActivityTestRule<TelecomActivity>(TelecomActivity.class) {
-                @Override
-                protected void afterActivityLaunched() {
-                    super.afterActivityLaunched();
-                    mHiltAndroidRule.inject();
-                    mFakeBluetoothAdapter.connectHfpDevice(mock(BluetoothDevice.class));
-                }
-            };
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.initMocks(RecentCallLogTest.this);
+        MutableLiveData<List<PhoneCallLog>> callLogLiveData = new MutableLiveData<>();
+        callLogLiveData.postValue(Collections.singletonList(mMockPhoneCallLog));
+        when(mMockCallHistoryManager.getCallHistoryLiveData()).thenReturn(callLogLiveData);
+        when(mMockPhoneCallLog.getAllCallRecords()).thenReturn(Collections.singletonList(mRecord));
+        when(mMockPhoneCallLog.getPhoneNumberString()).thenReturn("511");
+
+        mHiltAndroidRule.inject();
+        mFakeBluetoothAdapter.connectHfpDevice(mock(BluetoothDevice.class));
+    }
 
     @Test
     public void verifyRecentCallScreen() {
+        ActivityScenario.launch(
+                new Intent(InstrumentationRegistry.getInstrumentation().getTargetContext(),
+                        TelecomActivity.class));
         onView(withText(R.string.call_history_title)).check(matches(isDisplayed()));
+        onView(withText("511")).check(matches(isDisplayed()));
         // TODO implement the test.
     }
 }

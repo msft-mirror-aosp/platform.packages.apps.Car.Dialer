@@ -20,7 +20,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
@@ -46,7 +46,7 @@ public class CallHistoryFragment extends Hilt_CallHistoryFragment {
         getRecyclerView().setAdapter(mCallLogAdapter);
         getUxrContentLimiter().setAdapter(mCallLogAdapter);
 
-        CallHistoryViewModel viewModel = ViewModelProviders.of(this).get(
+        CallHistoryViewModel viewModel = new ViewModelProvider(this).get(
                 CallHistoryViewModel.class);
 
         viewModel.getCallHistory().observe(this, uiCallLogs -> {

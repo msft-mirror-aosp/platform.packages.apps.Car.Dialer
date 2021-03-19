@@ -38,7 +38,7 @@ import androidx.core.util.Preconditions;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
@@ -126,7 +126,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
 
         mAudioRouteSelectionDialog = audioRouteSelectionDialogBuilder.create();
 
-        mInCallViewModel = ViewModelProviders.of(getActivity()).get(InCallViewModel.class);
+        mInCallViewModel = new ViewModelProvider(getActivity()).get(InCallViewModel.class);
 
         mInCallViewModel.getPrimaryCallState().observe(this, this::setCallState);
         mPrimaryCallLiveData = mInCallViewModel.getPrimaryCall();

@@ -21,7 +21,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
@@ -49,7 +49,7 @@ public class ContactListFragment extends Hilt_ContactListFragment {
         getRecyclerView().setAdapter(mContactListAdapter);
         getUxrContentLimiter().setAdapter(mContactListAdapter);
 
-        ContactListViewModel contactListViewModel = ViewModelProviders.of(this).get(
+        ContactListViewModel contactListViewModel = new ViewModelProvider(this).get(
                 ContactListViewModel.class);
         contactListViewModel.getAllContacts().observe(this, contacts -> {
             if (contacts.isLoading()) {

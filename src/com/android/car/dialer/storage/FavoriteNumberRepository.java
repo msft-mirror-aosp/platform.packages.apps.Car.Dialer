@@ -56,6 +56,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 /**
  * Repository for favorite numbers.It supports the operation to convert the favorite entities to
  * {@link Contact}s and add or delete entry.
+ *
+ * <p>It is singleton to monitor device unpair event and remove favorite numbers for unpaired
+ * devices. See {@link BluetoothBondedListReceiver}.
  */
 @Singleton
 public class FavoriteNumberRepository {
@@ -73,14 +76,16 @@ public class FavoriteNumberRepository {
     private Future<?> mConvertAllRunnableFuture;
 
     @Inject
-    FavoriteNumberRepository(@ApplicationContext Context context,
-            FavoriteNumberDatabase favoriteNumberDatabase) {
+    FavoriteNumberRepository(
+            @ApplicationContext Context context,
+            FavoriteNumberDatabase favoriteNumberDatabase,
+            LiveData<List<Contact>> contactListLiveData) {
         mContext = context.getApplicationContext();
 
         mFavoriteNumberDao = favoriteNumberDatabase.favoriteNumberDao();
         mFavoriteNumbers = mFavoriteNumberDao.loadAll();
 
-        mFavoriteContacts = new FavoriteContactLiveData(mContext);
+        mFavoriteContacts = new FavoriteContactLiveData(mContext, contactListLiveData);
     }
 
     /**
@@ -255,9 +260,10 @@ public class FavoriteNumberRepository {
     }
 
     private class FavoriteContactLiveData extends MediatorLiveData<List<Contact>> {
-        private FavoriteContactLiveData(Context context) {
+        private FavoriteContactLiveData(Context context,
+                LiveData<List<Contact>> contactListLiveData) {
             super();
-            addSource(InMemoryPhoneBook.get().getContactsLiveData(),
+            addSource(contactListLiveData,
                     contacts -> convertToContacts(context, this));
             addSource(mFavoriteNumbers, favorites -> convertToContacts(context, this));
             observeForever(favoriteContacts -> L.d(TAG, "%d favorite contacts loaded.",

@@ -34,7 +34,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
@@ -156,7 +156,7 @@ public class DialpadFragment extends Hilt_DialpadFragment {
         int limit = getResources().getInteger(R.integer.config_type_down_list_limit);
         mAdapter.setUnrestrictedItemCount(limit);
 
-        mTypeDownResultsViewModel = ViewModelProviders.of(this).get(
+        mTypeDownResultsViewModel = new ViewModelProvider(this).get(
                 TypeDownResultsViewModel.class);
         mTypeDownResultsViewModel.getContactSearchResults().observe(this,
                 contactResults -> mAdapter.setData(contactResults));

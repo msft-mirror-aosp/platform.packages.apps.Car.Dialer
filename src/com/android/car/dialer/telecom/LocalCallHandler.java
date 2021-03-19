@@ -40,11 +40,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.android.scopes.ViewModelScoped;
 
 /**
  * Binds to the {@link InCallServiceImpl}, and upon establishing a connection, handles call list
  * change and call audio state change.
  */
+@ViewModelScoped
 public class LocalCallHandler {
     private static final String TAG = "CD.CallHandler";
     private final Context mContext;

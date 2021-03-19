@@ -24,7 +24,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -66,7 +66,7 @@ public class FavoriteFragment extends Hilt_FavoriteFragment {
         FavoriteAdapter favoriteAdapter = new FavoriteAdapter();
         favoriteAdapter.setOnAddFavoriteClickedListener(this::onAddFavoriteClicked);
 
-        FavoriteViewModel favoriteViewModel = ViewModelProviders.of(getActivity()).get(
+        FavoriteViewModel favoriteViewModel = new ViewModelProvider(getActivity()).get(
                 FavoriteViewModel.class);
         favoriteAdapter.setOnListItemClickedListener(this::onItemClicked);
         favoriteViewModel.getFavoriteContacts().observe(this, contacts -> {

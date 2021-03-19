@@ -21,7 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.search.ContactResultsFragment;
@@ -38,10 +38,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A fragment that allows the user to search for and select favorite phone numbers
  */
-public class AddFavoriteFragment extends ContactResultsFragment {
+@AndroidEntryPoint(ContactResultsFragment.class)
+public class AddFavoriteFragment extends Hilt_AddFavoriteFragment {
 
     /**
      * Creates a new instance of AddFavoriteFragment
@@ -62,7 +65,7 @@ public class AddFavoriteFragment extends ContactResultsFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FavoriteViewModel favoriteViewModel = ViewModelProviders.of(getActivity()).get(
+        FavoriteViewModel favoriteViewModel = new ViewModelProvider(getActivity()).get(
                 FavoriteViewModel.class);
         mSelectedNumbers = new HashSet<>();
 

@@ -16,32 +16,33 @@
 
 package com.android.car.dialer.ui.settings;
 
-import android.app.Application;
 import android.bluetooth.BluetoothDevice;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
-
-import com.android.car.dialer.ComponentFetcher;
-import com.android.car.dialer.inject.ViewModelComponent;
+import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
 /**
  * ViewModel for {@link DialerSettingsFragment}
  */
-public class DialerSettingsViewModel extends AndroidViewModel {
+@HiltViewModel
+public class DialerSettingsViewModel extends ViewModel {
     private static final String EMPTY_STRING = "";
 
-    @Inject @Named("Hfp") LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
-    @Inject @Named("Hfp") LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
+    private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
+    private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
-    public DialerSettingsViewModel(@NonNull Application application) {
-        super(application);
-        ComponentFetcher.from(application, ViewModelComponent.class).inject(this);
+    @Inject
+    public DialerSettingsViewModel(
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
+            @Named("Hfp") LiveData<Boolean> hasHfpDeviceConnectedLiveData) {
+        mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
+        mHasHfpDeviceConnectedLiveData = hasHfpDeviceConnectedLiveData;
     }
 
     /**

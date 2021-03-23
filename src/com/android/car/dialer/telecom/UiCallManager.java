@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import androidx.annotation.VisibleForTesting;
 
+import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.log.L;
@@ -49,9 +50,6 @@ import java.util.List;
 public class UiCallManager {
     private static String TAG = "CD.TelecomMgr";
 
-    @VisibleForTesting
-    static final String HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME
-            = "com.android.bluetooth.hfpclient.connserv.HfpClientConnectionService";
     private static UiCallManager sUiCallManager;
 
     private Context mContext;
@@ -100,7 +98,7 @@ public class UiCallManager {
         L.d(TAG, "SetUp");
         mContext = context;
 
-        mTelecomManager = (TelecomManager) context.getSystemService(Context.TELECOM_SERVICE);
+        mTelecomManager = context.getSystemService(TelecomManager.class);
         Intent intent = new Intent(context, InCallServiceImpl.class);
         intent.setAction(InCallServiceImpl.ACTION_LOCAL_BIND);
         context.bindService(intent, mInCallServiceConnection, Context.BIND_AUTO_CREATE);
@@ -195,7 +193,7 @@ public class UiCallManager {
         PhoneAccountHandle phoneAccountHandle =
                 mTelecomManager.getUserSelectedOutgoingPhoneAccount();
         if (phoneAccountHandle != null && phoneAccountHandle.getComponentName() != null) {
-            return HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME.equals(
+            return Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME.equals(
                     phoneAccountHandle.getComponentName().getClassName());
         } else {
             return false;
@@ -248,6 +246,7 @@ public class UiCallManager {
                 if (currentCalls != null && !currentCalls.isEmpty()) {
                     if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
                         bluetoothHeadsetClient.connectAudio(device);
+                        setMuted(false);
                     } else if ((audioRoute & CallAudioState.ROUTE_WIRED_OR_EARPIECE) != 0) {
                         bluetoothHeadsetClient.disconnectAudio(device);
                     }

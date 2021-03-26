@@ -49,8 +49,10 @@ public class NotificationService extends Hilt_NotificationService {
     static final String ACTION_READ_MISSED = "CD.ACTION_READ_MISSED";
     static final String EXTRA_PHONE_NUMBER = "CD.EXTRA_PHONE_NUMBER";
     static final String EXTRA_CALL_LOG_ID = "CD.EXTRA_CALL_LOG_ID";
+    static final String EXTRA_NOTIFICATION_TAG = "CD.EXTRA_NOTIFICATION_TAG";
 
     @Inject InCallNotificationController mInCallNotificationController;
+    @Inject MissedCallNotificationController mMissedCallNotificationController;
     @Inject UiCallManager mUiCallManager;
 
     @Override
@@ -69,6 +71,8 @@ public class NotificationService extends Hilt_NotificationService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
         String phoneNumber = intent.getStringExtra(EXTRA_PHONE_NUMBER);
+        String notificationTag = intent.getStringExtra(EXTRA_NOTIFICATION_TAG);
+        Context context = getApplicationContext();
         switch (action) {
             case ACTION_ANSWER_CALL:
                 answerCall(phoneNumber);
@@ -79,8 +83,7 @@ public class NotificationService extends Hilt_NotificationService {
                 mInCallNotificationController.cancelInCallNotification(phoneNumber);
                 break;
             case ACTION_SHOW_FULLSCREEN_UI:
-                Intent inCallActivityIntent = new Intent(getApplicationContext(),
-                        InCallActivity.class);
+                Intent inCallActivityIntent = new Intent(context, InCallActivity.class);
                 inCallActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 inCallActivityIntent.putExtra(Constants.Intents.EXTRA_SHOW_INCOMING_CALL, true);
                 startActivity(inCallActivityIntent);
@@ -88,19 +91,22 @@ public class NotificationService extends Hilt_NotificationService {
                 break;
             case ACTION_CALL_BACK_MISSED:
                 mUiCallManager.placeCall(phoneNumber);
-                TelecomUtils.markCallLogAsRead(getApplicationContext(), phoneNumber);
+                TelecomUtils.markCallLogAsRead(context, phoneNumber);
+                mMissedCallNotificationController.cancelMissedCallNotification(notificationTag);
                 break;
             case ACTION_MESSAGE_MISSED:
                 // TODO: call assistant to send message
-                TelecomUtils.markCallLogAsRead(getApplicationContext(), phoneNumber);
+                TelecomUtils.markCallLogAsRead(context, phoneNumber);
+                mMissedCallNotificationController.cancelMissedCallNotification(notificationTag);
                 break;
             case ACTION_READ_MISSED:
                 if (!TextUtils.isEmpty(phoneNumber)) {
-                    TelecomUtils.markCallLogAsRead(getApplicationContext(), phoneNumber);
+                    TelecomUtils.markCallLogAsRead(context, phoneNumber);
                 } else {
                     long callLogId = intent.getLongExtra(EXTRA_CALL_LOG_ID, -1);
-                    TelecomUtils.markCallLogAsRead(getApplicationContext(), callLogId);
+                    TelecomUtils.markCallLogAsRead(context, callLogId);
                 }
+                mMissedCallNotificationController.cancelMissedCallNotification(notificationTag);
                 break;
             default:
                 break;

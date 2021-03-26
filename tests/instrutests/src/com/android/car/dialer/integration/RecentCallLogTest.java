@@ -33,7 +33,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.CallHistoryManager;
-import com.android.car.dialer.framework.FakeBluetoothAdapter;
+import com.android.car.dialer.framework.FakeHfpManager;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.telephony.common.PhoneCallLog;
 
@@ -57,7 +57,7 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 @RunWith(AndroidJUnit4.class)
 @HiltAndroidTest
 public class RecentCallLogTest {
-    @Inject FakeBluetoothAdapter mFakeBluetoothAdapter;
+    @Inject FakeHfpManager mFakeHfpManager;
     @BindValue @Mock CallHistoryManager mMockCallHistoryManager;
     @Mock PhoneCallLog mMockPhoneCallLog;
     @Mock PhoneCallLog.Record mRecord;
@@ -75,7 +75,7 @@ public class RecentCallLogTest {
         when(mMockPhoneCallLog.getPhoneNumberString()).thenReturn("511");
 
         mHiltAndroidRule.inject();
-        mFakeBluetoothAdapter.connectHfpDevice();
+        mFakeHfpManager.connectHfpDevice();
     }
 
     @Test

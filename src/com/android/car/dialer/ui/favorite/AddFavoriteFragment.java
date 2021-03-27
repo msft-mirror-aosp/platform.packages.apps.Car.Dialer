@@ -59,7 +59,6 @@ public class AddFavoriteFragment extends Hilt_AddFavoriteFragment {
     private Set<PhoneNumber> mSelectedNumbers;
     private Contact mSelectedContact;
     private Drawable mFavoriteIcon;
-    private Drawable mFavoriteIconEmpty;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,9 +85,9 @@ public class AddFavoriteFragment extends Hilt_AddFavoriteFragment {
                                 favoriteViewModel.addToFavorite(mSelectedContact,
                                         number);
                             }
-                            mSelectedNumbers.clear();
-                            getFragmentManager().popBackStackImmediate();
+                            getParentFragmentManager().popBackStackImmediate();
                         })
+                .setOnDismissListener(dialog -> mSelectedNumbers.clear())
                 .create();
     }
 

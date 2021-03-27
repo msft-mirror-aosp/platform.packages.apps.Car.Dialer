@@ -16,6 +16,7 @@
 
 package com.android.car.dialer.ui.favorite;
 
+import android.Manifest;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -88,6 +89,7 @@ public class BluetoothFavoriteContactsLiveData extends AsyncQueryLiveData<List<C
                 null,
                 where.toString(),
                 selectionArgs.toArray(new String[0]),
-                ContactsContract.Contacts.DISPLAY_NAME + " ASC");
+                ContactsContract.Contacts.DISPLAY_NAME + " ASC",
+                Manifest.permission.READ_CONTACTS);
     }
 }

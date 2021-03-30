@@ -63,7 +63,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
     // Key to load and save the contact entity instance.
     private static final String KEY_CONTACT_ENTITY = "ContactEntity";
 
-    @Inject ContactDetailsAdapterFactory mContactDetailsAdapterFactory;
+    @Inject ContactDetailsAdapter.Factory mContactDetailsAdapterFactory;
     private Contact mContact;
     private LiveData<FutureData<Contact>> mContactDetailsLiveData;
     private ContactDetailsViewModel mContactDetailsViewModel;

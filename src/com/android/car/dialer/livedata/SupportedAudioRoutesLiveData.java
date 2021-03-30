@@ -25,26 +25,27 @@ import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
 
-import com.google.auto.factory.AutoFactory;
-import com.google.auto.factory.Provided;
-
 import java.util.List;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * Returns a list of {@link android.telecom.CallAudioState.CallAudioRoute}s for the primary ongoing
  * call.
  */
-@AutoFactory
 public class SupportedAudioRoutesLiveData extends MediatorLiveData<List<Integer>> {
     private boolean mIsHfpConnection;
     private final UiCallManager mUiCallManager;
     private final PhoneAccountManager mPhoneAccountManager;
 
+    @AssistedInject
     public SupportedAudioRoutesLiveData(
-            CallDetailLiveData primaryCallDetailLiveData,
-            @Provided PhoneAccountManager phoneAccountManager,
-            @Provided BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider,
-            @Provided UiCallManager uiCallManager) {
+            @Assisted CallDetailLiveData primaryCallDetailLiveData,
+            PhoneAccountManager phoneAccountManager,
+            BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider,
+            UiCallManager uiCallManager) {
         mPhoneAccountManager = phoneAccountManager;
         mUiCallManager = uiCallManager;
 
@@ -71,4 +72,13 @@ public class SupportedAudioRoutesLiveData extends MediatorLiveData<List<Integer>
         setValue(audioRoutes);
     }
 
+    /**
+     * Factory to create {@link SupportedAudioRoutesLiveData} instances via the {@link
+     * AssistedInject} constructor.
+     */
+    @AssistedFactory
+    public interface Factory {
+        /** Creates a {@link SupportedAudioRoutesLiveData} instance. */
+        SupportedAudioRoutesLiveData create(CallDetailLiveData primaryCallDetailLiveData);
+    }
 }

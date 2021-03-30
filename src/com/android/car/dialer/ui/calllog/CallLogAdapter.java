@@ -59,14 +59,14 @@ class CallLogAdapter extends ContentLimitingAdapter {
         int TYPE_CALLLOG = 2;
     }
 
-    private final CallLogViewHolderFactory mViewHolderFactory;
+    private final CallLogViewHolder.Factory mViewHolderFactory;
     private List<Object> mUiCallLogs = new ArrayList<>();
     private Context mContext;
     private LinearLayoutManager mLayoutManager;
     private int mLimitingAnchorIndex = 0;
 
     @Inject
-    CallLogAdapter(@ActivityContext Context context, CallLogViewHolderFactory viewHolderFactory) {
+    CallLogAdapter(@ActivityContext Context context, CallLogViewHolder.Factory viewHolderFactory) {
         mContext = context;
         mViewHolderFactory = viewHolderFactory;
     }

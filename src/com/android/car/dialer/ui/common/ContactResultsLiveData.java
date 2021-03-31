@@ -17,6 +17,7 @@
 package com.android.car.dialer.ui.common;
 
 import android.Manifest;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -45,6 +46,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Named;
+
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
@@ -61,6 +64,7 @@ public class ContactResultsLiveData extends
     private final Context mContext;
     private final SearchQueryParamProvider mSearchQueryParamProvider;
     private final ObservableAsyncQuery mObservableAsyncQuery;
+    private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     private final LiveData<String> mSearchQueryLiveData;
     private final SharedPreferencesLiveData mSortOrderPreferenceLiveData;
     private String mSearchQuery;
@@ -75,11 +79,13 @@ public class ContactResultsLiveData extends
     public ContactResultsLiveData(
             @Provided @ApplicationContext Context context,
             @Provided LiveData<List<Contact>> contactListLiveData,
+            @Provided @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
             LiveData<String> searchQueryLiveData,
             SharedPreferencesLiveData sortOrderPreferenceLiveData,
             boolean showOnlyOneEntry) {
         mContext = context;
         mShowOnlyOneEntry = showOnlyOneEntry;
+        mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
         mSearchQueryParamProvider = new SearchQueryParamProvider(searchQueryLiveData);
         mObservableAsyncQuery = new ObservableAsyncQuery(context, mSearchQueryParamProvider,
                 this::onQueryFinished);
@@ -103,9 +109,11 @@ public class ContactResultsLiveData extends
     public ContactResultsLiveData(
             @Provided @ApplicationContext Context context,
             @Provided LiveData<List<Contact>> contactListLiveData,
+            @Provided @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
             LiveData<String> searchQueryLiveData,
             SharedPreferencesLiveData sortOrderPreferenceLiveData) {
-        this(context, contactListLiveData, searchQueryLiveData, sortOrderPreferenceLiveData, true);
+        this(context, contactListLiveData, currentHfpDeviceLiveData, searchQueryLiveData,
+                sortOrderPreferenceLiveData, true);
     }
 
     private void onContactsChange(List<Contact> contactList) {
@@ -138,14 +146,17 @@ public class ContactResultsLiveData extends
         }
 
         List<ContactResultListItem> contactResults = new ArrayList<>();
+
+        BluetoothDevice currentHfpDevice = mCurrentHfpDeviceLiveData.getValue();
+        String accountName = currentHfpDevice == null ? null : currentHfpDevice.getAddress();
         while (cursor.moveToNext()) {
             int lookupKeyColIdx = cursor.getColumnIndex(
                     ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY);
             int numberIdx = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
             String lookupKey = cursor.getString(lookupKeyColIdx);
             String number = cursor.getString(numberIdx);
-            List<Contact> lookupResults = InMemoryPhoneBook.get().lookupContactByKey(lookupKey);
-            for (Contact contact : lookupResults) {
+            Contact contact = InMemoryPhoneBook.get().lookupContactByKey(lookupKey, accountName);
+            if (contact != null) {
                 contactResults.add(new ContactResultListItem(contact, number, mSearchQuery));
             }
         }

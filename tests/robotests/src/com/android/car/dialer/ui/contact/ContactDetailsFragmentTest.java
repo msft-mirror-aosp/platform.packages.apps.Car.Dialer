@@ -111,11 +111,12 @@ public class ContactDetailsFragmentTest {
         mFragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().resume().get();
 
-        ContactDetailsViewHolderFactory viewHolderFactory = new ContactDetailsViewHolderFactory(
-                () -> mMockUiCallManager);
-        mContactDetailsFragment.mContactDetailsAdapterFactory = new ContactDetailsAdapterFactory(
-                () -> mFragmentTestActivity,
-                () -> viewHolderFactory);
+        ContactDetailsViewHolder.Factory viewHolderFactory =
+                (v, phoneNumberPresenter) -> new ContactDetailsViewHolder(v, phoneNumberPresenter,
+                        mMockUiCallManager);
+        mContactDetailsFragment.mContactDetailsAdapterFactory =
+                (contact, phoneNumberPresenter) -> new ContactDetailsAdapter(
+                        mFragmentTestActivity, viewHolderFactory, contact, phoneNumberPresenter);
         mFragmentTestActivity.setFragment(mContactDetailsFragment);
 
         mListView = mContactDetailsFragment.getView().findViewById(R.id.list_view);

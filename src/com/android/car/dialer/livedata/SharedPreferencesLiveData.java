@@ -25,15 +25,14 @@ import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.log.L;
 
-import com.google.auto.factory.AutoFactory;
-import com.google.auto.factory.Provided;
-
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Provides SharedPreferences.
  */
-@AutoFactory
 public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
     private static final String TAG = "CD.PreferenceLiveData";
 
@@ -43,24 +42,17 @@ public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
     private final SharedPreferences.OnSharedPreferenceChangeListener
             mOnSharedPreferenceChangeListener;
 
-    SharedPreferencesLiveData(
-            @Provided SharedPreferences sharedPreferences,
-            String key) {
+    @AssistedInject
+    SharedPreferencesLiveData(@ApplicationContext Context context,
+            SharedPreferences sharedPreferences, @Assisted @StringRes int keyId) {
         mSharedPreferences = sharedPreferences;
-        mKey = key;
+        mKey = context.getString(keyId);
 
         mOnSharedPreferenceChangeListener = (preferences, k) -> {
             if (TextUtils.equals(k, mKey)) {
                 updateSharedPreferences();
             }
         };
-    }
-
-    SharedPreferencesLiveData(
-            @Provided @ApplicationContext Context context,
-            @Provided SharedPreferences sharedPreferences,
-            @StringRes int key) {
-        this(sharedPreferences, context.getString(key));
     }
 
     @Override
@@ -86,5 +78,15 @@ public class SharedPreferencesLiveData extends LiveData<SharedPreferences> {
      */
     public String getKey() {
         return mKey;
+    }
+
+    /**
+     * Factory to create {@link SharedPreferencesLiveData} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    public interface Factory {
+        /** Creates a {@link SharedPreferencesLiveData} instance for the given key. */
+        SharedPreferencesLiveData create(@StringRes int keyId);
     }
 }

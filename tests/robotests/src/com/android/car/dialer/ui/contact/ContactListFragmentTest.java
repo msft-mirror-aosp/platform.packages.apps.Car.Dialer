@@ -37,6 +37,7 @@ import com.android.car.dialer.FragmentTestActivity;
 import com.android.car.dialer.R;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testutils.ShadowAndroidViewModelFactory;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.favorite.FavoriteViewModel;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
@@ -213,8 +214,8 @@ public class ContactListFragmentTest {
         mFragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().resume().get();
 
-        ContactListViewHolderFactory viewHolderFactory = new ContactListViewHolderFactory(
-                () -> item -> {}, () -> mMockUiCallManager);
+        ContactListViewHolder.Factory viewHolderFactory = itemView -> new ContactListViewHolder(
+                itemView, mock(OnItemClickedListener.class), mMockUiCallManager);
         mContactListFragment.mContactListAdapter = new ContactListAdapter(
                mFragmentTestActivity, viewHolderFactory);
         mFragmentTestActivity.setFragment(mContactListFragment);

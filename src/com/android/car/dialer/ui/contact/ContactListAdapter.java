@@ -46,7 +46,7 @@ class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
     private static final String TAG = "CD.ContactListAdapter";
 
     private final Context mContext;
-    private final ContactListViewHolderFactory mViewHolderFactory;
+    private final ContactListViewHolder.Factory mViewHolderFactory;
     private final List<Contact> mContactList = new ArrayList<>();
 
     private Integer mSortMethod;
@@ -56,7 +56,7 @@ class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
     @Inject
     ContactListAdapter(
             @ActivityContext Context context,
-            ContactListViewHolderFactory viewHolderFactory) {
+            ContactListViewHolder.Factory viewHolderFactory) {
         mContext = context;
         mViewHolderFactory = viewHolderFactory;
     }

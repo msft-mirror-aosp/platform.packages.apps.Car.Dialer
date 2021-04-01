@@ -39,7 +39,6 @@ android_app {
         "car-telephony-common",
         "car-ui-lib",
         "car-uxr-client-lib",
-        "auto_factory_annotations",
         "guava",
         "glide-prebuilt",
         "hilt_android",
@@ -57,7 +56,6 @@ android_app {
     ],
 
     plugins: [
-        "auto_factory_plugin",
         "androidx.room_room-compiler-plugin",
     ],
 
@@ -103,7 +101,6 @@ android_app {
         "car-telephony-common",
         "car-ui-lib",
         "car-uxr-client-lib",
-        "auto_factory_annotations",
         "guava",
         "glide-prebuilt",
         "hilt_android",
@@ -121,7 +118,6 @@ android_app {
     ],
 
     plugins: [
-        "auto_factory_plugin",
         "androidx.room_room-compiler-plugin",
     ],
 
@@ -178,7 +174,6 @@ android_app {
         "car-telephony-common",
         "car-ui-lib",
         "car-uxr-client-lib",
-        "auto_factory_annotations",
         "guava",
         "glide-prebuilt",
         "hilt_android",
@@ -196,7 +191,6 @@ android_app {
     ],
 
     plugins: [
-        "auto_factory_plugin",
         "androidx.room_room-compiler-plugin",
     ],
 

@@ -24,7 +24,7 @@ import androidx.lifecycle.LiveData;
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
-import com.android.car.dialer.ui.favorite.BluetoothFavoriteContactsLiveDataFactory;
+import com.android.car.dialer.ui.favorite.BluetoothFavoriteContactsLiveData;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneCallLog;
@@ -95,7 +95,7 @@ public final class SingleHfpEmulatorModule {
     @Provides
     @Named("BluetoothFavorite")
     static LiveData<List<Contact>> provideBluetoothFavoriteContactListLiveData(
-            BluetoothFavoriteContactsLiveDataFactory bluetoothFavoriteContactsLiveDataFactory) {
+            BluetoothFavoriteContactsLiveData.Factory bluetoothFavoriteContactsLiveDataFactory) {
         return bluetoothFavoriteContactsLiveDataFactory.create(null);
     }
 

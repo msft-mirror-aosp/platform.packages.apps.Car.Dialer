@@ -18,14 +18,9 @@ package com.android.car.dialer.ui.dialpad;
 
 import android.content.Context;
 
-import androidx.lifecycle.LiveData;
-
-import com.android.car.dialer.livedata.SharedPreferencesLiveDataFactory;
+import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
-import com.android.car.dialer.ui.common.ContactResultsLiveDataFactory;
 import com.android.car.dialer.ui.search.ContactResultsViewModel;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -38,23 +33,19 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 @HiltViewModel
 public class TypeDownResultsViewModel extends ContactResultsViewModel {
 
-    private final ContactResultsLiveDataFactory mContactResultsLiveDataFactory;
-    private final ContactResultsLiveData mContactSearchResultsLiveData;
-
     @Inject
     public TypeDownResultsViewModel(@ApplicationContext Context context,
-            SharedPreferencesLiveDataFactory sharedPreferencesFactory,
-            ContactResultsLiveDataFactory contactResultsLiveDataFactory) {
+            SharedPreferencesLiveData.Factory sharedPreferencesFactory,
+            ContactResultsLiveData.Factory contactResultsLiveDataFactory) {
         super(context, sharedPreferencesFactory, contactResultsLiveDataFactory);
-        mContactResultsLiveDataFactory = contactResultsLiveDataFactory;
-        mContactSearchResultsLiveData = mContactResultsLiveDataFactory.create(
-                getSearchQueryLiveData(),
-                getSharedPreferencesLiveData(),
-                /* showOnlyOneEntry */ false);
     }
 
     @Override
-    public LiveData<List<ContactResultsLiveData.ContactResultListItem>> getContactSearchResults() {
-        return mContactSearchResultsLiveData;
+    public ContactResultsLiveData createContactSearchResultsLiveData(
+            ContactResultsLiveData.Factory factory) {
+        return factory.create(
+                getSearchQueryLiveData(),
+                getSharedPreferencesLiveData(),
+                /* showOnlyOneEntry = */ false);
     }
 }

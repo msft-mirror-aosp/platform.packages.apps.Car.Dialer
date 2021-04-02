@@ -22,9 +22,8 @@ import android.text.TextUtils;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.android.car.dialer.livedata.SharedPreferencesLiveDataFactory;
+import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
-import com.android.car.dialer.ui.common.ContactResultsLiveDataFactory;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 
 import java.util.List;
@@ -40,20 +39,26 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 @HiltViewModel
 public class ContactResultsViewModel extends DialerListViewModel {
 
-    private final ContactResultsLiveDataFactory mContactResultsLiveDataFactory;
     private final ContactResultsLiveData mContactSearchResultsLiveData;
     private final MutableLiveData<String> mSearchQueryLiveData;
 
     @Inject
     public ContactResultsViewModel(@ApplicationContext Context context,
-            SharedPreferencesLiveDataFactory sharedPreferencesFactory,
-            ContactResultsLiveDataFactory contactResultsLiveDataFactory) {
+            SharedPreferencesLiveData.Factory sharedPreferencesFactory,
+            ContactResultsLiveData.Factory contactResultsLiveDataFactory) {
         super(context, sharedPreferencesFactory);
-        mContactResultsLiveDataFactory = contactResultsLiveDataFactory;
         mSearchQueryLiveData = new MutableLiveData<>();
-        mContactSearchResultsLiveData = mContactResultsLiveDataFactory.create(
-                mSearchQueryLiveData,
-                getSharedPreferencesLiveData());
+        mContactSearchResultsLiveData = createContactSearchResultsLiveData(
+                contactResultsLiveDataFactory);
+    }
+
+    /** Creates the {@link ContactResultsLiveData} representing the contact search results. */
+    public ContactResultsLiveData createContactSearchResultsLiveData(
+            ContactResultsLiveData.Factory factory) {
+        return factory.create(
+                getSearchQueryLiveData(),
+                getSharedPreferencesLiveData(),
+                /* showOnlyOneEntry = */true);
     }
 
     /**

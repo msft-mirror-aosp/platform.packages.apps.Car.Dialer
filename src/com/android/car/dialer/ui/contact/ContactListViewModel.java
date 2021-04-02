@@ -27,7 +27,6 @@ import androidx.lifecycle.MediatorLiveData;
 import com.android.car.arch.common.FutureData;
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
-import com.android.car.dialer.livedata.SharedPreferencesLiveDataFactory;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
 import com.android.car.telephony.common.Contact;
@@ -56,7 +55,7 @@ public class ContactListViewModel extends DialerListViewModel {
 
     @Inject
     public ContactListViewModel(@ApplicationContext Context context,
-            SharedPreferencesLiveDataFactory sharedPreferencesFactory,
+            SharedPreferencesLiveData.Factory sharedPreferencesFactory,
             LiveData<List<Contact>> contactListLiveData) {
         super(context, sharedPreferencesFactory);
         mContactListLiveData = contactListLiveData;

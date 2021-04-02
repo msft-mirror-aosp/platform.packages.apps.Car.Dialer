@@ -18,6 +18,7 @@ package com.android.car.dialer.ui.calllog;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +36,7 @@ import com.android.car.dialer.R;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testutils.ShadowAndroidViewModelFactory;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.common.entity.HeaderViewHolder;
 import com.android.car.dialer.ui.common.entity.UiCallLog;
 import com.android.car.dialer.widget.CallTypeIconsView;
@@ -102,8 +104,8 @@ public class CallHistoryFragmentTest {
         mCallHistoryFragment = CallHistoryFragment.newInstance();
         FragmentTestActivity mFragmentTestActivity = Robolectric.buildActivity(
                 FragmentTestActivity.class).create().resume().get();
-        CallLogViewHolderFactory viewHolderFactory = new CallLogViewHolderFactory(
-                () -> item -> {}, () -> mMockUiCallManager);
+        CallLogViewHolder.Factory viewHolderFactory = itemView -> new CallLogViewHolder(itemView,
+                mock(OnItemClickedListener.class), mMockUiCallManager);
         mCallHistoryFragment.mCallLogAdapter = new CallLogAdapter(mFragmentTestActivity,
                 viewHolderFactory);
         mFragmentTestActivity.setFragment(mCallHistoryFragment);

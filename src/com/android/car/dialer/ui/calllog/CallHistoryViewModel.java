@@ -25,7 +25,7 @@ import com.android.car.arch.common.FutureData;
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.bluetooth.CallHistoryManager;
 import com.android.car.dialer.livedata.HeartBeatLiveData;
-import com.android.car.dialer.livedata.SharedPreferencesLiveDataFactory;
+import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 import com.android.car.dialer.ui.common.UiCallLogLiveData;
 import com.android.car.telephony.common.InMemoryPhoneBook;
@@ -48,7 +48,7 @@ public class CallHistoryViewModel extends DialerListViewModel {
     @Inject
     public CallHistoryViewModel(
             @ApplicationContext Context context,
-            SharedPreferencesLiveDataFactory sharedPreferencesFactory,
+            SharedPreferencesLiveData.Factory sharedPreferencesFactory,
             CallHistoryManager callHistoryManager) {
         super(context, sharedPreferencesFactory);
         mCallHistoryManager = callHistoryManager;

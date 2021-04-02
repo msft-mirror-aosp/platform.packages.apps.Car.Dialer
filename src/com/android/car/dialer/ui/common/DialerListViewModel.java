@@ -24,7 +24,6 @@ import androidx.lifecycle.ViewModel;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
-import com.android.car.dialer.livedata.SharedPreferencesLiveDataFactory;
 import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
@@ -39,7 +38,7 @@ public abstract class DialerListViewModel extends ViewModel {
 
     public DialerListViewModel(
             @ApplicationContext Context context,
-            SharedPreferencesLiveDataFactory sharedPreferencesFactory) {
+            SharedPreferencesLiveData.Factory sharedPreferencesFactory) {
         mSharedPreferencesLiveData = sharedPreferencesFactory.create(R.string.sort_order_key);
         mSortOrderLiveData = Transformations.map(mSharedPreferencesLiveData,
                 sharedPreferences -> ContactSortingInfo.getSortingInfo(context,

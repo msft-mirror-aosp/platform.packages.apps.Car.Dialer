@@ -24,7 +24,7 @@ import androidx.lifecycle.MediatorLiveData;
 import com.android.car.arch.common.FutureData;
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.R;
-import com.android.car.dialer.livedata.SharedPreferencesLiveDataFactory;
+import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 import com.android.car.dialer.ui.common.entity.ActionButton;
@@ -54,7 +54,7 @@ public class FavoriteViewModel extends DialerListViewModel {
     @Inject
     public FavoriteViewModel(
             @ApplicationContext Context context,
-            SharedPreferencesLiveDataFactory sharedPreferencesFactory,
+            SharedPreferencesLiveData.Factory sharedPreferencesFactory,
             FavoriteNumberRepository favoriteNumberRepository,
             @Named("BluetoothFavorite") LiveData<List<Contact>> bluetoothFavoriteContacts,
             @Named("LocalFavorite") LiveData<List<Contact>> localFavoriteContacts) {

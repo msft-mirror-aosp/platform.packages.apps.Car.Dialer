@@ -35,14 +35,14 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneCallLog;
 import com.android.car.telephony.common.TelecomUtils;
 
-import com.google.auto.factory.AutoFactory;
-import com.google.auto.factory.Provided;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * {@link RecyclerView.ViewHolder} for call history list item, responsible for presenting and
  * resetting the UI on recycle.
  */
-@AutoFactory
 class CallLogViewHolder extends RecyclerView.ViewHolder {
 
     private final UiCallManager mUiCallManager;
@@ -56,10 +56,11 @@ class CallLogViewHolder extends RecyclerView.ViewHolder {
     private View mActionButton;
     private View mDivider;
 
+    @AssistedInject
     CallLogViewHolder(
-            @NonNull View itemView,
-            @Provided OnItemClickedListener<Contact> onShowContactDetailListener,
-            @Provided UiCallManager uiCallManager) {
+            @Assisted @NonNull View itemView,
+            OnItemClickedListener<Contact> onShowContactDetailListener,
+            UiCallManager uiCallManager) {
         super(itemView);
         mUiCallManager = uiCallManager;
         mOnShowContactDetailListener = onShowContactDetailListener;
@@ -139,5 +140,14 @@ class CallLogViewHolder extends RecyclerView.ViewHolder {
         } else {
             ViewUtils.setOnClickListener(mActionButton, null);
         }
+    }
+
+    /**
+     * Factory to create {@link CallLogViewHolder} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    interface Factory {
+        CallLogViewHolder create(@NonNull View itemView);
     }
 }

@@ -30,15 +30,14 @@ import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
 
-import com.google.auto.factory.AutoFactory;
-import com.google.auto.factory.Provided;
-
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Provides the current connecting audio route.
  */
-@AutoFactory
 public class AudioRouteLiveData extends MediatorLiveData<Integer> {
     private static final String TAG = "CD.AudioRouteLiveData";
 
@@ -54,11 +53,12 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
         }
     };
 
+    @AssistedInject
     public AudioRouteLiveData(
-            @Provided @ApplicationContext Context context,
-            CallDetailLiveData primaryCallDetailLiveData,
-            @Provided BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider,
-            @Provided UiCallManager callManager) {
+            @ApplicationContext Context context,
+            @Assisted CallDetailLiveData primaryCallDetailLiveData,
+            BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider,
+            UiCallManager callManager) {
         mContext = context;
         mAudioRouteChangeFilter =
                 new IntentFilter(BluetoothHeadsetClient.ACTION_AUDIO_STATE_CHANGED);
@@ -100,5 +100,15 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
             L.d(TAG, "updateAudioRoute to %s", audioRoute);
             setValue(audioRoute);
         }
+    }
+
+    /**
+     * Factory to create {@link AudioRouteLiveData} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    public interface Factory {
+        /** Creates an {@link AudioRouteLiveData} instance. */
+        AudioRouteLiveData create(CallDetailLiveData primaryCallDetailLiveData);
     }
 }

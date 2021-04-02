@@ -28,11 +28,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
-import com.android.car.dialer.livedata.AudioRouteLiveDataFactory;
 import com.android.car.dialer.livedata.CallDetailLiveData;
 import com.android.car.dialer.livedata.CallStateLiveData;
 import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
-import com.android.car.dialer.livedata.SupportedAudioRoutesLiveDataFactory;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.common.CallDetail;
@@ -58,8 +56,8 @@ public class InCallViewModel extends ViewModel {
     private static final String TAG = "CD.InCallViewModel";
 
     private final LocalCallHandler mLocalCallHandler;
-    private final AudioRouteLiveDataFactory mAudioRouteLiveDataFactory;
-    private final SupportedAudioRoutesLiveDataFactory mSupportedAudioRoutesLiveDataFactory;
+    private final AudioRouteLiveData.Factory mAudioRouteLiveDataFactory;
+    private final SupportedAudioRoutesLiveData.Factory mSupportedAudioRoutesLiveDataFactory;
     private final LiveData<List<Contact>> mContactListLiveData;
 
     private final MutableLiveData<Boolean> mHasOngoingCallChangedLiveData;
@@ -107,8 +105,8 @@ public class InCallViewModel extends ViewModel {
     @Inject
     public InCallViewModel(
             LocalCallHandler localCallHandler,
-            AudioRouteLiveDataFactory audioRouteLiveDataFactory,
-            SupportedAudioRoutesLiveDataFactory supportedAudioRouteLiveDataFactory,
+            AudioRouteLiveData.Factory audioRouteLiveDataFactory,
+            SupportedAudioRoutesLiveData.Factory supportedAudioRouteLiveDataFactory,
             LiveData<List<Contact>> contactListLiveData) {
         mLocalCallHandler = localCallHandler;
         mAudioRouteLiveDataFactory = audioRouteLiveDataFactory;

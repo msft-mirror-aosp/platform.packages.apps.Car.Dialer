@@ -34,16 +34,16 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 
-import com.google.auto.factory.AutoFactory;
-import com.google.auto.factory.Provided;
-
 import java.util.List;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * {@link RecyclerView.ViewHolder} for contact list item, responsible for presenting and resetting
  * the UI on recycle.
  */
-@AutoFactory
 class ContactListViewHolder extends RecyclerView.ViewHolder {
     private final UiCallManager mUiCallManager;
     private final OnItemClickedListener<Contact> mOnItemClickedListener;
@@ -54,10 +54,11 @@ class ContactListViewHolder extends RecyclerView.ViewHolder {
     private final View mShowContactDetailView;
     private final View mCallActionView;
 
+    @AssistedInject
     ContactListViewHolder(
-            @NonNull View itemView,
-            @Provided OnItemClickedListener<Contact> onItemClickedListener,
-            @Provided UiCallManager uiCallManager) {
+            @Assisted @NonNull View itemView,
+            OnItemClickedListener<Contact> onItemClickedListener,
+            UiCallManager uiCallManager) {
         super(itemView);
         mUiCallManager = uiCallManager;
         mOnItemClickedListener = onItemClickedListener;
@@ -156,5 +157,14 @@ class ContactListViewHolder extends RecyclerView.ViewHolder {
     public void recycle() {
         ViewUtils.setOnClickListener(mCallActionView, null);
         ViewUtils.setOnClickListener(mShowContactDetailView, null);
+    }
+
+    /**
+     * Factory to create {@link ContactListViewHolder} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    interface Factory {
+        ContactListViewHolder create(@NonNull View itemView);
     }
 }

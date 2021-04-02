@@ -36,9 +36,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.TestDialerApplication;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
-import com.android.car.dialer.livedata.AudioRouteLiveDataFactory;
 import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
-import com.android.car.dialer.livedata.SupportedAudioRoutesLiveDataFactory;
 import com.android.car.dialer.telecom.InCallServiceImpl;
 import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.common.CallDetail;
@@ -82,9 +80,9 @@ public class InCallViewModelTest {
     @Captor
     private ArgumentCaptor<Call.Callback> mCallbackCaptor;
     @Mock
-    AudioRouteLiveDataFactory mMockAudioRouteLiveDataFactory;
+    AudioRouteLiveData.Factory mMockAudioRouteLiveDataFactory;
     @Mock
-    SupportedAudioRoutesLiveDataFactory mMockSupportedAudioRoutesLiveDataFactory;
+    SupportedAudioRoutesLiveData.Factory mMockSupportedAudioRoutesLiveDataFactory;
 
     @Before
     public void setup() {

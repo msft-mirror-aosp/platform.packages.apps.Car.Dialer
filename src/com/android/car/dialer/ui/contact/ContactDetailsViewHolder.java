@@ -48,15 +48,16 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-import com.google.auto.factory.AutoFactory;
-import com.google.auto.factory.Provided;
 
 import java.util.List;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * ViewHolder for {@link ContactDetailsFragment}.
  */
-@AutoFactory
 class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "CD.ContactDetailsVH";
 
@@ -91,10 +92,11 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
     @NonNull
     private final ContactDetailsAdapter.PhoneNumberPresenter mPhoneNumberPresenter;
 
+    @AssistedInject
     ContactDetailsViewHolder(
-            View v,
-            @NonNull ContactDetailsAdapter.PhoneNumberPresenter phoneNumberPresenter,
-            @Provided UiCallManager uiCallManager) {
+            @Assisted @NonNull View v,
+            @Assisted @NonNull ContactDetailsAdapter.PhoneNumberPresenter phoneNumberPresenter,
+            UiCallManager uiCallManager) {
         super(v);
         mUiCallManager = uiCallManager;
         mCallActionView = v.findViewById(R.id.call_action_id);
@@ -230,5 +232,15 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
         } catch (ActivityNotFoundException e) {
             L.w(TAG, "Map is not available.");
         }
+    }
+
+    /**
+     * Factory to create {@link ContactDetailsViewHolder} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    interface Factory {
+        ContactDetailsViewHolder create(@NonNull View v,
+                @NonNull ContactDetailsAdapter.PhoneNumberPresenter phoneNumberPresenter);
     }
 }

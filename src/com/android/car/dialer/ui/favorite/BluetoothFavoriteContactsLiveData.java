@@ -29,21 +29,21 @@ import com.android.car.telephony.common.AsyncQueryLiveData;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.QueryParam;
 
-import com.google.auto.factory.AutoFactory;
-import com.google.auto.factory.Provided;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /** Presents the favorite contacts downloaded from phone. It reads the contacts provider. */
-@AutoFactory
 public class BluetoothFavoriteContactsLiveData extends AsyncQueryLiveData<List<Contact>> {
     private final Context mContext;
 
+    @AssistedInject
     BluetoothFavoriteContactsLiveData(
-            @Provided @ApplicationContext Context context, @Nullable String accountName) {
+            @ApplicationContext Context context, @Assisted @Nullable String accountName) {
         super(context, QueryParam.of(getFavoriteQueryParam(accountName)));
         mContext = context;
     }
@@ -91,5 +91,15 @@ public class BluetoothFavoriteContactsLiveData extends AsyncQueryLiveData<List<C
                 selectionArgs.toArray(new String[0]),
                 ContactsContract.Contacts.DISPLAY_NAME + " ASC",
                 Manifest.permission.READ_CONTACTS);
+    }
+
+    /**
+     * Factory to create {@link BluetoothFavoriteContactsLiveData} instances via the {@link
+     * AssistedInject} constructor.
+     */
+    @AssistedFactory
+    public interface Factory {
+        /** Creates a {@link BluetoothFavoriteContactsLiveData} instance. */
+        BluetoothFavoriteContactsLiveData create(@Nullable String accountName);
     }
 }

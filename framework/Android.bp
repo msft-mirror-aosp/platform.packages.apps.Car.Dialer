@@ -24,7 +24,7 @@ package {
 android_library {
     name: "car-dialer-framework-dep",
     // required to access any private API.
-    platform_apis: true,
+    sdk_version: "system_current",
 
     srcs: ["src/**/*.java", "real/src/**/*.java"],
 
@@ -41,7 +41,7 @@ android_library {
     name: "car-dialer-fake-framework-dep",
 
     // required to access any private API and spy() on any framework class.
-    platform_apis: true,
+    sdk_version: "system_current",
 
     srcs: ["src/**/*.java", "fake/src/**/*.java"],
 

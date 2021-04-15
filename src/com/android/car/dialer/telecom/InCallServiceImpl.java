@@ -15,6 +15,7 @@
  */
 package com.android.car.dialer.telecom;
 
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
@@ -22,13 +23,18 @@ import android.os.Process;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
 import android.telecom.InCallService;
+import android.telecom.PhoneAccountHandle;
 
+import androidx.lifecycle.LiveData;
+
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.framework.InCallServiceProxy;
 import com.android.car.dialer.log.L;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -47,6 +53,8 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
             new CopyOnWriteArrayList<>();
 
     @Inject InCallRouter mInCallRouter;
+    @Inject PhoneAccountManager mPhoneAccountManager;
+    @Inject @Named("Hfp") LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
 
     /** Listens to active call list changes. Callbacks will be called on main thread. */
     public interface ActiveCallListChangedCallback {
@@ -89,6 +97,16 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
     @Override
     public void onCallAdded(Call telecomCall) {
         L.d(TAG, "onCallAdded: %s", telecomCall);
+        if (telecomCall.getState() == Call.STATE_SELECT_PHONE_ACCOUNT) {
+            BluetoothDevice currentHfpDevice = mCurrentHfpDeviceLiveData.getValue();
+            PhoneAccountHandle currentPhoneAccountHandle =
+                    mPhoneAccountManager.getMatchingPhoneAccount(currentHfpDevice);
+            if (currentPhoneAccountHandle != null) {
+                telecomCall.phoneAccountSelected(currentPhoneAccountHandle, false);
+            } else {
+                L.e(TAG, "Not able to get the phone account handle for current hfp device.");
+            }
+        }
         mInCallRouter.onCallAdded(telecomCall);
     }
 

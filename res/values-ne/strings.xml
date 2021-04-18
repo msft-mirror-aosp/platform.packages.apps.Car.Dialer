@@ -55,7 +55,7 @@
     <string name="select_number_dialog_title" msgid="5770700626013782205">"फोन नम्बर छनौट गर्नुहोस्"</string>
     <string name="select_number_dialog_just_once_button" msgid="1814381354393374660">"एक पटक मात्र"</string>
     <string name="select_number_dialog_always_button" msgid="6862338683635863764">"सधैँ"</string>
-    <string name="primary_number_description" msgid="1211198148918329509">"<xliff:g id="LABEL">%1$s</xliff:g> , पूर्वनिर्धारित फोन नम्बर"</string>
+    <string name="primary_number_description" msgid="1211198148918329509">"<xliff:g id="LABEL">%1$s</xliff:g> , डिफल्ट फोन नम्बर"</string>
     <string name="favorite_number_description" msgid="8175362259853807385">"मन पर्ने नम्बर -  <xliff:g id="LABEL">%1$s</xliff:g>"</string>
     <string name="local_favorite_number_description" msgid="3723823871011997275">"स्थानीय मन पर्ने नम्बर -  <xliff:g id="LABEL">%1$s</xliff:g>"</string>
     <string name="phone_favorites" msgid="2257447553252980575">"मन पर्ने नम्बरहरू"</string>
@@ -65,7 +65,7 @@
     <string name="notification_incoming_call" msgid="1722904631804432389">"आगमन कल"</string>
     <string name="missed_call_notification_channel_name" msgid="1135686963409691772">"छुटेको कलसम्बन्धी सूचना"</string>
     <plurals name="notification_missed_call" formatted="false" msgid="1018870358427938752">
-      <item quantity="other">छुटेका कलहरू(<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
+      <item quantity="other">मिस कलहरू(<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
       <item quantity="one">छुटेको कल</item>
     </plurals>
     <string name="onhold_call_label" msgid="1937027519810985499">"होल्डमा छ"</string>

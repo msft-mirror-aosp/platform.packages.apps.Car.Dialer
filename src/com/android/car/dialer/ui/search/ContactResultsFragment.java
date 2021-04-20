@@ -19,7 +19,6 @@ package com.android.car.dialer.ui.search;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -72,8 +71,6 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment implemen
 
     private RecyclerView.OnScrollListener mOnScrollChangeListener;
     private ToolbarController mToolbar;
-    @Nullable
-    private RecyclerView mToolbarSearchResultsView;
 
     private LifeCycleObserverUxrContentLimiter mUxrContentLimiter;
 
@@ -103,12 +100,6 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment implemen
         mUxrContentLimiter = new LifeCycleObserverUxrContentLimiter(
                 new UxrContentLimiterImpl(getContext(), R.xml.uxr_config));
         getLifecycle().addObserver(mUxrContentLimiter);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        getRecyclerView().setAdapter(mAdapter);
 
         mOnScrollChangeListener = new RecyclerView.OnScrollListener() {
             @Override
@@ -126,11 +117,12 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment implemen
                 }
             }
         };
-        getRecyclerView().addOnScrollListener(mOnScrollChangeListener);
-        if (mToolbarSearchResultsView != null) {
-            mToolbarSearchResultsView.setAdapter(mAdapter);
-        }
+    }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        getRecyclerView().setAdapter(mAdapter);
         mUxrContentLimiter.setAdapter(mAdapter);
     }
 
@@ -150,15 +142,10 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment implemen
         setSearchQuery(mContactResultsViewModel.getSearchQuery());
 
         if (mToolbar.canShowSearchResultsView()) {
-            mToolbarSearchResultsView = new RecyclerView(getContext());
-            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            mToolbarSearchResultsView.setLayoutParams(params);
-            mToolbarSearchResultsView.setLayoutManager(createLayoutManager());
-            mToolbarSearchResultsView.setAdapter(mAdapter);
-            mToolbarSearchResultsView.setBackground(
-                    getContext().getDrawable(R.drawable.car_ui_ime_wide_screen_background));
-            mToolbar.setSearchResultsView(mToolbarSearchResultsView);
+            mToolbar.setSearchResultsView(getRecyclerView());
+        } else {
+            // Widescreen IME list should not set the scroll listener to dismiss the keyboard.
+            getRecyclerView().addOnScrollListener(mOnScrollChangeListener);
         }
     }
 

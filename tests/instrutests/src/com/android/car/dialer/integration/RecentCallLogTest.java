@@ -21,10 +21,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 
 import androidx.lifecycle.MutableLiveData;
@@ -77,7 +75,7 @@ public class RecentCallLogTest {
         when(mMockPhoneCallLog.getPhoneNumberString()).thenReturn("511");
 
         mHiltAndroidRule.inject();
-        mFakeBluetoothAdapter.connectHfpDevice(mock(BluetoothDevice.class));
+        mFakeBluetoothAdapter.connectHfpDevice();
     }
 
     @Test

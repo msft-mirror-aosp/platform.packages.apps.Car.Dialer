@@ -31,10 +31,11 @@ import android.bluetooth.BluetoothHeadsetClient;
 import android.bluetooth.BluetoothProfile;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.ArraySet;
 
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -44,9 +45,12 @@ import javax.inject.Singleton;
  */
 @Singleton
 public final class FakeBluetoothAdapter {
+    private static final String CONTACT_DATA_FILE = "ContactsForPhone%d.json";
+    private static final String CALL_LOG_DATA_FILE = "CallLogForPhone%d.json";
+
     private boolean mIsEnabled = true;
     private int mHfpProfileConnectionState = BluetoothProfile.STATE_DISCONNECTED;
-    private final Set<BluetoothDevice> mConnectedBluetoothDevices = new ArraySet<>();
+    private Map<String, SimulatedBluetoothDevice> mDeviceMap = new HashMap();
     private final BluetoothHeadsetClient mMockedBluetoothHeadsetClient =
             mock(BluetoothHeadsetClient.class);
 
@@ -70,15 +74,42 @@ public final class FakeBluetoothAdapter {
     /**
      * Virtually connect a BluetoothDevice. Calling this function will update the Bluetooth state.
      */
-    public void connectHfpDevice(BluetoothDevice device) {
+    public void connectHfpDevice() {
         new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> {
+            SimulatedBluetoothDevice device = prepareNewDevice();
             mHfpProfileConnectionState = BluetoothProfile.STATE_CONNECTED;
-            mConnectedBluetoothDevices.add(device);
+            mDeviceMap.put(String.valueOf(mDeviceMap.size()), device);
             updateFake();
             if (mServiceListener != null) {
                 mServiceListener.onServiceConnected(BluetoothProfile.HEADSET_CLIENT,
                         mMockedBluetoothHeadsetClient);
             }
+        });
+    }
+
+    private SimulatedBluetoothDevice prepareNewDevice() {
+        String contactDataFile = String.format(CONTACT_DATA_FILE, mDeviceMap.size() + 1);
+        String callLogDataFile = String.format(CALL_LOG_DATA_FILE, mDeviceMap.size() + 1);
+        SimulatedBluetoothDevice simulatedBluetoothDevice = new SimulatedBluetoothDevice(
+                contactDataFile, callLogDataFile);
+
+        return simulatedBluetoothDevice;
+    }
+
+    /**
+     * Virtually disconnect a BluetoothDevice.
+     */
+    public void disconnectHfpDevice(String id) {
+        new Handler(Looper.getMainLooper()).postAtFrontOfQueue(() -> {
+            SimulatedBluetoothDevice simulatedBluetoothDevice = mDeviceMap.remove(id);
+            simulatedBluetoothDevice.disconnect();
+            if (mDeviceMap.isEmpty()) {
+                mHfpProfileConnectionState = BluetoothProfile.STATE_DISCONNECTED;
+                if (mServiceListener != null) {
+                    mServiceListener.onServiceDisconnected(BluetoothProfile.HEADSET_CLIENT);
+                }
+            }
+            updateFake();
         });
     }
 
@@ -90,11 +121,14 @@ public final class FakeBluetoothAdapter {
     }
 
     private void updateFake() {
+        Stream<BluetoothDevice> bluetoothDeviceStream = mDeviceMap.values().stream().map(
+                SimulatedBluetoothDevice::getBluetoothDevice);
         when(mMockedBluetoothHeadsetClient.getConnectedDevices())
-                .thenReturn(new ArrayList<>(mConnectedBluetoothDevices));
+                .thenReturn(bluetoothDeviceStream.collect(Collectors.toList()));
         when(mSpiedBluetoothAdapter.isEnabled()).thenReturn(mIsEnabled);
         doReturn(mHfpProfileConnectionState).when(mSpiedBluetoothAdapter)
                 .getProfileConnectionState(BluetoothProfile.HEADSET_CLIENT);
-        when(mSpiedBluetoothAdapter.getBondedDevices()).thenReturn(mConnectedBluetoothDevices);
+        when(mSpiedBluetoothAdapter.getBondedDevices()).thenReturn(bluetoothDeviceStream.collect(
+                Collectors.toSet()));
     }
 }

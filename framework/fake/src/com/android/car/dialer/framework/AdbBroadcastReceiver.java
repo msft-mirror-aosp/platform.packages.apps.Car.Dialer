@@ -16,9 +16,6 @@
 
 package com.android.car.dialer.framework;
 
-import static org.mockito.Mockito.mock;
-
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -40,12 +37,14 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     private static final String INTENT_ACTION = "com.android.car.dialer.intent.action.adb";
     private static final String ACTION_TAG = "action";
     private static final String ACTION_CONNECT = "connect";
+    private static final String ACTION_DISCONNECT = "disconnect";
     private static final String ACTION_ADDCALL = "addCall";
     private static final String ACTION_RECEIVECALL = "receiveCall";
     private static final String ACTION_ENDCALL = "endCall";
     private static final String ACTION_CLEARALL = "clearAll";
     private static final String ACTION_MERGE = "merge";
     private static final String EXTRA_CALL_ID = "id";
+    private static final String EXTRA_DEVICE_ID = "device";
 
     private final FakeTelecomManager mFakeTelecomManager;
     private final FakeBluetoothAdapter mFakeBluetoothAdapter;
@@ -83,7 +82,7 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
         String action = intent.getStringExtra(ACTION_TAG);
         String id;
 
-        switch(action) {
+        switch (action) {
             case ACTION_ADDCALL:
                 id = intent.getStringExtra(EXTRA_CALL_ID);
                 Log.d(TAG, action + id);
@@ -109,11 +108,23 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
                 break;
             case ACTION_CONNECT:
                 Log.d(TAG, action);
-                BluetoothDevice device = mock(BluetoothDevice.class);
-                mFakeBluetoothAdapter.connectHfpDevice(device);
+                connectDevice();
+                break;
+            case ACTION_DISCONNECT:
+                id = intent.getStringExtra(EXTRA_DEVICE_ID);
+                Log.d(TAG, action + id);
+                disconnectDevice(id);
                 break;
             default:
                 Log.d(TAG, "Unknown command " + action);
         }
+    }
+
+    private void connectDevice() {
+        mFakeBluetoothAdapter.connectHfpDevice();
+    }
+
+    private void disconnectDevice(String id) {
+        mFakeBluetoothAdapter.disconnectHfpDevice(id);
     }
 }

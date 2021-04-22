@@ -19,7 +19,7 @@
     <string name="phone_app_name" msgid="238824437273544459">"फोन"</string>
     <string name="no_hfp" msgid="7371139867234667691">"कल गर्न पहिले ब्लुटुथमार्फत आफ्नो फोन कारमा जोड्नुहोस्।"</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"ब्लुटुथ उपलब्ध छैन।"</string>
-    <string name="bluetooth_disabled" msgid="1275246762067907843">"फोन गर्न वा फोन उठाउन ब्लुटुथ सक्रिय गर्नुहोस्।"</string>
+    <string name="bluetooth_disabled" msgid="1275246762067907843">"फोन गर्न वा फोन उठाउन ब्लुटुथ अन गर्नुहोस्।"</string>
     <string name="bluetooth_unpaired" msgid="1600552386483652892">"कल गर्न वा उठाउन आफ्नो फोन र कारको जोडा बनाउनुहोस्।"</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"ब्लुटुथमा जोड्नुहोस्"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"आपत्‌कालीन"</string>

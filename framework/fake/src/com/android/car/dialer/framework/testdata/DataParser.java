@@ -78,7 +78,8 @@ public class DataParser {
             jsonReader.close();
             inputStream.close();
         } catch (IOException e) {
-            L.e(TAG, "Exception caught when open a file" + e);
+            L.e(TAG, "Exception caught when open a file" + e
+                    + ". Not enough pre-set data files for connected devices.");
         }
         return rawDataList;
     }

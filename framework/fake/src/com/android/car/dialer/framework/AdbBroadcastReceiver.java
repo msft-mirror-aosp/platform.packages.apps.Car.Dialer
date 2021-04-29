@@ -44,7 +44,7 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     private static final String ACTION_CLEARALL = "clearAll";
     private static final String ACTION_MERGE = "merge";
     private static final String EXTRA_CALL_ID = "id";
-    private static final String EXTRA_DEVICE_ID = "device";
+    private static final String EXTRA_DEVICE_ID = "device_id";
 
     private final FakeTelecomManager mFakeTelecomManager;
     private final FakeBluetoothAdapter mFakeBluetoothAdapter;
@@ -108,23 +108,15 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
                 break;
             case ACTION_CONNECT:
                 Log.d(TAG, action);
-                connectDevice();
+                mFakeBluetoothAdapter.connectHfpDevice();
                 break;
             case ACTION_DISCONNECT:
                 id = intent.getStringExtra(EXTRA_DEVICE_ID);
                 Log.d(TAG, action + id);
-                disconnectDevice(id);
+                mFakeBluetoothAdapter.disconnectHfpDevice(id);
                 break;
             default:
                 Log.d(TAG, "Unknown command " + action);
         }
-    }
-
-    private void connectDevice() {
-        mFakeBluetoothAdapter.connectHfpDevice();
-    }
-
-    private void disconnectDevice(String id) {
-        mFakeBluetoothAdapter.disconnectHfpDevice(id);
     }
 }

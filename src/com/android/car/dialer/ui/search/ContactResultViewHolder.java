@@ -113,7 +113,7 @@ public class ContactResultViewHolder extends RecyclerView.ViewHolder {
         itemView.setEnabled(true);
         mContactCard.setOnClickListener(null);
         if (mContactPicture != null) {
-            Glide.with(mContext).clear(mContactPicture);
+            Glide.with(mContext.getApplicationContext()).clear(mContactPicture);
         }
     }
 }

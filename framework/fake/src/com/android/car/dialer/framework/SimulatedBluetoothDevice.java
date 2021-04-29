@@ -23,8 +23,6 @@ import android.bluetooth.BluetoothDevice;
 import com.android.car.dialer.framework.testdata.CallLogDataHandler;
 import com.android.car.dialer.framework.testdata.ContactDataHandler;
 
-import javax.inject.Inject;
-
 /**
  * A class simulating the behavior of a real bluetooth device.
  */
@@ -32,13 +30,18 @@ public class SimulatedBluetoothDevice {
     private BluetoothDevice mMockBluetoothDevice;
     private String mContactDataFileName;
     private String mCallLogDataFileName;
-    @Inject
-    ContactDataHandler mContactDataHandler;
-    @Inject
-    CallLogDataHandler mCallLogDataHandler;
 
-    public SimulatedBluetoothDevice(String contactDataFile, String callLogDataFile) {
+    private ContactDataHandler mContactDataHandler;
+    private CallLogDataHandler mCallLogDataHandler;
+
+    public SimulatedBluetoothDevice(
+            ContactDataHandler contactDataHandler,
+            CallLogDataHandler callLogDataHandler,
+            String contactDataFile,
+            String callLogDataFile) {
         mMockBluetoothDevice = mock(BluetoothDevice.class);
+        mContactDataHandler = contactDataHandler;
+        mCallLogDataHandler = callLogDataHandler;
         mContactDataFileName = contactDataFile;
         mCallLogDataFileName = callLogDataFile;
     }
@@ -51,7 +54,7 @@ public class SimulatedBluetoothDevice {
      * Connects the bluetooth device to the {@link FakeBluetoothAdapter} and imports data.
      */
     public void connect() {
-        // TODO: will update the paramenters for account name and account type.
+        // TODO: b/186613173 figure out account name and account type.
         mContactDataHandler.addContactsAsync(mContactDataFileName, null, null);
         mCallLogDataHandler.addCallLogsAsync(mCallLogDataFileName);
     }

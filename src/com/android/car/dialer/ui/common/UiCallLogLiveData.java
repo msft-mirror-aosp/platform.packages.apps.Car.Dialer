@@ -105,6 +105,10 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
         }
     }
 
+    /**
+     * Convert {@link PhoneCallLog}s to UI friendly {@link UiCallLog}s. The list will be grouped by
+     * time and each group starts with a header indicating the time range the calls fall into.
+     */
     @NonNull
     private List<Object> convert(@Nullable List<PhoneCallLog> phoneCallLogs) {
         if (phoneCallLogs == null) {
@@ -123,17 +127,7 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
 
             String number = phoneCallLog.getPhoneNumberString();
             String relativeTime = getRelativeTime(phoneCallLog.getLastCallEndTimestamp());
-            if (TelecomUtils.isVoicemailNumber(mContext, number)) {
-                String title = mContext.getString(R.string.voicemail);
-                UiCallLog uiCallLog = new UiCallLog(title, title, number, null,
-                        phoneCallLog.getAllCallRecords());
-                uiCallLog.setRelativeTime(relativeTime);
-                uiCallLogs.add(uiCallLog);
-                continue;
-            }
 
-            // If InMemoryPhoneBook hasn't finished loading, there is still a chance that this
-            // number can be found there later. So query will not be proceeded now.
             TelecomUtils.PhoneNumberInfo phoneNumberInfo =
                     TelecomUtils.lookupNumberInBackground(mContext, number);
             Contact contact = inMemoryPhoneBook.lookupContactByKey(

@@ -24,8 +24,6 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.android.car.arch.common.LiveDataFunctions;
-import com.android.car.dialer.bluetooth.PhoneAccountManager;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
 import com.android.car.dialer.ui.favorite.BluetoothFavoriteContactsLiveData;
@@ -34,7 +32,6 @@ import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneCallLog;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -47,49 +44,15 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.android.scopes.ActivityRetainedScoped;
 import dagger.hilt.components.SingletonComponent;
 
-/** Module providing dependencies for single hfp connection. */
-public final class SingleHfpModules {
+/**
+ * Module providing dependencies for single hfp connection.
+ * This module is excluded in the emulator build variant.
+ */
+public final class HfpDataModules {
     /** Single hfp application level dependencies. */
     @InstallIn(SingletonComponent.class)
     @Module
     public static final class AppModule {
-        @Singleton
-        @Named("Bluetooth")
-        @Provides
-        static LiveData<Integer> provideBluetoothStateLiveData(
-                UiBluetoothMonitor uiBluetoothMonitor) {
-            return uiBluetoothMonitor.getBluetoothStateLiveData();
-        }
-
-        @Singleton
-        @Named("Bluetooth")
-        @Provides
-        static LiveData<Set<BluetoothDevice>> provideBluetoothPairListLiveData(
-                UiBluetoothMonitor uiBluetoothMonitor) {
-            return uiBluetoothMonitor.getPairListLiveData();
-        }
-
-        @Singleton
-        @Named("Hfp")
-        @Provides
-        static LiveData<List<BluetoothDevice>> provideHfpDeviceListLiveData(
-                UiBluetoothMonitor uiBluetoothMonitor) {
-            return uiBluetoothMonitor.getHfpDeviceListLiveData();
-        }
-
-        @Singleton
-        @Named("Hfp")
-        @Provides
-        static LiveData<BluetoothDevice> provideCurrentHfpDeviceLiveData(
-                @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
-                PhoneAccountManager phoneAccountManager) {
-            LiveData<BluetoothDevice> currentHfpDevice = Transformations.map(hfpDeviceListLiveData,
-                    devices -> devices != null && !devices.isEmpty() ? devices.get(0) : null);
-            currentHfpDevice.observeForever(
-                    device -> phoneAccountManager.setUserSelectedOutgoingDevice(device));
-            return currentHfpDevice;
-        }
-
         /**
          * This {@link LiveData} for call logs will be always be active. See {@link
          * com.android.car.dialer.bluetooth.CallHistoryManager}.
@@ -146,5 +109,4 @@ public final class SingleHfpModules {
                     device -> favoriteNumberRepository.getFavoriteContacts(device.getAddress()));
         }
     }
-
 }

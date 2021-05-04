@@ -24,13 +24,13 @@ android_app {
 
     resource_dirs: ["res"],
 
-    platform_apis: true,
+    sdk_version: "system_current",
 
     required: ["allowed_privapp_com.android.car.dialer"],
 
     overrides: ["Dialer"],
 
-    libs: ["android.car"],
+    libs: ["android.car-system-stubs"],
 
     static_libs: [
         "car-dialer-framework-dep",
@@ -92,9 +92,9 @@ android_app {
         "tests/robotests/res",
     ],
 
-    platform_apis: true,
+    sdk_version: "system_current",
 
-    libs: ["android.car"],
+    libs: ["android.car-system-stubs"],
 
     static_libs: [
         "car-dialer-fake-framework-dep",
@@ -164,13 +164,13 @@ android_app {
 
     resource_dirs: ["res"],
 
-    platform_apis: true,
+    sdk_version: "system_current",
 
     required: ["allowed_privapp_com.android.car.dialer"],
 
     overrides: ["Dialer"],
 
-    libs: ["android.car"],
+    libs: ["android.car-system-stubs"],
 
     static_libs: [
         "car-dialer-framework-dep",

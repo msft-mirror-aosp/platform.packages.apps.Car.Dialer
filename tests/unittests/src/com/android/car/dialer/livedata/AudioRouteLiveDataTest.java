@@ -29,12 +29,10 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.telecom.CallAudioState;
 
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.telecom.UiCallManager;
 
 import org.junit.Before;
@@ -48,7 +46,6 @@ import org.mockito.MockitoAnnotations;
 @RunWith(AndroidJUnit4.class)
 public class AudioRouteLiveDataTest {
     private AudioRouteLiveData mAudioRouteLiveData;
-    private MutableLiveData<Boolean> mBluetoothConnectedLiveData;
 
     @Mock
     private Context mMockContext;
@@ -57,8 +54,6 @@ public class AudioRouteLiveDataTest {
     private Observer<Integer> mMockObserver;
     @Mock
     private UiCallManager mMockUiCallManager;
-    @Mock
-    private BluetoothHeadsetClientProvider mMockHeadsetClientProvider;
 
     @Captor
     private ArgumentCaptor<IntentFilter> mIntentFilterCaptor;
@@ -69,12 +64,8 @@ public class AudioRouteLiveDataTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mMockUiCallManager.getAudioRoute(any())).thenReturn(CallAudioState.ROUTE_EARPIECE);
-        mBluetoothConnectedLiveData = new MutableLiveData<>();
-        when(mMockHeadsetClientProvider.isBluetoothHeadsetClientConnected()).thenReturn(
-                mBluetoothConnectedLiveData);
         mAudioRouteLiveData = new AudioRouteLiveData(
-                mMockContext, new CallDetailLiveData(), mMockHeadsetClientProvider,
-                mMockUiCallManager);
+                mMockContext, new CallDetailLiveData(), mMockUiCallManager);
     }
 
     @Test
@@ -96,7 +87,6 @@ public class AudioRouteLiveDataTest {
         assertThat(mAudioRouteLiveData.getValue()).isEqualTo(CallAudioState.ROUTE_EARPIECE);
 
         when(mMockUiCallManager.getAudioRoute(any())).thenReturn(CallAudioState.ROUTE_BLUETOOTH);
-        mBluetoothConnectedLiveData.setValue(Boolean.TRUE);
 
         verify(mMockObserver).onChanged(CallAudioState.ROUTE_BLUETOOTH);
         assertThat(mAudioRouteLiveData.getValue()).isEqualTo(CallAudioState.ROUTE_BLUETOOTH);

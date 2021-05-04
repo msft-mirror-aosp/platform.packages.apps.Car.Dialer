@@ -310,12 +310,12 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     }
 
     private void onSetAudioRoute(int audioRoute) {
-        CallDetail primaryCallDetail = mPrimaryCallDetailLiveData.getValue();
-        if (primaryCallDetail == null) {
+        Call primaryCall = mPrimaryCallLiveData.getValue();
+        if (primaryCall == null) {
             // AudioRouteButton is disabled if it is null. Simply ignore it.
             return;
         }
-        mUiCallManager.setAudioRoute(audioRoute, primaryCallDetail.getPhoneAccountHandle());
+        mUiCallManager.setAudioRoute(audioRoute, primaryCall);
         mActiveRoute = audioRoute;
         updateAudioRouteListItems();
         mAudioRouteSelectionDialog.dismiss();

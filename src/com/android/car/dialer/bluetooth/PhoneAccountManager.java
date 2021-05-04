@@ -100,7 +100,7 @@ public class PhoneAccountManager {
         }
 
         List<PhoneAccountHandle> phoneAccountHandleList =
-                mTelecomManager.getCallCapablePhoneAccounts(true);
+                mTelecomManager.getCallCapablePhoneAccounts(/* includeDisabledAccounts= */true);
         for (PhoneAccountHandle phoneAccountHandle : phoneAccountHandleList) {
             if (isHfpConnectionService(phoneAccountHandle)) {
                 if (TextUtils.equals(phoneAccountHandle.getId(), bluetoothDevice.getAddress())) {

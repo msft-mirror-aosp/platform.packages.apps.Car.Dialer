@@ -85,6 +85,8 @@ android_app {
 
     srcs: ["src/**/*.java"],
 
+    exclude_srcs: ["src/com/android/car/dialer/inject/BluetoothSingleHfpModule.java"],
+
     resource_dirs: [
         "res",
         "tests/robotests/res",
@@ -155,7 +157,10 @@ android_app {
 
     srcs: ["src/**/*.java", "framework/emulator/src/**/*.java"],
 
-    exclude_srcs: ["src/com/android/car/dialer/inject/SingleHfpModules.java"],
+    exclude_srcs: [
+        "src/com/android/car/dialer/inject/HfpDataModules.java",
+        "src/com/android/car/dialer/inject/BluetoothSingleHfpModule.java"
+    ],
 
     resource_dirs: ["res"],
 

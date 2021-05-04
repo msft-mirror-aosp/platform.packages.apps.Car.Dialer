@@ -51,7 +51,7 @@ public class SimulatedBluetoothDevice {
     }
 
     /**
-     * Connects the bluetooth device to the {@link FakeBluetoothAdapter} and imports data.
+     * Connects the bluetooth device to the {@link FakeHfpManager} and imports data.
      */
     public void connect() {
         // TODO: b/186613173 figure out account name and account type.
@@ -60,7 +60,7 @@ public class SimulatedBluetoothDevice {
     }
 
     /**
-     * Disconnects the bluetooth device from the {@link FakeBluetoothAdapter} and remove the data.
+     * Disconnects the bluetooth device from the {@link FakeHfpManager} and remove the data.
      */
     public void disconnect() {
         mContactDataHandler.removeAddedContactsAsync();

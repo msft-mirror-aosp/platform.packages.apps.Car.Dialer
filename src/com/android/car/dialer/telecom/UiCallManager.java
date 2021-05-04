@@ -16,7 +16,6 @@
 package com.android.car.dialer.telecom;
 
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothHeadsetClient;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -37,6 +36,7 @@ import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.log.L;
+import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.ArrayList;
@@ -54,6 +54,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 @Singleton
 public final class UiCallManager {
     private static String TAG = "CD.TelecomMgr";
+
+    private static final String EVENT_SCO_CONNECT = "com.android.bluetooth.hfpclient.SCO_CONNECT";
+    private static final String EVENT_SCO_DISCONNECT =
+            "com.android.bluetooth.hfpclient.SCO_DISCONNECT";
 
     private Context mContext;
     private final TelecomManager mTelecomManager;
@@ -164,23 +168,12 @@ public final class UiCallManager {
     }
 
     /**
-     * Returns the current audio route for given {@link PhoneAccountHandle}. If {@link
-     * BluetoothHeadsetClient} hasn't been connected, return {@link CallAudioState#ROUTE_EARPIECE}.
+     * Returns the current audio route given the SCO state. See {@link CallDetail#getScoState()}.
      * The available routes are defined in {@link CallAudioState}.
-     *
-     * @param phoneAccountHandle the account handle for the primary ongoing call.
      */
-    public int getAudioRoute(@Nullable PhoneAccountHandle phoneAccountHandle) {
-        BluetoothDevice device = mPhoneAccountManager.getMatchingDevice(phoneAccountHandle);
-        if (device != null) {
-            BluetoothHeadsetClient bluetoothHeadsetClient = mBluetoothHeadsetClientProvider.get();
-            // BluetoothHeadsetClient might haven't been initialized that the proxy object hasn't
-            // been bind by calling BluetoothAdapter#getProfileProxy.
-            if (bluetoothHeadsetClient == null) {
-                return CallAudioState.ROUTE_EARPIECE;
-            }
-            int audioState = bluetoothHeadsetClient.getAudioState(device);
-            if (audioState == BluetoothHeadsetClient.STATE_AUDIO_CONNECTED) {
+    public int getAudioRoute(int scoState) {
+        if (scoState != CallDetail.STATE_AUDIO_ERROR) {
+            if (scoState == CallDetail.STATE_AUDIO_CONNECTED) {
                 return CallAudioState.ROUTE_BLUETOOTH;
             } else {
                 return CallAudioState.ROUTE_EARPIECE;
@@ -196,14 +189,13 @@ public final class UiCallManager {
     /**
      * Re-route the audio out phone of the ongoing phone call.
      */
-    public void setAudioRoute(int audioRoute, @Nullable PhoneAccountHandle phoneAccountHandle) {
-        BluetoothDevice device = mPhoneAccountManager.getMatchingDevice(phoneAccountHandle);
-        BluetoothHeadsetClient bluetoothHeadsetClient = mBluetoothHeadsetClientProvider.get();
-        if (bluetoothHeadsetClient != null && device != null) {
+    public void setAudioRoute(int audioRoute, Call call) {
+        if (call != null) {
             if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
-                bluetoothHeadsetClient.connectAudio(device);
+                call.sendCallEvent(EVENT_SCO_CONNECT, null);
+                setMuted(false);
             } else if ((audioRoute & CallAudioState.ROUTE_WIRED_OR_EARPIECE) != 0) {
-                bluetoothHeadsetClient.disconnectAudio(device);
+                call.sendCallEvent(EVENT_SCO_DISCONNECT, null);
             }
         }
         // TODO: Implement routing audio if current call is not a bluetooth call.

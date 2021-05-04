@@ -16,16 +16,10 @@
 
 package com.android.car.dialer.livedata;
 
-import android.bluetooth.BluetoothHeadsetClient;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.telecom.PhoneAccountHandle;
 
 import androidx.lifecycle.MediatorLiveData;
 
-import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
@@ -42,32 +36,18 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
     private static final String TAG = "CD.AudioRouteLiveData";
 
     private final Context mContext;
-    private final IntentFilter mAudioRouteChangeFilter;
     private final UiCallManager mUiCallManager;
     private final CallDetailLiveData mPrimaryCallDetailLiveData;
-
-    private final BroadcastReceiver mAudioRouteChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateAudioRoute();
-        }
-    };
 
     @AssistedInject
     public AudioRouteLiveData(
             @ApplicationContext Context context,
             @Assisted CallDetailLiveData primaryCallDetailLiveData,
-            BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider,
             UiCallManager callManager) {
         mContext = context;
-        mAudioRouteChangeFilter =
-                new IntentFilter(BluetoothHeadsetClient.ACTION_AUDIO_STATE_CHANGED);
         mUiCallManager = callManager;
         mPrimaryCallDetailLiveData = primaryCallDetailLiveData;
 
-        // TODO: introduce a new AudioStateChanged listener for listening to the audio state change.
-        addSource(bluetoothHeadsetClientProvider.isBluetoothHeadsetClientConnected(),
-                connected -> updateAudioRoute());
         addSource(mPrimaryCallDetailLiveData, this::updateOngoingCallAudioRoute);
     }
 
@@ -75,13 +55,6 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
     protected void onActive() {
         super.onActive();
         updateAudioRoute();
-        mContext.registerReceiver(mAudioRouteChangeReceiver, mAudioRouteChangeFilter);
-    }
-
-    @Override
-    protected void onInactive() {
-        mContext.unregisterReceiver(mAudioRouteChangeReceiver);
-        super.onInactive();
     }
 
     private void updateAudioRoute() {
@@ -94,8 +67,8 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
             // Phone call might have disconnected, no action.
             return;
         }
-        PhoneAccountHandle phoneAccountHandle = callDetail.getPhoneAccountHandle();
-        int audioRoute = mUiCallManager.getAudioRoute(phoneAccountHandle);
+        int state = callDetail.getScoState();
+        int audioRoute = mUiCallManager.getAudioRoute(state);
         if (getValue() == null || audioRoute != getValue()) {
             L.d(TAG, "updateAudioRoute to %s", audioRoute);
             setValue(audioRoute);

@@ -16,13 +16,7 @@
 
 package com.android.car.dialer.ui.common;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.PhoneLookup;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
@@ -37,11 +31,7 @@ import com.android.car.dialer.ui.common.entity.UiCallLog;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneCallLog;
-import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,7 +49,6 @@ import java.util.concurrent.Future;
 public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
     private static final String TAG = "CD.UiCallLogLiveData";
 
-    private static final String TYPE_AND_RELATIVE_TIME_JOINER = ", ";
     private final ExecutorService mExecutorService;
     private Future<?> mRunnableFuture;
     private Context mContext;
@@ -81,9 +70,7 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
         if (mRunnableFuture != null) {
             mRunnableFuture.cancel(true);
         }
-        Runnable runnable = () -> {
-            postValue(convert(callLogs));
-        };
+        Runnable runnable = () -> postValue(convert(callLogs));
         mRunnableFuture = mExecutorService.submit(runnable);
     }
 
@@ -105,25 +92,9 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
         for (Object object : uiCallLogs) {
             if (object instanceof UiCallLog) {
                 UiCallLog uiCallLog = (UiCallLog) object;
-                String secondaryText = uiCallLog.getText();
-                List<String> splittedSecondaryText = Splitter.on(
-                        TYPE_AND_RELATIVE_TIME_JOINER).splitToList(secondaryText);
-
-                String oldRelativeTime;
-                String type = "";
-                if (splittedSecondaryText.size() == 1) {
-                    oldRelativeTime = splittedSecondaryText.get(0);
-                } else if (splittedSecondaryText.size() == 2) {
-                    type = splittedSecondaryText.get(0);
-                    oldRelativeTime = splittedSecondaryText.get(1);
-                } else {
-                    return;
-                }
 
                 String newRelativeTime = getRelativeTime(uiCallLog.getMostRecentCallEndTimestamp());
-                if (!oldRelativeTime.equals(newRelativeTime)) {
-                    String newSecondaryText = getSecondaryText(type, newRelativeTime);
-                    uiCallLog.setText(newSecondaryText);
+                if (uiCallLog.setRelativeTime(newRelativeTime)) {
                     hasChanged = true;
                 }
             }
@@ -154,72 +125,30 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
             String relativeTime = getRelativeTime(phoneCallLog.getLastCallEndTimestamp());
             if (TelecomUtils.isVoicemailNumber(mContext, number)) {
                 String title = mContext.getString(R.string.voicemail);
-                UiCallLog uiCallLog = new UiCallLog(title, title, relativeTime, number, null,
+                UiCallLog uiCallLog = new UiCallLog(title, title, number, null,
                         phoneCallLog.getAllCallRecords());
+                uiCallLog.setRelativeTime(relativeTime);
                 uiCallLogs.add(uiCallLog);
                 continue;
             }
 
-            String title;
-            String altTitle = null;
-            CharSequence typeLabel = "";
-            Contact contact = null;
-
             // If InMemoryPhoneBook hasn't finished loading, there is still a chance that this
             // number can be found there later. So query will not be proceeded now.
-            // TODO: will move to utils later.
-            if (inMemoryPhoneBook.isLoaded()) {
-                contact = inMemoryPhoneBook.lookupContactEntry(number);
-                if (contact == null && !TextUtils.isEmpty(number)) {
-                    ContentResolver cr = mContext.getContentResolver();
-                    try (Cursor cursor = cr.query(
-                            Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI,
-                                    Uri.encode(number)),
-                            new String[]{
-                                    PhoneLookup.LOOKUP_KEY,
-                                    PhoneLookup.TYPE,
-                                    PhoneLookup.LABEL,
-                            },
-                            null, null, null)) {
-
-                        if (cursor != null && cursor.moveToFirst()) {
-                            int lookupKeyColIdx = cursor.getColumnIndex(PhoneLookup.LOOKUP_KEY);
-                            int typeColumn = cursor.getColumnIndex(PhoneLookup.TYPE);
-                            int labelColumn = cursor.getColumnIndex(PhoneLookup.LABEL);
-
-                            contact = inMemoryPhoneBook.lookupContactByKey(
-                                    cursor.getString(lookupKeyColIdx),
-                                    phoneCallLog.getAccountName());
-                            int type = cursor.getInt(typeColumn);
-                            String label = cursor.getString(labelColumn);
-                            typeLabel = ContactsContract.CommonDataKinds.Phone.getTypeLabel(
-                                    mContext.getResources(), type, label);
-                        }
-                    }
-                }
-            }
-
-            if (contact != null && contact.getDisplayName() != null) {
-                title = contact.getDisplayName();
-                altTitle = contact.getDisplayNameAlt();
-            } else if (!TextUtils.isEmpty(number)) {
-                title = TelecomUtils.getFormattedNumber(mContext, number);
-            } else {
-                title = mContext.getString(R.string.unknown);
-            }
-            PhoneNumber phoneNumber = contact != null
-                    ? contact.getPhoneNumber(mContext, number) : null;
+            TelecomUtils.PhoneNumberInfo phoneNumberInfo =
+                    TelecomUtils.lookupNumberInBackground(mContext, number);
+            Contact contact = inMemoryPhoneBook.lookupContactByKey(
+                    phoneNumberInfo.getLookupKey(),
+                    phoneCallLog.getAccountName());
 
             UiCallLog uiCallLog = new UiCallLog(
-                    title,
-                    altTitle == null ? title : altTitle,
-                    getSecondaryText(
-                            TextUtils.isEmpty(typeLabel) ? getType(phoneNumber) : typeLabel,
-                            relativeTime),
+                    phoneNumberInfo.getDisplayName(),
+                    phoneNumberInfo.getDisplayNameAlt(),
                     number,
                     contact,
                     phoneCallLog.getAllCallRecords());
 
+            uiCallLog.setRelativeTime(relativeTime);
+            uiCallLog.setLabel(phoneNumberInfo.getTypeLabel());
             uiCallLogs.add(uiCallLog);
         }
         L.i(TAG, "phoneCallLog size: %d, uiCallLog size: %d",
@@ -234,18 +163,6 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
         return validTimestamp ? DateUtils.getRelativeTimeSpanString(
                 millis, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_RELATIVE).toString() : "";
-    }
-
-    private String getSecondaryText(@Nullable CharSequence type, String relativeTime) {
-        if (!TextUtils.isEmpty(type)) {
-            return Joiner.on(TYPE_AND_RELATIVE_TIME_JOINER).join(type, relativeTime);
-        } else {
-            return relativeTime;
-        }
-    }
-
-    private CharSequence getType(@Nullable PhoneNumber phoneNumber) {
-        return phoneNumber != null ? phoneNumber.getReadableLabel(mContext.getResources()) : "";
     }
 
     private String getHeader(long calllogTime) {

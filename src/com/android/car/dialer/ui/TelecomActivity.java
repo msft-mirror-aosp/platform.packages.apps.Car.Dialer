@@ -33,7 +33,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
 import com.android.car.apps.common.util.Themes;
-import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.notification.NotificationService;
@@ -78,7 +77,7 @@ public class TelecomActivity extends FragmentActivity implements
 
         mCarUiToolbar = CarUi.requireToolbar(this);
 
-        setupTabLayout(false);
+        setupTabLayout();
 
         TelecomActivityViewModel viewModel = ViewModelProviders.of(this).get(
                 TelecomActivityViewModel.class);
@@ -133,16 +132,10 @@ public class TelecomActivity extends FragmentActivity implements
                 String searchQuery = intent.getStringExtra(SearchManager.QUERY);
                 navigateToContactResultsFragment(searchQuery);
                 break;
-
-            case Constants.Intents.ACTION_SHOW_PAGE:
-                showTabPage(intent.getStringExtra(Constants.Intents.EXTRA_SHOW_PAGE));
-                if (intent.getBooleanExtra(Constants.Intents.EXTRA_ACTION_READ_MISSED, false)) {
-                    NotificationService.readAllMissedCall(this);
-                }
-                break;
             case Intent.ACTION_VIEW:
                 if (CallLog.Calls.CONTENT_TYPE.equals(intent.getType())) {
                     showTabPage(TelecomPageTab.Page.CALL_HISTORY);
+                    NotificationService.readAllMissedCall(this);
                 }
                 break;
             default:
@@ -155,11 +148,11 @@ public class TelecomActivity extends FragmentActivity implements
         maybeStartInCallActivity(mOngoingCallListLiveData.getValue());
     }
 
-    private void setupTabLayout(boolean forceInit) {
+    private void setupTabLayout() {
         boolean wasContentFragmentRestored = false;
         mTabFactory = new TelecomPageTab.Factory(this, getSupportFragmentManager());
         for (int i = 0; i < mTabFactory.getTabCount(); i++) {
-            TelecomPageTab tab = mTabFactory.createTab(getBaseContext(), i, forceInit);
+            TelecomPageTab tab = mTabFactory.createTab(getBaseContext(), i, false);
             mCarUiToolbar.addTab(tab);
 
             if (tab.wasFragmentRestored()) {
@@ -170,9 +163,9 @@ public class TelecomActivity extends FragmentActivity implements
 
         // Select the starting tab and set up the fragment for it.
         if (!wasContentFragmentRestored) {
-            int startTabIndex = getTabFromSharedPreference();
-            TelecomPageTab startTab = (TelecomPageTab) mCarUiToolbar.getTab(startTabIndex);
+            int startTabIndex = mTabFactory.getTabIndex(getTabFromSharedPreference());
             mCarUiToolbar.selectTab(startTabIndex);
+            TelecomPageTab startTab = (TelecomPageTab) mCarUiToolbar.getTab(startTabIndex);
             setContentFragment(startTab.getFragment(), startTab.getFragmentTag());
         }
 
@@ -185,9 +178,16 @@ public class TelecomActivity extends FragmentActivity implements
     }
 
     private void refreshUi() {
-        L.v(TAG, "hfp connected device list changes");
+        L.v(TAG, "Refresh ui");
+
         mCarUiToolbar.clearAllTabs();
-        setupTabLayout(true);
+        for (int i = 0; i < mTabFactory.getTabCount(); i++) {
+            TelecomPageTab tab = mTabFactory.createTab(getBaseContext(), i, true);
+            mCarUiToolbar.addTab(tab);
+        }
+
+        String startTab = getTabFromSharedPreference();
+        showTabPage(startTab);
     }
 
     /**
@@ -320,11 +320,11 @@ public class TelecomActivity extends FragmentActivity implements
         return getSupportFragmentManager().getBackStackEntryCount() > 1;
     }
 
-    private int getTabFromSharedPreference() {
+    private String getTabFromSharedPreference() {
         String key = getResources().getString(R.string.pref_start_page_key);
         String defaultValue = getResources().getString(R.string.tab_config_default_value);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        return mTabFactory.getTabIndex(sharedPreferences.getString(key, defaultValue));
+        return sharedPreferences.getString(key, defaultValue);
     }
 
     @Override

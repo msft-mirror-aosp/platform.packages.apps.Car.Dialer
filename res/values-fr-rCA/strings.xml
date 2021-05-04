@@ -37,7 +37,7 @@
     <string name="call_history_title" msgid="7997887846276371553">"Récents"</string>
     <string name="contacts_title" msgid="9201954388634537346">"Contacts"</string>
     <string name="favorites_title" msgid="4767723901530488145">"Favoris"</string>
-    <string name="dialpad_title" msgid="3746259645005208554">"Pavé numérique"</string>
+    <string name="dialpad_title" msgid="3746259645005208554">"Clavier numérique"</string>
     <!-- no translation found for tab_config_default_value (993008650601917964) -->
     <skip />
     <string name="call_log_header_today" msgid="2069013936632793214">"Aujourd\'hui"</string>
@@ -86,4 +86,7 @@
     <string name="audio_route_dialog_subtitle" msgid="8780526104805330121"></string>
     <string name="ongoing_conf_title" msgid="4161590966144000887">"Conférence"</string>
     <string name="ongoing_conf_title_format" msgid="7667048745156395220">"%1$s (%2$d) - "</string>
+    <string name="dialing_disabled_warning" msgid="8094136040809498594">"Le clavier téléphonique est désactivé"</string>
+    <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"L\'utilisation du clavier téléphonique est restreinte durant la conduite"</string>
+    <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
 </resources>

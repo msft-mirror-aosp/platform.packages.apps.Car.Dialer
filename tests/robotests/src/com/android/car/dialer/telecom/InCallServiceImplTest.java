@@ -30,8 +30,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
+import android.telecom.GatewayInfo;
 
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.ui.activecall.InCallActivity;
@@ -55,7 +57,7 @@ import org.robolectric.shadows.ShadowLooper;
  */
 @RunWith(CarDialerRobolectricTestRunner.class)
 public class InCallServiceImplTest {
-    private static final String TELECOM_CALL_ID = "TC@1234";
+    private static final String TELECOM_CALL_ID = "+12345678900";
 
     private InCallServiceImpl mInCallServiceImpl;
     private Context mContext;
@@ -85,8 +87,11 @@ public class InCallServiceImplTest {
         mInCallServiceImpl.addActiveCallListChangedCallback(mActiveCallListChangedCallback);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
+        Uri uri = Uri.fromParts("tel", TELECOM_CALL_ID, null);
+        GatewayInfo gatewayInfo = new GatewayInfo("", uri, uri);
         when(mMockTelecomCall.getDetails()).thenReturn(mMockCallDetails);
-        when(mMockCallDetails.getTelecomCallId()).thenReturn(TELECOM_CALL_ID);
+        when(mMockCallDetails.getHandle()).thenReturn(uri);
+        when(mMockCallDetails.getGatewayInfo()).thenReturn(gatewayInfo);
     }
 
     @Test

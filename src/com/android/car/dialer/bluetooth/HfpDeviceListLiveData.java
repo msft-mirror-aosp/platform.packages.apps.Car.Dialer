@@ -18,17 +18,16 @@ package com.android.car.dialer.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothHeadsetClient;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.telecom.TelecomManager;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,10 +40,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 class HfpDeviceListLiveData extends MediatorLiveData<List<BluetoothDevice>> {
     private final Context mContext;
     private final BluetoothAdapter mBluetoothAdapter;
-    private final BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
+    private final PhoneAccountManager mPhoneAccountManager;
     private final IntentFilter mIntentFilter;
 
-    private BroadcastReceiver mBluetoothStateReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mPhoneAccountUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             update();
@@ -56,16 +55,15 @@ class HfpDeviceListLiveData extends MediatorLiveData<List<BluetoothDevice>> {
     HfpDeviceListLiveData(
             @ApplicationContext Context context,
             @Nullable BluetoothAdapter bluetoothAdapter,
-            BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider) {
+            PhoneAccountManager phoneAccountManager) {
         mContext = context;
         mBluetoothAdapter = bluetoothAdapter;
-
-        mBluetoothHeadsetClientProvider = bluetoothHeadsetClientProvider;
-        addSource(mBluetoothHeadsetClientProvider.isBluetoothHeadsetClientConnected(),
-                isConnected -> update());
+        mPhoneAccountManager = phoneAccountManager;
 
         mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction(BluetoothHeadsetClient.ACTION_CONNECTION_STATE_CHANGED);
+        mIntentFilter.addAction(TelecomManager.ACTION_PHONE_ACCOUNT_REGISTERED);
+        mIntentFilter.addAction(TelecomManager.ACTION_PHONE_ACCOUNT_UNREGISTERED);
+        mIntentFilter.addAction(TelecomManager.ACTION_DEFAULT_DIALER_CHANGED);
     }
 
     @Override
@@ -73,23 +71,19 @@ class HfpDeviceListLiveData extends MediatorLiveData<List<BluetoothDevice>> {
         super.onActive();
         if (mBluetoothAdapter != null) {
             update();
-            mContext.registerReceiver(mBluetoothStateReceiver, mIntentFilter);
+            mContext.registerReceiver(mPhoneAccountUpdateReceiver, mIntentFilter);
         }
     }
 
     @Override
     protected void onInactive() {
         if (mBluetoothAdapter != null) {
-            mContext.unregisterReceiver(mBluetoothStateReceiver);
+            mContext.unregisterReceiver(mPhoneAccountUpdateReceiver);
         }
         super.onInactive();
     }
 
     private void update() {
-        if (mBluetoothHeadsetClientProvider.get() != null) {
-            setValue(mBluetoothHeadsetClientProvider.get().getConnectedDevices());
-        } else {
-            setValue(Collections.emptyList());
-        }
+        setValue(mPhoneAccountManager.getHfpDeviceList());
     }
 }

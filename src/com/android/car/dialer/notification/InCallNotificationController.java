@@ -92,9 +92,8 @@ public final class InCallNotificationController {
         }
 
         CallDetail callDetail = CallDetail.fromTelecomCallDetail(call.getDetails());
-        String number = callDetail.getNumber();
-        String callId = call.getDetails().getTelecomCallId();
-        mActiveInCallNotifications.add(callId);
+        String callNumber = callDetail.getNumber();
+        mActiveInCallNotifications.add(callNumber);
 
         if (mShowFullscreenIncallUi) {
             mNotificationBuilder.setFullScreenIntent(
@@ -102,7 +101,7 @@ public final class InCallNotificationController {
         }
         mNotificationBuilder
                 .setLargeIcon((Icon) null)
-                .setContentTitle(TelecomUtils.getBidiWrappedNumber(number))
+                .setContentTitle(TelecomUtils.getBidiWrappedNumber(callNumber))
                 .setContentText(mContext.getString(R.string.notification_incoming_call))
                 .setActions(
                         getAction(call, R.string.answer_call,
@@ -110,20 +109,20 @@ public final class InCallNotificationController {
                         getAction(call, R.string.decline_call,
                                 NotificationService.ACTION_DECLINE_CALL));
         mNotificationManager.notify(
-                callId,
+                callNumber,
                 NOTIFICATION_ID,
                 mNotificationBuilder.build());
 
-        mNotificationFuture = NotificationUtils.getDisplayNameAndRoundedAvatar(mContext, number)
+        mNotificationFuture = NotificationUtils.getDisplayNameAndRoundedAvatar(mContext, callNumber)
                 .thenAcceptAsync((pair) -> {
                     // Check that the notification hasn't already been dismissed
-                    if (mActiveInCallNotifications.contains(callId)) {
+                    if (mActiveInCallNotifications.contains(callNumber)) {
                         mNotificationBuilder
                                 .setLargeIcon(pair.second)
                                 .setContentTitle(TelecomUtils.getBidiWrappedNumber(pair.first));
 
                         mNotificationManager.notify(
-                                callId,
+                                callNumber,
                                 NOTIFICATION_ID,
                                 mNotificationBuilder.build());
                     }
@@ -134,8 +133,8 @@ public final class InCallNotificationController {
     public void cancelInCallNotification(Call call) {
         L.d(TAG, "cancelInCallNotification");
         if (call.getDetails() != null) {
-            String callId = call.getDetails().getTelecomCallId();
-            cancelInCallNotification(callId);
+            String callNumber = CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber();
+            cancelInCallNotification(callNumber);
         }
     }
 
@@ -172,7 +171,7 @@ public final class InCallNotificationController {
         Intent intent = new Intent(action, null, mContext, NotificationService.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(NotificationService.EXTRA_PHONE_NUMBER,
-                call.getDetails().getTelecomCallId());
+                CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber());
         return intent;
     }
 }

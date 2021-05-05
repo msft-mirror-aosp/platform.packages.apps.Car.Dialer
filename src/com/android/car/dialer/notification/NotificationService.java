@@ -26,6 +26,7 @@ import android.text.TextUtils;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.activecall.InCallActivity;
+import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.List;
@@ -118,8 +119,8 @@ public class NotificationService extends Hilt_NotificationService {
     private void answerCall(String callId) {
         List<Call> callList = mUiCallManager.getCallList();
         for (Call call : callList) {
-            if (call.getDetails() != null
-                    && TextUtils.equals(call.getDetails().getTelecomCallId(), callId)) {
+            if (call.getDetails() != null && TextUtils.equals(
+                    CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber(), callId)) {
                 call.answer(/* videoState= */0);
                 return;
             }
@@ -129,8 +130,8 @@ public class NotificationService extends Hilt_NotificationService {
     private void declineCall(String callId) {
         List<Call> callList = mUiCallManager.getCallList();
         for (Call call : callList) {
-            if (call.getDetails() != null
-                    && TextUtils.equals(call.getDetails().getTelecomCallId(), callId)) {
+            if (call.getDetails() != null && TextUtils.equals(
+                    CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber(), callId)) {
                 call.reject(false, /* textMessage= */"");
                 return;
             }

@@ -47,13 +47,12 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     private static final String EXTRA_DEVICE_ID = "device_id";
 
     private final FakeTelecomManager mFakeTelecomManager;
-    private final FakeBluetoothAdapter mFakeBluetoothAdapter;
+    private final FakeHfpManager mFakeHfpManager;
 
     @Inject
-    AdbBroadcastReceiver(FakeTelecomManager fakeTelecomManager,
-            FakeBluetoothAdapter fakeBluetoothAdapter) {
+    AdbBroadcastReceiver(FakeTelecomManager fakeTelecomManager, FakeHfpManager fakeHfpManager) {
         mFakeTelecomManager = fakeTelecomManager;
-        mFakeBluetoothAdapter = fakeBluetoothAdapter;
+        mFakeHfpManager = fakeHfpManager;
     }
 
     /**
@@ -108,12 +107,12 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
                 break;
             case ACTION_CONNECT:
                 Log.d(TAG, action);
-                mFakeBluetoothAdapter.connectHfpDevice();
+                mFakeHfpManager.connectHfpDevice();
                 break;
             case ACTION_DISCONNECT:
                 id = intent.getStringExtra(EXTRA_DEVICE_ID);
                 Log.d(TAG, action + id);
-                mFakeBluetoothAdapter.disconnectHfpDevice(id);
+                mFakeHfpManager.disconnectHfpDevice(id);
                 break;
             default:
                 Log.d(TAG, "Unknown command " + action);

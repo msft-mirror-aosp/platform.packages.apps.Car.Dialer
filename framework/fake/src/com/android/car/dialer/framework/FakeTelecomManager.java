@@ -166,7 +166,7 @@ public class FakeTelecomManager {
         }
 
         Intent intent = new Intent();
-        intent.setComponent(info.getComponentInfo().getComponentName());
+        intent.setComponent(new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name));
         intent.setAction(ACTION_BIND);
         context.bindService(intent, mInCallServiceConnection, Context.BIND_AUTO_CREATE);
     }

@@ -16,7 +16,6 @@
 
 package com.android.car.dialer.framework;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.telecom.TelecomManager;
 
@@ -31,10 +30,6 @@ import dagger.hilt.components.SingletonComponent;
 @InstallIn(SingletonComponent.class)
 @Module
 public abstract class ProdModule {
-    @Provides
-    static BluetoothAdapter provideBluetoothAdapter() {
-        return BluetoothAdapter.getDefaultAdapter();
-    }
 
     @Provides
     static TelecomManager provideTelecomManager(@ApplicationContext Context context) {

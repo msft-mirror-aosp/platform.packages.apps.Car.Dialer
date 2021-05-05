@@ -498,7 +498,6 @@ public class MockCallManager {
             DisconnectCause disconnectCause = new DisconnectCause(1, label, null, "");
             long connectTimeMillis = System.currentTimeMillis();
 
-            when(mDetails.getTelecomCallId()).thenReturn(mNumber);
             when(mDetails.getCallDirection()).thenReturn(mCallDirection);
             when(mDetails.getHandle()).thenReturn(uri);
             when(mDetails.getDisconnectCause()).thenReturn(disconnectCause);

@@ -24,13 +24,13 @@ android_app {
 
     resource_dirs: ["res"],
 
-    platform_apis: true,
+    sdk_version: "system_current",
 
     required: ["allowed_privapp_com.android.car.dialer"],
 
     overrides: ["Dialer"],
 
-    libs: ["android.car"],
+    libs: ["android.car-system-stubs"],
 
     static_libs: [
         "car-dialer-framework-dep",
@@ -85,14 +85,16 @@ android_app {
 
     srcs: ["src/**/*.java"],
 
+    exclude_srcs: ["src/com/android/car/dialer/inject/BluetoothSingleHfpModule.java"],
+
     resource_dirs: [
         "res",
         "tests/robotests/res",
     ],
 
-    platform_apis: true,
+    sdk_version: "system_current",
 
-    libs: ["android.car"],
+    libs: ["android.car-system-stubs"],
 
     static_libs: [
         "car-dialer-fake-framework-dep",
@@ -155,17 +157,20 @@ android_app {
 
     srcs: ["src/**/*.java", "framework/emulator/src/**/*.java"],
 
-    exclude_srcs: ["src/com/android/car/dialer/inject/SingleHfpModules.java"],
+    exclude_srcs: [
+        "src/com/android/car/dialer/inject/HfpDataModules.java",
+        "src/com/android/car/dialer/inject/BluetoothSingleHfpModule.java"
+    ],
 
     resource_dirs: ["res"],
 
-    platform_apis: true,
+    sdk_version: "system_current",
 
     required: ["allowed_privapp_com.android.car.dialer"],
 
     overrides: ["Dialer"],
 
-    libs: ["android.car"],
+    libs: ["android.car-system-stubs"],
 
     static_libs: [
         "car-dialer-framework-dep",

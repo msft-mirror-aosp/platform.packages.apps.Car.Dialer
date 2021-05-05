@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package com.android.car.dialer.framework;
+package com.android.car.dialer.inject;
 
 import android.bluetooth.BluetoothDevice;
-import android.telecom.TelecomManager;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
+
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
+import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 
 import java.util.List;
 import java.util.Set;
@@ -28,56 +30,52 @@ import java.util.Set;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
 
-/** Dependencies used in testing app. */
+/**
+ * Module providing dependencies that are overridden by car.dialer.framework modules.
+ * This module is excluded in the test and emulator build variants.
+ */
 @InstallIn(SingletonComponent.class)
 @Module
-public abstract class FakeModule {
-
+public final class BluetoothSingleHfpModule {
     @Singleton
     @Named("Bluetooth")
     @Provides
     static LiveData<Integer> provideBluetoothStateLiveData(
-            FakeHfpManager fakeHfpManager) {
-        return fakeHfpManager.getBluetoothStateLiveData();
+            UiBluetoothMonitor uiBluetoothMonitor) {
+        return uiBluetoothMonitor.getBluetoothStateLiveData();
     }
 
     @Singleton
     @Named("Bluetooth")
     @Provides
     static LiveData<Set<BluetoothDevice>> provideBluetoothPairListLiveData(
-            FakeHfpManager fakeHfpManager) {
-        return fakeHfpManager.getBluetoothPairListLiveData();
+            UiBluetoothMonitor uiBluetoothMonitor) {
+        return uiBluetoothMonitor.getPairListLiveData();
     }
 
     @Singleton
     @Named("Hfp")
     @Provides
     static LiveData<List<BluetoothDevice>> provideHfpDeviceListLiveData(
-            FakeHfpManager fakeHfpManager) {
-        return fakeHfpManager.getHfpDeviceListLiveData();
+            UiBluetoothMonitor uiBluetoothMonitor) {
+        return uiBluetoothMonitor.getHfpDeviceListLiveData();
     }
 
     @Singleton
     @Named("Hfp")
     @Provides
     static LiveData<BluetoothDevice> provideCurrentHfpDeviceLiveData(
-            @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
+            @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
+            PhoneAccountManager phoneAccountManager) {
         LiveData<BluetoothDevice> currentHfpDevice = Transformations.map(hfpDeviceListLiveData,
                 devices -> devices != null && !devices.isEmpty() ? devices.get(0) : null);
+        currentHfpDevice.observeForever(
+                device -> phoneAccountManager.setUserSelectedOutgoingDevice(device));
         return currentHfpDevice;
     }
-
-    @Provides
-    static TelecomManager provideTelecomManager(FakeTelecomManager fakeTelecomManager) {
-        return fakeTelecomManager.getTelecomManager();
-    }
-
-    @Binds
-    abstract AndroidFramework bindAndroidFramework(AndroidFrameworkImpl androidFramework);
 }

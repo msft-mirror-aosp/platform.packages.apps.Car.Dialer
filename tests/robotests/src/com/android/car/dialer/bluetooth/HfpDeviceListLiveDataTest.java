@@ -30,6 +30,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothHeadsetClient;
 import android.content.Context;
 import android.content.Intent;
+import android.telecom.TelecomManager;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
@@ -67,15 +68,18 @@ public class HfpDeviceListLiveDataTest {
     private LiveDataObserver<Integer> mMockObserver;
     @Mock
     private BluetoothDevice mMockBluetoothDevice;
-    @Mock
-    private BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
+    private BluetoothAdapter mBluetoothAdapter;
+    private TelecomManager mTelecomManager;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mTelecomManager = RuntimeEnvironment.application.getSystemService(TelecomManager.class);
+
         mHfpDeviceListLiveData = new HfpDeviceListLiveData(RuntimeEnvironment.application,
-                BluetoothAdapter.getDefaultAdapter(), mBluetoothHeadsetClientProvider);
+                mBluetoothAdapter, new PhoneAccountManager(mTelecomManager, mBluetoothAdapter));
         mLifecycleRegistry = new LifecycleRegistry(mMockLifecycleOwner);
         when(mMockLifecycleOwner.getLifecycle()).thenReturn(mLifecycleRegistry);
 

@@ -16,6 +16,7 @@
 
 package com.android.car.dialer.inject;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -43,6 +44,11 @@ public final class DialerModules {
     @InstallIn(SingletonComponent.class)
     @Module
     public static final class AppModule {
+
+        @Provides
+        static BluetoothAdapter provideBluetoothAdapter() {
+            return BluetoothAdapter.getDefaultAdapter();
+        }
 
         @Singleton
         @Provides

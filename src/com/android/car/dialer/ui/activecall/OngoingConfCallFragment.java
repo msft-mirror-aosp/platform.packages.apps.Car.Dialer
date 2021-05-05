@@ -75,7 +75,8 @@ public class OngoingConfCallFragment extends Hilt_OngoingConfCallFragment {
         mOnholdCallFragment = getChildFragmentManager().findFragmentById(R.id.onhold_user_profile);
         mDialpadFragment = getChildFragmentManager().findFragmentById(R.id.incall_dialpad_fragment);
         mConferenceCallProfilesView = fragmentView.findViewById(R.id.conference_profiles);
-        mRecyclerView = mConferenceCallProfilesView.findViewById(R.id.recycler_view);
+        mRecyclerView = mConferenceCallProfilesView.findViewById(
+                R.id.conference_call_profiles_recycler_view);
         mConferenceTimeTextView = mConferenceCallProfilesView.findViewById(R.id.call_duration);
         mConferenceTitle = mConferenceCallProfilesView.findViewById(R.id.conference_title);
 

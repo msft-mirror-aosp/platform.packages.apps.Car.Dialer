@@ -306,7 +306,7 @@ public class DialpadFragment extends Hilt_DialpadFragment {
 
         if (mHasTypeDown) {
             resetContactInfo();
-            ViewUtils.setVisible(mRecyclerView, true);
+            ViewUtils.setVisible(mRecyclerView.getView(), true);
 
             // In case of emergency or restricted dialing clean the type-down.
             mTypeDownResultsViewModel.setSearchQuery(

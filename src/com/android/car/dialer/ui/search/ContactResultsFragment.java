@@ -142,7 +142,7 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment implemen
         setSearchQuery(mContactResultsViewModel.getSearchQuery());
 
         if (mToolbar.canShowSearchResultsView()) {
-            mToolbar.setSearchResultsView(getRecyclerView());
+            mToolbar.setSearchResultsView(getRecyclerView().getView());
         } else {
             // Widescreen IME list should not set the scroll listener to dismiss the keyboard.
             getRecyclerView().addOnScrollListener(mOnScrollChangeListener);

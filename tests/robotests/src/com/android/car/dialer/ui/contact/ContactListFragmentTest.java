@@ -223,7 +223,7 @@ public class ContactListFragmentTest {
         CarUiRecyclerView recyclerView = mContactListFragment.getView()
                 .findViewById(R.id.list_view);
         //Force RecyclerView to layout to ensure findViewHolderForLayoutPosition works.
-        recyclerView.layout(0, 0, 100, 1000);
+        recyclerView.getView().layout(0, 0, 100, 1000);
         mViewHolder = (ContactListViewHolder) recyclerView.findViewHolderForLayoutPosition(0);
     }
 

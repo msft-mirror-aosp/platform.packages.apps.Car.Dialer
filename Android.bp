@@ -17,6 +17,30 @@ package {
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
+common_libs = ["android.car-system-stubs"]
+
+common_static_libs = [
+    "car-apps-common",
+    "car-arch-common",
+    "car-telephony-common",
+    "car-ui-lib",
+    "car-uxr-client-lib",
+    "guava",
+    "glide-prebuilt",
+    "hilt_android",
+    "libphonenumber",
+    "androidx-constraintlayout_constraintlayout",
+    "androidx-constraintlayout_constraintlayout-solver",
+    "androidx.cardview_cardview",
+    "androidx.legacy_legacy-support-v4",
+    "androidx.lifecycle_lifecycle-extensions",
+    "androidx.preference_preference",
+    "androidx.recyclerview_recyclerview",
+    "androidx.room_room-runtime",
+    "androidx.sqlite_sqlite",
+    "androidx.sqlite_sqlite-framework",
+]
+
 android_app {
     name: "CarDialerApp",
 
@@ -30,30 +54,11 @@ android_app {
 
     overrides: ["Dialer"],
 
-    libs: ["android.car-system-stubs"],
+    libs: common_libs,
 
     static_libs: [
         "car-dialer-framework-dep",
-        "car-apps-common",
-        "car-arch-common",
-        "car-telephony-common",
-        "car-ui-lib",
-        "car-uxr-client-lib",
-        "guava",
-        "glide-prebuilt",
-        "hilt_android",
-        "libphonenumber",
-        "androidx-constraintlayout_constraintlayout",
-        "androidx-constraintlayout_constraintlayout-solver",
-        "androidx.cardview_cardview",
-        "androidx.legacy_legacy-support-v4",
-        "androidx.lifecycle_lifecycle-extensions",
-        "androidx.preference_preference",
-        "androidx.recyclerview_recyclerview",
-        "androidx.room_room-runtime",
-        "androidx.sqlite_sqlite",
-        "androidx.sqlite_sqlite-framework",
-    ],
+    ] + common_static_libs,
 
     plugins: [
         "androidx.room_room-compiler-plugin",
@@ -94,30 +99,11 @@ android_app {
 
     sdk_version: "system_current",
 
-    libs: ["android.car-system-stubs"],
+    libs: common_libs,
 
     static_libs: [
         "car-dialer-fake-framework-dep",
-        "car-apps-common",
-        "car-arch-common",
-        "car-telephony-common",
-        "car-ui-lib",
-        "car-uxr-client-lib",
-        "guava",
-        "glide-prebuilt",
-        "hilt_android",
-        "libphonenumber",
-        "androidx-constraintlayout_constraintlayout",
-        "androidx-constraintlayout_constraintlayout-solver",
-        "androidx.cardview_cardview",
-        "androidx.legacy_legacy-support-v4",
-        "androidx.lifecycle_lifecycle-extensions",
-        "androidx.preference_preference",
-        "androidx.recyclerview_recyclerview",
-        "androidx.room_room-runtime",
-        "androidx.sqlite_sqlite",
-        "androidx.sqlite_sqlite-framework",
-    ],
+    ] + common_static_libs,
 
     plugins: [
         "androidx.room_room-compiler-plugin",
@@ -170,30 +156,11 @@ android_app {
 
     overrides: ["Dialer"],
 
-    libs: ["android.car-system-stubs"],
+    libs: common_libs,
 
     static_libs: [
         "car-dialer-framework-dep",
-        "car-apps-common",
-        "car-arch-common",
-        "car-telephony-common",
-        "car-ui-lib",
-        "car-uxr-client-lib",
-        "guava",
-        "glide-prebuilt",
-        "hilt_android",
-        "libphonenumber",
-        "androidx-constraintlayout_constraintlayout",
-        "androidx-constraintlayout_constraintlayout-solver",
-        "androidx.cardview_cardview",
-        "androidx.legacy_legacy-support-v4",
-        "androidx.lifecycle_lifecycle-extensions",
-        "androidx.preference_preference",
-        "androidx.recyclerview_recyclerview",
-        "androidx.room_room-runtime",
-        "androidx.sqlite_sqlite",
-        "androidx.sqlite_sqlite-framework",
-    ],
+    ] + common_static_libs,
 
     plugins: [
         "androidx.room_room-compiler-plugin",

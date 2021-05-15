@@ -61,7 +61,6 @@ class FavoriteContactViewHolder extends RecyclerView.ViewHolder {
      */
     public void bind(@NonNull Contact contact, Integer sortMethod) {
         Context context = itemView.getContext();
-        String displayName = contact.getDisplayName();
         mTitle.setText(TelecomUtils.isSortByFirstName(sortMethod) ? contact.getDisplayName()
                 : contact.getDisplayNameAlt());
 

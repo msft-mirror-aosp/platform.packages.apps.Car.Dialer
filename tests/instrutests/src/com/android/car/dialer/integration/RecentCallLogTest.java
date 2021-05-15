@@ -34,6 +34,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.CallHistoryManager;
 import com.android.car.dialer.framework.FakeHfpManager;
+import com.android.car.dialer.livedata.CallHistoryLiveData;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.telephony.common.PhoneCallLog;
 
@@ -71,8 +72,8 @@ public class RecentCallLogTest {
         MutableLiveData<List<PhoneCallLog>> callLogLiveData = new MutableLiveData<>();
         callLogLiveData.postValue(Collections.singletonList(mMockPhoneCallLog));
         when(mMockCallHistoryManager.getCallHistoryLiveData()).thenReturn(callLogLiveData);
+        when(mRecord.getCallType()).thenReturn(CallHistoryLiveData.CallType.INCOMING_TYPE);
         when(mMockPhoneCallLog.getAllCallRecords()).thenReturn(Collections.singletonList(mRecord));
-        when(mMockPhoneCallLog.getPhoneNumberString()).thenReturn("511");
 
         mHiltAndroidRule.inject();
         mFakeHfpManager.connectHfpDevice();
@@ -80,11 +81,24 @@ public class RecentCallLogTest {
 
     @Test
     public void verifyRecentCallScreen() {
+        when(mMockPhoneCallLog.getPhoneNumberString()).thenReturn("511");
+
         ActivityScenario.launch(
                 new Intent(InstrumentationRegistry.getInstrumentation().getTargetContext(),
                         TelecomActivity.class));
         onView(withText(R.string.call_history_title)).check(matches(isDisplayed()));
         onView(withText("511")).check(matches(isDisplayed()));
         // TODO implement the test.
+    }
+
+    @Test
+    public void emptyPhoneNumber_showAsUnknownCall() {
+        when(mMockPhoneCallLog.getPhoneNumberString()).thenReturn("");
+
+        ActivityScenario.launch(
+                new Intent(InstrumentationRegistry.getInstrumentation().getTargetContext(),
+                        TelecomActivity.class));
+        // Verify there is no loading issue and the call is displayed as unknown calls.
+        onView(withText("Unknown")).check(matches(isDisplayed()));
     }
 }

@@ -22,6 +22,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.android.car.dialer.Constants;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -32,7 +34,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
  */
 @HiltViewModel
 public class DialerSettingsViewModel extends ViewModel {
-    private static final String EMPTY_STRING = "";
 
     private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
@@ -51,7 +52,7 @@ public class DialerSettingsViewModel extends ViewModel {
      */
     public LiveData<String> getCurrentHfpConnectedDeviceName() {
         return Transformations.map(mCurrentHfpDeviceLiveData, (device) ->
-                device != null ? device.getName() : EMPTY_STRING);
+                device != null ? device.getName() : Constants.EMPTY_STRING);
     }
 
     /** Returns a {@link LiveData} which monitors if there are any connected HFP devices. */

@@ -21,7 +21,6 @@ import android.bluetooth.BluetoothDevice;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.android.car.arch.common.LiveDataFunctions;
 import com.android.car.dialer.framework.testdata.CallLogDataHandler;
 import com.android.car.dialer.framework.testdata.ContactDataHandler;
 
@@ -59,9 +58,9 @@ public class FakeHfpManager {
         mContactDataHandler = contactDataHandler;
 
         mDeviceList = new ArrayList<>();
-        mBluetoothStateLiveData = LiveDataFunctions.dataOf(/* enabled */2);
-        mBluetoothPairListLiveData = LiveDataFunctions.dataOf(Collections.emptySet());
-        mHfpDeviceListLiveData = LiveDataFunctions.dataOf(mDeviceList);
+        mBluetoothStateLiveData = new MutableLiveData<>(/* enabled */2);
+        mBluetoothPairListLiveData = new MutableLiveData<>(Collections.emptySet());
+        mHfpDeviceListLiveData = new MutableLiveData<>(mDeviceList);
     }
 
     /**
@@ -72,7 +71,7 @@ public class FakeHfpManager {
         device.connect();
         mDeviceMap.put(String.valueOf(mDeviceMap.size()), device);
         mDeviceList.add(device.getBluetoothDevice());
-        mHfpDeviceListLiveData.setValue(mDeviceList);
+        mHfpDeviceListLiveData.postValue(mDeviceList);
     }
 
     /**
@@ -82,7 +81,7 @@ public class FakeHfpManager {
         SimulatedBluetoothDevice simulatedBluetoothDevice = mDeviceMap.remove(id);
         mDeviceList.remove(simulatedBluetoothDevice.getBluetoothDevice());
         simulatedBluetoothDevice.disconnect();
-        mHfpDeviceListLiveData.setValue(mDeviceList);
+        mHfpDeviceListLiveData.postValue(mDeviceList);
     }
 
     private SimulatedBluetoothDevice prepareNewDevice() {

@@ -35,7 +35,9 @@ public final class Constants {
     }
 
     /** See {@link android.content.res.Resources#getIdentifier(String, String, String)} */
-    public static int INVALID_RES_ID = 0;
+    public static final int INVALID_RES_ID = 0;
+
+    public static final String EMPTY_STRING = "";
 
     /** See {@link com.android.bluetooth.hfpclient.connserv.HfpClientConnectionService}. */
     public static final String HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME =

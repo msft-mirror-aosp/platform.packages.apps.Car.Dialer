@@ -48,6 +48,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint(Fragment.class)
 public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFragment {
 
+    private InCallViewModel mInCallViewModel;
+
     private TextView mTitle;
     private ImageView mAvatarView;
     private View mSwapCallsView;
@@ -75,13 +77,12 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         mSwapCallsView = fragmentView.findViewById(R.id.swap_calls_view);
         mSwapCallsView.setOnClickListener(v -> swapCalls());
 
-        InCallViewModel inCallViewModel = new ViewModelProvider(getActivity()).get(
-                InCallViewModel.class);
-        inCallViewModel.getSecondaryCallDetail().observe(this, this::updateProfile);
-        mPrimaryCallLiveData = inCallViewModel.getPrimaryCall();
+        mInCallViewModel = new ViewModelProvider(getActivity()).get(InCallViewModel.class);
+        mInCallViewModel.getSecondaryCallDetail().observe(this, this::updateProfile);
+        mPrimaryCallLiveData = mInCallViewModel.getPrimaryCall();
 
         mTimeTextView = fragmentView.findViewById(R.id.time);
-        inCallViewModel.getSecondaryCallConnectTime().observe(this, this::updateConnectTime);
+        mInCallViewModel.getSecondaryCallConnectTime().observe(this, this::updateConnectTime);
 
         return fragmentView;
     }
@@ -117,12 +118,23 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         String number = callDetail.getNumber();
         mTitle.setText(TelecomUtils.getFormattedNumber(getContext(), number));
 
-        mPhoneNumberInfoFuture = TelecomUtils.getPhoneNumberInfo(getContext(), number)
-                .thenAcceptAsync((info) -> {
-                    mTitle.setText(info.getDisplayName());
-                    TelecomUtils.setContactBitmapAsync(getContext(), mAvatarView,
-                            info.getAvatarUri(), info.getInitials(), info.getDisplayName());
-                }, getContext().getMainExecutor());
+        TelecomUtils.PhoneNumberInfo phoneNumberInfo = mInCallViewModel.getPhoneNumberInfo(number);
+
+        if (phoneNumberInfo != null) {
+            updateProfileInfo(mInCallViewModel.getPhoneNumberInfo(number));
+        } else {
+            mPhoneNumberInfoFuture = TelecomUtils.getPhoneNumberInfo(getContext(), number)
+                    .thenAcceptAsync((info) -> {
+                        mInCallViewModel.putPhoneNumberInfo(number, info);
+                        updateProfileInfo(info);
+                    }, getContext().getMainExecutor());
+        }
+    }
+
+    private void updateProfileInfo(TelecomUtils.PhoneNumberInfo info) {
+        mTitle.setText(info.getDisplayName());
+        TelecomUtils.setContactBitmapAsync(getContext(), mAvatarView,
+                info.getAvatarUri(), info.getInitials(), info.getDisplayName());
     }
 
     private void swapCalls() {

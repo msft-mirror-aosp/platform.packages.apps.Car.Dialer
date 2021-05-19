@@ -35,12 +35,14 @@ import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
+import com.android.car.telephony.common.TelecomUtils;
 
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -77,6 +79,8 @@ public class InCallViewModel extends ViewModel {
     private LiveData<Long> mCallConnectTimeLiveData;
     private LiveData<Long> mSecondaryCallConnectTimeLiveData;
     private LiveData<Pair<Integer, Long>> mCallStateAndConnectTimeLiveData;
+
+    private HashMap<String, TelecomUtils.PhoneNumberInfo> mContactInfoMap = new HashMap<>();
 
     private final AudioRouteLiveData mAudioRouteLiveData;
     private final SupportedAudioRoutesLiveData mSupportedAudioRoutesLiveData;
@@ -286,6 +290,21 @@ public class InCallViewModel extends ViewModel {
      */
     public LiveData<List<Contact>> getContactListLiveData() {
         return mContactListLiveData;
+    }
+
+    /**
+     * Returns the cached phone number info.
+     */
+    public TelecomUtils.PhoneNumberInfo getPhoneNumberInfo(String number) {
+        return mContactInfoMap.get(number);
+    }
+
+    /**
+     * Puts an phone number info entry into the cache.
+     */
+    public TelecomUtils.PhoneNumberInfo putPhoneNumberInfo(
+            String number, TelecomUtils.PhoneNumberInfo info) {
+        return mContactInfoMap.put(number, info);
     }
 
     /**

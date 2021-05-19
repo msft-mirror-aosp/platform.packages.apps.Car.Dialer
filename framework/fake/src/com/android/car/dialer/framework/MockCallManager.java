@@ -306,11 +306,11 @@ public class MockCallManager {
     private void updateList() {
         List<Call> activeCallList = filter(mCallList,
                 call -> call != null && call.getState() != Call.STATE_RINGING);
-        activeCallList.sort(new CallComparator());
         mConferenceList = filter(activeCallList,
                 call -> call.getParent() != null);
         mOngoingCallList = filter(activeCallList,
                 call -> call.getParent() == null);
+        mOngoingCallList.sort(new CallComparator());
         if (mConferenceList.isEmpty()) {
             mConferenceCall = null;
         } else {

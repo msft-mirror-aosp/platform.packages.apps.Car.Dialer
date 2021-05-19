@@ -52,6 +52,8 @@ android_app {
 
     required: ["allowed_privapp_com.android.car.dialer"],
 
+    certificate: "platform",
+
     overrides: ["Dialer"],
 
     libs: common_libs,

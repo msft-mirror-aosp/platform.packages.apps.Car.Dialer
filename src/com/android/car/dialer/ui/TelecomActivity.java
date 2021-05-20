@@ -38,6 +38,7 @@ import com.android.car.dialer.notification.NotificationService;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.dialer.ui.common.DialerBaseFragment;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.dialpad.DialpadFragment;
 import com.android.car.dialer.ui.search.ContactResultsFragment;
 import com.android.car.dialer.ui.settings.DialerSettingsActivity;
@@ -49,6 +50,7 @@ import com.android.car.ui.toolbar.MenuItem;
 import com.android.car.ui.toolbar.ToolbarController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -156,13 +158,22 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
     }
 
     private void setupTabLayout() {
+        boolean[] tabSelectedListenerEnabled = new boolean[] { false };
+        OnItemClickedListener<TelecomPageTab> onTabSelected = tab -> {
+            if (tabSelectedListenerEnabled[0]) {
+                Fragment fragment = tab.getFragment();
+                setContentFragment(fragment, tab.getFragmentTag());
+            }
+        };
         boolean wasContentFragmentRestored = false;
-        mTabFactory = new TelecomPageTab.Factory(this, getSupportFragmentManager());
-        for (int i = 0; i < mTabFactory.getTabCount(); i++) {
-            TelecomPageTab tab = mTabFactory.createTab(getBaseContext(), i, false);
-            mCarUiToolbar.addTab(tab);
+        mTabFactory = new TelecomPageTab.Factory(this, onTabSelected, getSupportFragmentManager());
+        List<TelecomPageTab> tabs = mTabFactory.recreateTabs(getBaseContext(), false);
+        mCarUiToolbar.setTabs(tabs.stream()
+                .map(TelecomPageTab::getToolbarTab)
+                .collect(Collectors.toList()));
 
-            if (tab.wasFragmentRestored()) {
+        for (int i = 0; i < tabs.size(); i++) {
+            if (tabs.get(i).wasFragmentRestored()) {
                 mCarUiToolbar.selectTab(i);
                 wasContentFragmentRestored = true;
             }
@@ -172,26 +183,19 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
         if (!wasContentFragmentRestored) {
             int startTabIndex = mTabFactory.getTabIndex(getTabFromSharedPreference());
             mCarUiToolbar.selectTab(startTabIndex);
-            TelecomPageTab startTab = (TelecomPageTab) mCarUiToolbar.getTab(startTabIndex);
+            TelecomPageTab startTab = tabs.get(startTabIndex);
             setContentFragment(startTab.getFragment(), startTab.getFragmentTag());
         }
-
-        mCarUiToolbar.registerOnTabSelectedListener(
-                tab -> {
-                    TelecomPageTab telecomPageTab = (TelecomPageTab) tab;
-                    Fragment fragment = telecomPageTab.getFragment();
-                    setContentFragment(fragment, telecomPageTab.getFragmentTag());
-                });
+        tabSelectedListenerEnabled[0] = true;
     }
 
     private void refreshUi() {
         L.v(TAG, "Refresh ui");
 
-        mCarUiToolbar.clearAllTabs();
-        for (int i = 0; i < mTabFactory.getTabCount(); i++) {
-            TelecomPageTab tab = mTabFactory.createTab(getBaseContext(), i, true);
-            mCarUiToolbar.addTab(tab);
-        }
+        List<TelecomPageTab> tabs = mTabFactory.recreateTabs(getBaseContext(), true);
+        mCarUiToolbar.setTabs(tabs.stream()
+                .map(TelecomPageTab::getToolbarTab)
+                .collect(Collectors.toList()));
 
         String startTab = getTabFromSharedPreference();
         showTabPage(startTab);
@@ -207,7 +211,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
             return;
         }
 
-        TelecomPageTab dialpadTab = (TelecomPageTab) mCarUiToolbar.getTab(dialpadTabIndex);
+        TelecomPageTab dialpadTab = mTabFactory.getTab(dialpadTabIndex);
         Fragment fragment = dialpadTab.getFragment();
         if (fragment instanceof DialpadFragment) {
             ((DialpadFragment) fragment).setDialedNumber(number);

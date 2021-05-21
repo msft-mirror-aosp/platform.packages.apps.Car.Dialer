@@ -15,8 +15,11 @@ android_test {
         "androidx.test.rules",
         "androidx.test.runner",
         "androidx.test.ext.junit",
+        "androidx.test.espresso.core",
+        "androidx.test.espresso.contrib",
+        "androidx.test.espresso.intents",
         "truth-prebuilt",
-        "mockito-target-minus-junit4",
+        "mockito-target-extended-minus-junit4",
     ],
 
     instrumentation_for: "CarDialerAppForTesting",

@@ -16,8 +16,6 @@
 
 package com.android.car.dialer.livedata;
 
-import android.content.Context;
-
 import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.dialer.log.L;
@@ -27,7 +25,6 @@ import com.android.car.telephony.common.CallDetail;
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
 import dagger.assisted.AssistedInject;
-import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Provides the current connecting audio route.
@@ -35,16 +32,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 public class AudioRouteLiveData extends MediatorLiveData<Integer> {
     private static final String TAG = "CD.AudioRouteLiveData";
 
-    private final Context mContext;
     private final UiCallManager mUiCallManager;
     private final CallDetailLiveData mPrimaryCallDetailLiveData;
 
     @AssistedInject
     public AudioRouteLiveData(
-            @ApplicationContext Context context,
             @Assisted CallDetailLiveData primaryCallDetailLiveData,
             UiCallManager callManager) {
-        mContext = context;
         mUiCallManager = callManager;
         mPrimaryCallDetailLiveData = primaryCallDetailLiveData;
 

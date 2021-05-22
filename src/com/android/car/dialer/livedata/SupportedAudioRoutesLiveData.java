@@ -20,7 +20,6 @@ import android.telecom.PhoneAccountHandle;
 
 import androidx.lifecycle.MediatorLiveData;
 
-import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
@@ -44,15 +43,11 @@ public class SupportedAudioRoutesLiveData extends MediatorLiveData<List<Integer>
     public SupportedAudioRoutesLiveData(
             @Assisted CallDetailLiveData primaryCallDetailLiveData,
             PhoneAccountManager phoneAccountManager,
-            BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider,
             UiCallManager uiCallManager) {
         mPhoneAccountManager = phoneAccountManager;
         mUiCallManager = uiCallManager;
 
         mIsHfpConnection = false;
-        addSource(bluetoothHeadsetClientProvider.isBluetoothHeadsetClientConnected(),
-                connected -> updateOngoingCallSupportedAudioRoutes(
-                        primaryCallDetailLiveData.getValue()));
         addSource(primaryCallDetailLiveData, this::updateOngoingCallSupportedAudioRoutes);
     }
 

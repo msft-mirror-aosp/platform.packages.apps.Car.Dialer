@@ -33,7 +33,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.android.car.dialer.R;
-import com.android.car.dialer.bluetooth.BluetoothHeadsetClientProvider;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.log.L;
 import com.android.car.telephony.common.CallDetail;
@@ -62,20 +61,17 @@ public final class UiCallManager {
     private Context mContext;
     private final TelecomManager mTelecomManager;
     private final PhoneAccountManager mPhoneAccountManager;
-    private final BluetoothHeadsetClientProvider mBluetoothHeadsetClientProvider;
     private InCallServiceImpl mInCallService;
 
     @Inject
     UiCallManager(
             @ApplicationContext Context context,
             TelecomManager telecomManager,
-            PhoneAccountManager phoneAccountManager,
-            BluetoothHeadsetClientProvider bluetoothHeadsetClientProvider) {
+            PhoneAccountManager phoneAccountManager) {
         L.d(TAG, "SetUp");
         mContext = context;
         mTelecomManager = telecomManager;
         mPhoneAccountManager = phoneAccountManager;
-        mBluetoothHeadsetClientProvider = bluetoothHeadsetClientProvider;
 
         Intent intent = new Intent(context, InCallServiceImpl.class);
         intent.setAction(InCallServiceImpl.ACTION_LOCAL_BIND);

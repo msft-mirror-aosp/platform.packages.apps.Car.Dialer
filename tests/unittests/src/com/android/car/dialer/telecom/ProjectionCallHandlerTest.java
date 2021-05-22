@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ import static com.android.car.dialer.telecom.ProjectionCallHandler.HFP_CLIENT_SC
 import static com.android.car.dialer.telecom.ProjectionCallHandler.PROJECTION_STATUS_EXTRA_DEVICE_STATE;
 import static com.android.car.dialer.telecom.ProjectionCallHandler.PROJECTION_STATUS_EXTRA_HANDLES_PHONE_UI;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,16 +43,17 @@ import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 
 import androidx.annotation.Nullable;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class ProjectionCallHandlerTest {
     private static final String HFP_ADDRESS = "00:11:22:33:44:55";
     private static final String NON_HFP_ADDRESS = "AA:BB:CC:DD:EE:FF";
@@ -74,22 +77,20 @@ public class ProjectionCallHandlerTest {
     private final PhoneAccount mAccountWithNoAddress = phoneAccountBuilder("No Address").build();
 
     private Context mContext;
+    @Mock
     private TelecomManager mTelecomManager;
+    @Mock
     private CarProjectionManager mCarProjectionManager;
 
     private ProjectionCallHandler mProjectionCallHandler;
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
-        mTelecomManager = spy(mContext.getSystemService(TelecomManager.class));
-        mCarProjectionManager = mock(CarProjectionManager.class);
+        MockitoAnnotations.initMocks(this);
+
+        mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         when(mTelecomManager.isInEmergencyCall()).thenReturn(false);
-
-        mTelecomManager.registerPhoneAccount(mHfpAccount);
-        mTelecomManager.registerPhoneAccount(mNonHfpAccount);
-        mTelecomManager.registerPhoneAccount(mAccountWithNoAddress);
 
         mProjectionCallHandler = new ProjectionCallHandler(mContext, mTelecomManager,
                 car -> mCarProjectionManager);
@@ -106,11 +107,16 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void noProjectionApps_doesNotSuppress() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
         assertThat(shouldSuppressCallFor(mHfpAccount)).isFalse();
     }
 
     @Test
     public void projectionApp_inactive_doesNotSuppress() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
+
         sendProjectionStatus(
                 projectionStatusBuilder(ProjectionStatus.PROJECTION_STATE_INACTIVE)
                         .build());
@@ -120,6 +126,9 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void projectionApp_readyToProject_doesNotSuppress() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
+
         sendProjectionStatus(
                 projectionStatusBuilder(ProjectionStatus.PROJECTION_STATE_READY_TO_PROJECT)
                         .build());
@@ -129,6 +138,9 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void activeApp_noProjectingDevices_doesNotSuppress() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
+
         sendProjectionStatus(
                 projectionStatusBuilder(ProjectionStatus.PROJECTION_STATE_ACTIVE_FOREGROUND)
                         .addMobileDevice(
@@ -140,6 +152,9 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void activeApp_withProjectingDevice_suppresses() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
+
         sendProjectionStatus(
                 projectionStatusBuilder(ProjectionStatus.PROJECTION_STATE_ACTIVE_FOREGROUND)
                         .addMobileDevice(
@@ -151,6 +166,8 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void activeApp_thatHandlesPhoneUi_suppresses() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
         Bundle extras = new Bundle();
         extras.putBoolean(PROJECTION_STATUS_EXTRA_HANDLES_PHONE_UI, true);
 
@@ -161,6 +178,8 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void activeApp_thatDoesNotHandlePhoneUi_doesNotSuppress() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
         Bundle extras = new Bundle();
         extras.putBoolean(PROJECTION_STATUS_EXTRA_HANDLES_PHONE_UI, false);
 
@@ -171,6 +190,8 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void activeApp_withProjectingDevice_withBackgroundStateExtra_doesNotSuppress() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
         Bundle deviceExtras = new Bundle();
         deviceExtras.putInt(
                 PROJECTION_STATUS_EXTRA_DEVICE_STATE,
@@ -183,6 +204,8 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void activeApp_withProjectingDevice_withForegroundStateExtra_suppresses() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
         Bundle deviceExtras = new Bundle();
         deviceExtras.putInt(
                 PROJECTION_STATUS_EXTRA_DEVICE_STATE,
@@ -195,6 +218,8 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void activeApp_withInvalidBluetoothDeviceExtra_suppresses() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
         Bundle deviceExtras = new Bundle();
         deviceExtras.putParcelable(BluetoothDevice.EXTRA_DEVICE, mock(Parcelable.class));
 
@@ -205,6 +230,8 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void activeApp_withNonMatchingBluetoothDeviceExtra_doesNotSuppress() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
         Bundle deviceExtras = new Bundle();
         deviceExtras.putParcelable(
                 BluetoothDevice.EXTRA_DEVICE,
@@ -217,6 +244,8 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void activeApp_withMatchingBluetoothDeviceExtra_suppresses() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
         Bundle deviceExtras = new Bundle();
         deviceExtras.putParcelable(
                 BluetoothDevice.EXTRA_DEVICE,
@@ -229,6 +258,8 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void emergencyCall_isNotSuppressed() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
         sendProjectionStatus(suppressableStatus());
 
         when(mTelecomManager.isInEmergencyCall()).thenReturn(true);
@@ -238,6 +269,9 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void call_fromTelAccount_isNotSuppressed() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mNonHfpAccount);
+
         sendProjectionStatus(suppressableStatus());
 
         assertThat(shouldSuppressCallFor(mNonHfpAccount)).isFalse();
@@ -245,6 +279,9 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void call_fromAccount_withNoAddress_isNotSuppressed() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mAccountWithNoAddress);
+
         sendProjectionStatus(suppressableStatus());
 
         assertThat(shouldSuppressCallFor(mAccountWithNoAddress)).isFalse();
@@ -252,14 +289,18 @@ public class ProjectionCallHandlerTest {
 
     @Test
     public void call_fromAccount_withInvalidPhoneAccountHandle_isNotSuppressed() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                null);
+
         sendProjectionStatus(suppressableStatus());
-        mTelecomManager.unregisterPhoneAccount(mHfpAccount.getAccountHandle());
 
         assertThat(shouldSuppressCallFor(mHfpAccount)).isFalse();
     }
 
     @Test
     public void call_withNullDetails_isNotSuppressed() {
+        when(mTelecomManager.getPhoneAccount(any(PhoneAccountHandle.class))).thenReturn(
+                mHfpAccount);
         sendProjectionStatus(suppressableStatus());
 
         Call call = createCall(mHfpAccount);

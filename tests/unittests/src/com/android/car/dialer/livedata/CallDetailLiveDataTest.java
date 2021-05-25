@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,8 @@ package com.android.car.dialer.livedata;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.net.Uri;
@@ -34,9 +30,10 @@ import android.telecom.GatewayInfo;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
+import androidx.lifecycle.Observer;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.android.car.dialer.CarDialerRobolectricTestRunner;
-import com.android.car.dialer.LiveDataObserver;
 import com.android.car.telephony.common.CallDetail;
 
 import org.junit.Before;
@@ -47,7 +44,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-@RunWith(CarDialerRobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class CallDetailLiveDataTest {
 
     private CallDetailLiveData mCallDetailLiveData;
@@ -57,7 +54,7 @@ public class CallDetailLiveDataTest {
     @Mock
     private LifecycleOwner mMockLifecycleOwner;
     @Mock
-    private LiveDataObserver<Integer> mMockObserver;
+    private Observer<CallDetail> mMockObserver;
     @Captor
     private ArgumentCaptor<Call.Callback> mCallbackCaptor;
 
@@ -65,34 +62,20 @@ public class CallDetailLiveDataTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        doNothing().when(mMockCall).registerCallback(mCallbackCaptor.capture());
-
         mCallDetailLiveData = new CallDetailLiveData();
-        mCallDetailLiveData.setTelecomCall(mMockCall);
+        doNothing().when(mMockCall).registerCallback(mCallbackCaptor.capture());
         mLifecycleRegistry = new LifecycleRegistry(mMockLifecycleOwner);
         when(mMockLifecycleOwner.getLifecycle()).thenReturn(mLifecycleRegistry);
     }
 
     @Test
-    public void testOnActiveRegistry() {
-        mCallDetailLiveData.observe(mMockLifecycleOwner, (value) -> mMockObserver.onChanged(value));
-        verify(mMockObserver, never()).onChanged(any());
-        assertThat(mCallDetailLiveData.hasObservers()).isTrue();
-        assertThat(mCallDetailLiveData.hasActiveObservers()).isFalse();
-
-        reset(mMockCall);
-        mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
-
-        assertThat(mCallDetailLiveData.hasActiveObservers()).isTrue();
-        verify(mMockObserver).onChanged(any());
-        verify(mMockCall).registerCallback(any());
-    }
-
-    @Test
+    @UiThreadTest
     public void testOnDetailsChanged() {
+        mCallDetailLiveData.setTelecomCall(mMockCall);
         ArgumentCaptor<CallDetail> valueCaptor = ArgumentCaptor.forClass(CallDetail.class);
         doNothing().when(mMockObserver).onChanged(valueCaptor.capture());
-        startObserving();
+        mCallDetailLiveData.observe(mMockLifecycleOwner, (value) -> mMockObserver.onChanged(value));
+        mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
 
         // Set up updated details
         String number = "6505551234";
@@ -106,8 +89,8 @@ public class CallDetailLiveDataTest {
         when(updatedDetails.getDisconnectCause()).thenReturn(disconnectCause);
         when(updatedDetails.getGatewayInfo()).thenReturn(gatewayInfo);
         when(updatedDetails.getConnectTimeMillis()).thenReturn(connectTimeMillis);
-
         when(mMockCall.getDetails()).thenReturn(updatedDetails);
+
         mCallbackCaptor.getValue().onDetailsChanged(mMockCall, updatedDetails);
 
         CallDetail observedValue = valueCaptor.getValue();
@@ -115,22 +98,5 @@ public class CallDetailLiveDataTest {
         assertThat(observedValue.getConnectTimeMillis()).isEqualTo(connectTimeMillis);
         assertThat(observedValue.getDisconnectCause()).isEqualTo(label);
         assertThat(observedValue.getGatewayInfoOriginalAddress()).isEqualTo(uri);
-    }
-
-    @Test
-    public void testOnInactiveUnregister() {
-        startObserving();
-
-        reset(mMockCall);
-        mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
-
-        verify(mMockCall).unregisterCallback(mCallbackCaptor.getValue());
-        assertThat(mCallDetailLiveData.hasObservers()).isFalse();
-        assertThat(mCallDetailLiveData.hasActiveObservers()).isFalse();
-    }
-
-    private void startObserving() {
-        mCallDetailLiveData.observe(mMockLifecycleOwner, (value) -> mMockObserver.onChanged(value));
-        mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
     }
 }

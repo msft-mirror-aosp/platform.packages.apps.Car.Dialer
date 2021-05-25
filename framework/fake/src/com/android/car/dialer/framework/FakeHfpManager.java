@@ -18,7 +18,6 @@ package com.android.car.dialer.framework;
 
 import android.bluetooth.BluetoothDevice;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.framework.testdata.CallLogDataHandler;
@@ -44,8 +43,8 @@ public class FakeHfpManager {
 
     private Map<String, SimulatedBluetoothDevice> mDeviceMap = new HashMap<>();
     private List<BluetoothDevice> mDeviceList;
-    private LiveData<Integer> mBluetoothStateLiveData;
-    private LiveData<Set<BluetoothDevice>> mBluetoothPairListLiveData;
+    private MutableLiveData<Integer> mBluetoothStateLiveData;
+    private MutableLiveData<Set<BluetoothDevice>> mBluetoothPairListLiveData;
     private MutableLiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
 
     private final CallLogDataHandler mCallLogDataHandler;
@@ -93,15 +92,15 @@ public class FakeHfpManager {
         return simulatedBluetoothDevice;
     }
 
-    public LiveData<Integer> getBluetoothStateLiveData() {
+    public MutableLiveData<Integer> getBluetoothStateLiveData() {
         return mBluetoothStateLiveData;
     }
 
-    public LiveData<Set<BluetoothDevice>> getBluetoothPairListLiveData() {
+    public MutableLiveData<Set<BluetoothDevice>> getBluetoothPairListLiveData() {
         return mBluetoothPairListLiveData;
     }
 
-    public LiveData<List<BluetoothDevice>> getHfpDeviceListLiveData() {
+    public MutableLiveData<List<BluetoothDevice>> getHfpDeviceListLiveData() {
         return mHfpDeviceListLiveData;
     }
 }

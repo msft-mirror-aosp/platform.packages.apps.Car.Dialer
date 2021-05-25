@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,29 +18,32 @@ package com.android.car.dialer.telecom;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Application;
-import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.IBinder;
 import android.telecom.CallAudioState;
+import android.telecom.PhoneAccount;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 
-import com.android.car.dialer.CarDialerRobolectricTestRunner;
-import com.android.car.dialer.Constants;
-import com.android.car.dialer.TestDialerApplication;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
-import com.android.car.dialer.testutils.ShadowServiceManagerOverride;
-import com.android.internal.telephony.ITelephony;
+import com.android.car.telephony.common.CallDetail;
 
 import org.junit.After;
 import org.junit.Before;
@@ -49,63 +52,54 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadow.api.Shadow;
-import org.robolectric.shadows.ShadowContextImpl;
+import org.mockito.stubbing.Answer;
 
+import java.util.Collections;
 import java.util.List;
 
-@RunWith(CarDialerRobolectricTestRunner.class)
-@Config(shadows = ShadowServiceManagerOverride.class)
+@RunWith(AndroidJUnit4.class)
 public class UiCallManagerTest {
 
     private static final String TEL_SCHEME = "tel";
 
-    private Context mContext;
     private UiCallManager mUiCallManager;
-    private PhoneAccountManager mPhoneAccountManager;
+
+    @Mock
+    private PhoneAccountManager mMockPhoneAccountManager;
+    @Mock
+    private BluetoothDevice mMockBluetoothDevice;
     @Mock
     private TelecomManager mMockTelecomManager;
     @Mock
+    private Context mMockContext;
+    @Mock
+    private InCallServiceImpl.LocalBinder mMockIBinder;
+    @Mock
     private InCallServiceImpl mMockInCallService;
-    @Mock
-    private IBinder mMockBinder;
-    @Mock
-    private ITelephony mMockITelephony;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        mContext = RuntimeEnvironment.application;
-        mPhoneAccountManager = new PhoneAccountManager(mMockTelecomManager,
-                BluetoothAdapter.getDefaultAdapter());
+        when(mMockIBinder.getService()).thenReturn(mMockInCallService);
+        doAnswer((Answer<Void>) invocation -> {
+            ServiceConnection serviceConnection = invocation.getArgument(1);
+            serviceConnection.onServiceConnected(
+                    new ComponentName(mMockContext, InCallServiceImpl.class), mMockIBinder);
+            return null;
+        }).when(mMockContext).bindService(any(Intent.class), any(ServiceConnection.class),
+                anyInt());
 
-        ShadowContextImpl shadowContext = Shadow.extract(((Application) mContext).getBaseContext());
-        shadowContext.setSystemService(Context.TELECOM_SERVICE, mMockTelecomManager);
+        when(mMockPhoneAccountManager.getMatchingDevice(isNull())).thenReturn(null);
+        when(mMockPhoneAccountManager.getMatchingDevice(isNotNull())).thenReturn(
+                mMockBluetoothDevice);
 
-        when(mMockBinder.queryLocalInterface(
-                "com.android.internal.telephony.ITelephony")).thenReturn(mMockITelephony);
-        ShadowServiceManagerOverride.addService(Context.TELEPHONY_SERVICE, mMockBinder);
-    }
-
-    private void initUiCallManager() {
-        ((TestDialerApplication) mContext).setupInCallServiceImpl(mMockInCallService);
-
-        mUiCallManager = new UiCallManager(mContext, mMockTelecomManager, mPhoneAccountManager);
-    }
-
-    private void initUiCallManager_InCallServiceIsNull() {
-        ((TestDialerApplication) mContext).setupInCallServiceImpl(null);
-
-        mUiCallManager = new UiCallManager(mContext, mMockTelecomManager, mPhoneAccountManager);
+        mUiCallManager = new UiCallManager(mMockContext, mMockTelecomManager,
+                mMockPhoneAccountManager);
     }
 
     @Test
     public void testPlaceCall() {
-        initUiCallManager();
-
         String[] phoneNumbers = {
                 "6505551234", // US Number
                 "511", // Special number
@@ -123,8 +117,7 @@ public class UiCallManagerTest {
         ArgumentCaptor<Uri> uriCaptor = ArgumentCaptor.forClass(Uri.class);
 
         assertThat(mUiCallManager.placeCall(phoneNumber)).isTrue();
-        verify(mMockTelecomManager, times(timesCalled)).placeCall(uriCaptor.capture(),
-                (Bundle) isNull());
+        verify(mMockTelecomManager, times(timesCalled)).placeCall(uriCaptor.capture(), isNull());
         assertThat(uriCaptor.getValue().getScheme()).isEqualTo(TEL_SCHEME);
         assertThat(uriCaptor.getValue().getSchemeSpecificPart()).isEqualTo(phoneNumber);
         assertThat(uriCaptor.getValue().getFragment()).isNull();
@@ -132,8 +125,6 @@ public class UiCallManagerTest {
 
     @Test
     public void testGetMuted_isMuted() {
-        initUiCallManager();
-
         CallAudioState callAudioState = new CallAudioState(true,
                 CallAudioState.ROUTE_BLUETOOTH, CallAudioState.ROUTE_ALL);
         when(mMockInCallService.getCallAudioState()).thenReturn(callAudioState);
@@ -143,8 +134,6 @@ public class UiCallManagerTest {
 
     @Test
     public void testGetMuted_audioRouteIsNull() {
-        initUiCallManager();
-
         when(mMockInCallService.getCallAudioState()).thenReturn(null);
 
         assertThat(mUiCallManager.getMuted()).isFalse();
@@ -152,15 +141,15 @@ public class UiCallManagerTest {
 
     @Test
     public void testGetMuted_InCallServiceIsNull() {
-        initUiCallManager_InCallServiceIsNull();
+        when(mMockIBinder.getService()).thenReturn(null);
+        mUiCallManager = new UiCallManager(mMockContext, mMockTelecomManager,
+                mMockPhoneAccountManager);
 
         assertThat(mUiCallManager.getMuted()).isFalse();
     }
 
     @Test
     public void testSetMuted() {
-        initUiCallManager();
-
         mUiCallManager.setMuted(true);
 
         ArgumentCaptor<Boolean> captor = ArgumentCaptor.forClass(Boolean.class);
@@ -170,52 +159,31 @@ public class UiCallManagerTest {
 
     @Test
     public void testGetSupportedAudioRouteMask() {
-        initUiCallManager();
-
         CallAudioState callAudioState = new CallAudioState(
                 true, CallAudioState.ROUTE_BLUETOOTH, CallAudioState.ROUTE_ALL);
         when(mMockInCallService.getCallAudioState()).thenReturn(callAudioState);
 
-        assertThat(mUiCallManager.getSupportedAudioRouteMask()).isEqualTo(CallAudioState.ROUTE_ALL);
+        assertThat(mUiCallManager.getSupportedAudioRouteMask()).isEqualTo(CallAudioState
+                .ROUTE_ALL);
     }
 
     @Test
     public void testGetSupportedAudioRouteMask_InCallServiceIsNull() {
-        initUiCallManager_InCallServiceIsNull();
+        when(mMockIBinder.getService()).thenReturn(null);
+        mUiCallManager = new UiCallManager(mMockContext, mMockTelecomManager,
+                mMockPhoneAccountManager);
 
         assertThat(mUiCallManager.getSupportedAudioRouteMask()).isEqualTo(0);
     }
 
     @Test
-    public void testGetSupportedAudioRoute_isBluetoothCall() {
-        initUiCallManager();
-
-        PhoneAccountHandle mockPhoneAccountHandle = mock(PhoneAccountHandle.class);
-        ComponentName mockComponentName = mock(ComponentName.class);
-        when(mockComponentName.getClassName()).thenReturn(
-                Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME);
-        when(mockPhoneAccountHandle.getComponentName()).thenReturn(mockComponentName);
-        when(mMockTelecomManager.getUserSelectedOutgoingPhoneAccount())
-                .thenReturn(mockPhoneAccountHandle);
-
-        List<Integer> supportedAudioRoute = mUiCallManager.getSupportedAudioRoute(
-                mockPhoneAccountHandle);
-        assertThat(supportedAudioRoute.get(0)).isEqualTo(CallAudioState.ROUTE_BLUETOOTH);
-        assertThat(supportedAudioRoute.get(1)).isEqualTo(CallAudioState.ROUTE_EARPIECE);
-    }
-
-    @Test
     public void testGetSupportedAudioRoute_supportedAudioRouteMaskIs0() {
-        initUiCallManager();
-
         // SupportedAudioRouteMask is 0.
         assertThat(mUiCallManager.getSupportedAudioRoute(null).size()).isEqualTo(0);
     }
 
     @Test
     public void testGetSupportedAudioRoute_supportedAudioRouteMaskIsRouteAll() {
-        initUiCallManager();
-
         // SupportedAudioRouteMask is CallAudioState.ROUTE_ALL.
         CallAudioState callAudioState = new CallAudioState(
                 true, CallAudioState.ROUTE_BLUETOOTH, CallAudioState.ROUTE_ALL);
@@ -230,8 +198,6 @@ public class UiCallManagerTest {
 
     @Test
     public void testGetSupportedAudioRoute_supportedAudioRouteMaskIsRouteSpeaker() {
-        initUiCallManager();
-
         // SupportedAudioRouteMask is CallAudioState.ROUTE_SPEAKER.
         CallAudioState callAudioState = new CallAudioState(
                 true, CallAudioState.ROUTE_SPEAKER, CallAudioState.ROUTE_SPEAKER);
@@ -240,6 +206,54 @@ public class UiCallManagerTest {
         List<Integer> audioRoutes = mUiCallManager.getSupportedAudioRoute(null);
         assertThat(audioRoutes.size()).isEqualTo(1);
         assertThat(audioRoutes.get(0)).isEqualTo(CallAudioState.ROUTE_SPEAKER);
+    }
+
+    @Test
+    public void bluetoothCall_getSupportedAudioRoute() {
+        PhoneAccountHandle mockPhoneAccountHandle = mock(PhoneAccountHandle.class);
+
+        List<Integer> supportedAudioRoute = mUiCallManager.getSupportedAudioRoute(
+                mockPhoneAccountHandle);
+        assertThat(supportedAudioRoute.get(0)).isEqualTo(CallAudioState.ROUTE_BLUETOOTH);
+        assertThat(supportedAudioRoute.get(1)).isEqualTo(CallAudioState.ROUTE_EARPIECE);
+    }
+
+    @Test
+    public void noPhoneAccounts_emergencyCallNotSupported() {
+        when(mMockTelecomManager.getCallCapablePhoneAccounts()).thenReturn(Collections.EMPTY_LIST);
+
+        assertThat(mUiCallManager.isEmergencyCallSupported()).isFalse();
+    }
+
+    @Test
+    public void hasPhoneAccountWithEmergencyCallCapability_emergencyCallSupported() {
+        PhoneAccountHandle mockPhoneAccountHandle = mock(PhoneAccountHandle.class);
+        PhoneAccount mockPhoneAccount = mock(PhoneAccount.class);
+
+        when(mMockTelecomManager.getCallCapablePhoneAccounts()).thenReturn(
+                Collections.singletonList(mockPhoneAccountHandle));
+        when(mMockTelecomManager.getPhoneAccount(eq(mockPhoneAccountHandle))).thenReturn(
+                mockPhoneAccount);
+        when(mockPhoneAccount.hasCapabilities(
+                eq(PhoneAccount.CAPABILITY_PLACE_EMERGENCY_CALLS))).thenReturn(true);
+
+        assertThat(mUiCallManager.isEmergencyCallSupported()).isTrue();
+    }
+
+    @Test
+    public void scoStateToAudioRoute() {
+        CallAudioState callAudioState = new CallAudioState(
+                true, CallAudioState.ROUTE_SPEAKER, CallAudioState.ROUTE_ALL);
+        when(mMockInCallService.getCallAudioState()).thenReturn(callAudioState);
+
+        assertThat(mUiCallManager.getAudioRoute(CallDetail.STATE_AUDIO_CONNECTED)).isEqualTo(
+                CallAudioState.ROUTE_BLUETOOTH);
+        assertThat(mUiCallManager.getAudioRoute(CallDetail.STATE_AUDIO_CONNECTING)).isEqualTo(
+                CallAudioState.ROUTE_EARPIECE);
+        assertThat(mUiCallManager.getAudioRoute(CallDetail.STATE_AUDIO_DISCONNECTED)).isEqualTo(
+                CallAudioState.ROUTE_EARPIECE);
+        assertThat(mUiCallManager.getAudioRoute(CallDetail.STATE_AUDIO_ERROR)).isEqualTo(
+                CallAudioState.ROUTE_SPEAKER);
     }
 
     @After

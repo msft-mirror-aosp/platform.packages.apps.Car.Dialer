@@ -66,7 +66,6 @@ class BluetoothStateLiveData extends LiveData<Integer> {
             updateState();
             mContext.registerReceiver(mBluetoothStateReceiver, mIntentFilter);
         }
-
     }
 
     @Override

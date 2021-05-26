@@ -101,6 +101,12 @@ android_app {
 
     sdk_version: "system_current",
 
+    required: ["allowed_privapp_com.android.car.dialer"],
+
+    certificate: "platform",
+
+    overrides: ["Dialer"],
+
     libs: common_libs,
 
     static_libs: [
@@ -155,6 +161,8 @@ android_app {
     sdk_version: "system_current",
 
     required: ["allowed_privapp_com.android.car.dialer"],
+
+    certificate: "platform",
 
     overrides: ["Dialer"],
 

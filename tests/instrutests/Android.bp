@@ -20,6 +20,7 @@ android_test {
         "androidx.test.rules",
         "androidx.test.espresso.core",
         "androidx.test.espresso.contrib",
+        "androidx.test.espresso.intents",
         "hilt_android_testing",
         "mockito-target-extended",
     ],

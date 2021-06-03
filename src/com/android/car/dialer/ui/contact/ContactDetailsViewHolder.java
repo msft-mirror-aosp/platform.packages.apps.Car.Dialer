@@ -16,6 +16,7 @@
 
 package com.android.car.dialer.ui.contact;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -82,6 +83,10 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
     private final View mCallActionView;
     @Nullable
     private final ImageView mFavoriteActionView;
+    @Nullable
+    private final View mSmsActionView;
+    @Nullable
+    private final View mSmsActionDividerView;
 
     // Applies to address items
     @Nullable
@@ -101,6 +106,8 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
         mUiCallManager = uiCallManager;
         mCallActionView = v.findViewById(R.id.call_action_id);
         mFavoriteActionView = v.findViewById(R.id.contact_details_favorite_button);
+        mSmsActionView = v.findViewById(R.id.contact_details_sms_button);
+        mSmsActionDividerView = v.findViewById(R.id.divider1);
         mAddressView = v.findViewById(R.id.address_button);
         mNavigationButton = v.findViewById(R.id.navigation_button);
         mTitle = v.findViewById(R.id.title);
@@ -166,7 +173,7 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
                 }).into(mAvatarView);
     }
 
-    public void bind(Context context, Contact contact, PhoneNumber phoneNumber) {
+    public void bind(Context context, Contact contact, PhoneNumber phoneNumber, Activity activity) {
         mTitle.setText(phoneNumber.getRawNumber());
 
         // Present the phone number type and local favorite state.
@@ -183,6 +190,17 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
 
         mCallActionView.setOnClickListener(
                 v -> mUiCallManager.placeCall(phoneNumber.getRawNumber()));
+
+        boolean showSmsButton = context.getResources().getBoolean(
+                R.bool.config_show_contact_details_send_message_button);
+        if (showSmsButton) {
+            mSmsActionView.setOnClickListener(
+                    v -> mUiCallManager.placeSms(
+                            activity, phoneNumber.getRawNumber(), contact.getDisplayName(),
+                            Long.toString(contact.getRawContactId())));
+        }
+        mSmsActionDividerView.setVisibility(showSmsButton ? View.VISIBLE : View.GONE);
+        mSmsActionView.setVisibility(showSmsButton ? View.VISIBLE : View.GONE);
 
         if (phoneNumber.isFavorite() || !contact.isStarred()) {
             // If the phone number is marked as favorite locally, enable the action button to

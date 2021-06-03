@@ -254,4 +254,10 @@
     <!-- Delimiter to join two unrelated strings together, a comma followed by a whitespace. Use case: join phone number label and phone call timestamp in Recents page, "Mobile, 4 days ago" for example. -->
     <string name="comma_delimiter">,\u0020</string>
 
+    <!-- Sending SMS notification title -->
+    <string name="sms_notification_title">Dialer SMS</string>
+
+    <!-- Sending SMS notification text -->
+    <string name="sms_notification_text">Sending SMS</string>
+
 </resources>

@@ -32,12 +32,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.android.car.apps.common.LetterTileDrawable;
 import com.android.car.arch.common.FutureData;
 import com.android.car.dialer.R;
+import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 import com.android.car.ui.core.CarUi;
-import com.android.car.ui.toolbar.Toolbar;
+import com.android.car.ui.toolbar.NavButtonMode;
+import com.android.car.ui.toolbar.SearchMode;
 import com.android.car.ui.toolbar.ToolbarController;
 
 import com.bumptech.glide.Glide;
@@ -164,13 +166,11 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
 
     @Override
     protected void setupToolbar(@NonNull ToolbarController toolbar) {
-        toolbar.setState(getToolbarState());
+        toolbar.setNavButtonMode(NavButtonMode.BACK);
         toolbar.setMenuItems(null);
-    }
-
-    @Override
-    protected Toolbar.State getToolbarState() {
-        return Toolbar.State.SUBPAGE;
+        toolbar.setLogo(null);
+        toolbar.setSearchMode(SearchMode.DISABLED);
+        ((TelecomActivity) requireActivity()).setTabsShown(false);
     }
 
     @Override

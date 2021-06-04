@@ -210,8 +210,8 @@ public class TelecomPageTab {
         /**
          * Returns the {@link TelecomPageTab} at the given index
          */
-        public TelecomPageTab getTab(int index) {
-            return mTabs.get(index);
+        public List<TelecomPageTab> getTabs() {
+            return mTabs;
         }
     }
 }

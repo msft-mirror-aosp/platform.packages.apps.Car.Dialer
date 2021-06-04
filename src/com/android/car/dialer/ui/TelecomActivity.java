@@ -49,6 +49,7 @@ import com.android.car.ui.core.CarUi;
 import com.android.car.ui.toolbar.MenuItem;
 import com.android.car.ui.toolbar.ToolbarController;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,6 +75,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
     private LiveData<Boolean> mRefreshUiLiveData;
     // View objects for this activity.
     private TelecomPageTab.Factory mTabFactory;
+    private int mSelectedTab = 0;
     private ToolbarController mCarUiToolbar;
 
     @Override
@@ -161,6 +163,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
         boolean[] tabSelectedListenerEnabled = new boolean[] { false };
         OnItemClickedListener<TelecomPageTab> onTabSelected = tab -> {
             if (tabSelectedListenerEnabled[0]) {
+                mSelectedTab = mTabFactory.getTabs().indexOf(tab);
                 Fragment fragment = tab.getFragment();
                 setContentFragment(fragment, tab.getFragmentTag());
             }
@@ -175,6 +178,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
         for (int i = 0; i < tabs.size(); i++) {
             if (tabs.get(i).wasFragmentRestored()) {
                 mCarUiToolbar.selectTab(i);
+                mSelectedTab = i;
                 wasContentFragmentRestored = true;
             }
         }
@@ -183,6 +187,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
         if (!wasContentFragmentRestored) {
             int startTabIndex = mTabFactory.getTabIndex(getTabFromSharedPreference());
             mCarUiToolbar.selectTab(startTabIndex);
+            mSelectedTab = startTabIndex;
             TelecomPageTab startTab = tabs.get(startTabIndex);
             setContentFragment(startTab.getFragment(), startTab.getFragmentTag());
         }
@@ -211,13 +216,35 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
             return;
         }
 
-        TelecomPageTab dialpadTab = mTabFactory.getTab(dialpadTabIndex);
+        TelecomPageTab dialpadTab = mTabFactory.getTabs().get(dialpadTabIndex);
         Fragment fragment = dialpadTab.getFragment();
         if (fragment instanceof DialpadFragment) {
             ((DialpadFragment) fragment).setDialedNumber(number);
         } else {
             L.w(TAG, "Current tab is not a dialpad fragment!");
         }
+    }
+
+    private boolean mTabsShown = true;
+    /**
+     * Sets if the toolbar tabs should be shown or hidden. Used to hide the tabs
+     * on pages like search or contact details.
+     */
+    public void setTabsShown(boolean shown) {
+        if (mTabsShown == shown) {
+            // We don't want the tabs to be redisplayed if they already are displayed,
+            // as that would interrupt the ripple animation.
+            return;
+        }
+        if (shown) {
+            mCarUiToolbar.setTabs(mTabFactory.getTabs()
+                    .stream()
+                    .map(TelecomPageTab::getToolbarTab)
+                    .collect(Collectors.toList()), mSelectedTab);
+        } else {
+            mCarUiToolbar.setTabs(Collections.emptyList());
+        }
+        mTabsShown = shown;
     }
 
     private int showTabPage(@TelecomPageTab.Page String tabPage) {
@@ -232,6 +259,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
         }
 
         mCarUiToolbar.selectTab(tabIndex);
+        mSelectedTab = tabIndex;
         return tabIndex;
     }
 

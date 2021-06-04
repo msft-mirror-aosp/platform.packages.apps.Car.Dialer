@@ -27,14 +27,18 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
+import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
 import com.android.car.telephony.common.Contact;
 import com.android.car.ui.recyclerview.CarUiRecyclerView;
-import com.android.car.ui.toolbar.Toolbar;
+import com.android.car.ui.toolbar.NavButtonMode;
+import com.android.car.ui.toolbar.SearchMode;
 import com.android.car.ui.toolbar.ToolbarController;
 import com.android.car.uxr.LifeCycleObserverUxrContentLimiter;
 import com.android.car.uxr.UxrContentLimiterImpl;
+
+import java.util.function.Consumer;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -43,8 +47,7 @@ import dagger.hilt.android.AndroidEntryPoint;
  * results as a list.
  */
 @AndroidEntryPoint(DialerListBaseFragment.class)
-public class ContactResultsFragment extends Hilt_ContactResultsFragment implements
-        Toolbar.OnSearchListener {
+public class ContactResultsFragment extends Hilt_ContactResultsFragment {
 
     /**
      * Creates a new instance of the {@link ContactResultsFragment}.
@@ -73,6 +76,11 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment implemen
     private ToolbarController mToolbar;
 
     private LifeCycleObserverUxrContentLimiter mUxrContentLimiter;
+
+    private final Consumer<String> mToolbarSearchListener = (newQuery) -> {
+        L.d(TAG, "onSearch: %s", newQuery);
+        mContactResultsViewModel.setSearchQuery(newQuery);
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -131,7 +139,7 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment implemen
     public void onDestroyView() {
         getRecyclerView().removeOnScrollListener(mOnScrollChangeListener);
         if (mToolbar != null) {
-            mToolbar.unregisterOnSearchListener(this);
+            mToolbar.unregisterSearchListener(mToolbarSearchListener);
         }
         super.onDestroyView();
     }
@@ -140,7 +148,11 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment implemen
     protected void setupToolbar(@NonNull ToolbarController toolbar) {
         super.setupToolbar(toolbar);
         mToolbar = toolbar;
-        mToolbar.registerOnSearchListener(this);
+        mToolbar.setNavButtonMode(NavButtonMode.BACK);
+        mToolbar.setLogo(null);
+        ((TelecomActivity) requireActivity()).setTabsShown(false);
+        mToolbar.setSearchMode(SearchMode.SEARCH);
+        mToolbar.registerSearchListener(mToolbarSearchListener);
         mToolbar.setSearchIcon(R.drawable.ic_app_icon);
         setSearchQuery(mContactResultsViewModel.getSearchQuery());
 
@@ -157,24 +169,12 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment implemen
         if (mToolbar != null) {
             mToolbar.setSearchQuery(query);
         } else {
-            onSearch(query);
+            mToolbarSearchListener.accept(query);
         }
-    }
-
-    /** Triggered by search view text change. */
-    @Override
-    public void onSearch(String newQuery) {
-        L.d(TAG, "onSearch: %s", newQuery);
-        mContactResultsViewModel.setSearchQuery(newQuery);
     }
 
     protected void onShowContactDetail(Contact contact) {
         Fragment contactDetailsFragment = ContactDetailsFragment.newInstance(contact);
         pushContentFragment(contactDetailsFragment, ContactDetailsFragment.FRAGMENT_TAG);
-    }
-
-    @Override
-    protected Toolbar.State getToolbarState() {
-        return Toolbar.State.SEARCH;
     }
 }

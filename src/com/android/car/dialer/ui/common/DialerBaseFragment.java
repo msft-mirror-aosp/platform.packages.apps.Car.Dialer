@@ -28,11 +28,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.dialer.R;
+import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.TelecomActivityViewModel;
 import com.android.car.ui.baselayout.Insets;
 import com.android.car.ui.baselayout.InsetsChangedListener;
 import com.android.car.ui.core.CarUi;
-import com.android.car.ui.toolbar.Toolbar;
+import com.android.car.ui.toolbar.NavButtonMode;
+import com.android.car.ui.toolbar.SearchMode;
 import com.android.car.ui.toolbar.ToolbarController;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -81,10 +83,10 @@ public abstract class DialerBaseFragment extends Hilt_DialerBaseFragment impleme
         LiveData<String> toolbarTitleLiveData = viewModel.getToolbarTitle();
         toolbarTitleLiveData.observe(this, toolbar::setTitle);
 
-        toolbar.setState(getToolbarState());
-        toolbar.setLogo(getToolbarState() == Toolbar.State.HOME
-                ? requireActivity().getDrawable(R.drawable.ic_app_icon)
-                : null);
+        toolbar.setNavButtonMode(NavButtonMode.DISABLED);
+        toolbar.setSearchMode(SearchMode.DISABLED);
+        toolbar.setLogo(requireActivity().getDrawable(R.drawable.ic_app_icon));
+        ((TelecomActivity) requireActivity()).setTabsShown(true);
 
         toolbar.setMenuItems(R.xml.menuitems);
     }
@@ -97,10 +99,6 @@ public abstract class DialerBaseFragment extends Hilt_DialerBaseFragment impleme
         if (parentActivity instanceof DialerFragmentParent) {
             ((DialerFragmentParent) parentActivity).pushContentFragment(fragment, fragmentTag);
         }
-    }
-
-    protected Toolbar.State getToolbarState() {
-        return Toolbar.State.HOME;
     }
 
     @Override

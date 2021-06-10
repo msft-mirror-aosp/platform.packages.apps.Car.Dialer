@@ -17,11 +17,12 @@
 package com.android.car.dialer.ui.activecall;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static com.android.car.dialer.testing.TestViewActions.selfClick;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -71,25 +72,23 @@ public class RingingCallControllerBarFragmentTest {
     @Test
     public void testAnswerCallButton() {
         onView(withId(R.id.answer_call_button)).check(matches(isDisplayed())).check(
-                matches(isClickable())).perform(click());
+                matches(isClickable())).perform(selfClick());
 
-        // TODO: UI overlapping blocks the verification
-        // verify(mMockCall).answer(eq(0));
+        verify(mMockCall).answer(eq(0));
     }
 
     @Test
     public void testAnswerCallText() {
         onView(withId(R.id.answer_call_text)).check(matches(isDisplayed())).check(
-                matches(isClickable())).perform(click());
+                matches(isClickable())).perform(selfClick());
 
-        // TODO: UI overlapping blocks the verification
-        // verify(mMockCall).answer(eq(0));
+        verify(mMockCall).answer(eq(0));
     }
 
     @Test
     public void testEndCallButton() {
         onView(withId(R.id.end_call_button)).check(matches(isDisplayed())).check(
-                matches(isClickable())).perform(click());
+                matches(isClickable())).perform(selfClick());
 
         verify(mMockCall).reject(eq(false), isNull());
     }
@@ -97,7 +96,7 @@ public class RingingCallControllerBarFragmentTest {
     @Test
     public void testEndCallText() {
         onView(withId(R.id.end_call_text)).check(matches(isDisplayed())).check(
-                matches(isClickable())).perform(click());
+                matches(isClickable())).perform(selfClick());
 
         verify(mMockCall).reject(eq(false), isNull());
     }

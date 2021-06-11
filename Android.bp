@@ -111,6 +111,7 @@ android_app {
 
     static_libs: [
         "car-dialer-fake-framework-dep",
+        "car-dialer-testing",
     ] + common_static_libs,
 
     plugins: [

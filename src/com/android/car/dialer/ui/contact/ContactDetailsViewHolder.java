@@ -19,6 +19,7 @@ package com.android.car.dialer.ui.contact;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -42,9 +43,13 @@ import com.android.car.telephony.common.PostalAddress;
 import com.android.car.telephony.common.TelecomUtils;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
+import com.bumptech.glide.request.target.Target;
+
+import java.util.List;
 
 /**
  * ViewHolder for {@link ContactDetailsFragment}.
@@ -126,32 +131,30 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
         Glide.with(context)
                 .load(contact.getAvatarUri())
                 .apply(new RequestOptions().centerCrop().error(letterTile))
-                .into(new SimpleTarget<Drawable>() {
+                .listener(new RequestListener<Drawable>() {
                     @Override
-                    public void onResourceReady(Drawable resource,
-                            Transition<? super Drawable> glideAnimation) {
-                        if (mAvatarView != null) {
-                            mAvatarView.setImageDrawable(resource);
-                        }
-                        if (mBackgroundImageView != null) {
-                            mBackgroundImageView.setAlpha(context.getResources().getFloat(
-                                    R.dimen.config_background_image_alpha));
-                            mBackgroundImageView.setBackgroundDrawable(resource, false);
-                        }
-                    }
-
-                    @Override
-                    public void onLoadFailed(Drawable errorDrawable) {
-                        if (mAvatarView != null) {
-                            mAvatarView.setImageDrawable(letterTile);
-                        }
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                            Target<Drawable> target, boolean isFirstResource) {
                         if (mBackgroundImageView != null) {
                             mBackgroundImageView.setAlpha(context.getResources().getFloat(
                                     R.dimen.config_background_image_error_alpha));
                             mBackgroundImageView.setBackgroundColor(letterTile.getColor());
                         }
+                        return false;
                     }
-                });
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model,
+                            Target<Drawable> target, DataSource dataSource,
+                            boolean isFirstResource) {
+                        if (mBackgroundImageView != null) {
+                            mBackgroundImageView.setAlpha(context.getResources().getFloat(
+                                    R.dimen.config_background_image_alpha));
+                            mBackgroundImageView.setBackgroundDrawable(resource, false);
+                        }
+                        return false;
+                    }
+                }).into(mAvatarView);
     }
 
     public void bind(Context context, Contact contact, PhoneNumber phoneNumber) {
@@ -202,8 +205,16 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
 
         mAddressView.setOnClickListener(
                 v -> openMapWithMapIntent(context, postalAddress.getAddressIntent(resources)));
-        mNavigationButton.setOnClickListener(
-                v -> openMapWithMapIntent(context, postalAddress.getNavigationIntent(resources)));
+
+        Intent intent = postalAddress.getNavigationIntent(resources);
+        List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
+
+        if (infos.size() > 0) {
+            mNavigationButton.setVisibility(View.VISIBLE);
+            mNavigationButton.setOnClickListener(v -> openMapWithMapIntent(context, intent));
+        } else {
+            mNavigationButton.setVisibility(View.GONE);
+        }
     }
 
     private void openMapWithMapIntent(Context context, Intent mapIntent) {

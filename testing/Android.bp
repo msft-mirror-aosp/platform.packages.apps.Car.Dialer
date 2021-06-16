@@ -18,6 +18,8 @@ android_library {
 
     static_libs: [
         "androidx.lifecycle_lifecycle-extensions",
+        "androidx.test.espresso.core",
+        "androidx.test.espresso.contrib",
         "hilt_android",
         "mockito-target-extended-minus-junit4",
     ],

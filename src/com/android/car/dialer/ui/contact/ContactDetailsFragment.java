@@ -86,7 +86,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mContact = getArguments().getParcelable(KEY_CONTACT_ENTITY);
+        mContact = getArguments() == null ? null : getArguments().getParcelable(KEY_CONTACT_ENTITY);
         if (mContact == null && savedInstanceState != null) {
             mContact = savedInstanceState.getParcelable(KEY_CONTACT_ENTITY);
         }
@@ -118,7 +118,9 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
     }
 
     private void onContactChanged(Contact contact) {
-        getArguments().clear();
+        if (getArguments() != null) {
+            getArguments().clear();
+        }
         ToolbarController toolbar = CarUi.getToolbar(getActivity());
         // Null check to have unit tests to pass.
         if (toolbar == null) {

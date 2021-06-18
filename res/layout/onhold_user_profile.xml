@@ -16,12 +16,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.cardview.widget.CardView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:elevation="@dimen/dialer_card_elevation"
-        app:cardBackgroundColor="@color/onhold_call_background"
-        app:cardCornerRadius="@dimen/onhold_profile_corner_radius">
+        android:background="@drawable/on_hold_background">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -125,6 +124,6 @@
                 app:layout_constraintEnd_toEndOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.cardview.widget.CardView>
+    </FrameLayout>
 
 </com.android.car.ui.FocusArea>

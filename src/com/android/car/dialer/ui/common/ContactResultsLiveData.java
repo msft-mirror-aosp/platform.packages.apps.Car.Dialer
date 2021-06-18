@@ -16,6 +16,7 @@
 
 package com.android.car.dialer.ui.common;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -59,6 +60,7 @@ public class ContactResultsLiveData extends
     private final LiveData<String> mSearchQueryLiveData;
     private final LiveData<List<Contact>> mContactListLiveData;
     private final SharedPreferencesLiveData mSortOrderPreferenceLiveData;
+    private String mSearchQuery;
     private boolean mShowOnlyOneEntry;
 
     /**
@@ -73,8 +75,8 @@ public class ContactResultsLiveData extends
         mContext = context;
         mShowOnlyOneEntry = showOnlyOneEntry;
         mSearchQueryParamProvider = new SearchQueryParamProvider(searchQueryLiveData);
-        mObservableAsyncQuery = new ObservableAsyncQuery(mSearchQueryParamProvider,
-                context.getContentResolver(), this::onQueryFinished);
+        mObservableAsyncQuery = new ObservableAsyncQuery(context, mSearchQueryParamProvider,
+                this::onQueryFinished);
 
         mContactListLiveData = LiveDataFunctions.switchMapNonNull(
                 UiBluetoothMonitor.get().getFirstHfpConnectedDevice(),
@@ -110,6 +112,7 @@ public class ContactResultsLiveData extends
     }
 
     private void onSearchQueryChanged(String searchQuery) {
+        mSearchQuery = searchQuery;
         if (TextUtils.isEmpty(searchQuery)) {
             mObservableAsyncQuery.stopQuery();
             setValue(Collections.emptyList());
@@ -137,7 +140,7 @@ public class ContactResultsLiveData extends
             String number = cursor.getString(numberIdx);
             List<Contact> lookupResults = InMemoryPhoneBook.get().lookupContactByKey(lookupKey);
             for (Contact contact : lookupResults) {
-                contactResults.add(new ContactResultListItem(contact, number));
+                contactResults.add(new ContactResultListItem(contact, number, mSearchQuery));
             }
         }
 
@@ -179,7 +182,8 @@ public class ContactResultsLiveData extends
                     ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI,
                     Uri.encode(mSearchQueryLiveData.getValue()));
             return new QueryParam(lookupUri, CONTACT_DETAILS_PROJECTION, null,
-                    /* selectionArgs= */null, /* orderBy= */null);
+                    /* selectionArgs= */null, /* orderBy= */null,
+                    Manifest.permission.READ_CONTACTS);
         }
     }
 
@@ -189,10 +193,12 @@ public class ContactResultsLiveData extends
     public static class ContactResultListItem {
         private final Contact mContact;
         private final String mNumber;
+        private final String mSearchQuery;
 
-        public ContactResultListItem(Contact contact, String number) {
+        public ContactResultListItem(Contact contact, String number, String searchQuery) {
             mContact = contact;
             mNumber = number;
+            mSearchQuery = searchQuery;
         }
 
         /**
@@ -208,6 +214,13 @@ public class ContactResultsLiveData extends
          */
         public String getNumber() {
             return mNumber;
+        }
+
+        /**
+         * Returns the search query that initiates the search.
+         */
+        public String getSearchQuery() {
+            return mSearchQuery;
         }
     }
 }

@@ -27,6 +27,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static com.android.car.dialer.testing.TestViewActions.selfClick;
+import static com.android.car.dialer.testing.TestViewMatchers.isActivated;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -37,7 +38,6 @@ import static org.mockito.Mockito.when;
 
 import android.telecom.Call;
 import android.telecom.CallAudioState;
-import android.view.View;
 
 import androidx.core.util.Pair;
 import androidx.lifecycle.LiveData;
@@ -52,9 +52,6 @@ import com.android.car.dialer.R;
 import com.android.car.dialer.testing.TestActivity;
 import com.android.car.telephony.common.CallDetail;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -234,19 +231,5 @@ public class OnGoingCallControllerBarFragmentTest {
                     R.id.test_fragment_container,
                     new OnGoingCallControllerBarFragment()).commit();
         });
-    }
-
-    private static Matcher<View> isActivated(boolean isActivated) {
-        return new TypeSafeMatcher<View>() {
-            @Override
-            protected boolean matchesSafely(View item) {
-                return item.isActivated() == isActivated;
-            }
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("View is " + (isActivated ? "activated" : "not activated"));
-            }
-        };
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,28 +25,31 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.BluetoothState;
-import com.android.car.dialer.testutils.ShadowBluetoothAdapterForDialer;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@RunWith(CarDialerRobolectricTestRunner.class)
-@Config(shadows = ShadowBluetoothAdapterForDialer.class)
+@RunWith(AndroidJUnit4.class)
 public class BluetoothErrorStringLiveDataTest {
 
+    @Mock
     private Context mContext;
+    @Mock
+    private Observer<String> mMockObserver;
+    private BluetoothAdapter mBluetoothAdapter;
     private MutableLiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
     private MutableLiveData<Set<BluetoothDevice>> mPairedListLiveData;
     private MutableLiveData<Integer> mBluetoothStateLiveData;
@@ -55,13 +58,15 @@ public class BluetoothErrorStringLiveDataTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
-        mContext = RuntimeEnvironment.application;
+        mHfpDeviceListLiveData = new MutableLiveData<>(Collections.emptyList());
+        mPairedListLiveData = new MutableLiveData<>(Collections.emptySet());
+        mBluetoothStateLiveData = new MutableLiveData<>(0);
     }
 
     @Test
+    @UiThreadTest
     public void testDialerAppState_defaultBluetoothAdapterIsNull_bluetoothError() {
-        ShadowBluetoothAdapterForDialer.setBluetoothAvailable(false);
+        mBluetoothAdapter = null;
 
         initializeBluetoothErrorStringLiveData();
 
@@ -70,8 +75,9 @@ public class BluetoothErrorStringLiveDataTest {
     }
 
     @Test
+    @UiThreadTest
     public void testDialerAppState_bluetoothNotEnabled_bluetoothError() {
-        ShadowBluetoothAdapterForDialer.setBluetoothAvailable(true);
+        mBluetoothAdapter = mock(BluetoothAdapter.class);
         mBluetoothStateLiveData.setValue(BluetoothState.DISABLED);
 
         initializeBluetoothErrorStringLiveData();
@@ -81,8 +87,9 @@ public class BluetoothErrorStringLiveDataTest {
     }
 
     @Test
+    @UiThreadTest
     public void testDialerAppState_noPairedDevices_bluetoothError() {
-        ShadowBluetoothAdapterForDialer.setBluetoothAvailable(true);
+        mBluetoothAdapter = mock(BluetoothAdapter.class);
         mBluetoothStateLiveData.setValue(BluetoothState.ENABLED);
         mPairedListLiveData.setValue(Collections.emptySet());
 
@@ -93,8 +100,9 @@ public class BluetoothErrorStringLiveDataTest {
     }
 
     @Test
+    @UiThreadTest
     public void testDialerAppState_hfpNoConnected_bluetoothError() {
-        ShadowBluetoothAdapterForDialer.setBluetoothAvailable(true);
+        mBluetoothAdapter = mock(BluetoothAdapter.class);
         mBluetoothStateLiveData.setValue(BluetoothState.ENABLED);
         BluetoothDevice mockBluetoothDevice = mock(BluetoothDevice.class);
         mPairedListLiveData.setValue(Collections.singleton(mockBluetoothDevice));
@@ -107,8 +115,9 @@ public class BluetoothErrorStringLiveDataTest {
     }
 
     @Test
+    @UiThreadTest
     public void testDialerAppState_bluetoothAllSet_dialerAppNoError() {
-        ShadowBluetoothAdapterForDialer.setBluetoothAvailable(true);
+        mBluetoothAdapter = mock(BluetoothAdapter.class);
         mBluetoothStateLiveData.setValue(BluetoothState.ENABLED);
         BluetoothDevice mockBluetoothDevice = mock(BluetoothDevice.class);
         mPairedListLiveData.setValue(Collections.singleton(mockBluetoothDevice));
@@ -123,9 +132,14 @@ public class BluetoothErrorStringLiveDataTest {
     private void initializeBluetoothErrorStringLiveData() {
         mBluetoothErrorStringLiveData = new BluetoothErrorStringLiveData(mContext,
                 mHfpDeviceListLiveData, mPairedListLiveData, mBluetoothStateLiveData,
-                BluetoothAdapter.getDefaultAdapter());
+                mBluetoothAdapter);
         // Observers needed so that the liveData's internal initialization is triggered
         mBluetoothStateLiveData.observeForever(error -> {
         });
+        mHfpDeviceListLiveData.observeForever(error -> {
+        });
+        mPairedListLiveData.observeForever(error -> {
+        });
+        mBluetoothErrorStringLiveData.observeForever(mMockObserver);
     }
 }

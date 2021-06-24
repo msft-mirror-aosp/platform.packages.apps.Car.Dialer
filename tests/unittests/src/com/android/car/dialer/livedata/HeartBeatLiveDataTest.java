@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,50 +16,47 @@
 package com.android.car.dialer.livedata;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.text.format.DateUtils;
 
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LifecycleRegistry;
+import androidx.lifecycle.Observer;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.android.car.dialer.LiveDataObserver;
+import com.android.car.dialer.testing.TestActivity;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.shadows.ShadowLooper;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class HeartBeatLiveDataTest {
 
     private HeartBeatLiveData mHeartBeatLiveData;
-
-    private LifecycleRegistry mLifecycleRegistry;
-    private LifecycleOwner mLifecycleOwner;
+    @Mock
+    private Observer<Boolean> mMockObserver;
 
     @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         mHeartBeatLiveData = new HeartBeatLiveData(DateUtils.SECOND_IN_MILLIS);
-        mLifecycleOwner = mock(LifecycleOwner.class);
-        mLifecycleRegistry = new LifecycleRegistry(mLifecycleOwner);
-        when(mLifecycleOwner.getLifecycle()).thenReturn(mLifecycleRegistry);
     }
 
     @Test
     public void active_onLifecycleStart() {
-        LiveDataObserver<HeartBeatLiveData> mockObserver = mock(LiveDataObserver.class);
-        mHeartBeatLiveData.observe(mLifecycleOwner, (value) -> mockObserver.onChanged(value));
-        verify(mockObserver, never()).onChanged(any());
+        ActivityScenario<TestActivity> activityScenario = ActivityScenario.launch(
+                TestActivity.class);
+        activityScenario.moveToState(Lifecycle.State.CREATED);
+        activityScenario.onActivity(activity ->
+                mHeartBeatLiveData.observe(activity, (value) -> mMockObserver.onChanged(value)));
+        verify(mMockObserver, never()).onChanged(any());
 
-        mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
-        ShadowLooper.runUiThreadTasks();
-
-        verify(mockObserver).onChanged(any());
+        activityScenario.moveToState(Lifecycle.State.STARTED);
+        verify(mMockObserver).onChanged(any());
     }
 }

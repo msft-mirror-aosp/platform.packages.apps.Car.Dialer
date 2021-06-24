@@ -209,6 +209,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_speaker_phone_activatable"/>
       <item type="drawable" name="icon_call_button"/>
       <item type="drawable" name="list_divider"/>
+      <item type="drawable" name="on_hold_background"/>
       <item type="drawable" name="restricted_dialing_mode_label_background"/>
       <item type="id" name="address_button"/>
       <item type="id" name="answer_call_button"/>

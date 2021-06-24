@@ -129,7 +129,9 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment implemen
     @Override
     public void onDestroyView() {
         getRecyclerView().removeOnScrollListener(mOnScrollChangeListener);
-        mToolbar.unregisterOnSearchListener(this);
+        if (mToolbar != null) {
+            mToolbar.unregisterOnSearchListener(this);
+        }
         super.onDestroyView();
     }
 

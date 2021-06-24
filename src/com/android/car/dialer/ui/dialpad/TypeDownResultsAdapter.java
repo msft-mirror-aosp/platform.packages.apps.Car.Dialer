@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.car.dialer.R;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.search.ContactResultViewHolder;
 import com.android.car.dialer.ui.search.ContactResultsAdapter;
 
@@ -29,15 +30,35 @@ import com.android.car.dialer.ui.search.ContactResultsAdapter;
  */
 public class TypeDownResultsAdapter extends ContactResultsAdapter {
 
+    private OnItemClickedListener mOnItemClickedListener;
+
+    private int mUnrestrictedItemCount = Integer.MAX_VALUE;
+
     public TypeDownResultsAdapter() {
         super(null);
+    }
+
+    public void setOnItemClickedListener(OnItemClickedListener onItemClickedListener) {
+        mOnItemClickedListener = onItemClickedListener;
+    }
+
+    /**
+     * Sets the unrestricted item count. This sets the limit for when UXR is not enforced.
+     */
+    public void setUnrestrictedItemCount(int limit) {
+        mUnrestrictedItemCount = limit < 0 ? Integer.MAX_VALUE : limit;
+    }
+
+    @Override
+    public int getUnrestrictedItemCount() {
+        return Math.min(mUnrestrictedItemCount, getContactResults().size());
     }
 
     @Override
     public ContactResultViewHolder onCreateViewHolderImpl(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.type_down_list_item, parent, false);
-        return new ContactResultViewHolder(view, null);
+        return new ContactResultViewHolder(view, null, mOnItemClickedListener);
     }
 
     @Override

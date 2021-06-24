@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import android.telecom.Call;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
-
-import com.android.car.dialer.CarDialerRobolectricTestRunner;
-import com.android.car.dialer.LiveDataObserver;
+import androidx.lifecycle.Observer;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-@RunWith(CarDialerRobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class CallStateLiveDataTest {
 
     private CallStateLiveData mCallStateLiveData;
@@ -51,7 +51,7 @@ public class CallStateLiveDataTest {
     @Mock
     private LifecycleOwner mMockLifecycleOwner;
     @Mock
-    private LiveDataObserver<Integer> mMockObserver;
+    private Observer<Integer> mMockObserver;
     @Captor
     private ArgumentCaptor<Call.Callback> mCallbackCaptor;
 
@@ -68,6 +68,7 @@ public class CallStateLiveDataTest {
     }
 
     @Test
+    @UiThreadTest
     public void testOnActiveRegistry() {
         mCallStateLiveData.onActive();
 
@@ -75,6 +76,7 @@ public class CallStateLiveDataTest {
     }
 
     @Test
+    @UiThreadTest
     public void testOnLifecycleStart() {
         mCallStateLiveData.observe(mMockLifecycleOwner, (value) -> mMockObserver.onChanged(value));
         verify(mMockObserver, never()).onChanged(any());
@@ -88,6 +90,7 @@ public class CallStateLiveDataTest {
     }
 
     @Test
+    @UiThreadTest
     public void testOnStateChanged() {
         ArgumentCaptor<Integer> valueCaptor = ArgumentCaptor.forClass(Integer.class);
         doNothing().when(mMockObserver).onChanged(valueCaptor.capture());
@@ -101,6 +104,7 @@ public class CallStateLiveDataTest {
     }
 
     @Test
+    @UiThreadTest
     public void testOnInactiveUnregister() {
         mCallStateLiveData.observe(mMockLifecycleOwner, (value) -> mMockObserver.onChanged(value));
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);

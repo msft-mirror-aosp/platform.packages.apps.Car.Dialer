@@ -76,8 +76,10 @@ public class DialerUtils {
                     : readableLabel);
             item.setBody(TelecomUtils.getBidiWrappedNumber(number.getNumber()));
             item.setOnCheckedChangeListener((i, isChecked) -> {
-                selectedPhoneNumber.clear();
-                selectedPhoneNumber.add(number);
+                if (isChecked) {
+                    selectedPhoneNumber.clear();
+                    selectedPhoneNumber.add(number);
+                }
             });
             items.add(item);
         }

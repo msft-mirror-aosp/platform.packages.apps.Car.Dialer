@@ -75,4 +75,7 @@
     <!-- Maximum number of unrestricted items in Dialpad typedown list when UXR is not enforced.
      Any negative value is unlimited. -->
     <integer name="config_type_down_list_limit">-1</integer>
+
+    <!-- Maximum number of phone call log loaded to show -->
+    <integer name="config_phone_call_log_limit">100</integer>
 </resources>

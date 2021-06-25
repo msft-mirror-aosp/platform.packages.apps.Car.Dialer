@@ -39,7 +39,7 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     private static final String ACTION_CONNECT = "connect";
     private static final String ACTION_DISCONNECT = "disconnect";
     private static final String ACTION_ADDCALL = "addCall";
-    private static final String ACTION_RECEIVECALL = "receiveCall";
+    private static final String ACTION_RECEIVECALL = "rcvCall";
     private static final String ACTION_ENDCALL = "endCall";
     private static final String ACTION_CLEARALL = "clearAll";
     private static final String ACTION_MERGE = "merge";

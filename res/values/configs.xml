@@ -47,10 +47,10 @@
     <integer name="config_toolbar_title_mode">0</integer>
 
     <!-- A config determines whether to show the full screen ui when call is answered-->
-    <bool name="config_show_fullscreen_incall_ui">true</bool>
+    <bool name="config_show_fullscreen_incall_ui">false</bool>
     <!-- A config determines whether to show an entry in setting to config showing full screen UI
     when call is answered-->
-    <bool name="config_should_show_active_call_setting">false</bool>
+    <bool name="config_should_show_active_call_setting">true</bool>
 
     <!-- Config for enabling incoming call HUN fullscreen intent -->
     <bool name="config_show_hun_fullscreen_incall_ui">true</bool>
@@ -59,7 +59,7 @@
     <bool name="config_should_suppress_incoming_call_hun">false</bool>
     <!-- A config determines whether to show an entry in setting to config showing a heads up
     notification when there's a incoming call-->
-    <bool name="config_should_show_incoming_call_hun_setting">false</bool>
+    <bool name="config_should_show_incoming_call_hun_setting">true</bool>
 
     <!-- A config determines whether to show type down list on Dialpad -->
     <bool name="config_show_type_down_list_on_dialpad">true</bool>

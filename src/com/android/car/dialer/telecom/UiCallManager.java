@@ -185,14 +185,20 @@ public final class UiCallManager {
     /**
      * Re-route the audio out phone of the ongoing phone call.
      */
-    public void setAudioRoute(int audioRoute, Call call) {
-        if (call != null) {
-            if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
-                call.sendCallEvent(EVENT_SCO_CONNECT, null);
-                setMuted(false);
-            } else if ((audioRoute & CallAudioState.ROUTE_WIRED_OR_EARPIECE) != 0) {
-                call.sendCallEvent(EVENT_SCO_DISCONNECT, null);
-            }
+    public void setAudioRoute(int audioRoute, Call primaryCall) {
+        if (primaryCall == null) {
+            return;
+        }
+
+        boolean isConference = !primaryCall.getChildren().isEmpty()
+                && primaryCall.getDetails().hasProperty(Call.Details.PROPERTY_CONFERENCE);
+        Call call = isConference ? primaryCall.getChildren().get(0) : primaryCall;
+
+        if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
+            call.sendCallEvent(EVENT_SCO_CONNECT, null);
+            setMuted(false);
+        } else if ((audioRoute & CallAudioState.ROUTE_WIRED_OR_EARPIECE) != 0) {
+            call.sendCallEvent(EVENT_SCO_DISCONNECT, null);
         }
         // TODO: Implement routing audio if current call is not a bluetooth call.
     }

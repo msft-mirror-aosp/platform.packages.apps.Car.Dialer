@@ -21,7 +21,7 @@
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth қолжетімді емес."</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"Қоңырау шалу не қабылдау үшін Bluetooth функциясын қосыңыз."</string>
     <string name="bluetooth_unpaired" msgid="1600552386483652892">"Қоңырау шалу немесе қабылдау үшін телефоныңызды көлікпен жұптаңыз."</string>
-    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Bluetooth-ке жалғау"</string>
+    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Bluetooth-қа жалғау"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Төтенше жағдай"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Құтқару қызметіне қоңырау шалу"</string>
     <string name="error_contact_deleted" msgid="6356539067659368396">"Бұл контакт жойылған."</string>
@@ -86,4 +86,7 @@
     <string name="audio_route_dialog_subtitle" msgid="8780526104805330121"></string>
     <string name="ongoing_conf_title" msgid="4161590966144000887">"Конференция"</string>
     <string name="ongoing_conf_title_format" msgid="7667048745156395220">"%1$s (%2$d) - "</string>
+    <string name="dialing_disabled_warning" msgid="8094136040809498594">"Теру өшірілген"</string>
+    <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"Көлік жүргізгенде нөмір теру тақтасын пайдалану мүмкін емес."</string>
+    <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
 </resources>

@@ -27,9 +27,9 @@ import static org.mockito.Mockito.when;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
-
-import com.android.car.dialer.CarDialerRobolectricTestRunner;
-import com.android.car.dialer.LiveDataObserver;
+import androidx.lifecycle.Observer;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-@RunWith(CarDialerRobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class SingleLiveEventTest {
     private static final String VALUE = "setValue";
 
@@ -49,9 +49,9 @@ public class SingleLiveEventTest {
     @Mock
     private LifecycleOwner mMockLifecycleOwner;
     @Mock
-    private LiveDataObserver<SingleLiveEvent> mMockObserver1;
+    private Observer<String> mMockObserver1;
     @Mock
-    private LiveDataObserver<SingleLiveEvent> mMockObserver2;
+    private Observer<String> mMockObserver2;
     @Captor
     private ArgumentCaptor<String> mCaptor;
 
@@ -64,6 +64,7 @@ public class SingleLiveEventTest {
         when(mMockLifecycleOwner.getLifecycle()).thenReturn(mLifecycleRegistry);
     }
 
+    @UiThreadTest
     @Test
     public void test_onChangeCalledAfterSetValue() {
         mSingleLiveEvent.observe(mMockLifecycleOwner, mMockObserver1);
@@ -77,6 +78,7 @@ public class SingleLiveEventTest {
         assertThat(mCaptor.getValue()).isEqualTo(VALUE);
     }
 
+    @UiThreadTest
     @Test
     public void test_onChangeOnlyHandledOnce() {
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);

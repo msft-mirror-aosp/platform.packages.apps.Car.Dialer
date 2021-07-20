@@ -17,6 +17,7 @@
 package com.android.car.dialer.testing;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.any;
 
 import android.view.View;
 
@@ -46,6 +47,48 @@ public final class TestViewActions {
             @Override
             public void perform(UiController uiController, View view) {
                 view.performClick();
+            }
+        };
+    }
+
+    /** A click action by calling the {@link View#performClick()} api. */
+    public static ViewAction selfClickWithoutConstraints() {
+        return new ViewAction() {
+
+            @Override
+            public Matcher<View> getConstraints() {
+                return any(View.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "Calling View#performClick() api";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                view.performClick();
+            }
+        };
+    }
+
+    /** A click action by calling the {@link View#performLongClick()} api. */
+    public static ViewAction selfLongClickWithoutConstraints() {
+        return new ViewAction() {
+
+            @Override
+            public Matcher<View> getConstraints() {
+                return any(View.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "Calling View#performLongClick() api";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                view.performLongClick();
             }
         };
     }

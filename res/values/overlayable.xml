@@ -248,6 +248,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="control_bar_focus_area"/>
       <item type="id" name="delete_button"/>
       <item type="id" name="dialpad_contact_avatar"/>
+      <item type="id" name="dialpad_contact_initials"/>
       <item type="id" name="dialpad_focus_area"/>
       <item type="id" name="dialpad_fragment"/>
       <item type="id" name="dialpad_info_boundaries"/>

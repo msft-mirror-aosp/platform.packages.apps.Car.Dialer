@@ -327,6 +327,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="integer" name="config_dial_motion_scale_start"/>
       <item type="integer" name="config_dialed_number_gravity"/>
       <item type="integer" name="config_no_dialpad_uxr_max_allow_digits"/>
+      <item type="integer" name="config_phone_call_log_limit"/>
       <item type="integer" name="config_toolbar_title_mode"/>
       <item type="integer" name="config_type_down_list_limit"/>
       <item type="integer" name="favorite_fragment_grid_column"/>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,14 @@ import android.content.Context;
 import android.text.SpannableString;
 import android.text.style.TextAppearanceSpan;
 
-import com.android.car.dialer.CarDialerRobolectricTestRunner;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
 
-@RunWith(CarDialerRobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class QueryStyleTest {
     private static final String NUMBER_1 = "+1-234-567-8901";
     private static final String NUMBER_2 = "+1 234 567 8901";
@@ -51,7 +51,7 @@ public class QueryStyleTest {
 
     @Before
     public void setUp() {
-        Context context = RuntimeEnvironment.application;
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
         mQueryStyle = new QueryStyle(context, STYLE);
     }
 

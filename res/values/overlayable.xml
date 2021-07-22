@@ -21,6 +21,14 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="array" name="contact_order_entry_values"/>
       <item type="array" name="tabs_config"/>
       <item type="array" name="tabs_title"/>
+      <item type="attr" name="emptyViewLayout"/>
+      <item type="attr" name="errorViewLayout"/>
+      <item type="attr" name="image"/>
+      <item type="attr" name="letterText"/>
+      <item type="attr" name="numberText"/>
+      <item type="attr" name="progressViewLayout"/>
+      <item type="attr" name="tabBarSize"/>
+      <item type="attr" name="toolbarTitleMode"/>
       <item type="bool" name="config_enable_dial_motion"/>
       <item type="bool" name="config_should_show_active_call_setting"/>
       <item type="bool" name="config_should_show_incoming_call_hun_setting"/>
@@ -240,6 +248,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="control_bar_focus_area"/>
       <item type="id" name="delete_button"/>
       <item type="id" name="dialpad_contact_avatar"/>
+      <item type="id" name="dialpad_contact_initials"/>
       <item type="id" name="dialpad_focus_area"/>
       <item type="id" name="dialpad_fragment"/>
       <item type="id" name="dialpad_info_boundaries"/>

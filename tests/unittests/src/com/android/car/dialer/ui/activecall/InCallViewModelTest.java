@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
 import android.net.Uri;
 import android.telecom.Call;
 import android.telecom.DisconnectCause;
@@ -32,12 +31,11 @@ import android.telecom.GatewayInfo;
 
 import androidx.core.util.Pair;
 import androidx.lifecycle.MutableLiveData;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.android.car.dialer.CarDialerRobolectricTestRunner;
-import com.android.car.dialer.TestDialerApplication;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
 import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
-import com.android.car.dialer.telecom.InCallServiceImpl;
 import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.common.CallDetail;
 
@@ -48,13 +46,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RuntimeEnvironment;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@RunWith(CarDialerRobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class InCallViewModelTest {
     private static final String NUMBER = "6505551234";
     private static final long CONNECT_TIME_MILLIS = 500000000;
@@ -62,10 +58,6 @@ public class InCallViewModelTest {
     private static final Uri GATEWAY_ADDRESS = Uri.fromParts("tel", NUMBER, null);
 
     private InCallViewModel mInCallViewModel;
-    private List<Call> mListForMockCalls;
-
-    @Mock
-    private InCallServiceImpl mInCallService;
 
     @Mock
     private Call mMockActiveCall;
@@ -83,13 +75,13 @@ public class InCallViewModelTest {
     AudioRouteLiveData.Factory mMockAudioRouteLiveDataFactory;
     @Mock
     SupportedAudioRoutesLiveData.Factory mMockSupportedAudioRoutesLiveDataFactory;
+    @Mock
+    LocalCallHandler mMockLocalCallHandler;
 
     @Before
+    @UiThreadTest
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        Context context = RuntimeEnvironment.application;
-
-        ((TestDialerApplication) context).setupInCallServiceImpl(mInCallService);
 
         when(mMockActiveCall.getState()).thenReturn(Call.STATE_ACTIVE);
         when(mMockDialingCall.getState()).thenReturn(Call.STATE_DIALING);
@@ -107,18 +99,21 @@ public class InCallViewModelTest {
 
         when(mMockDialingCall.getDetails()).thenReturn(mMockDetails);
 
-        mListForMockCalls = new ArrayList<>();
-        mListForMockCalls.add(mMockActiveCall);
-        mListForMockCalls.add(mMockDialingCall);
-        mListForMockCalls.add(mMockHoldingCall);
-        mListForMockCalls.add(mMockRingingCall);
-        when(mInCallService.getCalls()).thenReturn(mListForMockCalls);
         when(mMockAudioRouteLiveDataFactory.create(any())).thenReturn(
                 mock(AudioRouteLiveData.class));
-        when(mMockSupportedAudioRoutesLiveDataFactory.create(any())).thenReturn(mock(
-                SupportedAudioRoutesLiveData.class));
+        when(mMockSupportedAudioRoutesLiveDataFactory.create(any())).thenReturn(
+                mock(SupportedAudioRoutesLiveData.class));
 
-        mInCallViewModel = new InCallViewModel(new LocalCallHandler(context),
+        when(mMockLocalCallHandler.getIncomingCallLiveData()).thenReturn(
+                new MutableLiveData<>(mMockRingingCall));
+        when(mMockLocalCallHandler.getCallListLiveData()).thenReturn(
+                new MutableLiveData<>(Arrays.asList(
+                        mMockRingingCall, mMockDialingCall, mMockActiveCall, mMockHoldingCall)));
+        when(mMockLocalCallHandler.getOngoingCallListLiveData()).thenReturn(
+                new MutableLiveData<>(Arrays.asList(
+                        mMockDialingCall, mMockActiveCall, mMockHoldingCall)));
+
+        mInCallViewModel = new InCallViewModel(mMockLocalCallHandler,
                 mMockAudioRouteLiveDataFactory,
                 mMockSupportedAudioRoutesLiveDataFactory, new MutableLiveData<>());
         mInCallViewModel.getIncomingCall().observeForever(s -> { });
@@ -139,6 +134,7 @@ public class InCallViewModelTest {
     }
 
     @Test
+    @UiThreadTest
     public void testStateChange_triggerCallListUpdate() {
         Call.Callback callback = mCallbackCaptor.getValue();
         assertThat(callback).isNotNull();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The Android Open Source Project
+ * Copyright (C) 2021 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.android.car.dialer.CarDialerRobolectricTestRunner;
+import androidx.test.annotation.UiThreadTest;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import com.android.car.dialer.R;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.testing.TestActivity;
 import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
@@ -45,15 +50,10 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowAlertDialog;
-import org.robolectric.shadows.ShadowLooper;
 
 import java.util.Arrays;
 
-@Config(qualifiers = "h610dp")
-@RunWith(CarDialerRobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class ContactListViewHolderTest {
     private static final String DISPLAY_NAME = "Display Name";
     private static final String LABEL_1 = "Work";
@@ -75,15 +75,13 @@ public class ContactListViewHolderTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mContext = RuntimeEnvironment.application;
+        mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        mItemView = LayoutInflater.from(mContext)
-                .inflate(R.layout.contact_list_item, null, false);
-        mContactListViewHolder = new ContactListViewHolder(mItemView, mMockListener,
-                mMockUiCallManager);
+        setupActivity();
     }
 
     @Test
+    @UiThreadTest
     public void testDisplayName() {
         when(mMockContact.getDisplayName()).thenReturn(DISPLAY_NAME);
         mContactListViewHolder.bind(mMockContact, false, "", TelecomUtils.SORT_BY_FIRST_NAME);
@@ -93,6 +91,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testLabel_withOnlyOneNumber_showLabel() {
         PhoneNumber phoneNumber = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
@@ -103,6 +102,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testLabel_withOneNumberAndNumberHasNullLabel_showTypeLabel() {
         PhoneNumber phoneNumber = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, TYPE, null,
                 false, 0, null, null, 0);
@@ -115,6 +115,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testLabel_withOneNumberAndGetNullLabel_showEmptyString() {
         // There will not be situations where PhoneNumber gets a null label.
         // But we keep this unit test to make sure the logic is correct.
@@ -127,6 +128,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testLabel_withMultipleNumbersAndNoPrimaryNumber_showMultipleLabel() {
         PhoneNumber phoneNumber1 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
@@ -141,6 +143,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testLabel_withMultipleNumbersAndHasPrimaryNumber_showPrimaryNumberLabel() {
         PhoneNumber phoneNumber1 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
@@ -156,6 +159,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testLabel_HasPrimaryNumberAndPrimaryNumberHasNullLabel_showPrimaryNumberLabel() {
         PhoneNumber phoneNumber1 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
@@ -174,6 +178,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testLabel_HasPrimaryNumberButGetNullLabel_showMultipleLabel() {
         // There will not be situations where PhoneNumber gets a null label.
         // But we keep this unit test to make sure the logic is correct.
@@ -190,6 +195,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testClickCallActionButton_ContactHasOneNumber_placeCall() {
         PhoneNumber phoneNumber = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
@@ -207,6 +213,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testClickCallActionButton_HasMultipleNumbersAndNoPrimaryNumber_showAlertDialog() {
         PhoneNumber phoneNumber1 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
@@ -214,18 +221,17 @@ public class ContactListViewHolderTest {
                 false, 0, null, null, 0);
         when(mMockContact.getNumbers()).thenReturn(Arrays.asList(phoneNumber1, phoneNumber2));
         when(mMockContact.hasPrimaryPhoneNumber()).thenReturn(false);
+
         mContactListViewHolder.bind(mMockContact, false, "", TelecomUtils.SORT_BY_FIRST_NAME);
 
-        assertThat(ShadowAlertDialog.getLatestAlertDialog()).isNull();
         View callActionView = mItemView.findViewById(R.id.call_action_id);
-        ShadowLooper.pauseMainLooper();
         callActionView.performClick();
 
         verify(mMockUiCallManager, never()).placeCall(any());
-        assertThat(ShadowAlertDialog.getLatestAlertDialog()).isNotNull();
     }
 
     @Test
+    @UiThreadTest
     public void testClickCallActionButton_HasMultipleNumbersAndPrimaryNumber_callPrimaryNumber() {
         PhoneNumber phoneNumber1 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
@@ -247,6 +253,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testClickShowContactDetailView_hasContactDetail_showContactDetail() {
         PhoneNumber phoneNumber = mock(PhoneNumber.class);
         when(mMockContact.getNumbers()).thenReturn(Arrays.asList(phoneNumber));
@@ -263,6 +270,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testClickShowContactDetailView_hasAddressButNoPhoneNumber_dependOnConfig() {
         PostalAddress postalAddress = mock(PostalAddress.class);
         when(mMockContact.getPostalAddresses()).thenReturn(Arrays.asList(postalAddress));
@@ -291,6 +299,7 @@ public class ContactListViewHolderTest {
     }
 
     @Test
+    @UiThreadTest
     public void testClickShowContactDetailView_NoContactDetail_ContactDetailButtonNotEnabled() {
         mContactListViewHolder.bind(mMockContact, false, "", TelecomUtils.SORT_BY_FIRST_NAME);
 
@@ -300,5 +309,17 @@ public class ContactListViewHolderTest {
         assertThat(showContactDetailActionView.getVisibility() == View.VISIBLE).isEqualTo(
                 mItemView.getResources().getBoolean(
                         R.bool.config_show_contact_detail_button_for_empty_contact));
+    }
+
+    private void setupActivity() {
+        ActivityScenario<TestActivity> activityScenario =
+                ActivityScenario.launch(TestActivity.class);
+        activityScenario.onActivity(activity -> {
+            mItemView = LayoutInflater.from(activity)
+                    .inflate(R.layout.contact_list_item, null, false);
+
+            mContactListViewHolder = new ContactListViewHolder(mItemView, mMockListener,
+                    mMockUiCallManager);
+        });
     }
 }

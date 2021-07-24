@@ -86,7 +86,7 @@ class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
     public ContactListViewHolder onCreateViewHolderImpl(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.contact_list_item, parent,
                 false);
-        return  mViewHolderFactory.create(itemView);
+        return mViewHolderFactory.create(itemView);
     }
 
     @Override

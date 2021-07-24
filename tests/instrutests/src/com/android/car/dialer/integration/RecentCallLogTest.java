@@ -121,7 +121,7 @@ public class RecentCallLogTest {
                 mIncomingRecord.getCallEndTimestamp());
 
         mHiltAndroidRule.inject();
-        mFakeHfpManager.connectHfpDevice();
+        mFakeHfpManager.connectHfpDevice(/* withMockData= */false);
     }
 
     @Test

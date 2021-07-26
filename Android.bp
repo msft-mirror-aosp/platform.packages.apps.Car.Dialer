@@ -94,10 +94,7 @@ android_app {
 
     exclude_srcs: ["src/com/android/car/dialer/inject/BluetoothSingleHfpModule.java"],
 
-    resource_dirs: [
-        "res",
-        "tests/robotests/res",
-    ],
+    resource_dirs: ["res"],
 
     sdk_version: "system_current",
 

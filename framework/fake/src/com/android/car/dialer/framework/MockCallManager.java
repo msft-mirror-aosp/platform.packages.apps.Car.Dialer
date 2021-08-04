@@ -24,6 +24,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.bluetooth.BluetoothDevice;
 import android.net.Uri;
 import android.provider.CallLog;
 import android.telecom.Call;
@@ -31,6 +32,8 @@ import android.telecom.DisconnectCause;
 import android.telecom.GatewayInfo;
 import android.telecom.InCallService;
 import android.util.Log;
+
+import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.framework.testdata.CallLogDataHandler;
 import com.android.car.dialer.framework.testdata.CallLogRawData;
@@ -51,6 +54,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -62,6 +66,7 @@ public class MockCallManager {
 
     private InCallService mInCallService;
     private final CallLogDataHandler mCallLogDataHandler;
+    private final LiveData<BluetoothDevice> mCurrentHfpDevice;
 
     private List<Call> mCallList = new ArrayList<>();
     private List<Call> mConferenceList = new ArrayList<>();
@@ -73,8 +78,10 @@ public class MockCallManager {
     private Map<Call, List<Call.Callback>> mCallbacks = new HashMap<>();
 
     @Inject
-    public MockCallManager(CallLogDataHandler callLogDataHandler) {
+    public MockCallManager(CallLogDataHandler callLogDataHandler,
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDevice) {
         mCallLogDataHandler = callLogDataHandler;
+        mCurrentHfpDevice = currentHfpDevice;
     }
 
     /**
@@ -215,7 +222,7 @@ public class MockCallManager {
                             : call.getDetails().getCallDirection() + 1);
             data.setNumber(detail.getNumber());
             data.setInterval(callDuration);
-            mCallLogDataHandler.addOneCallLog(data);
+            mCallLogDataHandler.addOneCallLog(data, mCurrentHfpDevice.getValue().getAddress());
         }
     }
 

@@ -19,7 +19,7 @@ package com.android.car.dialer.framework.testdata;
 /**
  * A class represents the call log raw data.
  */
-public class CallLogRawData extends RawData {
+public class CallLogRawData {
 
     private String mNumber;
     private Integer mNumberType;
@@ -73,9 +73,7 @@ public class CallLogRawData extends RawData {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("[id: ");
-        builder.append(getId());
-        builder.append(", number: ");
+        builder.append("[number: ");
         builder.append(mNumber);
         builder.append(", number type: ");
         builder.append(mNumberType);

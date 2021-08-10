@@ -21,8 +21,10 @@ android_test {
         "androidx.test.espresso.core",
         "androidx.test.espresso.contrib",
         "androidx.test.espresso.intents",
+        "androidx.test.uiautomator_uiautomator",
         "hilt_android_testing",
         "mockito-target-extended",
+        "truth-prebuilt",
     ],
 
     jni_libs: ["libstaticjvmtiagent"],

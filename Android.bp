@@ -87,7 +87,7 @@ android_app {
 // Duplicate of CarDialerApp which includes testing only resources for Robolectric #
 //##################################################################################
 
-android_app {
+android_test_helper_app {
     name: "CarDialerAppForTesting",
 
     srcs: ["src/**/*.java"],

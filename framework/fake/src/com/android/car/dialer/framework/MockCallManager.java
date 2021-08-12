@@ -125,7 +125,9 @@ public class MockCallManager {
      */
     public void endCall(String id) {
         Call call = findCallById(id);
-        disconnect(call);
+        if (call != null) {
+            disconnect(call);
+        }
     }
 
     /**
@@ -180,7 +182,9 @@ public class MockCallManager {
         for (Call child : call.getChildren()) {
             mCallList.remove(child);
             mInCallService.onCallRemoved(child);
-            mCallbacks.remove(child);
+            List<Call.Callback> callbacks = mCallbacks.remove(child);
+            callbacks.stream().forEach(
+                    callback -> callback.onStateChanged(child, Call.STATE_DISCONNECTED));
         }
 
         // If the call is a conference, remove the reference
@@ -192,12 +196,14 @@ public class MockCallManager {
         mInCallService.onCallRemoved(call);
         updateList();
 
-        // If the call is child of a conference call, make sure to call callbacks and...
-        if (parent != null) {
-            List<Call.Callback> callbacks = mCallbacks.get(call);
-            for (Call.Callback callback : callbacks) {
+        List<Call.Callback> callbacks = mCallbacks.get(call);
+
+        for (Call.Callback callback : callbacks) {
+            // If the call is child of a conference call, make sure to call callbacks and...
+            if (parent != null) {
                 callback.onChildrenChanged(parent, mConferenceList);
             }
+            callback.onStateChanged(call, Call.STATE_DISCONNECTED);
         }
 
         mCallbacks.remove(call);
@@ -279,6 +285,14 @@ public class MockCallManager {
         if (created) {
             Log.d(TAG, "created conf" + mConferenceCall);
             mInCallService.onCallAdded(mConferenceCall);
+        }
+    }
+
+    /** Answers a received call. */
+    public void answerCall(String id) {
+        Call call = findCallById(id);
+        if (call != null) {
+            answerCall(call);
         }
     }
 

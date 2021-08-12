@@ -58,9 +58,9 @@ android_app {
 
     libs: common_libs,
 
-    static_libs: [
+    static_libs: common_static_libs + [
         "car-dialer-framework-dep",
-    ] + common_static_libs,
+    ],
 
     plugins: [
         "androidx.room_room-compiler-plugin",
@@ -84,7 +84,7 @@ android_app {
 }
 
 //##################################################################################
-// Duplicate of CarDialerApp which includes testing only resources for Robolectric #
+// Duplicate of CarDialerApp using fake components used for debugging and testings #
 //##################################################################################
 
 android_test_helper_app {
@@ -106,10 +106,10 @@ android_test_helper_app {
 
     libs: common_libs,
 
-    static_libs: [
+    static_libs: common_static_libs + [
         "car-dialer-fake-framework-dep",
         "car-dialer-testing",
-    ] + common_static_libs,
+    ],
 
     plugins: [
         "androidx.room_room-compiler-plugin",
@@ -166,9 +166,9 @@ android_app {
 
     libs: common_libs,
 
-    static_libs: [
+    static_libs: common_static_libs + [
         "car-dialer-framework-dep",
-    ] + common_static_libs,
+    ],
 
     plugins: [
         "androidx.room_room-compiler-plugin",

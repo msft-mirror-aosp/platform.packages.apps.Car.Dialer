@@ -27,6 +27,13 @@
         <option name="test-file-name" value="CarDialerAppForTesting.apk" />
     </target_preparer>
 
+    <!--Disable device animation. -->
+    <target_preparer class="com.android.tradefed.targetprep.RunCommandTargetPreparer">
+        <option name="run-command" value="settings put global window_animation_scale 0" />
+        <option name="run-command" value="settings put global transition_animation_scale 0" />
+        <option name="run-command" value="settings put global animator_duration_scale 0" />
+    </target_preparer>
+
     <test class="com.android.tradefed.testtype.AndroidJUnitTest" >
         <option name="package" value="com.android.car.dialer.tests.instrutests" />
         <option name="runner" value="com.android.car.dialer.integration.DialerHiltTestRunner" />

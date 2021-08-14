@@ -175,9 +175,11 @@ public class ContactResultsLiveData extends
     }
 
     private void sort(List<ContactResultListItem> contactResults) {
-        Collections.sort(contactResults, (o1, o2) -> ContactSortingInfo.getSortingInfo(
-                mContext, mSortOrderPreferenceLiveData).first.compare(o1.mContact,
-                o2.mContact));
+        if (contactResults != null) {
+            Collections.sort(contactResults, (o1, o2) -> ContactSortingInfo.getSortingInfo(
+                    mContext, mSortOrderPreferenceLiveData).first.compare(o1.mContact,
+                    o2.mContact));
+        }
     }
 
     private static class SearchQueryParamProvider implements QueryParam.Provider {

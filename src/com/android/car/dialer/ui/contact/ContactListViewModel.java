@@ -16,7 +16,6 @@
 
 package com.android.car.dialer.ui.contact;
 
-import android.app.Application;
 import android.content.Context;
 import android.util.Pair;
 
@@ -27,12 +26,10 @@ import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.arch.common.FutureData;
 import com.android.car.arch.common.LiveDataFunctions;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
 import com.android.car.telephony.common.Contact;
-import com.android.car.telephony.common.InMemoryPhoneBook;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,25 +38,31 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * View model for {@link ContactListFragment}.
  */
+@HiltViewModel
 public class ContactListViewModel extends DialerListViewModel {
-    private final Context mContext;
+
+    private final LiveData<List<Contact>> mContactListLiveData;
     private final LiveData<Pair<Integer, List<Contact>>> mSortedContactListLiveData;
     private final LiveData<FutureData<Pair<Integer, List<Contact>>>> mContactList;
 
-    public ContactListViewModel(@NonNull Application application) {
-        super(application);
-        mContext = application.getApplicationContext();
+    @Inject
+    public ContactListViewModel(@ApplicationContext Context context,
+            SharedPreferencesLiveData.Factory sharedPreferencesFactory,
+            LiveData<List<Contact>> contactListLiveData) {
+        super(context, sharedPreferencesFactory);
+        mContactListLiveData = contactListLiveData;
 
         SharedPreferencesLiveData preferencesLiveData = getSharedPreferencesLiveData();
-        LiveData<List<Contact>> contactListLiveData = LiveDataFunctions.switchMapNonNull(
-                UiBluetoothMonitor.get().getFirstHfpConnectedDevice(),
-                device -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(
-                        device.getAddress()));
-        mSortedContactListLiveData = new SortedContactListLiveData(
-                mContext, contactListLiveData, preferencesLiveData);
+        mSortedContactListLiveData = new SortedContactListLiveData(context, mContactListLiveData,
+                preferencesLiveData);
         mContactList = LiveDataFunctions.loadingSwitchMap(mSortedContactListLiveData,
                 input -> LiveDataFunctions.dataOf(input));
     }

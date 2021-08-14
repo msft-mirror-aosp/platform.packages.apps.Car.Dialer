@@ -16,20 +16,15 @@
 
 package com.android.car.dialer.livedata;
 
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothHeadsetClient;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-
 import androidx.lifecycle.MediatorLiveData;
 
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.telephony.common.CallDetail;
 
-import java.util.List;
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
 
 /**
  * Provides the current connecting audio route.
@@ -37,45 +32,50 @@ import java.util.List;
 public class AudioRouteLiveData extends MediatorLiveData<Integer> {
     private static final String TAG = "CD.AudioRouteLiveData";
 
-    private final Context mContext;
-    private final IntentFilter mAudioRouteChangeFilter;
+    private final UiCallManager mUiCallManager;
+    private final CallDetailLiveData mPrimaryCallDetailLiveData;
 
-    private final BroadcastReceiver mAudioRouteChangeReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateAudioRoute();
-        }
-    };
+    @AssistedInject
+    public AudioRouteLiveData(
+            @Assisted CallDetailLiveData primaryCallDetailLiveData,
+            UiCallManager callManager) {
+        mUiCallManager = callManager;
+        mPrimaryCallDetailLiveData = primaryCallDetailLiveData;
 
-    public AudioRouteLiveData(Context context) {
-        mContext = context;
-        mAudioRouteChangeFilter =
-                new IntentFilter(BluetoothHeadsetClient.ACTION_AUDIO_STATE_CHANGED);
-        addSource(UiBluetoothMonitor.get().getHfpDeviceListLiveData(), this::onHfpDeviceListChange);
+        addSource(mPrimaryCallDetailLiveData, this::updateOngoingCallAudioRoute);
     }
 
     @Override
     protected void onActive() {
         super.onActive();
         updateAudioRoute();
-        mContext.registerReceiver(mAudioRouteChangeReceiver, mAudioRouteChangeFilter);
-    }
-
-    @Override
-    protected void onInactive() {
-        mContext.unregisterReceiver(mAudioRouteChangeReceiver);
-        super.onInactive();
     }
 
     private void updateAudioRoute() {
-        int audioRoute = UiCallManager.get().getAudioRoute();
+        CallDetail primaryCallDetail = mPrimaryCallDetailLiveData.getValue();
+        updateOngoingCallAudioRoute(primaryCallDetail);
+    }
+
+    private void updateOngoingCallAudioRoute(CallDetail callDetail) {
+        if (callDetail == null) {
+            // Phone call might have disconnected, no action.
+            return;
+        }
+        int state = callDetail.getScoState();
+        int audioRoute = mUiCallManager.getAudioRoute(state);
         if (getValue() == null || audioRoute != getValue()) {
             L.d(TAG, "updateAudioRoute to %s", audioRoute);
             setValue(audioRoute);
         }
     }
 
-    private void onHfpDeviceListChange(List<BluetoothDevice> bluetoothDeviceList) {
-        updateAudioRoute();
+    /**
+     * Factory to create {@link AudioRouteLiveData} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    public interface Factory {
+        /** Creates an {@link AudioRouteLiveData} instance. */
+        AudioRouteLiveData create(CallDetailLiveData primaryCallDetailLiveData);
     }
 }

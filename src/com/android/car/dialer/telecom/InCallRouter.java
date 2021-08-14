@@ -18,10 +18,10 @@ package com.android.car.dialer.telecom;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.telecom.Call;
 
 import androidx.annotation.MainThread;
-import androidx.preference.PreferenceManager;
 
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
@@ -32,26 +32,39 @@ import com.android.car.dialer.ui.activecall.InCallViewModel;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.android.scopes.ServiceScoped;
+
 /**
  * Routes a call to different path depending on its state. If there is any {@link
  * InCallServiceImpl.ActiveCallListChangedCallback} that already handles the call, i.e. the {@link
  * InCallViewModel} that actively updates the in call page, then we don't show HUN for the ringing
  * call or attempt to start the in call page again.
  */
+@ServiceScoped
 class InCallRouter {
 
     private static final String TAG = "CD.InCallRouter";
 
     private final Context mContext;
+    private final SharedPreferences mSharedPreferences;
     private final InCallNotificationController mInCallNotificationController;
     private final ArrayList<InCallServiceImpl.ActiveCallListChangedCallback>
             mActiveCallListChangedCallbacks = new ArrayList<>();
     private final ProjectionCallHandler mProjectionCallHandler;
 
-    InCallRouter(Context context) {
+    @Inject
+    InCallRouter(
+            @ApplicationContext Context context,
+            SharedPreferences sharedPreferences,
+            InCallNotificationController inCallNotificationController,
+            ProjectionCallHandler projectionCallHandler) {
         mContext = context;
-        mInCallNotificationController = InCallNotificationController.get();
-        mProjectionCallHandler = new ProjectionCallHandler(context);
+        mSharedPreferences = sharedPreferences;
+        mInCallNotificationController = inCallNotificationController;
+        mProjectionCallHandler = projectionCallHandler;
     }
 
     void start() {
@@ -167,7 +180,7 @@ class InCallRouter {
     private boolean shouldShowIncomingCallHun() {
         boolean shouldSuppressHunByDefault =
                 mContext.getResources().getBoolean(R.bool.config_should_suppress_incoming_call_hun);
-        return !PreferenceManager.getDefaultSharedPreferences(mContext)
+        return !mSharedPreferences
                 .getBoolean(mContext.getString(R.string.pref_no_incoming_call_hun_key),
                         shouldSuppressHunByDefault);
     }
@@ -175,7 +188,7 @@ class InCallRouter {
     private boolean shouldShowFullScreenUi() {
         boolean shouldShowFullScreenUiByDefault =
                 mContext.getResources().getBoolean(R.bool.config_show_fullscreen_incall_ui);
-        return PreferenceManager.getDefaultSharedPreferences(mContext)
+        return mSharedPreferences
                 .getBoolean(mContext.getString(R.string.pref_show_fullscreen_active_call_ui_key),
                         shouldShowFullScreenUiByDefault);
     }

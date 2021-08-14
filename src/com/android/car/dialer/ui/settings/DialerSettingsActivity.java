@@ -24,10 +24,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.dialer.log.L;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Activity for settings in Dialer
  */
-public class DialerSettingsActivity extends FragmentActivity {
+@AndroidEntryPoint(FragmentActivity.class)
+public class DialerSettingsActivity extends Hilt_DialerSettingsActivity {
     private static final String TAG = "CD.SettingsActivity";
 
     @Override

@@ -42,6 +42,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 
 import com.android.car.dialer.R;
@@ -134,7 +135,9 @@ public class PrivacySettingTest {
     }
 
     private void waitUntilNotificationShows() {
-        mUiDevice.wait(Until.findObject(By.text("Answer")), UI_RESPONSE_TIMEOUT_MS);
+        UiObject2 answerButton = mUiDevice.wait(Until.findObject(By.text("Answer")),
+                UI_RESPONSE_TIMEOUT_MS);
+        assertThat(answerButton).isNotNull();
     }
 
     private void waitUntilNotificationDismissed() {

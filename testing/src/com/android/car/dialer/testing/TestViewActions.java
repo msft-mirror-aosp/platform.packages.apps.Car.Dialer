@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.any;
 
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -89,6 +90,51 @@ public final class TestViewActions {
             @Override
             public void perform(UiController uiController, View view) {
                 view.performLongClick();
+            }
+        };
+    }
+
+    /**
+     * A type text action by calling the {@link android.widget.TextView#setText(CharSequence)}
+     * api.
+     */
+    public static ViewAction setTextWithoutConstraints(CharSequence text) {
+        return new ViewAction() {
+
+            @Override
+            public Matcher<View> getConstraints() {
+                return ViewMatchers.isAssignableFrom(TextView.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "Calling TextView#setText(CharSequence) api";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                TextView textView = (TextView) view;
+                textView.setText(text);
+            }
+        };
+    }
+
+    /** A wait action to loop the main thread for given time. */
+    public static ViewAction waitAction(long millis) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return any(View.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return String.format("Wait for %d ms", millis);
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                uiController.loopMainThreadForAtLeast(millis);
             }
         };
     }

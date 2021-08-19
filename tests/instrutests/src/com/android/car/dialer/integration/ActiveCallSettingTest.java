@@ -48,7 +48,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 
 import com.android.car.dialer.R;
@@ -89,7 +88,7 @@ public class ActiveCallSettingTest {
 
     @Before
     public void setup() {
-        mHiltAndroidRule.inject();
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> mHiltAndroidRule.inject());
 
         mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -118,7 +117,7 @@ public class ActiveCallSettingTest {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> {
                     mFakeTelecomManager.receiveCall(CALL_ID);
-                    mFakeTelecomManager.answerCall(CALL_ID);
+                    clickNotificationAnswerButton();
                     mFakeTelecomManager.endCall(CALL_ID);
                 });
 
@@ -145,7 +144,7 @@ public class ActiveCallSettingTest {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> {
                     mFakeTelecomManager.receiveCall(CALL_ID);
-                    mFakeTelecomManager.answerCall(CALL_ID);
+                    clickNotificationAnswerButton();
                     mFakeTelecomManager.endCall(CALL_ID);
                 });
 
@@ -162,14 +161,8 @@ public class ActiveCallSettingTest {
         mCallLogDataHandler.tearDown();
     }
 
-    /**
-     * Runs into NotificationService component not created error.
-     * TODO: look into the error and replace calling the fake answerCall(String) api.
-     */
-    private void answerCall() {
-        UiObject2 answerButton = mUiDevice.wait(Until.findObject(By.text("Answer")),
-                UI_RESPONSE_TIMEOUT_MS);
-        answerButton.click();
+    private void clickNotificationAnswerButton() {
+        mUiDevice.wait(Until.findObject(By.text("Answer")), UI_RESPONSE_TIMEOUT_MS).click();
     }
 
     private void waitUntilNotificationDismissed() {

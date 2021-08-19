@@ -80,14 +80,14 @@ public class CallLogDataHandler {
     public void addOneCallLog(CallLogRawData callLogRawData, String accountId) {
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
-        String number = callLogRawData.getNumber();
-        Integer type = callLogRawData.getNumberType();
-        Integer timeInterval = callLogRawData.getInterval();
-
         ops.add(ContentProviderOperation.newInsert(CallLog.Calls.CONTENT_URI)
-                .withValue(CallLog.Calls.NUMBER, number)
-                .withValue(CallLog.Calls.TYPE, type)
-                .withValue(CallLog.Calls.DATE, System.currentTimeMillis() - timeInterval)
+                .withValue(CallLog.Calls.NUMBER, callLogRawData.getNumber())
+                .withValue(CallLog.Calls.TYPE, callLogRawData.getNumberType())
+                .withValue(CallLog.Calls.DATE,
+                        System.currentTimeMillis() - callLogRawData.getInterval())
+                .withValue(CallLog.Calls.TYPE, callLogRawData.getCallType())
+                .withValue(CallLog.Calls.IS_READ, callLogRawData.getRead())
+                .withValue(CallLog.Calls.NEW, 1)
                 .withValue(CallLog.Calls.PHONE_ACCOUNT_ID, accountId)
                 .build());
 

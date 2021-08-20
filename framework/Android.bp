@@ -26,6 +26,10 @@ android_library {
     // required to access any private API.
     sdk_version: "system_current",
 
+    min_sdk_version: "29",
+
+    target_sdk_version: "31",
+
     manifest: "real/AndroidManifest.xml",
 
     srcs: ["src/**/*.java", "real/src/**/*.java"],
@@ -44,6 +48,10 @@ android_library {
 
     // required to access any private API and spy() on any framework class.
     sdk_version: "system_current",
+
+    min_sdk_version: "29",
+
+    target_sdk_version: "31",
 
     manifest: "fake/AndroidManifest.xml",
 

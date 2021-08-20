@@ -33,6 +33,7 @@ import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.startsWith;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
@@ -80,6 +81,8 @@ public class InCallTest {
 
     @Before
     public void setup() {
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().grantRuntimePermission(
+                "com.android.car.dialer", Manifest.permission.BLUETOOTH_CONNECT);
         MockitoAnnotations.initMocks(InCallTest.this);
         mHiltAndroidRule.inject();
 

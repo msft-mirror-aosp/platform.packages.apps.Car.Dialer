@@ -50,11 +50,16 @@ android_app {
 
     resource_dirs: ["res"],
 
+    min_sdk_version: "29",
+
+    target_sdk_version: "31",
+
     sdk_version: "system_current",
 
     required: ["allowed_privapp_com.android.car.dialer"],
 
     certificate: "platform",
+    // certificate: ":com-android-car-apps-test",
 
     overrides: ["Dialer"],
 
@@ -100,9 +105,14 @@ android_test_helper_app {
 
     sdk_version: "system_current",
 
+    min_sdk_version: "29",
+
+    target_sdk_version: "31",
+
     required: ["allowed_privapp_com.android.car.dialer"],
 
     certificate: "platform",
+    // certificate: ":com-android-car-apps-test",
 
     overrides: ["Dialer"],
 
@@ -160,9 +170,14 @@ android_app {
 
     sdk_version: "system_current",
 
+    min_sdk_version: "29",
+
+    target_sdk_version: "31",
+
     required: ["allowed_privapp_com.android.car.dialer"],
 
     certificate: "platform",
+    // certificate: ":com-android-car-apps-test",
 
     overrides: ["Dialer"],
 

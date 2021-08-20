@@ -31,6 +31,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.Matchers.allOf;
 
+import android.Manifest;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -67,7 +68,6 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 public class PrivacySettingTest {
     private static final String CALL_ID = "1234567";
     private static final long UI_RESPONSE_TIMEOUT_MS = 5000;
-
     @Rule
     public final HiltAndroidRule mHiltAndroidRule = new HiltAndroidRule(this);
 
@@ -81,6 +81,8 @@ public class PrivacySettingTest {
 
     @Before
     public void setup() {
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().grantRuntimePermission(
+                "com.android.car.dialer", Manifest.permission.BLUETOOTH_CONNECT);
         mHiltAndroidRule.inject();
 
         mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();

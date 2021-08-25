@@ -119,6 +119,26 @@ public final class TestViewActions {
         };
     }
 
+    /** An action by calling {@link View#bringToFront()}. */
+    public static ViewAction bringToFrontAction() {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return any(View.class);
+            }
+
+            @Override
+            public String getDescription() {
+                return "Bring the view to front.";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                view.bringToFront();
+            }
+        };
+    }
+
     /** A wait action to loop the main thread for given time. */
     public static ViewAction waitAction(long millis) {
         return new ViewAction() {

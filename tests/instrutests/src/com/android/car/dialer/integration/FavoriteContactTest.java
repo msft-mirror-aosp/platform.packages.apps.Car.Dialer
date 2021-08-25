@@ -56,6 +56,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.framework.FakeHfpManager;
+import com.android.car.dialer.framework.FakeTelecomManager;
 import com.android.car.dialer.framework.SimulatedBluetoothDevice;
 import com.android.car.dialer.framework.testdata.ContactRawData;
 import com.android.car.dialer.testing.TestViewActions;
@@ -88,6 +89,7 @@ public class FavoriteContactTest {
 
     @Inject FakeHfpManager mFakeHfpManager;
     @Inject TelecomManager mTelecomManager;
+    @Inject FakeTelecomManager mFakeTelecomManager;
     private SimulatedBluetoothDevice mBluetoothDevice;
 
     @Rule
@@ -203,5 +205,6 @@ public class FavoriteContactTest {
     public void tearDown() {
         Intents.release();
         mBluetoothDevice.disconnect();
+        mFakeTelecomManager.clearCalls();
     }
 }

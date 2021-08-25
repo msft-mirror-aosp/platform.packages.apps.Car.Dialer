@@ -143,7 +143,7 @@ public class MockCallManager {
         }
         updateList();
 
-        List<Call.Callback> callbacks = mCallbacks.get(call);
+        List<Call.Callback> callbacks = getCallbacks(call);
         for (Call.Callback callback : callbacks) {
             callback.onStateChanged(call, Call.STATE_HOLDING);
         }
@@ -157,7 +157,7 @@ public class MockCallManager {
         when(call.getState()).thenReturn(Call.STATE_ACTIVE);
         updateList();
 
-        List<Call.Callback> callbacks = mCallbacks.get(call);
+        List<Call.Callback> callbacks = getCallbacks(call);
         for (Call.Callback callback : callbacks) {
             callback.onStateChanged(call, Call.STATE_ACTIVE);
         }
@@ -196,7 +196,7 @@ public class MockCallManager {
         mInCallService.onCallRemoved(call);
         updateList();
 
-        List<Call.Callback> callbacks = mCallbacks.get(call);
+        List<Call.Callback> callbacks = getCallbacks(call);
 
         for (Call.Callback callback : callbacks) {
             // If the call is child of a conference call, make sure to call callbacks and...
@@ -230,6 +230,11 @@ public class MockCallManager {
             data.setInterval(callDuration);
             mCallLogDataHandler.addOneCallLog(data, mCurrentHfpDevice.getValue().getAddress());
         }
+    }
+
+    private List<Call.Callback> getCallbacks(Call call) {
+        List<Call.Callback> callbacks = mCallbacks.get(call);
+        return callbacks == null ? Collections.emptyList() : callbacks;
     }
 
     /**
@@ -267,14 +272,14 @@ public class MockCallManager {
         // Merge single caller to existing conference call.
         if (mPrimaryCall != mConferenceCall) {
             when(mPrimaryCall.getParent()).thenReturn(mConferenceCall);
-            List<Call.Callback> callbacks = mCallbacks.get(mPrimaryCall);
+            List<Call.Callback> callbacks = getCallbacks(mPrimaryCall);
             for (Call.Callback callback : callbacks) {
                 callback.onParentChanged(mPrimaryCall, mConferenceCall);
             }
         }
         if (mSecondaryCall != mConferenceCall) {
             when(mSecondaryCall.getParent()).thenReturn(mConferenceCall);
-            List<Call.Callback> callbacks = mCallbacks.get(mSecondaryCall);
+            List<Call.Callback> callbacks = getCallbacks(mSecondaryCall);
             for (Call.Callback callback : callbacks) {
                 callback.onParentChanged(mSecondaryCall, mConferenceCall);
             }
@@ -305,7 +310,7 @@ public class MockCallManager {
         when(call.getState()).thenReturn(Call.STATE_ACTIVE);
         updateList();
 
-        List<Call.Callback> callbacks = mCallbacks.get(call);
+        List<Call.Callback> callbacks = getCallbacks(call);
         for (Call.Callback callback : callbacks) {
             callback.onStateChanged(call, Call.STATE_ACTIVE);
         }

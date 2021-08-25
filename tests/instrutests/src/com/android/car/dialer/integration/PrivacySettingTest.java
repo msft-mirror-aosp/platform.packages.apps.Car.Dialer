@@ -127,6 +127,10 @@ public class PrivacySettingTest {
                 () -> mFakeTelecomManager.receiveCall(CALL_ID));
 
         assertThat(mNotificationManager.getActiveNotifications().length).isEqualTo(0);
+
+        // Teardown properly
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> mFakeTelecomManager.endCall(CALL_ID));
     }
 
     @After

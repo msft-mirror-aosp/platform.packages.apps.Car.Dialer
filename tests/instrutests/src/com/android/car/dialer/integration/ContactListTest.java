@@ -50,6 +50,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.framework.FakeHfpManager;
+import com.android.car.dialer.framework.FakeTelecomManager;
 import com.android.car.dialer.framework.SimulatedBluetoothDevice;
 import com.android.car.dialer.framework.testdata.ContactRawData;
 import com.android.car.dialer.ui.TelecomActivity;
@@ -75,10 +76,9 @@ public class ContactListTest {
     private static final String PHONE_NUMBER_LABEL = "Work";
     private static final Uri CALL_URI = Uri.fromParts("tel", PHONE_NUMBER, null);
 
-    @Inject
-    FakeHfpManager mFakeHfpManager;
-    @Inject
-    TelecomManager mTelecomManager;
+    @Inject FakeHfpManager mFakeHfpManager;
+    @Inject TelecomManager mTelecomManager;
+    @Inject FakeTelecomManager mFakeTelecomManager;
     private SimulatedBluetoothDevice mSimulatedBluetoothDevice;
 
     @Rule
@@ -167,5 +167,6 @@ public class ContactListTest {
     public void tearDown() {
         Intents.release();
         mSimulatedBluetoothDevice.disconnect();
+        mFakeTelecomManager.clearCalls();
     }
 }

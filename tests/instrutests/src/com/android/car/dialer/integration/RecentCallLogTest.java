@@ -20,9 +20,11 @@ import static android.app.Activity.RESULT_OK;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.repeatedlyUntil;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -58,6 +60,7 @@ import com.android.car.dialer.framework.SimulatedBluetoothDevice;
 import com.android.car.dialer.framework.testdata.CallLogRawData;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
 import com.android.car.dialer.notification.MissedCallNotificationController;
+import com.android.car.dialer.testing.TestViewActions;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.dialer.widget.CallTypeIconsView;
@@ -130,6 +133,9 @@ public class RecentCallLogTest {
                 new Intent(InstrumentationRegistry.getInstrumentation().getTargetContext(),
                         TelecomActivity.class));
         onView(withText(R.string.call_history_title)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.list_view)).perform(repeatedlyUntil(TestViewActions.waitAction(100),
+                hasDescendant(withText(PHONE_NUMBER)), 50));
 
         onView(allOf(withText(HEADER), withId(R.id.title))).check(matches(isDisplayed()));
         onView(allOf(withText(PHONE_NUMBER), withId(R.id.title))).check(matches(isDisplayed()));

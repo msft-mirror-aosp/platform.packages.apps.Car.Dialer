@@ -136,7 +136,7 @@ public class ContactResultsLiveData extends
     private void onSortOrderChanged(SharedPreferences unusedSharedPreferences) {
         List<ContactResultListItem> contactResults = getValue();
         sort(contactResults);
-        setValue(contactResults);
+        setValue(contactResults == null ? Collections.emptyList() : contactResults);
     }
 
     @WorkerThread

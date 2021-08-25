@@ -27,6 +27,8 @@ common_static_libs = [
     "car-uxr-client-lib",
     "guava",
     "glide-prebuilt",
+    "glide-gifdecoder-prebuilt",
+    "glide-disklrucache-prebuilt",
     "hilt_android",
     "libphonenumber",
     "androidx-constraintlayout_constraintlayout",

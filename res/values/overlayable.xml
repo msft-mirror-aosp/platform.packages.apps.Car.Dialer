@@ -472,6 +472,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="type_multiple"/>
       <item type="string" name="zero"/>
       <item type="string" name="zero_letters"/>
+      <item type="style" name="AddFavoriteText"/>
       <item type="style" name="DialpadPrimaryButton"/>
       <item type="style" name="DialpadSecondaryButton"/>
       <item type="style" name="KeypadButtonStyle"/>

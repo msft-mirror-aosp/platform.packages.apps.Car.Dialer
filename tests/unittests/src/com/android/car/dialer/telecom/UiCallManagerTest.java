@@ -95,7 +95,7 @@ public class UiCallManagerTest {
                 mMockBluetoothDevice);
 
         mUiCallManager = new UiCallManager(mMockContext, mMockTelecomManager,
-                mMockPhoneAccountManager);
+                mMockPhoneAccountManager, null);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class UiCallManagerTest {
     public void testGetMuted_InCallServiceIsNull() {
         when(mMockIBinder.getService()).thenReturn(null);
         mUiCallManager = new UiCallManager(mMockContext, mMockTelecomManager,
-                mMockPhoneAccountManager);
+                mMockPhoneAccountManager, null);
 
         assertThat(mUiCallManager.getMuted()).isFalse();
     }
@@ -171,7 +171,7 @@ public class UiCallManagerTest {
     public void testGetSupportedAudioRouteMask_InCallServiceIsNull() {
         when(mMockIBinder.getService()).thenReturn(null);
         mUiCallManager = new UiCallManager(mMockContext, mMockTelecomManager,
-                mMockPhoneAccountManager);
+                mMockPhoneAccountManager, null);
 
         assertThat(mUiCallManager.getSupportedAudioRouteMask()).isEqualTo(0);
     }

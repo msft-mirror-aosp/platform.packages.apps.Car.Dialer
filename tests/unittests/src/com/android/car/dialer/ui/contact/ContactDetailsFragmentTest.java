@@ -103,12 +103,12 @@ public class ContactDetailsFragmentTest {
                     if (f instanceof ContactDetailsFragment) {
                         // Set up adapter with the mock UiCallManager.
                         ContactDetailsViewHolder.Factory viewHolderFactory =
-                                (v, phoneNumberPresenter) -> new ContactDetailsViewHolder(v,
-                                        phoneNumberPresenter, mMockUiCallManager);
+                                (v, phoneNumberPresenter) -> new ContactDetailsViewHolder(
+                                        v, phoneNumberPresenter, mMockUiCallManager);
                         ((ContactDetailsFragment) f).mContactDetailsAdapterFactory =
-                                (contact, phoneNumberPresenter) -> new ContactDetailsAdapter(
-                                        f.getContext(), viewHolderFactory, contact,
-                                        phoneNumberPresenter);
+                                (contact, phoneNumberPresenter, activity) ->
+                                        new ContactDetailsAdapter(f.getContext(), viewHolderFactory,
+                                                contact, phoneNumberPresenter, activity);
                         fm.unregisterFragmentLifecycleCallbacks(mCallbacks);
                     }
                 }

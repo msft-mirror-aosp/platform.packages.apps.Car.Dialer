@@ -22,7 +22,9 @@ common_libs = ["android.car-system-stubs"]
 common_static_libs = [
     "car-apps-common",
     "car-arch-common",
+    "car-assist-lib",
     "car-telephony-common",
+    "car-messenger-common",
     "car-ui-lib",
     "car-uxr-client-lib",
     "guava",

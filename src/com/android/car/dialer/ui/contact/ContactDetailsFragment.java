@@ -104,7 +104,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ContactDetailsAdapter contactDetailsAdapter = mContactDetailsAdapterFactory.create(mContact,
-                this);
+                this, getActivity());
         getRecyclerView().setAdapter(contactDetailsAdapter);
         mContactDetailsLiveData.observe(this, contact -> {
             if (contact.isLoading()) {

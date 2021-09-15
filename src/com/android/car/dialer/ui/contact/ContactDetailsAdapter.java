@@ -16,6 +16,7 @@
 
 package com.android.car.dialer.ui.contact;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,15 +56,18 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
     private final PhoneNumberPresenter mPhoneNumberPresenter;
     private final ArrayList<Object> mItems = new ArrayList<>();
     private Contact mContact;
+    private Activity mActivity;
 
     @AssistedInject
     ContactDetailsAdapter(
             @ActivityContext @NonNull Context context,
             ContactDetailsViewHolder.Factory viewHolderFactory,
             @Assisted @Nullable Contact contact,
-            @Assisted @NonNull PhoneNumberPresenter phoneNumberPresenter) {
+            @Assisted @NonNull PhoneNumberPresenter phoneNumberPresenter,
+            @Assisted @NonNull Activity activity) {
         super();
         mContext = context;
+        mActivity = activity;
         mViewHolderFactory = viewHolderFactory;
         mPhoneNumberPresenter = phoneNumberPresenter;
         setContact(contact);
@@ -140,7 +144,7 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
                 viewHolder.bind(mContext, (Contact) mItems.get(position));
                 break;
             case ID_NUMBER:
-                viewHolder.bind(mContext, mContact, (PhoneNumber) mItems.get(position));
+                viewHolder.bind(mContext, mContact, (PhoneNumber) mItems.get(position), mActivity);
                 break;
             case ID_ADDRESS:
                 viewHolder.bind(mContext, (PostalAddress) mItems.get(position));
@@ -158,6 +162,6 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
     @AssistedFactory
     interface Factory {
         ContactDetailsAdapter create(@Nullable Contact contact,
-                @NonNull PhoneNumberPresenter phoneNumberPresenter);
+                @NonNull PhoneNumberPresenter phoneNumberPresenter, @NonNull Activity activity);
     }
 }

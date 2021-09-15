@@ -42,6 +42,8 @@
     <bool name="config_show_contact_details_action_bar_view">false</bool>
     <!-- A config determines if to show the action bar avatar in the contact details page.-->
     <bool name="config_show_contact_details_action_bar_avatar">true</bool>
+    <!-- A config determines whether to show the send message button in the contact details page.-->
+    <bool name="config_show_contact_details_send_message_button">false</bool>
 
     <!-- Use app name as toolbar title. Supported value see @attr/toolbarTitleMode -->
     <integer name="config_toolbar_title_mode">0</integer>

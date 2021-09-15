@@ -38,6 +38,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="bool" name="config_show_contact_details_action_bar_avatar"/>
       <item type="bool" name="config_show_contact_details_action_bar_view"/>
       <item type="bool" name="config_show_contact_details_header"/>
+      <item type="bool" name="config_show_contact_details_send_message_button"/>
       <item type="bool" name="config_show_detailed_user_profile_on_dialpad"/>
       <item type="bool" name="config_show_fullscreen_incall_ui"/>
       <item type="bool" name="config_show_hun_fullscreen_incall_ui"/>
@@ -213,6 +214,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_phone"/>
       <item type="drawable" name="ic_smartphone"/>
       <item type="drawable" name="ic_smartphone_activatable"/>
+      <item type="drawable" name="ic_sms"/>
       <item type="drawable" name="ic_speaker_phone"/>
       <item type="drawable" name="ic_speaker_phone_activatable"/>
       <item type="drawable" name="icon_call_button"/>
@@ -239,6 +241,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="conference_title"/>
       <item type="id" name="connect_bluetooth_button"/>
       <item type="id" name="contact_details_favorite_button"/>
+      <item type="id" name="contact_details_sms_button"/>
       <item type="id" name="contact_list_button"/>
       <item type="id" name="contact_list_guideline_begin"/>
       <item type="id" name="contact_list_guideline_end"/>
@@ -255,6 +258,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="dialpad_info_guideline"/>
       <item type="id" name="display_name"/>
       <item type="id" name="divider"/>
+      <item type="id" name="divider1"/>
+      <item type="id" name="divider2"/>
       <item type="id" name="eight"/>
       <item type="id" name="emergency_call_button"/>
       <item type="id" name="end_call_button"/>
@@ -454,6 +459,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="seven_letters"/>
       <item type="string" name="six"/>
       <item type="string" name="six_letters"/>
+      <item type="string" name="sms_notification_text"/>
+      <item type="string" name="sms_notification_title"/>
       <item type="string" name="sort_order_default_value"/>
       <item type="string" name="sort_order_key"/>
       <item type="string" name="sort_order_title"/>

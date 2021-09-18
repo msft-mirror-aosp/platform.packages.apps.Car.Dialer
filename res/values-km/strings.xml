@@ -89,4 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"បានបិទការហៅទូរសព្ទ"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"មិនអាចប្រើផ្ទាំងចុចលេខបានទេ ពេលកំពុងបើកបរ"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"សារ SMS ពីផ្ទាំង​ចុចហៅទូរសព្ទ"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"កំពុងផ្ញើសារ SMS"</string>
 </resources>

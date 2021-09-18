@@ -89,4 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"ଡାଏଲ୍ କରିବା ଅକ୍ଷମ କରାଯାଇଛି"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"ଡ୍ରାଇଭିଂ କରିବା ସମୟରେ ଡାଏଲପ୍ୟାଡର ବ୍ୟବହାର ପ୍ରତିବନ୍ଧିତ କରାଯାଇଛି"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"ଡାଏଲର୍ SMS"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"SMS ପଠାଯାଉଛି"</string>
 </resources>

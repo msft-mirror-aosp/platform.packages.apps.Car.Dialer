@@ -89,4 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"ডায়েল কৰা সুবিধাটো অক্ষম কৰা হৈছে"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"গাড়ী চলাই থকাৰ সময়ত ডায়েলপেডৰ ব্যৱহাৰ সীমিত কৰা হৈছে"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"ডায়েলাৰ এছএমএছ"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"এছএমএছ পঠিয়াই থকা হৈছে"</string>
 </resources>

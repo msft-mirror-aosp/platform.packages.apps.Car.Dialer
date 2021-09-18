@@ -89,4 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"Knappsatsen för samtal har inaktiverats"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"Knappsatsen är inaktiverad under körning"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"Sms från uppringningsappen"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"Skickar sms"</string>
 </resources>

@@ -90,4 +90,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"Apelarea este dezactivată"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"Folosirea tastaturii numerice este restricționată în timp ce conduceți"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"Tastatură telefon pentru SMS"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"Se trimite SMS-ul"</string>
 </resources>

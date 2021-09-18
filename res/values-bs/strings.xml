@@ -90,4 +90,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"Biranje je onemogućeno"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"Korištenje telefonske tipkovnice je ograničeno tokom vožnje"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"SMS putem brojčane tastature"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"Slanje SMS-a"</string>
 </resources>

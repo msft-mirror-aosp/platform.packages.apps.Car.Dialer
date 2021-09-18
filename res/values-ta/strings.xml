@@ -89,4 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"டயலிங் முடக்கப்பட்டுள்ளது"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"வாகனம் ஓட்டும்போது டயல்பேடைப் பயன்படுத்த இயலாது"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"டயலர் மெசேஜ்"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"மெசேஜை அனுப்புகிறது"</string>
 </resources>

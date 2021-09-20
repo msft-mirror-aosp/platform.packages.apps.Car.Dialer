@@ -89,4 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"Tárcsázás letiltva"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"A Tárcsázó használata vezetés közben korlátozva van"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"Tárcsázó SMS-e"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"SMS küldése"</string>
 </resources>

@@ -89,4 +89,8 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"ഡയൽ ചെയ്യുന്നത് പ്രവർത്തനരഹിതമാക്കി"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"ഡ്രൈവ് ചെയ്യുമ്പോൾ ഡയൽപാഡ് ഉപയോഗം നിയന്ത്രിച്ചിരിക്കുന്നു"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <!-- no translation found for sms_notification_title (5980540487139970307) -->
+    <skip />
+    <!-- no translation found for sms_notification_text (9193883830187173056) -->
+    <skip />
 </resources>

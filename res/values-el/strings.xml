@@ -89,4 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"Κλήση με χρήση πληκτρολογίου ανενεργή"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"Η χρήση του πληκτρολογίου κλήσης περιορίζεται κατά την οδήγηση."</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"Dialer SMS"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"Αποστολή SMS"</string>
 </resources>

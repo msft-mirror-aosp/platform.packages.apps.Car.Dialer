@@ -89,4 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"拨号功能已停用"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"驾车时禁止使用拨号键盘"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">"， "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"拨号器短信"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"正在发送短信"</string>
 </resources>

@@ -10,6 +10,10 @@ package {
 android_test {
     name: "CarDialerInstruTests",
 
+    min_sdk_version: "29",
+
+    target_sdk_version: "31",
+
     srcs: ["src/**/*.java"],
 
     test_suites:["device-tests"],

@@ -62,7 +62,6 @@ import com.android.car.dialer.ui.activecall.InCallActivity;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -140,7 +139,6 @@ public class DialpadTest {
     }
 
     @Test
-    @Ignore("//TODO, no results showing, figure out why")
     public void typeDownTest() {
         ContactRawData contactRawData = new ContactRawData();
         contactRawData.setNumber(PHONE_NUMBER);

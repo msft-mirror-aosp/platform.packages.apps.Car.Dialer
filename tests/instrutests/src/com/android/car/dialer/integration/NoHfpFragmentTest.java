@@ -28,6 +28,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 
@@ -68,6 +69,8 @@ public class NoHfpFragmentTest {
 
     @Before
     public void setup() {
+        InstrumentationRegistry.getInstrumentation().getUiAutomation().grantRuntimePermission(
+                "com.android.car.dialer", Manifest.permission.BLUETOOTH_CONNECT);
         mHiltAndroidRule.inject();
 
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();

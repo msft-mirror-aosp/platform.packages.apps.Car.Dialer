@@ -89,8 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"Le clavier téléphonique est désactivé"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"L\'utilisation du clavier téléphonique est restreinte durant la conduite"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
-    <!-- no translation found for sms_notification_title (5980540487139970307) -->
-    <skip />
-    <!-- no translation found for sms_notification_text (9193883830187173056) -->
-    <skip />
+    <string name="sms_notification_title" msgid="5980540487139970307">"Composeur de messages texte"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"Envoi du message texte en cours…"</string>
 </resources>

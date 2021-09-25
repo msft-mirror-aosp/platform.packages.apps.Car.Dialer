@@ -89,8 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"ڈائلنگ غیر فعال کردہ ہے"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"ڈرائیو کرتے وقت ڈائل پیڈ کا استعمال محدود کردہ ہے"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">"، "</string>
-    <!-- no translation found for sms_notification_title (5980540487139970307) -->
-    <skip />
-    <!-- no translation found for sms_notification_text (9193883830187173056) -->
-    <skip />
+    <string name="sms_notification_title" msgid="5980540487139970307">"ڈائلر SMS"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"SMS بھیجا جا رہا ہے"</string>
 </resources>

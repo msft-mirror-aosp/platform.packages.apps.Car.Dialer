@@ -89,6 +89,6 @@
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"Teclado inhabilitado"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"No puedes usar el teclado mientras conduces"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
-    <string name="sms_notification_title" msgid="5980540487139970307">"Marcador de SMS"</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"SMS de Teléfono"</string>
     <string name="sms_notification_text" msgid="9193883830187173056">"Enviando SMS"</string>
 </resources>

@@ -22,7 +22,8 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- TODO(b/201454324): pregrant BLUETOOTH_CONNECT permission on 31 -->
+    <!-- <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />-->
     <uses-permission android:name="android.permission.READ_CALL_LOG"/>
     <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>

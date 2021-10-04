@@ -23,7 +23,9 @@ android {
     defaultConfig {
         applicationId 'com.android.car.dialer'
         minSdkVersion 29 // Dialer requires apis that became public in Q.
-        targetSdkVersion gradle.ext.aaosTargetSDK
+        // TODO(b/201454324): pregrant BLUETOOTH_CONNECT permission on 31
+        targetSdkVersion 30
+        // targetSdkVersion gradle.ext.aaosTargetSDK
         testInstrumentationRunnerArguments clearPackageData: 'true', coverage: 'true'
     }
 
@@ -108,10 +110,13 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('../libs/certs/com_android_car_apps_test.jks')
-            storePassword 'carapps'
-            keyAlias 'carapps'
-            keyPassword 'carapps'
+            // storeFile file('../libs/certs/com_android_car_apps_test.jks')
+            // storePassword 'carapps'
+            // keyAlias 'carapps'
+            // keyPassword 'carapps'
+            // The following signs the apk with platform key.
+            storeFile file('../../../../vendor/google/certs/devkeys/platform.keystore')
+            storePassword 'android'
         }
     }
 }

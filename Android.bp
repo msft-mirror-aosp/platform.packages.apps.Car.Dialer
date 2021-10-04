@@ -52,7 +52,9 @@ android_app {
 
     min_sdk_version: "29",
 
-    target_sdk_version: "31",
+    // TODO(b/201454324): pregrant BLUETOOTH_CONNECT permission on 31
+    target_sdk_version: "30",
+    // target_sdk_version: "31",
 
     sdk_version: "system_current",
 
@@ -107,7 +109,8 @@ android_test_helper_app {
 
     min_sdk_version: "29",
 
-    target_sdk_version: "31",
+    target_sdk_version: "30",
+    // target_sdk_version: "31",
 
     required: ["allowed_privapp_com.android.car.dialer"],
 
@@ -172,7 +175,8 @@ android_app {
 
     min_sdk_version: "29",
 
-    target_sdk_version: "31",
+    target_sdk_version: "30",
+    // target_sdk_version: "31",
 
     required: ["allowed_privapp_com.android.car.dialer"],
 

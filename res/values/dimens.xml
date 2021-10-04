@@ -67,6 +67,7 @@
     <dimen name="onhold_profile_avatar_margin">@dimen/car_keyline_1</dimen>
     <dimen name="onhold_profile_guideline">@dimen/list_item_guideline</dimen>
     <dimen name="onhold_profile_status_margin">12dp</dimen>
+    <dimen name="onhold_label_margin_end">@dimen/car_ui_padding_3</dimen>
     <dimen name="user_profile_list_item_height">150dp</dimen>
 
     <!-- Ringing call dimensions -->

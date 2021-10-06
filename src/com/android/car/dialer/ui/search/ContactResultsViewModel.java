@@ -16,31 +16,49 @@
 
 package com.android.car.dialer.ui.search;
 
-import android.app.Application;
+import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * {link AndroidViewModel} used for search functionality.
  */
+@HiltViewModel
 public class ContactResultsViewModel extends DialerListViewModel {
 
     private final ContactResultsLiveData mContactSearchResultsLiveData;
     private final MutableLiveData<String> mSearchQueryLiveData;
 
-    public ContactResultsViewModel(@NonNull Application application) {
-        super(application);
+    @Inject
+    public ContactResultsViewModel(@ApplicationContext Context context,
+            SharedPreferencesLiveData.Factory sharedPreferencesFactory,
+            ContactResultsLiveData.Factory contactResultsLiveDataFactory) {
+        super(context, sharedPreferencesFactory);
         mSearchQueryLiveData = new MutableLiveData<>();
-        mContactSearchResultsLiveData = new ContactResultsLiveData(application,
-                mSearchQueryLiveData, getSharedPreferencesLiveData());
+        mContactSearchResultsLiveData = createContactSearchResultsLiveData(
+                contactResultsLiveDataFactory);
+    }
+
+    /** Creates the {@link ContactResultsLiveData} representing the contact search results. */
+    public ContactResultsLiveData createContactSearchResultsLiveData(
+            ContactResultsLiveData.Factory factory) {
+        return factory.create(
+                getSearchQueryLiveData(),
+                getSharedPreferencesLiveData(),
+                /* showOnlyOneEntry = */true);
     }
 
     /**

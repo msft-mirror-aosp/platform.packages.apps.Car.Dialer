@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CallLog;
+import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 
@@ -72,14 +73,17 @@ public class CallHistoryLiveData extends AsyncQueryLiveData<List<PhoneCallLog>> 
 
         if (callType != CALL_TYPE_ALL) {
             // add a filter for call type
-            where.append("(" + CallLog.Calls.TYPE + " = ?)");
+            where.append(CallLog.Calls.TYPE + " = ?");
             selectionArgs.add(Integer.toString(callType));
             where.append(" AND ");
         }
-        where.append("(" + CallLog.Calls.PHONE_ACCOUNT_ID + " = ?)");
-        selectionArgs.add(accountName);
 
-        String selection = where.length() > 0 ? where.toString() : null;
+        if (TextUtils.isEmpty(accountName)) {
+            where.append(CallLog.Calls.PHONE_ACCOUNT_ID + " IS NULL");
+        } else {
+            where.append(CallLog.Calls.PHONE_ACCOUNT_ID + " = ?");
+            selectionArgs.add(accountName);
+        }
 
         Uri uri = CallLog.Calls.CONTENT_URI.buildUpon()
                 .appendQueryParameter(CallLog.Calls.LIMIT_PARAM_KEY,
@@ -88,7 +92,7 @@ public class CallHistoryLiveData extends AsyncQueryLiveData<List<PhoneCallLog>> 
         QueryParam queryParam = new QueryParam(
                 uri,
                 null,
-                selection,
+                where.toString(),
                 selectionArgs.toArray(EMPTY_STRING_ARRAY),
                 CallLog.Calls.DEFAULT_SORT_ORDER,
                 Manifest.permission.READ_CALL_LOG);

@@ -22,12 +22,15 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.R;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
-import com.android.car.dialer.livedata.HfpDeviceListLiveData;
 
-import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.android.scopes.ViewModelScoped;
 
 /**
  * LiveData for the toolbar title of the  {@link com.android.car.dialer.ui.TelecomActivity}. The
@@ -37,6 +40,7 @@ import java.util.List;
  *     <li> none: 1
  *     <li> device_name: 2
  */
+@ViewModelScoped
 class ToolbarTitleLiveData extends MediatorLiveData<String> {
 
     @IntDef({
@@ -50,17 +54,25 @@ class ToolbarTitleLiveData extends MediatorLiveData<String> {
         int DEVICE_NAME = 2;
     }
 
-    private final HfpDeviceListLiveData mHfpDeviceListLiveData;
-    private final LiveData<Integer> mToolbarTitleModeLiveData;
+    private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
+    private final MutableLiveData<Integer> mToolbarTitleModeLiveData;
     private final Context mContext;
 
-    ToolbarTitleLiveData(Context context, LiveData<Integer> toolbarTitleModeLiveData) {
+    @Inject
+    ToolbarTitleLiveData(
+            @ApplicationContext Context context,
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
         mContext = context;
-        mToolbarTitleModeLiveData = toolbarTitleModeLiveData;
-        mHfpDeviceListLiveData = UiBluetoothMonitor.get().getHfpDeviceListLiveData();
+        mToolbarTitleModeLiveData = new MutableLiveData<>();
+        mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
 
         addSource(mToolbarTitleModeLiveData, this::updateToolbarTitle);
-        addSource(mHfpDeviceListLiveData, this::updateDeviceName);
+        addSource(mCurrentHfpDeviceLiveData, this::updateDeviceName);
+    }
+
+    /** Exposes the {@link MutableLiveData} for the toolbar title mode. */
+    public MutableLiveData<Integer> getToolbarTitleModeLiveData() {
+        return mToolbarTitleModeLiveData;
     }
 
     private void updateToolbarTitle(int toolbarTitleMode) {
@@ -69,7 +81,7 @@ class ToolbarTitleLiveData extends MediatorLiveData<String> {
                 setValue(null);
                 return;
             case ToolbarTitleMode.DEVICE_NAME:
-                updateDeviceName(mHfpDeviceListLiveData.getValue());
+                updateDeviceName(mCurrentHfpDeviceLiveData.getValue());
                 return;
             case ToolbarTitleMode.APP_NAME:
             default:
@@ -78,19 +90,17 @@ class ToolbarTitleLiveData extends MediatorLiveData<String> {
         }
     }
 
-    private void updateDeviceName(List<BluetoothDevice> hfpDeviceList) {
+    private void updateDeviceName(BluetoothDevice currentHfpDevice) {
         Integer toolbarTitleMode = mToolbarTitleModeLiveData.getValue();
         if (toolbarTitleMode != null
                 && ToolbarTitleMode.DEVICE_NAME == toolbarTitleMode.intValue()) {
             // When there is no hfp device connected, use the app name as title.
-            if (hfpDeviceList == null || hfpDeviceList.isEmpty()) {
+            if (currentHfpDevice == null) {
                 setValue(mContext.getString(R.string.phone_app_name));
                 return;
             }
 
-            // TODO: handle multi-HFP cases. Right now return the first connected device in list.
-            BluetoothDevice bluetoothDevice = hfpDeviceList.get(0);
-            setValue(bluetoothDevice.getName());
+            setValue(currentHfpDevice.getName());
         }
     }
 }

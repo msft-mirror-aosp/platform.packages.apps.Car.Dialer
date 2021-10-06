@@ -17,6 +17,7 @@
 package com.android.car.dialer.ui.common;
 
 import android.Manifest;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -28,8 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
-import com.android.car.arch.common.LiveDataFunctions;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
 import com.android.car.telephony.common.Contact;
@@ -44,6 +43,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.inject.Named;
+
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * Represents a list of {@link Contact} based on the search query
  */
@@ -57,49 +63,40 @@ public class ContactResultsLiveData extends
     private final Context mContext;
     private final SearchQueryParamProvider mSearchQueryParamProvider;
     private final ObservableAsyncQuery mObservableAsyncQuery;
+    private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     private final LiveData<String> mSearchQueryLiveData;
-    private final LiveData<List<Contact>> mContactListLiveData;
     private final SharedPreferencesLiveData mSortOrderPreferenceLiveData;
     private String mSearchQuery;
     private boolean mShowOnlyOneEntry;
 
     /**
      * @param searchQueryLiveData represents a list of strings that are used to query the data
+     * @param contactListLiveData represents contact list for current connected hfp device
      * @param sortOrderPreferenceLiveData has the information on how to order the acquired contacts.
      * @param showOnlyOneEntry determines whether to show only entry per contact.
      */
-    public ContactResultsLiveData(Context context,
-            LiveData<String> searchQueryLiveData,
-            SharedPreferencesLiveData sortOrderPreferenceLiveData,
-            boolean showOnlyOneEntry) {
+    @AssistedInject
+    public ContactResultsLiveData(
+            @ApplicationContext Context context,
+            LiveData<List<Contact>> contactListLiveData,
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
+            @Assisted LiveData<String> searchQueryLiveData,
+            @Assisted SharedPreferencesLiveData sortOrderPreferenceLiveData,
+            @Assisted boolean showOnlyOneEntry) {
         mContext = context;
         mShowOnlyOneEntry = showOnlyOneEntry;
+        mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
         mSearchQueryParamProvider = new SearchQueryParamProvider(searchQueryLiveData);
         mObservableAsyncQuery = new ObservableAsyncQuery(context, mSearchQueryParamProvider,
                 this::onQueryFinished);
 
-        mContactListLiveData = LiveDataFunctions.switchMapNonNull(
-                UiBluetoothMonitor.get().getFirstHfpConnectedDevice(),
-                device -> InMemoryPhoneBook.get()
-                        .getContactsLiveDataByAccount(device.getAddress()));
-        addSource(mContactListLiveData, this::onContactsChange);
+        addSource(contactListLiveData, this::onContactsChange);
+
         mSearchQueryLiveData = searchQueryLiveData;
         addSource(mSearchQueryLiveData, this::onSearchQueryChanged);
 
         mSortOrderPreferenceLiveData = sortOrderPreferenceLiveData;
         addSource(mSortOrderPreferenceLiveData, this::onSortOrderChanged);
-    }
-
-    /**
-     * This constructor only allows one entry per contact.
-     *
-     * @param searchQueryLiveData represents a list of strings that are used to query the data
-     * @param sortOrderPreferenceLiveData has the information on how to order the acquired contacts.
-     */
-    public ContactResultsLiveData(Context context,
-            LiveData<String> searchQueryLiveData,
-            SharedPreferencesLiveData sortOrderPreferenceLiveData) {
-        this(context, searchQueryLiveData, sortOrderPreferenceLiveData, true);
     }
 
     private void onContactsChange(List<Contact> contactList) {
@@ -132,14 +129,17 @@ public class ContactResultsLiveData extends
         }
 
         List<ContactResultListItem> contactResults = new ArrayList<>();
+
+        BluetoothDevice currentHfpDevice = mCurrentHfpDeviceLiveData.getValue();
+        String accountName = currentHfpDevice == null ? null : currentHfpDevice.getAddress();
         while (cursor.moveToNext()) {
             int lookupKeyColIdx = cursor.getColumnIndex(
                     ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY);
             int numberIdx = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
             String lookupKey = cursor.getString(lookupKeyColIdx);
             String number = cursor.getString(numberIdx);
-            List<Contact> lookupResults = InMemoryPhoneBook.get().lookupContactByKey(lookupKey);
-            for (Contact contact : lookupResults) {
+            Contact contact = InMemoryPhoneBook.get().lookupContactByKey(lookupKey, accountName);
+            if (contact != null) {
                 contactResults.add(new ContactResultListItem(contact, number, mSearchQuery));
             }
         }
@@ -222,5 +222,17 @@ public class ContactResultsLiveData extends
         public String getSearchQuery() {
             return mSearchQuery;
         }
+    }
+
+    /**
+     * Factory to create {@link ContactResultsLiveData} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    public interface Factory {
+        /** Creates a {@link ContactResultsLiveData} instance. */
+        ContactResultsLiveData create(LiveData<String> searchQueryLiveData,
+                SharedPreferencesLiveData sortOrderPreferenceLiveData,
+                boolean showOnlyOneEntry);
     }
 }

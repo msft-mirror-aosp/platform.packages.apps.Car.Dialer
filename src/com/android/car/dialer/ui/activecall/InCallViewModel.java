@@ -16,45 +16,51 @@
 
 package com.android.car.dialer.ui.activecall;
 
-import android.app.Application;
-import android.content.Context;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
 
-import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 
 import com.android.car.arch.common.LiveDataFunctions;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
 import com.android.car.dialer.livedata.CallDetailLiveData;
 import com.android.car.dialer.livedata.CallStateLiveData;
+import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
-import com.android.car.telephony.common.InMemoryPhoneBook;
+import com.android.car.telephony.common.TelecomUtils;
 
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
 
 /**
  * View model for {@link InCallActivity} and {@link OngoingCallFragment}. UI that doesn't belong to
  * in call page should use a different ViewModel.
  */
-public class InCallViewModel extends AndroidViewModel {
+@HiltViewModel
+public class InCallViewModel extends ViewModel {
     private static final String TAG = "CD.InCallViewModel";
 
     private final LocalCallHandler mLocalCallHandler;
+    private final AudioRouteLiveData.Factory mAudioRouteLiveDataFactory;
+    private final SupportedAudioRoutesLiveData.Factory mSupportedAudioRoutesLiveDataFactory;
+    private final LiveData<List<Contact>> mContactListLiveData;
 
     private final MutableLiveData<Boolean> mHasOngoingCallChangedLiveData;
     private final MediatorLiveData<List<Call>> mOngoingCallListLiveData;
@@ -68,15 +74,16 @@ public class InCallViewModel extends AndroidViewModel {
     private final LiveData<Call> mSecondaryCallLiveData;
     private final CallDetailLiveData mSecondaryCallDetailLiveData;
     private final LiveData<Pair<Call, Call>> mOngoingCallPairLiveData;
-    private final LiveData<Integer> mAudioRouteLiveData;
     private final MutableLiveData<Boolean> mDialpadIsOpen;
     private final ShowOnholdCallLiveData mShowOnholdCall;
     private LiveData<Long> mCallConnectTimeLiveData;
     private LiveData<Long> mSecondaryCallConnectTimeLiveData;
     private LiveData<Pair<Integer, Long>> mCallStateAndConnectTimeLiveData;
-    private LiveData<List<Contact>> mContactListLiveData;
 
-    private final Context mContext;
+    private HashMap<String, TelecomUtils.PhoneNumberInfo> mContactInfoMap = new HashMap<>();
+
+    private final AudioRouteLiveData mAudioRouteLiveData;
+    private final SupportedAudioRoutesLiveData mSupportedAudioRoutesLiveData;
 
     // Reuse the same instance so the callback won't be registered more than once.
     private final Call.Callback mCallStateChangedCallback = new Call.Callback() {
@@ -99,11 +106,17 @@ public class InCallViewModel extends AndroidViewModel {
         }
     };
 
-    public InCallViewModel(@NonNull Application application) {
-        super(application);
-        mContext = application.getApplicationContext();
+    @Inject
+    public InCallViewModel(
+            LocalCallHandler localCallHandler,
+            AudioRouteLiveData.Factory audioRouteLiveDataFactory,
+            SupportedAudioRoutesLiveData.Factory supportedAudioRouteLiveDataFactory,
+            LiveData<List<Contact>> contactListLiveData) {
+        mLocalCallHandler = localCallHandler;
+        mAudioRouteLiveDataFactory = audioRouteLiveDataFactory;
+        mSupportedAudioRoutesLiveDataFactory = supportedAudioRouteLiveDataFactory;
+        mContactListLiveData = contactListLiveData;
 
-        mLocalCallHandler = new LocalCallHandler(mContext);
         mCallComparator = new CallComparator();
 
         mConferenceCallListLiveData = new MutableLiveData<>();
@@ -129,6 +142,9 @@ public class InCallViewModel extends AndroidViewModel {
             mCallDetailLiveData.setTelecomCall(call);
             return call;
         });
+        mAudioRouteLiveData = mAudioRouteLiveDataFactory.create(mCallDetailLiveData);
+        mSupportedAudioRoutesLiveData = mSupportedAudioRoutesLiveDataFactory.create(
+                mCallDetailLiveData);
 
         mCallStateLiveData = Transformations.switchMap(mPrimaryCallLiveData,
                 input -> input != null ? new CallStateLiveData(input) : null);
@@ -159,18 +175,11 @@ public class InCallViewModel extends AndroidViewModel {
         mOngoingCallPairLiveData = LiveDataFunctions.pair(mPrimaryCallLiveData,
                 mSecondaryCallLiveData);
 
-        mAudioRouteLiveData = new AudioRouteLiveData(mContext);
-
         mDialpadIsOpen = new MutableLiveData<>();
         // Set initial value to avoid NPE
         mDialpadIsOpen.setValue(false);
 
         mShowOnholdCall = new ShowOnholdCallLiveData(mSecondaryCallLiveData, mDialpadIsOpen);
-
-        mContactListLiveData = LiveDataFunctions.switchMapNonNull(
-                UiBluetoothMonitor.get().getFirstHfpConnectedDevice(),
-                device -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(
-                        device.getAddress()));
     }
 
     /** Merge primary and secondary calls into a conference */
@@ -272,11 +281,30 @@ public class InCallViewModel extends AndroidViewModel {
         return mAudioRouteLiveData;
     }
 
+    public LiveData<List<Integer>> getSupportedAudioRoutes() {
+        return mSupportedAudioRoutesLiveData;
+    }
+
     /**
      * Returns contact list.
      */
     public LiveData<List<Contact>> getContactListLiveData() {
         return mContactListLiveData;
+    }
+
+    /**
+     * Returns the cached phone number info.
+     */
+    public TelecomUtils.PhoneNumberInfo getPhoneNumberInfo(String number) {
+        return mContactInfoMap.get(number);
+    }
+
+    /**
+     * Puts an phone number info entry into the cache.
+     */
+    public TelecomUtils.PhoneNumberInfo putPhoneNumberInfo(
+            String number, TelecomUtils.PhoneNumberInfo info) {
+        return mContactInfoMap.put(number, info);
     }
 
     /**
@@ -313,8 +341,6 @@ public class InCallViewModel extends AndroidViewModel {
             return;
         }
 
-        activeCallList.sort(mCallComparator);
-
         List<Call> conferenceList = new ArrayList<>();
         List<Call> ongoingCallList = new ArrayList<>();
         for (Call call : activeCallList) {
@@ -325,6 +351,7 @@ public class InCallViewModel extends AndroidViewModel {
                 ongoingCallList.add(call);
             }
         }
+        ongoingCallList.sort(mCallComparator);
 
         L.d(TAG, "size:" + activeCallList.size() + " activeList" + activeCallList);
         L.d(TAG, "conf:%s" + conferenceList, conferenceList.size());

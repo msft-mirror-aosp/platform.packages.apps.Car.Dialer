@@ -29,11 +29,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.dialer.R;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A fullscreen {@link DialogFragment} that hosts the {@link NoHfpFragment} as an overlay of dialer
  * activities.
  */
-public class OverlayFragment extends DialogFragment {
+@AndroidEntryPoint(DialogFragment.class)
+public class OverlayFragment extends Hilt_OverlayFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

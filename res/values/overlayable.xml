@@ -324,6 +324,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="user_profile_avatar"/>
       <item type="id" name="user_profile_call_state"/>
       <item type="id" name="user_profile_container"/>
+      <item type="id" name="user_profile_phone_label"/>
       <item type="id" name="user_profile_phone_number"/>
       <item type="id" name="user_profile_title"/>
       <item type="id" name="voice_channel_button"/>

@@ -93,6 +93,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="contact_details_avatar_margin_top"/>
       <item type="dimen" name="contact_details_avatar_size"/>
       <item type="dimen" name="contact_details_item_height"/>
+      <item type="dimen" name="contact_details_list_item_guideline_start"/>
+      <item type="dimen" name="contact_details_list_item_padding"/>
       <item type="dimen" name="contact_details_number_padding_end"/>
       <item type="dimen" name="contact_details_number_padding_start"/>
       <item type="dimen" name="contact_details_text_button_guideline"/>
@@ -214,6 +216,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_pause"/>
       <item type="drawable" name="ic_pause_activatable"/>
       <item type="drawable" name="ic_phone"/>
+      <item type="drawable" name="ic_place"/>
       <item type="drawable" name="ic_smartphone"/>
       <item type="drawable" name="ic_smartphone_activatable"/>
       <item type="drawable" name="ic_sms"/>

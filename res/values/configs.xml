@@ -80,4 +80,7 @@
 
     <!-- Maximum number of phone call log loaded to show -->
     <integer name="config_phone_call_log_limit">100</integer>
+
+    <!-- A config to determine if the dialpad should always been shown in ongoing call screen.   -->
+    <bool name="config_always_show_incall_dialpad">false</bool>
 </resources>

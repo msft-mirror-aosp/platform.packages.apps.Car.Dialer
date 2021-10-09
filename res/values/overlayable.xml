@@ -29,6 +29,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="progressViewLayout"/>
       <item type="attr" name="tabBarSize"/>
       <item type="attr" name="toolbarTitleMode"/>
+      <item type="bool" name="config_always_show_incall_dialpad"/>
       <item type="bool" name="config_enable_dial_motion"/>
       <item type="bool" name="config_should_show_active_call_setting"/>
       <item type="bool" name="config_should_show_incoming_call_hun_setting"/>

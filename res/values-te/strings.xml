@@ -49,8 +49,8 @@
     <string name="favorites_empty" msgid="5794510741132758130">"ఇష్టమైనవి లేవు"</string>
     <string name="no_favorites_added" msgid="2359050103464783907">"మీరు ఇష్టమైనవి ఏవీ ఇంకా జోడించలేదు"</string>
     <string name="add_favorite_button" msgid="7914955940249767808">"ఇష్టమైన వారిని జోడించండి"</string>
-    <string name="search_title" msgid="5412680850141871664">"పరిచయాలను వెతకండి"</string>
-    <string name="search_hint" msgid="3099066132607042439">"పరిచయాలను వెతకండి"</string>
+    <string name="search_title" msgid="5412680850141871664">"కాంటాక్ట్‌లలో సెర్చ్ చేయండి"</string>
+    <string name="search_hint" msgid="3099066132607042439">"కాంటాక్ట్‌లలో సెర్చ్ చేయండి"</string>
     <string name="type_multiple" msgid="3402949522797441236">"అనేకం"</string>
     <string name="select_number_dialog_title" msgid="5770700626013782205">"ఒక ఫోన్ నంబర్‌ను ఎంచుకోండి"</string>
     <string name="select_number_dialog_just_once_button" msgid="1814381354393374660">"కేవలం ఒకసారి"</string>

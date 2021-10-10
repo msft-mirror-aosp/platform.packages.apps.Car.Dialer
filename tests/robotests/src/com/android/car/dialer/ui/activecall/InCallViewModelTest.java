@@ -19,27 +19,28 @@ package com.android.car.dialer.ui.activecall;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
 import android.telecom.Call;
-import android.telecom.CallAudioState;
 import android.telecom.DisconnectCause;
 import android.telecom.GatewayInfo;
 
 import androidx.core.util.Pair;
+import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.TestDialerApplication;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.livedata.AudioRouteLiveData;
+import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
 import com.android.car.dialer.telecom.InCallServiceImpl;
-import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.common.CallDetail;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,8 +68,6 @@ public class InCallViewModelTest {
     private InCallServiceImpl mInCallService;
 
     @Mock
-    private UiCallManager mMockUiCallManager;
-    @Mock
     private Call mMockActiveCall;
     @Mock
     private Call mMockDialingCall;
@@ -80,6 +79,10 @@ public class InCallViewModelTest {
     private Call.Details mMockDetails;
     @Captor
     private ArgumentCaptor<Call.Callback> mCallbackCaptor;
+    @Mock
+    AudioRouteLiveData.Factory mMockAudioRouteLiveDataFactory;
+    @Mock
+    SupportedAudioRoutesLiveData.Factory mMockSupportedAudioRoutesLiveDataFactory;
 
     @Before
     public void setup() {
@@ -87,7 +90,6 @@ public class InCallViewModelTest {
         Context context = RuntimeEnvironment.application;
 
         ((TestDialerApplication) context).setupInCallServiceImpl(mInCallService);
-        UiBluetoothMonitor.init(context);
 
         when(mMockActiveCall.getState()).thenReturn(Call.STATE_ACTIVE);
         when(mMockDialingCall.getState()).thenReturn(Call.STATE_DIALING);
@@ -111,10 +113,14 @@ public class InCallViewModelTest {
         mListForMockCalls.add(mMockHoldingCall);
         mListForMockCalls.add(mMockRingingCall);
         when(mInCallService.getCalls()).thenReturn(mListForMockCalls);
-        UiCallManager.set(mMockUiCallManager);
-        when(mMockUiCallManager.getAudioRoute()).thenReturn(CallAudioState.ROUTE_BLUETOOTH);
+        when(mMockAudioRouteLiveDataFactory.create(any())).thenReturn(
+                mock(AudioRouteLiveData.class));
+        when(mMockSupportedAudioRoutesLiveDataFactory.create(any())).thenReturn(mock(
+                SupportedAudioRoutesLiveData.class));
 
-        mInCallViewModel = new InCallViewModel((Application) context);
+        mInCallViewModel = new InCallViewModel(new LocalCallHandler(context),
+                mMockAudioRouteLiveDataFactory,
+                mMockSupportedAudioRoutesLiveDataFactory, new MutableLiveData<>());
         mInCallViewModel.getIncomingCall().observeForever(s -> { });
         mInCallViewModel.getOngoingCallList().observeForever(s -> { });
         mInCallViewModel.getPrimaryCall().observeForever(s -> { });
@@ -122,12 +128,6 @@ public class InCallViewModelTest {
         mInCallViewModel.getPrimaryCallDetail().observeForever(s -> { });
         mInCallViewModel.getCallStateAndConnectTime().observeForever(s -> { });
         mInCallViewModel.getAudioRoute().observeForever(s -> { });
-    }
-
-    @After
-    public void tearDown() {
-        UiBluetoothMonitor.get().tearDown();
-        UiCallManager.set(null);
     }
 
     @Test
@@ -183,11 +183,5 @@ public class InCallViewModelTest {
         Pair<Integer, Long> pair = mInCallViewModel.getCallStateAndConnectTime().getValue();
         assertThat(pair.first).isEqualTo(Call.STATE_DIALING);
         assertThat(pair.second).isEqualTo(CONNECT_TIME_MILLIS);
-    }
-
-    @Test
-    public void testGetAudioRoute() {
-        assertThat(mInCallViewModel.getAudioRoute().getValue())
-                .isEqualTo(CallAudioState.ROUTE_BLUETOOTH);
     }
 }

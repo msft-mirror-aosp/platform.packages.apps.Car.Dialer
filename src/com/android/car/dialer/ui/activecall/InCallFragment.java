@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.BackgroundImageView;
 import com.android.car.apps.common.LetterTileDrawable;
@@ -49,9 +49,14 @@ import com.bumptech.glide.request.target.Target;
 
 import java.util.concurrent.CompletableFuture;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** A fragment that displays information about a call with actions. */
-public abstract class InCallFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public abstract class InCallFragment extends Hilt_InCallFragment {
     private static final String TAG = "CD.InCallFragment";
+
+    private InCallViewModel mInCallViewModel;
 
     private View mUserProfileContainerView;
     private TextView mPhoneNumberView;
@@ -106,64 +111,74 @@ public abstract class InCallFragment extends Fragment {
         mPhoneNumberView.setVisibility(View.GONE);
         mAvatarView.setImageDrawable(mDefaultAvatar);
 
-        InCallViewModel inCallViewModel = ViewModelProviders.of(this).get(
-                InCallViewModel.class);
-        inCallViewModel.getContactListLiveData().observe(this, contacts -> updateProfile(number));
+        mInCallViewModel = new ViewModelProvider(this).get(InCallViewModel.class);
+        mInCallViewModel.getContactListLiveData().observe(this, contacts -> updateProfile(number));
+    }
+
+    private void updateProfileInfo(String number, TelecomUtils.PhoneNumberInfo info) {
+        String nameViewText = info.getDisplayName();
+        mNameView.setText(nameViewText);
+
+        String phoneNumberLabel = info.getTypeLabel();
+        if (!phoneNumberLabel.isEmpty()) {
+            phoneNumberLabel += " ";
+        }
+
+        String bidiWrappedLabel = phoneNumberLabel + TelecomUtils.getBidiWrappedNumber(
+                TelecomUtils.getFormattedNumber(getContext(), number));
+        phoneNumberLabel += TelecomUtils.getFormattedNumber(getContext(), number);
+
+        if (!TextUtils.isEmpty(phoneNumberLabel)
+                && !phoneNumberLabel.equals(info.getDisplayName())) {
+            mPhoneNumberView.setText(bidiWrappedLabel);
+            mPhoneNumberView.setVisibility(View.VISIBLE);
+        } else {
+            mPhoneNumberView.setVisibility(View.GONE);
+        }
+
+        LetterTileDrawable letterTile = TelecomUtils.createLetterTile(
+                getContext(), info.getInitials(), info.getDisplayName());
+
+        Glide.with(this)
+                .load(info.getAvatarUri())
+                .apply(new RequestOptions().centerCrop().error(letterTile))
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                            Target<Drawable> target, boolean isFirstResource) {
+                        mBackgroundImage.setAlpha(getResources().getFloat(
+                                R.dimen.config_background_image_error_alpha));
+                        mBackgroundImage.setBackgroundColor(letterTile.getColor());
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model,
+                            Target<Drawable> target, DataSource dataSource,
+                            boolean isFirstResource) {
+                        mBackgroundImage.setAlpha(getResources().getFloat(
+                                R.dimen.config_background_image_alpha));
+                        mBackgroundImage.setBackgroundDrawable(resource, false);
+                        return false;
+                    }
+                }).into(mAvatarView);
     }
 
     private void updateProfile(String number) {
+        TelecomUtils.PhoneNumberInfo phoneNumberInfo = mInCallViewModel.getPhoneNumberInfo(number);
+
+        if (phoneNumberInfo != null) {
+            updateProfileInfo(number, mInCallViewModel.getPhoneNumberInfo(number));
+            return;
+        }
+
         mPhoneNumberInfoFuture = TelecomUtils.getPhoneNumberInfo(getContext(), number)
             .thenAcceptAsync((info) -> {
                 if (getContext() == null) {
                     return;
                 }
-
-                String nameViewText = info.getDisplayName();
-                mNameView.setText(nameViewText);
-
-                String phoneNumberLabel = info.getTypeLabel();
-                if (!phoneNumberLabel.isEmpty()) {
-                    phoneNumberLabel += " ";
-                }
-
-                String bidiWrappedLabel = phoneNumberLabel + TelecomUtils.getBidiWrappedNumber(
-                        TelecomUtils.getFormattedNumber(getContext(), number));
-                phoneNumberLabel += TelecomUtils.getFormattedNumber(getContext(), number);
-
-                if (!TextUtils.isEmpty(phoneNumberLabel)
-                        && !phoneNumberLabel.equals(info.getDisplayName())) {
-                    mPhoneNumberView.setText(bidiWrappedLabel);
-                    mPhoneNumberView.setVisibility(View.VISIBLE);
-                } else {
-                    mPhoneNumberView.setVisibility(View.GONE);
-                }
-
-                LetterTileDrawable letterTile = TelecomUtils.createLetterTile(
-                        getContext(), info.getInitials(), info.getDisplayName());
-
-                Glide.with(this)
-                        .load(info.getAvatarUri())
-                        .apply(new RequestOptions().centerCrop().error(letterTile))
-                        .listener(new RequestListener<Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                    Target<Drawable> target, boolean isFirstResource) {
-                                mBackgroundImage.setAlpha(getResources().getFloat(
-                                        R.dimen.config_background_image_error_alpha));
-                                mBackgroundImage.setBackgroundColor(letterTile.getColor());
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model,
-                                    Target<Drawable> target, DataSource dataSource,
-                                    boolean isFirstResource) {
-                                mBackgroundImage.setAlpha(getResources().getFloat(
-                                        R.dimen.config_background_image_alpha));
-                                mBackgroundImage.setBackgroundDrawable(resource, false);
-                                return false;
-                            }
-                        }).into(mAvatarView);
+                mInCallViewModel.putPhoneNumberInfo(number, info);
+                updateProfileInfo(number, info);
             }, getContext().getMainExecutor());
     }
 

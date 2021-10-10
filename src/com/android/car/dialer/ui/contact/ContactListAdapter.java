@@ -35,28 +35,30 @@ import com.android.car.ui.recyclerview.ContentLimitingAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.qualifiers.ActivityContext;
+
 /**
  * Adapter for contact list.
  */
-public class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
+class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHolder> {
     private static final String TAG = "CD.ContactListAdapter";
 
-    interface OnShowContactDetailListener {
-        void onShowContactDetail(Contact contact);
-    }
-
     private final Context mContext;
+    private final ContactListViewHolder.Factory mViewHolderFactory;
     private final List<Contact> mContactList = new ArrayList<>();
-    private final OnShowContactDetailListener mOnShowContactDetailListener;
 
     private Integer mSortMethod;
     private LinearLayoutManager mLinearLayoutManager;
     private int mLimitingAnchorIndex = 0;
 
-    public ContactListAdapter(Context context,
-            OnShowContactDetailListener onShowContactDetailListener) {
+    @Inject
+    ContactListAdapter(
+            @ActivityContext Context context,
+            ContactListViewHolder.Factory viewHolderFactory) {
         mContext = context;
-        mOnShowContactDetailListener = onShowContactDetailListener;
+        mViewHolderFactory = viewHolderFactory;
     }
 
     /**
@@ -84,7 +86,7 @@ public class ContactListAdapter extends ContentLimitingAdapter<ContactListViewHo
     public ContactListViewHolder onCreateViewHolderImpl(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.contact_list_item, parent,
                 false);
-        return new ContactListViewHolder(itemView, mOnShowContactDetailListener);
+        return  mViewHolderFactory.create(itemView);
     }
 
     @Override

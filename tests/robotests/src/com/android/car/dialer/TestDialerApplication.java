@@ -30,11 +30,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.telecom.CallAudioState;
 
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
-import com.android.car.dialer.notification.InCallNotificationController;
-import com.android.car.dialer.notification.MissedCallNotificationController;
 import com.android.car.dialer.telecom.InCallServiceImpl;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testutils.ShadowCar;
 
 /** Robolectric runtime application for Dialer. Must be Test + application class name. */
@@ -52,9 +48,6 @@ public class TestDialerApplication extends Application {
         super.onCreate();
         shadowOf(this).setSystemService(
                 Context.NOTIFICATION_SERVICE, mock(NotificationManager.class));
-        UiBluetoothMonitor.init(this);
-        InCallNotificationController.init(this);
-        MissedCallNotificationController.init(this);
 
         mLocalBinder = mock(InCallServiceImpl.LocalBinder.class);
         shadowOf(this).setComponentNameAndServiceForBindService(
@@ -72,10 +65,6 @@ public class TestDialerApplication extends Application {
         ShadowCar.setCar(mMockCar);
     }
 
-    public void initUiCallManager() {
-        UiCallManager.init(this);
-    }
-
     public void setupInCallServiceImpl() {
         InCallServiceImpl inCallService = mock(InCallServiceImpl.class);
         CallAudioState callAudioState = mock(CallAudioState.class);
@@ -91,8 +80,6 @@ public class TestDialerApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
-        InCallNotificationController.tearDown();
-        MissedCallNotificationController.get().tearDown();
         ShadowCar.setCar(null);
     }
 

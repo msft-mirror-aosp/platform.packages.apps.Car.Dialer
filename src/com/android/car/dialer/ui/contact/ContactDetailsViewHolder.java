@@ -51,11 +51,17 @@ import com.bumptech.glide.request.target.Target;
 
 import java.util.List;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+
 /**
  * ViewHolder for {@link ContactDetailsFragment}.
  */
 class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = "CD.ContactDetailsVH";
+
+    private final UiCallManager mUiCallManager;
 
     // Applies to all
     @NonNull
@@ -86,10 +92,13 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
     @NonNull
     private final ContactDetailsAdapter.PhoneNumberPresenter mPhoneNumberPresenter;
 
+    @AssistedInject
     ContactDetailsViewHolder(
-            View v,
-            @NonNull ContactDetailsAdapter.PhoneNumberPresenter phoneNumberPresenter) {
+            @Assisted @NonNull View v,
+            @Assisted @NonNull ContactDetailsAdapter.PhoneNumberPresenter phoneNumberPresenter,
+            UiCallManager uiCallManager) {
         super(v);
+        mUiCallManager = uiCallManager;
         mCallActionView = v.findViewById(R.id.call_action_id);
         mFavoriteActionView = v.findViewById(R.id.contact_details_favorite_button);
         mAddressView = v.findViewById(R.id.address_button);
@@ -173,7 +182,7 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
         }
 
         mCallActionView.setOnClickListener(
-                v -> UiCallManager.get().placeCall(phoneNumber.getRawNumber()));
+                v -> mUiCallManager.placeCall(phoneNumber.getRawNumber()));
 
         if (phoneNumber.isFavorite() || !contact.isStarred()) {
             // If the phone number is marked as favorite locally, enable the action button to
@@ -223,5 +232,15 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
         } catch (ActivityNotFoundException e) {
             L.w(TAG, "Map is not available.");
         }
+    }
+
+    /**
+     * Factory to create {@link ContactDetailsViewHolder} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    interface Factory {
+        ContactDetailsViewHolder create(@NonNull View v,
+                @NonNull ContactDetailsAdapter.PhoneNumberPresenter phoneNumberPresenter);
     }
 }

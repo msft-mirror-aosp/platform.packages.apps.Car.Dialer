@@ -20,22 +20,28 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.dialer.R;
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
-import com.android.car.dialer.livedata.BluetoothPairListLiveData;
-import com.android.car.dialer.livedata.BluetoothStateLiveData;
-import com.android.car.dialer.livedata.HfpDeviceListLiveData;
+import com.android.car.dialer.bluetooth.BluetoothState;
 import com.android.car.dialer.log.L;
 
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.android.scopes.ViewModelScoped;
+
 /**
  * A {@link androidx.lifecycle.LiveData<String>} that has a string describing the current bluetooth
  * error. If there is no error, its value will be {@link #NO_BT_ERROR}.
  */
+@ViewModelScoped
 public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
     private static final String TAG = "CD.BluetoothErrorStringLiveData";
 
@@ -43,21 +49,26 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
 
     private Context mContext;
 
-    private HfpDeviceListLiveData mHfpDeviceListLiveData;
-    private BluetoothPairListLiveData mPairListLiveData;
-    private BluetoothStateLiveData mBluetoothStateLiveData;
+    private LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
+    private LiveData<Set<BluetoothDevice>> mPairListLiveData;
+    private LiveData<Integer> mBluetoothStateLiveData;
 
-    BluetoothErrorStringLiveData(Context context) {
-        mContext = context.getApplicationContext();
+    @Inject
+    BluetoothErrorStringLiveData(
+            @ApplicationContext Context context,
+            @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
+            @Named("Bluetooth") LiveData<Set<BluetoothDevice>> pairListLiveData,
+            @Named("Bluetooth") LiveData<Integer> bluetoothStateLiveData,
+            @Nullable BluetoothAdapter bluetoothAdapter) {
+        mContext = context;
 
-        if (BluetoothAdapter.getDefaultAdapter() == null) {
+        if (bluetoothAdapter == null) {
             setValue(mContext.getString(R.string.bluetooth_unavailable));
         } else {
             setValue(NO_BT_ERROR);
-            UiBluetoothMonitor uiBluetoothMonitor = UiBluetoothMonitor.get();
-            mHfpDeviceListLiveData = uiBluetoothMonitor.getHfpDeviceListLiveData();
-            mPairListLiveData = uiBluetoothMonitor.getPairListLiveData();
-            mBluetoothStateLiveData = uiBluetoothMonitor.getBluetoothStateLiveData();
+            mHfpDeviceListLiveData = hfpDeviceListLiveData;
+            mPairListLiveData = pairListLiveData;
+            mBluetoothStateLiveData = bluetoothStateLiveData;
 
             addSource(mHfpDeviceListLiveData, this::onHfpDevicesChanged);
             addSource(mPairListLiveData, this::onPairListChanged);
@@ -108,8 +119,7 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
 
     private boolean isBluetoothEnabled() {
         Integer bluetoothState = mBluetoothStateLiveData.getValue();
-        return bluetoothState == null
-                || bluetoothState != BluetoothStateLiveData.BluetoothState.DISABLED;
+        return bluetoothState == null || bluetoothState != BluetoothState.DISABLED;
     }
 
     private boolean hasPairedDevices() {

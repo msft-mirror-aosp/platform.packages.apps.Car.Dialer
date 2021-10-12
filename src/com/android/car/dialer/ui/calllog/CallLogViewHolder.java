@@ -27,6 +27,7 @@ import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.common.entity.UiCallLog;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.dialer.widget.CallTypeIconsView;
@@ -34,13 +35,18 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneCallLog;
 import com.android.car.telephony.common.TelecomUtils;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+
 /**
  * {@link RecyclerView.ViewHolder} for call history list item, responsible for presenting and
  * resetting the UI on recycle.
  */
-public class CallLogViewHolder extends RecyclerView.ViewHolder {
+class CallLogViewHolder extends RecyclerView.ViewHolder {
 
-    private CallLogAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
+    private final UiCallManager mUiCallManager;
+    private OnItemClickedListener<Contact> mOnShowContactDetailListener;
     private View mPlaceCallView;
     private ImageView mAvatarView;
     private TextView mTitleView;
@@ -50,9 +56,13 @@ public class CallLogViewHolder extends RecyclerView.ViewHolder {
     private View mActionButton;
     private View mDivider;
 
-    public CallLogViewHolder(@NonNull View itemView,
-            CallLogAdapter.OnShowContactDetailListener onShowContactDetailListener) {
+    @AssistedInject
+    CallLogViewHolder(
+            @Assisted @NonNull View itemView,
+            OnItemClickedListener<Contact> onShowContactDetailListener,
+            UiCallManager uiCallManager) {
         super(itemView);
+        mUiCallManager = uiCallManager;
         mOnShowContactDetailListener = onShowContactDetailListener;
         mPlaceCallView = itemView.findViewById(R.id.call_action_id);
         mAvatarView = itemView.findViewById(R.id.icon);
@@ -99,7 +109,7 @@ public class CallLogViewHolder extends RecyclerView.ViewHolder {
         }
 
         ViewUtils.setOnClickListener(mPlaceCallView,
-                view -> UiCallManager.get().placeCall(uiCallLog.getNumber()));
+                view -> mUiCallManager.placeCall(uiCallLog.getNumber()));
 
         setUpActionButton(contact);
     }
@@ -126,9 +136,18 @@ public class CallLogViewHolder extends RecyclerView.ViewHolder {
 
         if (contact != null) {
             ViewUtils.setOnClickListener(mActionButton,
-                    view -> mOnShowContactDetailListener.onShowContactDetail(contact));
+                    view -> mOnShowContactDetailListener.onItemClicked(contact));
         } else {
             ViewUtils.setOnClickListener(mActionButton, null);
         }
+    }
+
+    /**
+     * Factory to create {@link CallLogViewHolder} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    interface Factory {
+        CallLogViewHolder create(@NonNull View itemView);
     }
 }

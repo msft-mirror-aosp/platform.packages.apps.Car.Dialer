@@ -16,37 +16,43 @@
 
 package com.android.car.dialer.ui.settings;
 
-import android.app.Application;
 import android.bluetooth.BluetoothDevice;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 
-import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
+import com.android.car.dialer.Constants;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
 
 /**
  * ViewModel for {@link DialerSettingsFragment}
  */
-public class DialerSettingsViewModel extends AndroidViewModel {
-    private static final String EMPTY_STRING = "";
-    private final LiveData<BluetoothDevice> mFirstHfpDeviceLiveData;
+@HiltViewModel
+public class DialerSettingsViewModel extends ViewModel {
+
+    private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
-    public DialerSettingsViewModel(@NonNull Application application) {
-        super(application);
-        mFirstHfpDeviceLiveData = UiBluetoothMonitor.get().getFirstHfpConnectedDevice();
-        mHasHfpDeviceConnectedLiveData = UiBluetoothMonitor.get().hasHfpDeviceConnected();
+    @Inject
+    public DialerSettingsViewModel(
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
+            @Named("Hfp") LiveData<Boolean> hasHfpDeviceConnectedLiveData) {
+        mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
+        mHasHfpDeviceConnectedLiveData = hasHfpDeviceConnectedLiveData;
     }
 
     /**
-     * Returns the LiveData for the first HFP device's name.  Returns an empty string if there's no
+     * Returns the LiveData for the current HFP device's name. Returns an empty string if there's no
      * device connected.
      */
-    public LiveData<String> getFirstHfpConnectedDeviceName() {
-        return Transformations.map(mFirstHfpDeviceLiveData, (device) ->
-                device != null ? device.getName() : EMPTY_STRING);
+    public LiveData<String> getCurrentHfpConnectedDeviceName() {
+        return Transformations.map(mCurrentHfpDeviceLiveData, (device) ->
+                device != null ? device.getName() : Constants.EMPTY_STRING);
     }
 
     /** Returns a {@link LiveData} which monitors if there are any connected HFP devices. */

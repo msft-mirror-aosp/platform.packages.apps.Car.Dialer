@@ -24,7 +24,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,10 +36,16 @@ import com.android.car.dialer.ui.common.DialerUtils;
 import com.android.car.telephony.common.Contact;
 import com.android.car.ui.recyclerview.DelegatingContentLimitingAdapter;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Contains a list of favorite contacts.
  */
-public class FavoriteFragment extends DialerListBaseFragment {
+@AndroidEntryPoint(DialerListBaseFragment.class)
+public class FavoriteFragment extends Hilt_FavoriteFragment {
+    @Inject UiCallManager mUiCallManager;
 
     private DelegatingContentLimitingAdapter<FavoriteContactViewHolder>
             mContentLimitingAdapter;
@@ -60,7 +66,7 @@ public class FavoriteFragment extends DialerListBaseFragment {
         FavoriteAdapter favoriteAdapter = new FavoriteAdapter();
         favoriteAdapter.setOnAddFavoriteClickedListener(this::onAddFavoriteClicked);
 
-        FavoriteViewModel favoriteViewModel = ViewModelProviders.of(getActivity()).get(
+        FavoriteViewModel favoriteViewModel = new ViewModelProvider(getActivity()).get(
                 FavoriteViewModel.class);
         favoriteAdapter.setOnListItemClickedListener(this::onItemClicked);
         favoriteViewModel.getFavoriteContacts().observe(this, contacts -> {
@@ -99,7 +105,7 @@ public class FavoriteFragment extends DialerListBaseFragment {
 
     private void onItemClicked(Contact contact) {
         DialerUtils.promptForPrimaryNumber(getContext(), contact, (phoneNumber, always) ->
-                UiCallManager.get().placeCall(phoneNumber.getRawNumber()));
+                mUiCallManager.placeCall(phoneNumber.getRawNumber()));
     }
 
     private void onAddFavoriteClicked() {

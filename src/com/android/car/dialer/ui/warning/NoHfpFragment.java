@@ -37,14 +37,20 @@ import com.android.car.dialer.R;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.dialpad.DialpadFragment;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A fragment that informs the user that there is no bluetooth device attached that can make
  * phone calls.
  */
-public class NoHfpFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public class NoHfpFragment extends Hilt_NoHfpFragment {
     private static final String Bluetooth_Setting_ACTION = "android.settings.BLUETOOTH_SETTINGS";
     private static final String Bluetooth_Setting_CATEGORY = "android.intent.category.DEFAULT";
 
+    @Inject UiCallManager mUiCallManager;
     private TextView mErrorMessageView;
 
     private Car mCar;
@@ -82,7 +88,7 @@ public class NoHfpFragment extends Fragment {
         });
 
         View emergencyButton = view.findViewById(R.id.emergency_call_button);
-        ViewUtils.setVisible(emergencyButton, UiCallManager.get().isEmergencyCallSupported());
+        ViewUtils.setVisible(emergencyButton, mUiCallManager.isEmergencyCallSupported());
         emergencyButton.setOnClickListener(v -> getParentFragmentManager()
                 .beginTransaction()
                 .replace(android.R.id.content, DialpadFragment.newEmergencyDialpad())

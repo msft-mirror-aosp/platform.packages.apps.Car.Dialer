@@ -26,16 +26,22 @@ import android.text.TextUtils;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.activecall.InCallActivity;
+import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.List;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * A {@link Service} that is used to handle actions from notifications to:
  * <ul><li>answer or inject an incoming call.
  * <li>call back or message to a missed call.
  */
-public class NotificationService extends Service {
+@AndroidEntryPoint(Service.class)
+public class NotificationService extends Hilt_NotificationService {
     static final String ACTION_ANSWER_CALL = "CD.ACTION_ANSWER_CALL";
     static final String ACTION_DECLINE_CALL = "CD.ACTION_DECLINE_CALL";
     static final String ACTION_SHOW_FULLSCREEN_UI = "CD.ACTION_SHOW_FULLSCREEN_UI";
@@ -45,6 +51,10 @@ public class NotificationService extends Service {
     static final String EXTRA_PHONE_NUMBER = "CD.EXTRA_PHONE_NUMBER";
     static final String EXTRA_CALL_LOG_ID = "CD.EXTRA_CALL_LOG_ID";
     static final String EXTRA_NOTIFICATION_TAG = "CD.EXTRA_NOTIFICATION_TAG";
+
+    @Inject InCallNotificationController mInCallNotificationController;
+    @Inject MissedCallNotificationController mMissedCallNotificationController;
+    @Inject UiCallManager mUiCallManager;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -67,30 +77,28 @@ public class NotificationService extends Service {
         switch (action) {
             case ACTION_ANSWER_CALL:
                 answerCall(phoneNumber);
-                InCallNotificationController.get().cancelInCallNotification(phoneNumber);
+                mInCallNotificationController.cancelInCallNotification(phoneNumber);
                 break;
             case ACTION_DECLINE_CALL:
                 declineCall(phoneNumber);
-                InCallNotificationController.get().cancelInCallNotification(phoneNumber);
+                mInCallNotificationController.cancelInCallNotification(phoneNumber);
                 break;
             case ACTION_SHOW_FULLSCREEN_UI:
                 Intent inCallActivityIntent = new Intent(context, InCallActivity.class);
                 inCallActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 inCallActivityIntent.putExtra(Constants.Intents.EXTRA_SHOW_INCOMING_CALL, true);
                 startActivity(inCallActivityIntent);
-                InCallNotificationController.get().cancelInCallNotification(phoneNumber);
+                mInCallNotificationController.cancelInCallNotification(phoneNumber);
                 break;
             case ACTION_CALL_BACK_MISSED:
-                UiCallManager.get().placeCall(phoneNumber);
+                mUiCallManager.placeCall(phoneNumber);
                 TelecomUtils.markCallLogAsRead(context, phoneNumber);
-                MissedCallNotificationController.get().cancelMissedCallNotification(
-                        notificationTag);
+                mMissedCallNotificationController.cancelMissedCallNotification(notificationTag);
                 break;
             case ACTION_MESSAGE_MISSED:
                 // TODO: call assistant to send message
                 TelecomUtils.markCallLogAsRead(context, phoneNumber);
-                MissedCallNotificationController.get().cancelMissedCallNotification(
-                        notificationTag);
+                mMissedCallNotificationController.cancelMissedCallNotification(notificationTag);
                 break;
             case ACTION_READ_MISSED:
                 if (!TextUtils.isEmpty(phoneNumber)) {
@@ -99,8 +107,7 @@ public class NotificationService extends Service {
                     long callLogId = intent.getLongExtra(EXTRA_CALL_LOG_ID, -1);
                     TelecomUtils.markCallLogAsRead(context, callLogId);
                 }
-                MissedCallNotificationController.get().cancelMissedCallNotification(
-                        notificationTag);
+                mMissedCallNotificationController.cancelMissedCallNotification(notificationTag);
                 break;
             default:
                 break;
@@ -110,10 +117,10 @@ public class NotificationService extends Service {
     }
 
     private void answerCall(String callId) {
-        List<Call> callList = UiCallManager.get().getCallList();
+        List<Call> callList = mUiCallManager.getCallList();
         for (Call call : callList) {
-            if (call.getDetails() != null
-                    && TextUtils.equals(call.getDetails().getTelecomCallId(), callId)) {
+            if (call.getDetails() != null && TextUtils.equals(
+                    CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber(), callId)) {
                 call.answer(/* videoState= */0);
                 return;
             }
@@ -121,10 +128,10 @@ public class NotificationService extends Service {
     }
 
     private void declineCall(String callId) {
-        List<Call> callList = UiCallManager.get().getCallList();
+        List<Call> callList = mUiCallManager.getCallList();
         for (Call call : callList) {
-            if (call.getDetails() != null
-                    && TextUtils.equals(call.getDetails().getTelecomCallId(), callId)) {
+            if (call.getDetails() != null && TextUtils.equals(
+                    CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber(), callId)) {
                 call.reject(false, /* textMessage= */"");
                 return;
             }

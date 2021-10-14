@@ -29,8 +29,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.preference.PreferenceManager;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.util.Themes;
 import com.android.car.dialer.R;
@@ -39,6 +38,7 @@ import com.android.car.dialer.notification.NotificationService;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.dialer.ui.common.DialerBaseFragment;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.dialpad.DialpadFragment;
 import com.android.car.dialer.ui.search.ContactResultsFragment;
 import com.android.car.dialer.ui.settings.DialerSettingsActivity;
@@ -50,6 +50,11 @@ import com.android.car.ui.toolbar.MenuItem;
 import com.android.car.ui.toolbar.ToolbarController;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * Main activity for the Dialer app. It hosts most of the fragments for the app.
@@ -58,9 +63,13 @@ import java.util.List;
  *
  * <p>Based on call and connectivity status, it will choose the right page to display.
  */
-public class TelecomActivity extends FragmentActivity implements
+@AndroidEntryPoint(FragmentActivity.class)
+public class TelecomActivity extends Hilt_TelecomActivity implements
         DialerBaseFragment.DialerFragmentParent, InsetsChangedListener {
     private static final String TAG = "CD.TelecomActivity";
+
+    @Inject SharedPreferences mSharedPreferences;
+    @Inject UiCallManager mUiCallManager;
     private LiveData<List<Call>> mOngoingCallListLiveData;
     private LiveData<Boolean> mRefreshUiLiveData;
     // View objects for this activity.
@@ -79,7 +88,7 @@ public class TelecomActivity extends FragmentActivity implements
 
         setupTabLayout();
 
-        TelecomActivityViewModel viewModel = ViewModelProviders.of(this).get(
+        TelecomActivityViewModel viewModel = new ViewModelProvider(this).get(
                 TelecomActivityViewModel.class);
 
         mRefreshUiLiveData = viewModel.getRefreshTabsLiveData();
@@ -125,7 +134,7 @@ public class TelecomActivity extends FragmentActivity implements
 
             case Intent.ACTION_CALL:
                 number = PhoneNumberUtils.getNumberFromIntent(intent, this);
-                UiCallManager.get().placeCall(number);
+                mUiCallManager.placeCall(number);
                 break;
 
             case Intent.ACTION_SEARCH:
@@ -149,13 +158,22 @@ public class TelecomActivity extends FragmentActivity implements
     }
 
     private void setupTabLayout() {
+        boolean[] tabSelectedListenerEnabled = new boolean[] { false };
+        OnItemClickedListener<TelecomPageTab> onTabSelected = tab -> {
+            if (tabSelectedListenerEnabled[0]) {
+                Fragment fragment = tab.getFragment();
+                setContentFragment(fragment, tab.getFragmentTag());
+            }
+        };
         boolean wasContentFragmentRestored = false;
-        mTabFactory = new TelecomPageTab.Factory(this, getSupportFragmentManager());
-        for (int i = 0; i < mTabFactory.getTabCount(); i++) {
-            TelecomPageTab tab = mTabFactory.createTab(getBaseContext(), i, false);
-            mCarUiToolbar.addTab(tab);
+        mTabFactory = new TelecomPageTab.Factory(this, onTabSelected, getSupportFragmentManager());
+        List<TelecomPageTab> tabs = mTabFactory.recreateTabs(getBaseContext(), false);
+        mCarUiToolbar.setTabs(tabs.stream()
+                .map(TelecomPageTab::getToolbarTab)
+                .collect(Collectors.toList()));
 
-            if (tab.wasFragmentRestored()) {
+        for (int i = 0; i < tabs.size(); i++) {
+            if (tabs.get(i).wasFragmentRestored()) {
                 mCarUiToolbar.selectTab(i);
                 wasContentFragmentRestored = true;
             }
@@ -165,26 +183,19 @@ public class TelecomActivity extends FragmentActivity implements
         if (!wasContentFragmentRestored) {
             int startTabIndex = mTabFactory.getTabIndex(getTabFromSharedPreference());
             mCarUiToolbar.selectTab(startTabIndex);
-            TelecomPageTab startTab = (TelecomPageTab) mCarUiToolbar.getTab(startTabIndex);
+            TelecomPageTab startTab = tabs.get(startTabIndex);
             setContentFragment(startTab.getFragment(), startTab.getFragmentTag());
         }
-
-        mCarUiToolbar.registerOnTabSelectedListener(
-                tab -> {
-                    TelecomPageTab telecomPageTab = (TelecomPageTab) tab;
-                    Fragment fragment = telecomPageTab.getFragment();
-                    setContentFragment(fragment, telecomPageTab.getFragmentTag());
-                });
+        tabSelectedListenerEnabled[0] = true;
     }
 
     private void refreshUi() {
         L.v(TAG, "Refresh ui");
 
-        mCarUiToolbar.clearAllTabs();
-        for (int i = 0; i < mTabFactory.getTabCount(); i++) {
-            TelecomPageTab tab = mTabFactory.createTab(getBaseContext(), i, true);
-            mCarUiToolbar.addTab(tab);
-        }
+        List<TelecomPageTab> tabs = mTabFactory.recreateTabs(getBaseContext(), true);
+        mCarUiToolbar.setTabs(tabs.stream()
+                .map(TelecomPageTab::getToolbarTab)
+                .collect(Collectors.toList()));
 
         String startTab = getTabFromSharedPreference();
         showTabPage(startTab);
@@ -200,7 +211,7 @@ public class TelecomActivity extends FragmentActivity implements
             return;
         }
 
-        TelecomPageTab dialpadTab = (TelecomPageTab) mCarUiToolbar.getTab(dialpadTabIndex);
+        TelecomPageTab dialpadTab = mTabFactory.getTab(dialpadTabIndex);
         Fragment fragment = dialpadTab.getFragment();
         if (fragment instanceof DialpadFragment) {
             ((DialpadFragment) fragment).setDialedNumber(number);
@@ -323,8 +334,7 @@ public class TelecomActivity extends FragmentActivity implements
     private String getTabFromSharedPreference() {
         String key = getResources().getString(R.string.pref_start_page_key);
         String defaultValue = getResources().getString(R.string.tab_config_default_value);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        return sharedPreferences.getString(key, defaultValue);
+        return mSharedPreferences.getString(key, defaultValue);
     }
 
     @Override

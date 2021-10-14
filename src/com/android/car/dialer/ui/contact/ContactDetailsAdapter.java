@@ -33,6 +33,11 @@ import com.android.car.telephony.common.PostalAddress;
 
 import java.util.ArrayList;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+import dagger.hilt.android.qualifiers.ActivityContext;
+
 class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolder> {
 
     private static final String TAG = "CD.ContactDetailsAdapter";
@@ -46,16 +51,20 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
     }
 
     private final Context mContext;
+    private final ContactDetailsViewHolder.Factory mViewHolderFactory;
     private final PhoneNumberPresenter mPhoneNumberPresenter;
     private final ArrayList<Object> mItems = new ArrayList<>();
     private Contact mContact;
 
+    @AssistedInject
     ContactDetailsAdapter(
-            @NonNull Context context,
-            @Nullable Contact contact,
-            @NonNull PhoneNumberPresenter phoneNumberPresenter) {
+            @ActivityContext @NonNull Context context,
+            ContactDetailsViewHolder.Factory viewHolderFactory,
+            @Assisted @Nullable Contact contact,
+            @Assisted @NonNull PhoneNumberPresenter phoneNumberPresenter) {
         super();
         mContext = context;
+        mViewHolderFactory = viewHolderFactory;
         mPhoneNumberPresenter = phoneNumberPresenter;
         setContact(contact);
     }
@@ -121,7 +130,7 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
 
         View view = LayoutInflater.from(parent.getContext()).inflate(layoutResId, parent,
                 false);
-        return new ContactDetailsViewHolder(view, mPhoneNumberPresenter);
+        return mViewHolderFactory.create(view, mPhoneNumberPresenter);
     }
 
     @Override
@@ -140,5 +149,15 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
                 L.w(TAG, "Unknown view type %d ", viewHolder.getItemViewType());
                 return;
         }
+    }
+
+    /**
+     * Factory to create {@link ContactDetailsAdapter} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    interface Factory {
+        ContactDetailsAdapter create(@Nullable Contact contact,
+                @NonNull PhoneNumberPresenter phoneNumberPresenter);
     }
 }

@@ -16,30 +16,32 @@
 
 package com.android.car.dialer.ui.common;
 
-import android.app.Application;
+import android.content.Context;
 
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 
 import com.android.car.dialer.R;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * Superclass View Model. Monitors the sort method used for lists.
  */
-public class DialerListViewModel extends AndroidViewModel {
+public abstract class DialerListViewModel extends ViewModel {
 
     private final SharedPreferencesLiveData mSharedPreferencesLiveData;
     private final LiveData<Integer> mSortOrderLiveData;
 
-    public DialerListViewModel(Application application) {
-        super(application);
-        mSharedPreferencesLiveData = new SharedPreferencesLiveData(
-                application, R.string.sort_order_key);
+    public DialerListViewModel(
+            @ApplicationContext Context context,
+            SharedPreferencesLiveData.Factory sharedPreferencesFactory) {
+        mSharedPreferencesLiveData = sharedPreferencesFactory.create(R.string.sort_order_key);
         mSortOrderLiveData = Transformations.map(mSharedPreferencesLiveData,
-                sharedPreferences -> ContactSortingInfo.getSortingInfo(application,
+                sharedPreferences -> ContactSortingInfo.getSortingInfo(context,
                         mSharedPreferencesLiveData).second);
     }
 

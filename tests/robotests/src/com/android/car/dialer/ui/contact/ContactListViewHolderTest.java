@@ -33,12 +33,12 @@ import android.widget.TextView;
 import com.android.car.dialer.CarDialerRobolectricTestRunner;
 import com.android.car.dialer.R;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.PostalAddress;
 import com.android.car.telephony.common.TelecomUtils;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +70,7 @@ public class ContactListViewHolderTest {
     @Mock
     private UiCallManager mMockUiCallManager;
     @Mock
-    private ContactListAdapter.OnShowContactDetailListener mMockListener;
+    private OnItemClickedListener<Contact> mMockListener;
 
     @Before
     public void setUp() {
@@ -79,12 +79,8 @@ public class ContactListViewHolderTest {
 
         mItemView = LayoutInflater.from(mContext)
                 .inflate(R.layout.contact_list_item, null, false);
-        mContactListViewHolder = new ContactListViewHolder(mItemView, mMockListener);
-    }
-
-    @After
-    public void tearDown() {
-        UiCallManager.set(null);
+        mContactListViewHolder = new ContactListViewHolder(mItemView, mMockListener,
+                mMockUiCallManager);
     }
 
     @Test
@@ -195,7 +191,6 @@ public class ContactListViewHolderTest {
 
     @Test
     public void testClickCallActionButton_ContactHasOneNumber_placeCall() {
-        UiCallManager.set(mMockUiCallManager);
         PhoneNumber phoneNumber = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
         when(mMockContact.getNumbers()).thenReturn(Arrays.asList(phoneNumber));
@@ -213,7 +208,6 @@ public class ContactListViewHolderTest {
 
     @Test
     public void testClickCallActionButton_HasMultipleNumbersAndNoPrimaryNumber_showAlertDialog() {
-        UiCallManager.set(mMockUiCallManager);
         PhoneNumber phoneNumber1 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
         PhoneNumber phoneNumber2 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_2, 0, LABEL_2,
@@ -233,7 +227,6 @@ public class ContactListViewHolderTest {
 
     @Test
     public void testClickCallActionButton_HasMultipleNumbersAndPrimaryNumber_callPrimaryNumber() {
-        UiCallManager.set(mMockUiCallManager);
         PhoneNumber phoneNumber1 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_1, 0, LABEL_1,
                 false, 0, null, null, 0);
         PhoneNumber phoneNumber2 = PhoneNumber.newInstance(mContext, PHONE_NUMBER_2, 0, LABEL_2,
@@ -265,7 +258,7 @@ public class ContactListViewHolderTest {
         showContactDetailActionView.performClick();
 
         ArgumentCaptor<Contact> captor = ArgumentCaptor.forClass(Contact.class);
-        verify(mMockListener).onShowContactDetail(captor.capture());
+        verify(mMockListener).onItemClicked(captor.capture());
         assertThat(captor.getValue()).isEqualTo(mMockContact);
     }
 
@@ -292,7 +285,7 @@ public class ContactListViewHolderTest {
             showContactDetailActionView.performClick();
 
             ArgumentCaptor<Contact> captor = ArgumentCaptor.forClass(Contact.class);
-            verify(mMockListener).onShowContactDetail(captor.capture());
+            verify(mMockListener).onItemClicked(captor.capture());
             assertThat(captor.getValue()).isEqualTo(mMockContact);
         }
     }

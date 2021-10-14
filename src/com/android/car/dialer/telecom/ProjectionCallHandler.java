@@ -36,6 +36,12 @@ import com.android.car.dialer.log.L;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
+@Singleton
 class ProjectionCallHandler implements InCallServiceImpl.ActiveCallListChangedCallback,
         CarProjectionManager.ProjectionStatusListener {
     private static final String TAG = "CD.ProjectionCallHandler";
@@ -55,8 +61,9 @@ class ProjectionCallHandler implements InCallServiceImpl.ActiveCallListChangedCa
     private int mProjectionState = ProjectionStatus.PROJECTION_STATE_INACTIVE;
     private List<ProjectionStatus> mProjectionDetails = Collections.emptyList();
 
-    ProjectionCallHandler(Context context) {
-        this(context, context.getSystemService(TelecomManager.class),
+    @Inject
+    ProjectionCallHandler(@ApplicationContext Context context, TelecomManager telecomManager) {
+        this(context, telecomManager,
                 car -> (CarProjectionManager) car.getCarManager(Car.PROJECTION_SERVICE));
     }
 

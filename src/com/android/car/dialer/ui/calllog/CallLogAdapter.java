@@ -30,14 +30,17 @@ import com.android.car.dialer.log.L;
 import com.android.car.dialer.ui.common.DialerUtils;
 import com.android.car.dialer.ui.common.entity.HeaderViewHolder;
 import com.android.car.dialer.ui.common.entity.UiCallLog;
-import com.android.car.telephony.common.Contact;
 import com.android.car.ui.recyclerview.ContentLimitingAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.qualifiers.ActivityContext;
+
 /** Adapter for call history list. */
-public class CallLogAdapter extends ContentLimitingAdapter {
+class CallLogAdapter extends ContentLimitingAdapter {
 
     private static final String TAG = "CD.CallLogAdapter";
 
@@ -56,20 +59,16 @@ public class CallLogAdapter extends ContentLimitingAdapter {
         int TYPE_CALLLOG = 2;
     }
 
-    public interface OnShowContactDetailListener {
-        void onShowContactDetail(Contact contact);
-    }
-
+    private final CallLogViewHolder.Factory mViewHolderFactory;
     private List<Object> mUiCallLogs = new ArrayList<>();
     private Context mContext;
-    private CallLogAdapter.OnShowContactDetailListener mOnShowContactDetailListener;
     private LinearLayoutManager mLayoutManager;
     private int mLimitingAnchorIndex = 0;
 
-    public CallLogAdapter(Context context,
-            CallLogAdapter.OnShowContactDetailListener onShowContactDetailListener) {
+    @Inject
+    CallLogAdapter(@ActivityContext Context context, CallLogViewHolder.Factory viewHolderFactory) {
         mContext = context;
-        mOnShowContactDetailListener = onShowContactDetailListener;
+        mViewHolderFactory = viewHolderFactory;
     }
 
     /**
@@ -101,7 +100,7 @@ public class CallLogAdapter extends ContentLimitingAdapter {
         if (viewType == EntryType.TYPE_CALLLOG) {
             View rootView = LayoutInflater.from(mContext)
                     .inflate(R.layout.call_history_list_item, parent, false);
-            return new CallLogViewHolder(rootView, mOnShowContactDetailListener);
+            return mViewHolderFactory.create(rootView);
         }
 
         View rootView = LayoutInflater.from(mContext)

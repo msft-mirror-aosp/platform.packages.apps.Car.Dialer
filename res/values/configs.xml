@@ -83,4 +83,8 @@
 
     <!-- A config to determine if the dialpad should always been shown in ongoing call screen.   -->
     <bool name="config_always_show_incall_dialpad">false</bool>
+
+    <!-- Config if dialogs should allow a default dismiss button-->
+    <bool name="config_dialog_allow_dismiss_button">false</bool>
+
 </resources>

@@ -30,6 +30,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="tabBarSize"/>
       <item type="attr" name="toolbarTitleMode"/>
       <item type="bool" name="config_always_show_incall_dialpad"/>
+      <item type="bool" name="config_dialog_allow_dismiss_button"/>
       <item type="bool" name="config_enable_dial_motion"/>
       <item type="bool" name="config_should_show_active_call_setting"/>
       <item type="bool" name="config_should_show_incoming_call_hun_setting"/>
@@ -93,6 +94,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="contact_details_avatar_margin_top"/>
       <item type="dimen" name="contact_details_avatar_size"/>
       <item type="dimen" name="contact_details_item_height"/>
+      <item type="dimen" name="contact_details_list_item_guideline_start"/>
+      <item type="dimen" name="contact_details_list_item_padding"/>
       <item type="dimen" name="contact_details_number_padding_end"/>
       <item type="dimen" name="contact_details_number_padding_start"/>
       <item type="dimen" name="contact_details_text_button_guideline"/>
@@ -159,6 +162,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="loading_info_icon_size"/>
       <item type="dimen" name="no_hfp_icon_margin_bottom"/>
       <item type="dimen" name="no_hfp_icon_size"/>
+      <item type="dimen" name="onhold_label_margin_end"/>
       <item type="dimen" name="onhold_profile_avatar_margin"/>
       <item type="dimen" name="onhold_profile_corner_radius"/>
       <item type="dimen" name="onhold_profile_guideline"/>
@@ -213,6 +217,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_pause"/>
       <item type="drawable" name="ic_pause_activatable"/>
       <item type="drawable" name="ic_phone"/>
+      <item type="drawable" name="ic_place"/>
       <item type="drawable" name="ic_smartphone"/>
       <item type="drawable" name="ic_smartphone_activatable"/>
       <item type="drawable" name="ic_sms"/>
@@ -323,6 +328,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="user_profile_avatar"/>
       <item type="id" name="user_profile_call_state"/>
       <item type="id" name="user_profile_container"/>
+      <item type="id" name="user_profile_phone_label"/>
       <item type="id" name="user_profile_phone_number"/>
       <item type="id" name="user_profile_title"/>
       <item type="id" name="voice_channel_button"/>

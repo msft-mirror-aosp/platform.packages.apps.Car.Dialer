@@ -23,9 +23,7 @@ android {
     defaultConfig {
         applicationId 'com.android.car.dialer'
         minSdkVersion 29 // Dialer requires apis that became public in Q.
-        // TODO(b/201454324): pregrant BLUETOOTH_CONNECT permission on 31
-        targetSdkVersion 30
-        // targetSdkVersion gradle.ext.aaosTargetSDK
+        targetSdkVersion gradle.ext.aaosTargetSDK
         testInstrumentationRunnerArguments clearPackageData: 'true', coverage: 'true'
     }
 

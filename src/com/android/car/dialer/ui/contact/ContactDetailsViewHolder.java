@@ -93,6 +93,8 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
     private final View mAddressView;
     @Nullable
     private final View mNavigationButton;
+    @Nullable
+    private final View mDivider;
 
     @NonNull
     private final ContactDetailsAdapter.PhoneNumberPresenter mPhoneNumberPresenter;
@@ -110,6 +112,7 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
         mSmsActionDividerView = v.findViewById(R.id.divider1);
         mAddressView = v.findViewById(R.id.address_button);
         mNavigationButton = v.findViewById(R.id.navigation_button);
+        mDivider = v.findViewById(R.id.divider);
         mTitle = v.findViewById(R.id.title);
         mText = v.findViewById(R.id.text);
         mAvatarView = v.findViewById(R.id.avatar);
@@ -237,9 +240,11 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
         List<ResolveInfo> infos = context.getPackageManager().queryIntentActivities(intent, 0);
 
         if (infos.size() > 0) {
+            mDivider.setVisibility(View.VISIBLE);
             mNavigationButton.setVisibility(View.VISIBLE);
             mNavigationButton.setOnClickListener(v -> openMapWithMapIntent(context, intent));
         } else {
+            mDivider.setVisibility(View.GONE);
             mNavigationButton.setVisibility(View.GONE);
         }
     }

@@ -270,7 +270,8 @@ public final class UiCallManager {
 
         int requestCode = ACTION_DIRECT_SEND.hashCode();
         PendingIntent pendingIntent = PendingIntent.getForegroundService(
-                context, requestCode, intent, PendingIntent.FLAG_ONE_SHOT);
+                context, requestCode, intent,
+                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
         bundle.putParcelable(KEY_SEND_PENDING_INTENT, pendingIntent);
         activity.showAssist(bundle);

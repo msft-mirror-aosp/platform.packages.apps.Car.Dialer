@@ -69,6 +69,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
     private Contact mContact;
     private LiveData<FutureData<Contact>> mContactDetailsLiveData;
     private ContactDetailsViewModel mContactDetailsViewModel;
+    private LiveData<Boolean> mPhoneNumberRefreshEvent;
 
     private boolean mShowActionBarView;
     private boolean mShowActionBarAvatar;
@@ -95,6 +96,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
         mContactDetailsViewModel = new ViewModelProvider(this).get(
                 ContactDetailsViewModel.class);
         mContactDetailsLiveData = mContactDetailsViewModel.getContactDetails(mContact);
+        mPhoneNumberRefreshEvent = mContactDetailsViewModel.getPhoneNumberRefreshEvent();
 
         mShowActionBarView = getResources().getBoolean(
                 R.bool.config_show_contact_details_action_bar_view);
@@ -115,6 +117,15 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
                 onContactChanged(contact.getData());
                 contactDetailsAdapter.setContact(contact.getData());
                 showContent();
+            }
+        });
+
+        mPhoneNumberRefreshEvent.observe(this, refresh -> {
+            int itemCount = contactDetailsAdapter.getItemCount();
+            for (int i = 0; i < itemCount; i++) {
+                if (contactDetailsAdapter.getItemViewType(i) == ContactDetailsAdapter.ID_NUMBER) {
+                    contactDetailsAdapter.notifyItemChanged(i);
+                }
             }
         });
     }

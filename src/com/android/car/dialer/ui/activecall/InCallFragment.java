@@ -130,17 +130,13 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             mPhoneNumberView.setVisibility(View.GONE);
         } else {
             String phoneNumberLabel = info.getTypeLabel();
-            String bidiWrappedNumber;
             if (!phoneNumberLabel.isEmpty()) {
-                bidiWrappedNumber = " ";
                 ViewUtils.setText(mPhoneLabelView, phoneNumberLabel);
                 ViewUtils.setVisible(mPhoneLabelView, true);
             } else {
-                bidiWrappedNumber = "";
                 ViewUtils.setVisible(mPhoneLabelView, false);
             }
-            bidiWrappedNumber += TelecomUtils.getBidiWrappedNumber(formattedNumber);
-            mPhoneNumberView.setText(bidiWrappedNumber);
+            mPhoneNumberView.setText(formattedNumber);
             mPhoneNumberView.setVisibility(View.VISIBLE);
         }
 

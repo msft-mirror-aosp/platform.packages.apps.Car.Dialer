@@ -56,14 +56,9 @@ public class OngoingConfCallFragment extends Hilt_OngoingConfCallFragment {
 
     private ConferenceProfileAdapter mConfProfileAdapter;
 
-    private String mConferenceTitleString;
-    private String mConfStrTitleFormat;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mConferenceTitleString = getString(R.string.ongoing_conf_title);
-        mConfStrTitleFormat = getString(R.string.ongoing_conf_title_format);
     }
 
     @Override
@@ -128,7 +123,7 @@ public class OngoingConfCallFragment extends Hilt_OngoingConfCallFragment {
     }
 
     private void updateTitle(int numParticipants) {
-        String title = String.format(mConfStrTitleFormat, mConferenceTitleString, numParticipants);
+        String title = getString(R.string.ongoing_conf_header_title, numParticipants);
         mConferenceTitle.setText(title);
     }
 

@@ -280,6 +280,7 @@ public class DialpadFragment extends Hilt_DialpadFragment {
 
         if (number.length() == 0) {
             mTitleView.setGravity(Gravity.CENTER);
+            mTitleView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             if (dialpadUxrMode == DialpadUxrMode.UNRESTRICTED) {
                 mTitleView.setText(
                         mMode == MODE_DIAL ? R.string.dial_a_number
@@ -299,6 +300,8 @@ public class DialpadFragment extends Hilt_DialpadFragment {
         } else {
             mTitleView.setGravity(
                     getResources().getInteger(R.integer.config_dialed_number_gravity));
+            mTitleView.setTextAlignment(
+                    getResources().getInteger(R.integer.config_dialed_number_alignment));
             if (number.length() <= MAX_DIAL_NUMBER) {
                 mTitleView.setText(TelecomUtils.getFormattedNumber(getContext(), number));
             } else {

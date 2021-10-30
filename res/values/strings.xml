@@ -244,7 +244,9 @@
     <!-- Ongoing Conference Call -->
     <!-- Title of conference page -->
     <string name="ongoing_conf_title">Conference</string>
-    <string name="ongoing_conf_title_format">%1$s (%2$d) -\u0020</string>
+    <string name="ongoing_conf_header_title">
+        Conference (<xliff:g id="count" example="5">%1$d</xliff:g>)
+    </string>
 
     <!-- Dialing disabled warning [CHAR LIMIT=40] -->
     <string name="dialing_disabled_warning">Dialing disabled</string>
@@ -253,6 +255,9 @@
 
     <!-- Delimiter to join two unrelated strings together, a comma followed by a whitespace. Use case: join phone number label and phone call timestamp in Recents page, "Mobile, 4 days ago" for example. -->
     <string name="comma_delimiter">,\u0020</string>
+
+    <!-- Delimiter, a space followed by a dash and then a space at the end.-->
+    <string name="dash_delimiter" translatable="false">\u0020-\u0020</string>
 
     <!-- Sending SMS notification title -->
     <string name="sms_notification_title">Dialer SMS</string>

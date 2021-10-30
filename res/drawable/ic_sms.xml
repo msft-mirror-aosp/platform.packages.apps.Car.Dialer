@@ -14,6 +14,7 @@
      limitations under the License.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:autoMirrored="true"
         android:width="@dimen/primary_icon_size"
         android:height="@dimen/primary_icon_size"
         android:viewportWidth="24"

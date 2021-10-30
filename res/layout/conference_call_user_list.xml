@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="35dp"
         android:layout_marginBottom="35dp"
-        android:layout_marginLeft="170dp"
+        android:layout_marginStart="170dp"
         app:layout_constraintBottom_toTopOf="@+id/conference_call_profiles_recycler_view"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,6 +41,12 @@
             android:textAppearance="@style/TextAppearance.InCallState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+        <TextView
+            android:textAppearance="@style/TextAppearance.InCallState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dash_delimiter"/>
 
         <!-- A textView without a fixed width will call requestLayout() every time its text is changed -->
         <!-- So we have to make this Chronometer match_parent to avoid redrawing the whole screen -->

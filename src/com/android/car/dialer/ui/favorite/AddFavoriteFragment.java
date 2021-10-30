@@ -95,7 +95,7 @@ public class AddFavoriteFragment extends Hilt_AddFavoriteFragment {
         mFavoritePhoneNumberList.clear();
         for (PhoneNumber number : phoneNumbers) {
             CarUiContentListItem item = new CarUiContentListItem(CarUiContentListItem.Action.ICON);
-            item.setTitle(TelecomUtils.getBidiWrappedNumber(number.getNumber()));
+            item.setTitle(TelecomUtils.getBidiWrappedNumber(number.getRawNumber()));
             item.setSupplementalIcon(mFavoriteIcon.getConstantState().newDrawable());
             setFavoriteItemState(item, number);
 

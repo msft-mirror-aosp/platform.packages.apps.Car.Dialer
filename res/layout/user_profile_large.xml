@@ -46,6 +46,7 @@ limitations under the License.
             android:textAppearance="@style/TextAppearance.InCallUserPhoneNumber"
             android:singleLine="true"
             android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
+            android:layout_marginEnd="@dimen/in_call_margin_label_end"
             android:layout_marginTop="@dimen/in_call_phone_number_margin_top"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintHorizontal_bias="0.0"

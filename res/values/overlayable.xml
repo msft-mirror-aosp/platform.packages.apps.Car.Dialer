@@ -139,6 +139,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="in_call_controller_bar_margin"/>
       <item type="dimen" name="in_call_controller_bar_margin_bottom"/>
       <item type="dimen" name="in_call_margin_between_avatar_and_text"/>
+      <item type="dimen" name="in_call_margin_label_end"/>
       <item type="dimen" name="in_call_phone_number_margin_top"/>
       <item type="dimen" name="in_call_state_margin_top"/>
       <item type="dimen" name="in_call_user_profile_list_margin"/>
@@ -337,6 +338,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="zero"/>
       <item type="integer" name="config_dial_motion_duration"/>
       <item type="integer" name="config_dial_motion_scale_start"/>
+      <item type="integer" name="config_dialed_number_alignment"/>
       <item type="integer" name="config_dialed_number_gravity"/>
       <item type="integer" name="config_no_dialpad_uxr_max_allow_digits"/>
       <item type="integer" name="config_phone_call_log_limit"/>
@@ -402,6 +404,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="connect_bluetooth_button_text"/>
       <item type="string" name="contact_list_empty"/>
       <item type="string" name="contacts_title"/>
+      <item type="string" name="dash_delimiter"/>
       <item type="string" name="decline_call"/>
       <item type="string" name="dial_a_number"/>
       <item type="string" name="dialing_disabled_warning"/>
@@ -437,8 +440,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="notification_incoming_call"/>
       <item type="string" name="one"/>
       <item type="string" name="one_letters"/>
+      <item type="string" name="ongoing_conf_header_title"/>
       <item type="string" name="ongoing_conf_title"/>
-      <item type="string" name="ongoing_conf_title_format"/>
       <item type="string" name="onhold_call_separator"/>
       <item type="string" name="phone_app_name"/>
       <item type="string" name="phone_favorites"/>

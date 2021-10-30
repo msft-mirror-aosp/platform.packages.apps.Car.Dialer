@@ -17,6 +17,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/Theme.Dialer.BidiText"
     android:id="@+id/contact_result"
     android:foreground="?android:attr/selectableItemBackground"
     android:layout_width="match_parent"

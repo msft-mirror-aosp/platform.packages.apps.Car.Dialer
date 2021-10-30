@@ -20,5 +20,6 @@ limitations under the License.
     android:layout_width="match_parent"
     android:layout_height="@dimen/subheader_list_height"
     android:singleLine="true"
-    android:gravity="center_vertical"
+    android:gravity="start|center_vertical"
+    android:textAlignment="viewStart"
     style="@style/SubheaderText"/>

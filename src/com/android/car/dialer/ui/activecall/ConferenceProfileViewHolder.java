@@ -74,17 +74,13 @@ public class ConferenceProfileViewHolder extends RecyclerView.ViewHolder {
                         mNumber.setVisibility(View.GONE);
                     } else {
                         String phoneNumberLabel = info.getTypeLabel();
-                        String bidiWrappedNumber;
                         if (!phoneNumberLabel.isEmpty()) {
-                            bidiWrappedNumber = " ";
                             ViewUtils.setText(mLabel, phoneNumberLabel);
                             ViewUtils.setVisible(mLabel, true);
                         } else {
-                            bidiWrappedNumber = "";
                             ViewUtils.setVisible(mLabel, false);
                         }
-                        bidiWrappedNumber += TelecomUtils.getBidiWrappedNumber(readableNumber);
-                        mNumber.setText(bidiWrappedNumber);
+                        mNumber.setText(readableNumber);
                         mNumber.setVisibility(View.VISIBLE);
                     }
 

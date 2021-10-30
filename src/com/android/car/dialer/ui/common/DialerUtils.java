@@ -74,7 +74,7 @@ public class DialerUtils {
             item.setTitle(number.isPrimary()
                     ? context.getString(R.string.primary_number_description, readableLabel)
                     : readableLabel);
-            item.setBody(TelecomUtils.getBidiWrappedNumber(number.getNumber()));
+            item.setBody(TelecomUtils.getBidiWrappedNumber(number.getRawNumber()));
             item.setOnCheckedChangeListener((i, isChecked) -> {
                 if (isChecked) {
                     selectedPhoneNumber.clear();

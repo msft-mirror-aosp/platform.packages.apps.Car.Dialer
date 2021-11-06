@@ -44,7 +44,7 @@ class ContactDetailsAdapter extends RecyclerView.Adapter<ContactDetailsViewHolde
     private static final String TAG = "CD.ContactDetailsAdapter";
 
     private static final int ID_HEADER = 1;
-    private static final int ID_NUMBER = 2;
+    static final int ID_NUMBER = 2;
     private static final int ID_ADDRESS = 3;
 
     interface PhoneNumberPresenter {

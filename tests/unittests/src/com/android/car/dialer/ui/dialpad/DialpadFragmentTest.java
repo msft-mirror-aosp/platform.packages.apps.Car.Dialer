@@ -43,7 +43,7 @@ import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.R;
 import com.android.car.dialer.testing.TestActivity;
 import com.android.car.dialer.ui.common.ContactResultsLiveData;

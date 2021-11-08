@@ -30,7 +30,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.LetterTileDrawable;
-import com.android.car.arch.common.FutureData;
+import com.android.car.apps.common.util.FutureData;
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;

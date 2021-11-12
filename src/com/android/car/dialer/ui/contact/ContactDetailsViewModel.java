@@ -26,8 +26,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.android.car.arch.common.FutureData;
-import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.apps.common.util.FutureData;
+import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
 import com.android.car.dialer.ui.common.SingleLiveEvent;
 import com.android.car.telephony.common.Contact;

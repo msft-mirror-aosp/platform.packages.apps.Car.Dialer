@@ -20,12 +20,12 @@ package {
 common_libs = ["android.car-system-stubs"]
 
 common_static_libs = [
-    "car-apps-common",
-    "car-assist-lib",
-    "car-telephony-common",
+    "car-apps-common-prebuilt",
+    "car-assist-lib-prebuilt",
+    "car-telephony-common-prebuilt",
     "car-messenger-common",
-    "car-ui-lib",
-    "car-uxr-client-lib",
+    "car-ui-lib-prebuilt",
+    "car-uxr-client-lib-prebuilt",
     "guava",
     "glide-prebuilt",
     "hilt_android",
@@ -34,6 +34,7 @@ common_static_libs = [
     "androidx-constraintlayout_constraintlayout-solver",
     "androidx.cardview_cardview",
     "androidx.legacy_legacy-support-v4",
+    "androidx.lifecycle_lifecycle-common-java8",
     "androidx.lifecycle_lifecycle-extensions",
     "androidx.preference_preference",
     "androidx.recyclerview_recyclerview",

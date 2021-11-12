@@ -28,7 +28,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.android.car.arch.common.LiveDataFunctions;
+import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;

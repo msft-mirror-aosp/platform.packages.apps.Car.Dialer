@@ -139,7 +139,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
         if (toolbar == null) {
             return;
         }
-        toolbar.setTitle(null);
+        toolbar.setTitle((CharSequence) null);
         toolbar.setLogo(null);
         if (mShowActionBarView) {
             toolbar.setTitle(contact == null ? getString(R.string.error_contact_deleted)

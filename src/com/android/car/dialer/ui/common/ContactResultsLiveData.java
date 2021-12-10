@@ -36,6 +36,7 @@ import com.android.car.telephony.common.AsyncEntityLoader;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.QueryParam;
+import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,7 +90,7 @@ public class ContactResultsLiveData extends
         mContext = context;
         mShowOnlyOneEntry = showOnlyOneEntry;
         mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
-        mSearchQueryParamProvider = new SearchQueryParamProvider(searchQueryLiveData);
+        mSearchQueryParamProvider = new SearchQueryParamProvider(context, searchQueryLiveData);
         mAsyncEntityLoader = new AsyncEntityLoader<>(context, mSearchQueryParamProvider, this,
                 (loader, contactResultListItems) -> setValue(contactResultListItems));
 
@@ -183,18 +184,22 @@ public class ContactResultsLiveData extends
     }
 
     private static class SearchQueryParamProvider implements QueryParam.Provider {
+        private final Context mContext;
         private final LiveData<String> mSearchQueryLiveData;
 
-        private SearchQueryParamProvider(LiveData<String> searchQueryLiveData) {
+        private SearchQueryParamProvider(Context context, LiveData<String> searchQueryLiveData) {
+            mContext = context;
             mSearchQueryLiveData = searchQueryLiveData;
         }
 
         @Nullable
         @Override
         public QueryParam getQueryParam() {
+            String normalizedNumber = TelecomUtils.getNormalizedNumber(
+                    mContext, mSearchQueryLiveData.getValue());
             Uri lookupUri = Uri.withAppendedPath(
                     ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI,
-                    Uri.encode(mSearchQueryLiveData.getValue()));
+                    Uri.encode(normalizedNumber));
             return new QueryParam(lookupUri, CONTACT_DETAILS_PROJECTION, null,
                     /* selectionArgs= */null, /* orderBy= */null,
                     Manifest.permission.READ_CONTACTS);

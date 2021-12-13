@@ -55,6 +55,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -91,6 +93,7 @@ public class DialpadFragment extends Hilt_DialpadFragment {
                     .build();
 
     @Inject UiCallManager mUiCallManager;
+    @Inject @Named("HfpAddr") Provider<String> mCurrentHfpDeviceAddress;
 
     private TypeDownResultsAdapter mAdapter;
 
@@ -324,7 +327,8 @@ public class DialpadFragment extends Hilt_DialpadFragment {
     }
 
     private void presentContactInfo(@NonNull String number) {
-        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(number);
+        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(
+                number, mCurrentHfpDeviceAddress.get());
         ViewUtils.setText(mDisplayName, contact == null ? "" : contact.getDisplayName());
         if (contact != null && getResources().getBoolean(
                 R.bool.config_show_detailed_user_profile_on_dialpad)) {

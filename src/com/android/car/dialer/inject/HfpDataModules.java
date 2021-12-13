@@ -74,6 +74,14 @@ public final class HfpDataModules {
                     device -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(
                             device.getAddress()));
         }
+
+        @Provides
+        @Named("HfpAddr")
+        static String provideCurrentHfpDeviceAddress(
+                @Named("Hfp") LiveData<BluetoothDevice> currentHfpDevice) {
+            return currentHfpDevice.getValue() == null
+                    ? null : currentHfpDevice.getValue().getAddress();
+        }
     }
 
     /** {@link LiveData} instances that are shared across various {@link ViewModel}s. */

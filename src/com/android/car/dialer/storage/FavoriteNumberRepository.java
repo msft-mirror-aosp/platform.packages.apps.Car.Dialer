@@ -34,9 +34,9 @@ import androidx.lifecycle.Transformations;
 
 import com.android.car.dialer.log.L;
 import com.android.car.telephony.common.Contact;
-import com.android.car.telephony.common.I18nPhoneNumberWrapper;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneNumber;
+import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -254,9 +254,9 @@ public class FavoriteNumberRepository {
             return false;
         }
 
-        I18nPhoneNumberWrapper i18nPhoneNumberWrapper = I18nPhoneNumberWrapper.Factory.INSTANCE.get(
+        String normalizedFavoriteNumber = TelecomUtils.getNormalizedNumber(
                 mContext, favoriteNumber.getPhoneNumber().get());
-        return i18nPhoneNumberWrapper.equals(phoneNumber.getI18nPhoneNumberWrapper());
+        return TextUtils.equals(normalizedFavoriteNumber, phoneNumber.getNormalizedNumber());
     }
 
     private class FavoriteContactLiveData extends MediatorLiveData<List<Contact>> {

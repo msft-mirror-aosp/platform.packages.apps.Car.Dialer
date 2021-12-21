@@ -17,6 +17,7 @@
 package com.android.car.dialer.ui.common;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
@@ -31,7 +32,7 @@ import com.android.car.dialer.ui.common.entity.UiCallLog;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneCallLog;
-import com.android.car.telephony.common.TelecomUtils;
+import com.android.car.telephony.common.PhoneNumber;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,7 +77,7 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
     private void onContactsChanged(List<PhoneCallLog> callLogs) {
         // When contacts change, do not set value to trigger an update when there are no
         // call logs loaded yet. An update will switch the loading state to loaded in the ViewModel.
-        if (getValue() == null || getValue().isEmpty()) {
+        if (callLogs == null || callLogs.isEmpty()) {
             return;
         }
         onCallHistoryChanged(callLogs);
@@ -127,21 +128,22 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
             String number = phoneCallLog.getPhoneNumberString();
             String relativeTime = getRelativeTime(phoneCallLog.getLastCallEndTimestamp());
 
-            TelecomUtils.PhoneNumberInfo phoneNumberInfo =
-                    TelecomUtils.lookupNumberInBackground(mContext, number);
-            Contact contact = inMemoryPhoneBook.lookupContactByKey(
-                    phoneNumberInfo.getLookupKey(),
-                    phoneCallLog.getAccountName());
+            Contact contact = inMemoryPhoneBook.lookupContactEntry(
+                    number, phoneCallLog.getAccountName());
 
+            String readableNumber = TextUtils.isEmpty(number)
+                    ? mContext.getString(R.string.unknown) : number;
             UiCallLog uiCallLog = new UiCallLog(
-                    phoneNumberInfo.getDisplayName(),
-                    phoneNumberInfo.getDisplayNameAlt(),
+                    contact == null ? readableNumber : contact.getDisplayName(),
+                    contact == null ? readableNumber : contact.getDisplayNameAlt(),
                     number,
                     contact,
                     phoneCallLog.getAllCallRecords());
 
             uiCallLog.setRelativeTime(relativeTime);
-            uiCallLog.setLabel(phoneNumberInfo.getTypeLabel());
+            PhoneNumber phoneNumber = contact == null ? null : contact.getPhoneNumber(number);
+            uiCallLog.setLabel(phoneNumber == null
+                    ? null : phoneNumber.getReadableLabel(mContext.getResources()));
             uiCallLogs.add(uiCallLog);
         }
         L.i(TAG, "phoneCallLog size: %d, uiCallLog size: %d",

@@ -29,6 +29,8 @@ import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.CallDetail;
+import com.android.car.telephony.common.Contact;
+import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.TelecomUtils;
 
 /**
@@ -59,34 +61,28 @@ public class ConferenceProfileViewHolder extends RecyclerView.ViewHolder {
      */
     public void bind(CallDetail callDetail) {
         String number = callDetail.getNumber();
-        TelecomUtils.getPhoneNumberInfo(mContext, number)
-                .thenAcceptAsync((info) -> {
-                    if (mContext == null) {
-                        return;
-                    }
-
-                    mAvatar.setImageDrawable(TelecomUtils.createLetterTile(mContext, null, null));
-                    mTitle.setText(info.getDisplayName());
-
-                    String readableNumber = TelecomUtils.getReadableNumber(mContext, number);
-                    if (TextUtils.equals(info.getDisplayName(), readableNumber)) {
-                        ViewUtils.setVisible(mLabel, false);
-                        mNumber.setVisibility(View.GONE);
-                    } else {
-                        String phoneNumberLabel = info.getTypeLabel();
-                        if (!phoneNumberLabel.isEmpty()) {
-                            ViewUtils.setText(mLabel, phoneNumberLabel);
-                            ViewUtils.setVisible(mLabel, true);
-                        } else {
-                            ViewUtils.setVisible(mLabel, false);
-                        }
-                        mNumber.setText(readableNumber);
-                        mNumber.setVisibility(View.VISIBLE);
-                    }
-
-                    TelecomUtils.setContactBitmapAsync(mContext, mAvatar,
-                            info.getAvatarUri(), info.getInitials(), info.getDisplayName());
-
-                }, mContext.getMainExecutor());
+        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(
+                number, callDetail.getPhoneAccountHandle().getId());
+        String readableNumber = TelecomUtils.getReadableNumber(mContext, number);
+        if (contact == null) {
+            mAvatar.setImageDrawable(TelecomUtils.createLetterTile(mContext, null, null));
+            mTitle.setText(readableNumber);
+            ViewUtils.setVisible(mLabel, false);
+            mNumber.setVisibility(View.GONE);
+        } else {
+            TelecomUtils.setContactBitmapAsync(mContext, mAvatar,
+                    contact.getAvatarUri(), contact.getInitials(), contact.getDisplayName());
+            mTitle.setText(contact.getDisplayName());
+            CharSequence phoneNumberLabel = contact.getPhoneNumber(number).getReadableLabel(
+                    mContext.getResources());
+            if (!TextUtils.isEmpty(phoneNumberLabel)) {
+                ViewUtils.setText(mLabel, phoneNumberLabel);
+                ViewUtils.setVisible(mLabel, true);
+            } else {
+                ViewUtils.setVisible(mLabel, false);
+            }
+            mNumber.setText(readableNumber);
+            mNumber.setVisibility(View.VISIBLE);
+        }
     }
 }

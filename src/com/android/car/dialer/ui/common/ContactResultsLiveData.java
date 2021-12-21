@@ -17,7 +17,6 @@
 package com.android.car.dialer.ui.common;
 
 import android.Manifest;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -35,6 +34,7 @@ import com.android.car.dialer.ui.common.entity.ContactSortingInfo;
 import com.android.car.telephony.common.AsyncEntityLoader;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
+import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.QueryParam;
 import com.android.car.telephony.common.TelecomUtils;
 
@@ -46,6 +46,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Named;
+import javax.inject.Provider;
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;
@@ -66,7 +67,7 @@ public class ContactResultsLiveData extends
     private final Context mContext;
     private final SearchQueryParamProvider mSearchQueryParamProvider;
     private final AsyncEntityLoader<List<ContactResultListItem>> mAsyncEntityLoader;
-    private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
+    private final Provider<String> mCurrentHfpDeviceAddress;
     private final LiveData<String> mSearchQueryLiveData;
     private final SharedPreferencesLiveData mSortOrderPreferenceLiveData;
     private String mSearchQuery;
@@ -83,14 +84,14 @@ public class ContactResultsLiveData extends
     public ContactResultsLiveData(
             @ApplicationContext Context context,
             LiveData<List<Contact>> contactListLiveData,
-            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
+            @Named("HfpAddr") Provider<String> currentHfpDeviceAddress,
             @Assisted LiveData<String> searchQueryLiveData,
             @Assisted SharedPreferencesLiveData sortOrderPreferenceLiveData,
             @Assisted boolean showOnlyOneEntry) {
         mContext = context;
         mShowOnlyOneEntry = showOnlyOneEntry;
-        mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
-        mSearchQueryParamProvider = new SearchQueryParamProvider(context, searchQueryLiveData);
+        mCurrentHfpDeviceAddress = currentHfpDeviceAddress;
+        mSearchQueryParamProvider = new SearchQueryParamProvider(searchQueryLiveData);
         mAsyncEntityLoader = new AsyncEntityLoader<>(context, mSearchQueryParamProvider, this,
                 (loader, contactResultListItems) -> setValue(contactResultListItems));
 
@@ -149,8 +150,7 @@ public class ContactResultsLiveData extends
 
         List<ContactResultListItem> contactResults = new ArrayList<>();
 
-        BluetoothDevice currentHfpDevice = mCurrentHfpDeviceLiveData.getValue();
-        String accountName = currentHfpDevice == null ? null : currentHfpDevice.getAddress();
+        String accountName = mCurrentHfpDeviceAddress.get();
         while (cursor.moveToNext()) {
             int lookupKeyColIdx = cursor.getColumnIndex(
                     ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY);
@@ -160,6 +160,22 @@ public class ContactResultsLiveData extends
             Contact contact = InMemoryPhoneBook.get().lookupContactByKey(lookupKey, accountName);
             if (contact != null) {
                 contactResults.add(new ContactResultListItem(contact, number, mSearchQuery));
+            }
+        }
+
+        // For a valid phone number without country code, search results won't include entries with
+        // country code. Append one matched entry to the results.
+        String normalizedNumber = TelecomUtils.getNormalizedNumber(mContext, mSearchQuery);
+        if (!TextUtils.isEmpty(normalizedNumber)) {
+            Contact contact = InMemoryPhoneBook.get().lookupContactEntry(
+                    normalizedNumber, accountName);
+            if (contact != null) {
+                PhoneNumber phoneNumber = contact.getPhoneNumber(normalizedNumber);
+                if (phoneNumber != null
+                        && !TextUtils.equals(normalizedNumber, phoneNumber.getNormalizedNumber())) {
+                    contactResults.add(new ContactResultListItem(
+                            contact, phoneNumber.getRawNumber(), mSearchQuery));
+                }
             }
         }
 
@@ -184,22 +200,18 @@ public class ContactResultsLiveData extends
     }
 
     private static class SearchQueryParamProvider implements QueryParam.Provider {
-        private final Context mContext;
         private final LiveData<String> mSearchQueryLiveData;
 
-        private SearchQueryParamProvider(Context context, LiveData<String> searchQueryLiveData) {
-            mContext = context;
+        private SearchQueryParamProvider(LiveData<String> searchQueryLiveData) {
             mSearchQueryLiveData = searchQueryLiveData;
         }
 
         @Nullable
         @Override
         public QueryParam getQueryParam() {
-            String normalizedNumber = TelecomUtils.getNormalizedNumber(
-                    mContext, mSearchQueryLiveData.getValue());
             Uri lookupUri = Uri.withAppendedPath(
                     ContactsContract.CommonDataKinds.Phone.CONTENT_FILTER_URI,
-                    Uri.encode(normalizedNumber));
+                    Uri.encode(mSearchQueryLiveData.getValue()));
             return new QueryParam(lookupUri, CONTACT_DETAILS_PROJECTION, null,
                     /* selectionArgs= */null, /* orderBy= */null,
                     Manifest.permission.READ_CONTACTS);

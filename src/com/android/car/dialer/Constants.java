@@ -39,7 +39,7 @@ public final class Constants {
 
     public static final String EMPTY_STRING = "";
 
-    /** See {@link com.android.bluetooth.hfpclient.connserv.HfpClientConnectionService}. */
+    /** See {@link com.android.bluetooth.hfpclient.HfpClientConnectionService}. */
     public static final String HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME =
-            "com.android.bluetooth.hfpclient.connserv.HfpClientConnectionService";
+            "com.android.bluetooth.hfpclient.HfpClientConnectionService";
 }

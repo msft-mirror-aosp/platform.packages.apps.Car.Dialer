@@ -339,7 +339,7 @@ public class DialpadFragment extends Hilt_DialpadFragment {
     }
 
     private void presentContactDetail(@Nullable Contact contact, @NonNull String number) {
-        PhoneNumber phoneNumber = contact.getPhoneNumber(getContext(), number);
+        PhoneNumber phoneNumber = contact.getPhoneNumber(number);
         CharSequence readableLabel = phoneNumber.getReadableLabel(
                 getContext().getResources());
         ViewUtils.setText(mLabel, phoneNumber.isPrimary() ? getContext().getString(

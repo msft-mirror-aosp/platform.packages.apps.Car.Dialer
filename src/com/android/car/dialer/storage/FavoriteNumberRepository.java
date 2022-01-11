@@ -23,6 +23,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -36,7 +37,6 @@ import com.android.car.dialer.log.L;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneNumber;
-import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -254,9 +254,9 @@ public class FavoriteNumberRepository {
             return false;
         }
 
-        String normalizedFavoriteNumber = TelecomUtils.getNormalizedNumber(
-                mContext, favoriteNumber.getPhoneNumber().get());
-        return TextUtils.equals(normalizedFavoriteNumber, phoneNumber.getNormalizedNumber());
+        String minMatch = PhoneNumberUtils.toCallerIDMinMatch(
+                favoriteNumber.getPhoneNumber().get());
+        return TextUtils.equals(minMatch, phoneNumber.getMinMatch());
     }
 
     private class FavoriteContactLiveData extends MediatorLiveData<List<Contact>> {

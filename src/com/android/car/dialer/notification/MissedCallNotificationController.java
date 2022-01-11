@@ -118,7 +118,7 @@ public final class MissedCallNotificationController {
         String tag = getTag(callLog);
         cancelLoadingRunnable(tag);
         CompletableFuture<Void> updateFuture = NotificationUtils.getDisplayNameAndRoundedAvatar(
-                mContext, phoneNumber)
+                mContext, phoneNumber, callLog.getAccountName())
                 .thenAcceptAsync((pair) -> {
                     int callLogSize = callLog.getAllCallRecords().size();
                     Notification.Builder builder = new Notification.Builder(mContext, CHANNEL_ID)

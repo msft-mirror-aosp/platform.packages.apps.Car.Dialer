@@ -39,6 +39,9 @@ import com.android.car.dialer.R;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.CallDetail;
+import com.android.car.telephony.common.Contact;
+import com.android.car.telephony.common.InMemoryPhoneBook;
+import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 
 import com.bumptech.glide.Glide;
@@ -47,8 +50,6 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
-
-import java.util.concurrent.CompletableFuture;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -68,13 +69,13 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     private ImageView mAvatarView;
     private BackgroundImageView mBackgroundImage;
     private LetterTileDrawable mDefaultAvatar;
-    private CompletableFuture<Void> mPhoneNumberInfoFuture;
     private String mCurrentNumber;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDefaultAvatar = TelecomUtils.createLetterTile(getContext(), null, null);
+        mInCallViewModel = new ViewModelProvider(this).get(InCallViewModel.class);
     }
 
     /**
@@ -100,6 +101,7 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         if (callDetail == null) {
             return;
         }
+        mInCallViewModel.getContactListLiveData().removeObservers(this);
 
         String number = callDetail.getNumber();
         if (mCurrentNumber != null && mCurrentNumber.equals(number)) {
@@ -107,21 +109,22 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         }
         mCurrentNumber = number;
 
-        if (mPhoneNumberInfoFuture != null) {
-            mPhoneNumberInfoFuture.cancel(true);
-        }
-
         mNameView.setText(TelecomUtils.getReadableNumber(getContext(), number));
         ViewUtils.setVisible(mPhoneLabelView, false);
         mPhoneNumberView.setVisibility(View.GONE);
         mAvatarView.setImageDrawable(mDefaultAvatar);
 
-        mInCallViewModel = new ViewModelProvider(this).get(InCallViewModel.class);
-        mInCallViewModel.getContactListLiveData().observe(this, contacts -> updateProfile(number));
+        mInCallViewModel.getContactListLiveData().observe(this, contacts -> updateProfileInfo(
+                number, callDetail.getPhoneAccountHandle().getId()));
     }
 
-    private void updateProfileInfo(String number, TelecomUtils.PhoneNumberInfo info) {
-        String nameViewText = info.getDisplayName();
+    private void updateProfileInfo(String number, String accountName) {
+        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(number, accountName);
+        if (contact == null) {
+            return;
+        }
+
+        String nameViewText = contact.getDisplayName();
         String formattedNumber = TelecomUtils.getReadableNumber(getContext(), number);
         mNameView.setText(nameViewText);
 
@@ -129,8 +132,10 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             ViewUtils.setVisible(mPhoneLabelView, false);
             mPhoneNumberView.setVisibility(View.GONE);
         } else {
-            String phoneNumberLabel = info.getTypeLabel();
-            if (!phoneNumberLabel.isEmpty()) {
+            PhoneNumber phoneNumber = contact.getPhoneNumber(number);
+            CharSequence phoneNumberLabel = phoneNumber == null
+                    ? null : phoneNumber.getReadableLabel(getResources());
+            if (!TextUtils.isEmpty(phoneNumberLabel)) {
                 ViewUtils.setText(mPhoneLabelView, phoneNumberLabel);
                 ViewUtils.setVisible(mPhoneLabelView, true);
             } else {
@@ -141,10 +146,10 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         }
 
         LetterTileDrawable letterTile = TelecomUtils.createLetterTile(
-                getContext(), info.getInitials(), info.getDisplayName());
+                getContext(), contact.getInitials(), contact.getDisplayName());
 
         Glide.with(this)
-                .load(info.getAvatarUri())
+                .load(contact.getAvatarUri())
                 .apply(new RequestOptions().centerCrop().error(letterTile))
                 .listener(new RequestListener<Drawable>() {
                     @Override
@@ -168,24 +173,6 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
                 }).into(mAvatarView);
     }
 
-    private void updateProfile(String number) {
-        TelecomUtils.PhoneNumberInfo phoneNumberInfo = mInCallViewModel.getPhoneNumberInfo(number);
-
-        if (phoneNumberInfo != null) {
-            updateProfileInfo(number, mInCallViewModel.getPhoneNumberInfo(number));
-            return;
-        }
-
-        mPhoneNumberInfoFuture = TelecomUtils.getPhoneNumberInfo(getContext(), number)
-            .thenAcceptAsync((info) -> {
-                if (getContext() == null) {
-                    return;
-                }
-                mInCallViewModel.putPhoneNumberInfo(number, info);
-                updateProfileInfo(number, info);
-            }, getContext().getMainExecutor());
-    }
-
     /** Presents the call state and call duration. */
     protected void updateCallDescription(@Nullable Pair<Integer, Long> callStateAndConnectTime) {
         if (callStateAndConnectTime == null || callStateAndConnectTime.first == null) {
@@ -201,14 +188,6 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             mUserProfileCallStateText.stop();
             mUserProfileCallStateText.setText(TelecomUtils.callStateToUiString(getContext(),
                     callStateAndConnectTime.first));
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mPhoneNumberInfoFuture != null) {
-            mPhoneNumberInfoFuture.cancel(true);
         }
     }
 }

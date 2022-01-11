@@ -36,9 +36,9 @@ import com.android.car.apps.common.LetterTileDrawable;
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.CallDetail;
+import com.android.car.telephony.common.Contact;
+import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.TelecomUtils;
-
-import java.util.concurrent.CompletableFuture;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -54,7 +54,6 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
     private ImageView mAvatarView;
     private View mSwapCallsView;
     private LiveData<Call> mPrimaryCallLiveData;
-    private CompletableFuture<Void> mPhoneNumberInfoFuture;
     private LetterTileDrawable mDefaultAvatar;
     private Chronometer mTimeTextView;
 
@@ -103,12 +102,9 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         if (callDetail == null) {
             return;
         }
+        mInCallViewModel.getContactListLiveData().removeObservers(this);
 
         mAvatarView.setImageDrawable(mDefaultAvatar);
-
-        if (mPhoneNumberInfoFuture != null) {
-            mPhoneNumberInfoFuture.cancel(true);
-        }
 
         if (callDetail.isConference()) {
             mTitle.setText(getString(R.string.ongoing_conf_title));
@@ -118,37 +114,26 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         String number = callDetail.getNumber();
         mTitle.setText(TelecomUtils.getReadableNumber(getContext(), number));
 
-        TelecomUtils.PhoneNumberInfo phoneNumberInfo = mInCallViewModel.getPhoneNumberInfo(number);
-
-        if (phoneNumberInfo != null) {
-            updateProfileInfo(mInCallViewModel.getPhoneNumberInfo(number));
-        } else {
-            mPhoneNumberInfoFuture = TelecomUtils.getPhoneNumberInfo(getContext(), number)
-                    .thenAcceptAsync((info) -> {
-                        mInCallViewModel.putPhoneNumberInfo(number, info);
-                        updateProfileInfo(info);
-                    }, getContext().getMainExecutor());
-        }
+        mInCallViewModel.getContactListLiveData().observe(this, contacts -> {
+            updateProfileInfo(number, callDetail.getPhoneAccountHandle().getId());
+        });
     }
 
-    private void updateProfileInfo(TelecomUtils.PhoneNumberInfo info) {
-        mTitle.setText(info.getDisplayName());
+    private void updateProfileInfo(String number, String accountName) {
+        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(number, accountName);
+        if (contact == null) {
+            return;
+        }
+
+        mTitle.setText(contact.getDisplayName());
         TelecomUtils.setContactBitmapAsync(getContext(), mAvatarView,
-                info.getAvatarUri(), info.getInitials(), info.getDisplayName());
+                contact.getAvatarUri(), contact.getInitials(), contact.getDisplayName());
     }
 
     private void swapCalls() {
         // Hold primary call and the secondary call will automatically come to the foreground.
         if (mPrimaryCallLiveData.getValue().getState() != Call.STATE_HOLDING) {
             mPrimaryCallLiveData.getValue().hold();
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mPhoneNumberInfoFuture != null) {
-            mPhoneNumberInfoFuture.cancel(true);
         }
     }
 }

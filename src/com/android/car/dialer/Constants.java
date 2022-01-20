@@ -42,4 +42,8 @@ public final class Constants {
     /** See {@link com.android.bluetooth.hfpclient.connserv.HfpClientConnectionService}. */
     public static final String HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME =
             "com.android.bluetooth.hfpclient.connserv.HfpClientConnectionService";
+
+    /** See {@link com.android.bluetooth.hfpclient.HfpClientConnectionService}. */
+    public static final String HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME_T =
+            "com.android.bluetooth.hfpclient.HfpClientConnectionService";
 }

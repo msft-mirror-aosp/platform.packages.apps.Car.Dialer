@@ -21,6 +21,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
@@ -126,8 +127,14 @@ public class PhoneAccountManager {
 
     /** Returns if the {@link PhoneAccountHandle} is from a hfp connection for bluetooth call. */
     public boolean isHfpConnectionService(@Nullable PhoneAccountHandle phoneAccountHandle) {
-        return phoneAccountHandle != null
-                && Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME.equals(
-                phoneAccountHandle.getComponentName().getClassName());
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
+            return phoneAccountHandle != null
+                    && Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME.equals(
+                    phoneAccountHandle.getComponentName().getClassName());
+        } else {
+            return phoneAccountHandle != null
+                    && Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME_T.equals(
+                    phoneAccountHandle.getComponentName().getClassName());
+        }
     }
 }

@@ -66,6 +66,7 @@ import com.android.car.telephony.common.PostalAddress;
 import com.android.car.telephony.common.TelecomUtils;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -127,6 +128,7 @@ public class ContactListFragmentTest {
     }
 
     @Test
+    @Ignore
     public void testClickCallActionButton_ContactHasOneNumber_placeCall() {
         when(mMockContact1.getNumbers()).thenReturn(Arrays.asList(mMockPhoneNumber));
         when(mMockPhoneNumber.getRawNumber()).thenReturn(RAW_NUMBER);
@@ -140,6 +142,7 @@ public class ContactListFragmentTest {
         assertThat(captor.getValue()).isEqualTo(RAW_NUMBER);
     }
 
+    @Ignore
     @Test
     public void testClickCallActionButton_ContactHasMultipleNumbers_showAlertDialog() {
         PhoneNumber otherMockPhoneNumber = mock(PhoneNumber.class);

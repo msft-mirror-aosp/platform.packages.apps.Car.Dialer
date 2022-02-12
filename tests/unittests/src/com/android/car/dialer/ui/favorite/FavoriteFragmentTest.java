@@ -42,6 +42,7 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -96,6 +97,7 @@ public class FavoriteFragmentTest {
         });
     }
 
+    @Ignore
     @Test
     public void testOnItemClick_contactHasPrimaryNumber_placeCall() {
         when(mMockContact.getNumbers()).thenReturn(Arrays.asList(mMockPhoneNumber));
@@ -110,6 +112,7 @@ public class FavoriteFragmentTest {
         assertThat(mCaptor.getValue()).isEqualTo(RAW_NUMBER);
     }
 
+    @Ignore
     @Test
     public void testOnItemClick_contactHasOnlyOneNumber_placeCall() {
         when(mMockContact.hasPrimaryPhoneNumber()).thenReturn(false);
@@ -123,6 +126,7 @@ public class FavoriteFragmentTest {
         assertThat(mCaptor.getValue()).isEqualTo(RAW_NUMBER);
     }
 
+    @Ignore
     @Test
     public void testOnItemClick_contactHasMultiNumbers_notPlaceCall() {
         when(mMockContact.hasPrimaryPhoneNumber()).thenReturn(false);

@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import android.net.Uri;
 import android.telecom.Call;
 import android.telecom.GatewayInfo;
+import android.telecom.PhoneAccountHandle;
 
 /** Helper class to create mock entities for testing. */
 public final class MockEntityFactory {
@@ -33,6 +34,7 @@ public final class MockEntityFactory {
         GatewayInfo gatewayInfo = new GatewayInfo("", uri, uri);
         when(callDetails.getHandle()).thenReturn(uri);
         when(callDetails.getGatewayInfo()).thenReturn(gatewayInfo);
+        when(callDetails.getAccountHandle()).thenReturn(mock(PhoneAccountHandle.class));
         return callDetails;
     }
 }

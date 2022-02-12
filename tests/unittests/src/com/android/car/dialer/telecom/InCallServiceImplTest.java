@@ -40,6 +40,7 @@ import android.service.notification.StatusBarNotification;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
 import android.telecom.GatewayInfo;
+import android.telecom.PhoneAccountHandle;
 
 import androidx.preference.PreferenceManager;
 import androidx.test.espresso.intent.Intents;
@@ -91,6 +92,8 @@ public class InCallServiceImplTest {
     private PhoneAccountManager mPhoneAccountManager;
     @Mock
     private ProjectionCallHandler mProjectionCallHandler;
+    @Mock
+    private PhoneAccountHandle mMockPhoneAccountHandle;
 
     @Before
     public void setUp() throws TimeoutException {
@@ -126,6 +129,7 @@ public class InCallServiceImplTest {
         GatewayInfo gatewayInfo = new GatewayInfo("", uri, uri);
         when(mMockTelecomCall.getDetails()).thenReturn(mMockCallDetails);
         when(mMockCallDetails.getHandle()).thenReturn(uri);
+        when(mMockCallDetails.getAccountHandle()).thenReturn(mMockPhoneAccountHandle);
         when(mMockCallDetails.getGatewayInfo()).thenReturn(gatewayInfo);
 
         Intents.init();

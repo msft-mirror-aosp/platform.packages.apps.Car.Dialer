@@ -68,9 +68,6 @@ public class IncomingCallFragmentTest {
 
     @Test
     public void testUserProfile() {
-        Call.Details mockDetails = MockEntityFactory.createMockCallDetails(NUMBER);
-        when(mMockCall.getDetails()).thenReturn(mockDetails);
-
         startFragment();
 
         onView(withId(R.id.user_profile_title)).check(matches(withText(NUMBER)));
@@ -83,6 +80,8 @@ public class IncomingCallFragmentTest {
             InCallViewModel mockInCallViewModel = new ViewModelProvider(activity).get(
                     InCallViewModel.class);
             mCallLiveData = new MutableLiveData<>(mMockCall);
+            Call.Details mockDetails = MockEntityFactory.createMockCallDetails(NUMBER);
+            when(mMockCall.getDetails()).thenReturn(mockDetails);
             when(mockInCallViewModel.getIncomingCall()).thenReturn(mCallLiveData);
             activity.getSupportFragmentManager().beginTransaction().add(
                     R.id.test_fragment_container,

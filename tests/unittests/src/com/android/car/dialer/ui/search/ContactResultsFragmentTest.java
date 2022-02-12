@@ -60,6 +60,7 @@ import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -136,6 +137,7 @@ public class ContactResultsFragmentTest {
         onView(withId(R.id.contact_result)).check(doesNotExist());
     }
 
+    @Ignore
     @Test
     public void testDisplaySearchResults_multipleResults() {
         mContactSearchResultsLiveData = new MutableLiveData<>(
@@ -152,6 +154,7 @@ public class ContactResultsFragmentTest {
                         allOf(withId(R.id.contact_name), withText(DISPLAY_NAMES[2]))))));
     }
 
+    @Ignore
     @Test
     public void testClickSearchResult_showContactDetailPage() {
         mContactSearchResultsLiveData = new MutableLiveData<>(

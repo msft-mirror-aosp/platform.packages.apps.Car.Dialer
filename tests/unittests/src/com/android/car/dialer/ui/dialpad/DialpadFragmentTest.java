@@ -53,7 +53,6 @@ import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -61,6 +60,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.MockitoSession;
 import org.mockito.quality.Strictness;
 
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
@@ -90,6 +90,8 @@ public class DialpadFragmentTest {
         mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         mTypeDownResultsLiveData = new MutableLiveData<>();
+
+        mTypeDownResultsLiveData.setValue(Collections.EMPTY_LIST);
         when(mTypeDownResultsViewModel.getContactSearchResults()).thenReturn(
                 mTypeDownResultsLiveData);
         when(mTypeDownResultsViewModel.getSortOrderLiveData()).thenReturn(
@@ -216,19 +218,20 @@ public class DialpadFragmentTest {
         verifyTitleText(DIAL_NUMBER.substring(0, DIAL_NUMBER.length() - 1) + "+");
     }
 
-    @Ignore("//TODO fix")
     @Test
     public void testDisplayName() {
         MockitoSession session = mockitoSession().strictness(Strictness.LENIENT)
                 .spyStatic(InMemoryPhoneBook.class).startMocking();
 
         try {
-            when(mInMemoryPhoneBook.lookupContactEntry(DIAL_NUMBER)).thenReturn(mMockContact);
-            when(mInMemoryPhoneBook.getContactsLiveDataByAccount(anyString()))
+            when(mInMemoryPhoneBook.lookupContactByKey(anyString(), anyString())).thenReturn(
+                    mMockContact);
+            when(mInMemoryPhoneBook.getContactsLiveDataByAccount(any()))
                     .thenReturn(new MutableLiveData<>());
             when(InMemoryPhoneBook.get()).thenReturn(mInMemoryPhoneBook);
             when(mMockContact.getDisplayName()).thenReturn(DISPLAY_NAME);
-            when(mMockContact.getPhoneNumber(any(), any())).thenReturn(mock(PhoneNumber.class));
+            when(mMockContact.getPhoneNumber(any(String.class))).thenReturn(
+                    mock(PhoneNumber.class));
 
             mDialpadFragment = DialpadFragment.newPlaceCallDialpad();
             startPlaceCallActivity();

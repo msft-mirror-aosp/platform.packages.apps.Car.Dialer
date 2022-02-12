@@ -19,6 +19,7 @@ package com.android.car.dialer.framework;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.apps.common.util.LiveDataFunctions;
@@ -104,5 +105,14 @@ public final class SingleHfpEmulatorModule {
     static LiveData<List<Contact>> provideLocalFavoriteContactListLiveData(
             FavoriteNumberRepository favoriteNumberRepository) {
         return favoriteNumberRepository.getFavoriteContacts(null);
+    }
+
+    @Provides
+    @Nullable
+    @Named("HfpAddr")
+    static String provideCurrentHfpDeviceAddress(
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDevice) {
+        return currentHfpDevice.getValue() == null
+                ? null : currentHfpDevice.getValue().getAddress();
     }
 }

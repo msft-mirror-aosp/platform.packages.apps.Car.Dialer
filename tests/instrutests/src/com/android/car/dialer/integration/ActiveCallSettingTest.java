@@ -29,6 +29,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -102,7 +103,7 @@ public class ActiveCallSettingTest {
 
     @Test
     public void defaultOff_noInCallUi() {
-        onView(withId(R.id.recycler_view))
+        onRecyclerView()
                 .perform(RecyclerViewActions.scrollToPosition(1))
                 .check(matches(atPosition(1, hasDescendant(
                         allOf(withId(android.R.id.title),
@@ -132,7 +133,7 @@ public class ActiveCallSettingTest {
     @Test
     public void toggleOn_showInCallUi() {
         // Turn on
-        onView(withId(R.id.recycler_view))
+        onRecyclerView()
                 .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()))
                 .check(matches(atPosition(1, hasDescendant(
                         allOf(withId(android.R.id.switch_widget), isChecked())))));

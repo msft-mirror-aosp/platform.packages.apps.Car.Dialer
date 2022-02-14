@@ -26,6 +26,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -36,6 +38,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Pair;
 
@@ -66,7 +69,6 @@ import com.android.car.telephony.common.PostalAddress;
 import com.android.car.telephony.common.TelecomUtils;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -80,6 +82,7 @@ import java.util.List;
 @RunWith(AndroidJUnit4.class)
 public class ContactListFragmentTest {
     private static final String RAW_NUMBER = "6502530000";
+    private static final CharSequence LABEL = "Work";
 
     private Context mContext;
     private TestContactListFragment mContactListFragment;
@@ -93,6 +96,8 @@ public class ContactListFragmentTest {
     private Contact mMockContact1;
     @Mock
     private PhoneNumber mMockPhoneNumber;
+    @Mock
+    private PhoneNumber mMockPhoneNumberOther;
     @Mock
     private PostalAddress mMockPostalAddress;
 
@@ -125,16 +130,18 @@ public class ContactListFragmentTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        when(mMockPhoneNumber.getRawNumber()).thenReturn(RAW_NUMBER);
+        when(mMockPhoneNumber.getReadableLabel(any(Resources.class))).thenReturn(LABEL);
+        when(mMockPhoneNumberOther.getRawNumber()).thenReturn(RAW_NUMBER);
+        when(mMockPhoneNumberOther.getReadableLabel(any(Resources.class))).thenReturn(LABEL);
     }
 
     @Test
-    @Ignore
     public void testClickCallActionButton_ContactHasOneNumber_placeCall() {
         when(mMockContact1.getNumbers()).thenReturn(Arrays.asList(mMockPhoneNumber));
-        when(mMockPhoneNumber.getRawNumber()).thenReturn(RAW_NUMBER);
         setUpFragment();
 
-        onView(withId(R.id.list_view)).perform(
+        onRecyclerView().perform(
                 RecyclerViewActions.actionOnItemAtPosition(0, click()));
         mActivityScenario.moveToState(Lifecycle.State.STARTED);
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -142,12 +149,10 @@ public class ContactListFragmentTest {
         assertThat(captor.getValue()).isEqualTo(RAW_NUMBER);
     }
 
-    @Ignore
     @Test
     public void testClickCallActionButton_ContactHasMultipleNumbers_showAlertDialog() {
-        PhoneNumber otherMockPhoneNumber = mock(PhoneNumber.class);
         when(mMockContact1.getNumbers()).thenReturn(
-                Arrays.asList(mMockPhoneNumber, otherMockPhoneNumber));
+                Arrays.asList(mMockPhoneNumber, mMockPhoneNumberOther));
         setUpFragment();
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();

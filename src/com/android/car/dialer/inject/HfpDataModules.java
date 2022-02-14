@@ -19,6 +19,7 @@ package com.android.car.dialer.inject;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
@@ -76,6 +77,7 @@ public final class HfpDataModules {
         }
 
         @Provides
+        @Nullable
         @Named("HfpAddr")
         static String provideCurrentHfpDeviceAddress(
                 @Named("Hfp") LiveData<BluetoothDevice> currentHfpDevice) {

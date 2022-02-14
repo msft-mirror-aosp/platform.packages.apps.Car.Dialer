@@ -16,5 +16,5 @@
   ~ limitations under the License.
   -->
 <resources>
-    <bool name="car_ui_scrollbar_enable">false</bool>
+    <bool name="car_ui_scrollbar_enable">true</bool>
 </resources>

@@ -161,7 +161,7 @@ public class FakeTelecomManager {
     public void bindService(@ApplicationContext Context context) {
         Log.d(TAG, "binding to InCallService");
 
-        String defaultPackage = mSpiedTelecomManager.getDefaultDialerPackage();
+        String defaultPackage = "com.android.car.dialer";
 
         Intent serviceIntent = new Intent();
         serviceIntent.setAction(InCallService.SERVICE_INTERFACE);

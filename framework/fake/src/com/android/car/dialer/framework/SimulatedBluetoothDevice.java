@@ -37,6 +37,7 @@ public class SimulatedBluetoothDevice {
     private BluetoothDevice mMockBluetoothDevice;
     private String mContactDataFileName;
     private String mCallLogDataFileName;
+    private final int mDeviceId;
 
     private ContactDataHandler mContactDataHandler;
     private CallLogDataHandler mCallLogDataHandler;
@@ -47,6 +48,7 @@ public class SimulatedBluetoothDevice {
             CallLogDataHandler callLogDataHandler,
             String contactDataFile,
             String callLogDataFile) {
+        mDeviceId = deviceId;
         mMockBluetoothDevice = mock(BluetoothDevice.class);
         when(mMockBluetoothDevice.getAddress()).thenReturn(
                 String.format(TestData.ACCOUNT_NAME, deviceId));
@@ -80,6 +82,11 @@ public class SimulatedBluetoothDevice {
         mContactDataHandler.removeAddedContactsAsync(mMockBluetoothDevice.getAddress(),
                 TestData.ACCOUNT_TYPE);
         mCallLogDataHandler.removeAddedCalllogsAsync(mMockBluetoothDevice.getAddress());
+    }
+
+    /** Returns the device id. */
+    public String getDeviceId() {
+        return String.valueOf(mDeviceId);
     }
 
     /** Insert one mock contact into the contacts provider for this device. */

@@ -29,6 +29,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
+
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.Matchers.allOf;
@@ -135,7 +137,7 @@ public class RecentCallLogTest {
                         TelecomActivity.class));
         onView(withText(R.string.call_history_title)).check(matches(isDisplayed()));
 
-        onView(withId(R.id.list_view)).perform(repeatedlyUntil(TestViewActions.waitAction(100),
+        onRecyclerView().perform(repeatedlyUntil(TestViewActions.waitAction(100),
                 hasDescendant(withText(PHONE_NUMBER)), 50));
 
         onView(allOf(withText(HEADER), withId(R.id.title))).check(matches(isDisplayed()));

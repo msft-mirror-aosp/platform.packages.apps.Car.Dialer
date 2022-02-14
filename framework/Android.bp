@@ -67,6 +67,8 @@ android_library {
         "androidx.annotation_annotation",
         "androidx.core_core",
         "androidx.legacy_legacy-support-v4",
+        "androidx.lifecycle_lifecycle-common-java8",
+        "androidx.lifecycle_lifecycle-extensions",
         "gson-prebuilt-jar",
         "guava",
         "hilt_android",

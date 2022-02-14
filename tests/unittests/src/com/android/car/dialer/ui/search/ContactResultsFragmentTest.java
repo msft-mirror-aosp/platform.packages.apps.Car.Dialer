@@ -24,6 +24,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -60,7 +61,6 @@ import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -137,15 +137,13 @@ public class ContactResultsFragmentTest {
         onView(withId(R.id.contact_result)).check(doesNotExist());
     }
 
-    @Ignore
     @Test
     public void testDisplaySearchResults_multipleResults() {
         mContactSearchResultsLiveData = new MutableLiveData<>(
                 Arrays.asList(mContactResult1, mContactResult2, mContactResult3));
         setUpFragment();
 
-        onView(withId(R.id.list_view))
-                .perform(RecyclerViewActions.scrollToPosition(0))
+        onRecyclerView().perform(RecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, hasDescendant(
                         allOf(withId(R.id.contact_name), withText(DISPLAY_NAMES[0]))))))
                 .check(matches(atPosition(1, hasDescendant(
@@ -154,14 +152,13 @@ public class ContactResultsFragmentTest {
                         allOf(withId(R.id.contact_name), withText(DISPLAY_NAMES[2]))))));
     }
 
-    @Ignore
     @Test
     public void testClickSearchResult_showContactDetailPage() {
         mContactSearchResultsLiveData = new MutableLiveData<>(
                 Arrays.asList(mContactResult1, mContactResult2, mContactResult3));
         setUpFragment();
 
-        onView(withId(R.id.list_view)).perform(
+        onRecyclerView().perform(
                 RecyclerViewActions.actionOnItemAtPosition(1, click()));
 
         // verify contact detail is shown.

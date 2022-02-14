@@ -31,6 +31,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewActions.selfClick;
 import static com.android.car.dialer.testing.TestViewActions.selfClickWithoutConstraints;
 import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
@@ -129,7 +130,7 @@ public class FavoriteContactTest {
         mBluetoothDevice.insertContactInBackground(contact);
 
         // Verify phone favorite contact is rendered correctly.
-        onView(withId(R.id.list_view))
+        onRecyclerView()
                 .perform(ViewActions.repeatedlyUntil(
                         TestViewActions.waitAction(WAIT_ACTION_INTERVAL),
                         hasDescendant(withText(PHONE_FAVORITE_CONTACT)), WAIT_MAX_RETRY))
@@ -155,7 +156,7 @@ public class FavoriteContactTest {
         contact.setStarred(false);
         mBluetoothDevice.insertContactInBackground(contact);
 
-        onView(withId(R.id.list_view))
+        onRecyclerView()
                 .perform(RecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, withText(R.string.local_favorites))))
                 .perform(RecyclerViewActions.scrollToPosition(1))
@@ -164,7 +165,7 @@ public class FavoriteContactTest {
         onView(withId(R.id.car_ui_toolbar_search_bar)).perform(
                 TestViewActions.setTextWithoutConstraints(PHONE_NUMBER));
 
-        onView(withId(R.id.list_view))
+        onRecyclerView()
                 .perform(ViewActions.repeatedlyUntil(
                         TestViewActions.waitAction(WAIT_ACTION_INTERVAL),
                         hasDescendant(withText(LOCAL_FAVORITE_CONTACT)), WAIT_MAX_RETRY))
@@ -174,7 +175,7 @@ public class FavoriteContactTest {
         onView(withText(R.string.confirm_add_favorites_dialog)).inRoot(isDialog()).perform(click());
 
         // Verify local favorite contact is rendered correctly.
-        onView(withId(R.id.list_view))
+        onRecyclerView()
                 .perform(ViewActions.repeatedlyUntil(
                         TestViewActions.waitAction(WAIT_ACTION_INTERVAL),
                         hasDescendant(withText(LOCAL_FAVORITE_CONTACT)), WAIT_MAX_RETRY))
@@ -196,7 +197,7 @@ public class FavoriteContactTest {
         onView(isRoot()).perform(pressBack());
         onView(withText(R.string.favorites_title)).check(matches(isDisplayed())).perform(click());
         // Verify there is no local favorites.
-        onView(withId(R.id.list_view))
+        onRecyclerView()
                 .perform(RecyclerViewActions.scrollToPosition(1))
                 .check(matches(atPosition(1, withText(R.string.add_favorite_button))));
     }

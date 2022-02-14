@@ -29,6 +29,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
 
 import static org.hamcrest.Matchers.allOf;
@@ -117,7 +118,7 @@ public class ContactListTest {
 
         // Verify contacts are rendered correctly.
         for (int i = 0; i < 3; i++) {
-            onView(withId(R.id.list_view))
+            onRecyclerView()
                     .perform(RecyclerViewActions.scrollToPosition(i))
                     .check(matches(atPosition(i, hasDescendant(
                             allOf(withId(R.id.title), withText(DISPLAY_NAME + " " + i))))))
@@ -152,7 +153,7 @@ public class ContactListTest {
 
         // Wait until the insertion is done and verify the contact is rendered correctly.
         SystemClock.sleep(2000);
-        onView(withId(R.id.list_view))
+        onRecyclerView()
                 .perform(RecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, hasDescendant(
                         allOf(withId(R.id.title), withText(DISPLAY_NAME))))))

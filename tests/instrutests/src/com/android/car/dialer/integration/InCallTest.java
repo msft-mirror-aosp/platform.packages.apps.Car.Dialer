@@ -26,6 +26,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewActions.selfClick;
 import static com.android.car.dialer.testing.TestViewActions.waitAction;
 import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
@@ -53,6 +54,7 @@ import com.android.car.dialer.ui.TelecomActivity;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,6 +93,7 @@ public class InCallTest {
         mBluetoothDevice = mFakeHfpManager.connectHfpDevice(/* withMockData = */false);
     }
 
+    @Ignore
     @Test
     public void placeCall() {
         ContactRawData contactRawData = new ContactRawData();
@@ -100,7 +103,7 @@ public class InCallTest {
         mBluetoothDevice.insertContactInBackground(contactRawData);
 
         onView(withText(R.string.contacts_title)).perform(click());
-        onView(withId(R.id.list_view))
+        onRecyclerView()
                 .perform(ViewActions.repeatedlyUntil(
                         waitAction(WAIT_ACTION_INTERVAL),
                         hasDescendant(withText(DISPLAY_NAME)), WAIT_MAX_RETRY));
@@ -109,7 +112,8 @@ public class InCallTest {
                 () -> mFakeTelecomManager.placeCall(PHONE_NUMBER));
 
         onView(withText(DISPLAY_NAME)).check(matches(isDisplayed()));
-        onView(withText(PHONE_NUMBER_LABEL + " " + PHONE_NUMBER)).check(matches(isDisplayed()));
+        onView(withText(PHONE_NUMBER_LABEL)).check(matches(isDisplayed()));
+        onView(withText(PHONE_NUMBER)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.mute_button), isDisplayed())).check(
                 matches(isCompletelyDisplayed()));
         onView(allOf(withId(R.id.toggle_dialpad_button), isDisplayed())).check(
@@ -168,7 +172,7 @@ public class InCallTest {
         SystemClock.sleep(1000);
 
         onView(withText(startsWith("Conference (2)"))).check(matches(isDisplayed()));
-        onView(withId(R.id.conference_call_profiles_recycler_view))
+        onRecyclerView()
                 .perform(RecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, hasDescendant(
                         allOf(withId(R.id.user_profile_title), withText(PHONE_NUMBER))))))
@@ -181,6 +185,6 @@ public class InCallTest {
 
     @After
     public void tearDown() {
-        mBluetoothDevice.disconnect();
+        mFakeHfpManager.disconnectHfpDevice(mBluetoothDevice.getDeviceId());
     }
 }

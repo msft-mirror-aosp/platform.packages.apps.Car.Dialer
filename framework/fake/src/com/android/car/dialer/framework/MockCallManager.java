@@ -21,16 +21,19 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
 import android.net.Uri;
 import android.provider.CallLog;
 import android.telecom.Call;
 import android.telecom.DisconnectCause;
 import android.telecom.GatewayInfo;
 import android.telecom.InCallService;
+import android.telecom.PhoneAccountHandle;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -528,6 +531,16 @@ public class MockCallManager {
             when(mDetails.getHandle()).thenReturn(uri);
             when(mDetails.getDisconnectCause()).thenReturn(disconnectCause);
             when(mDetails.getGatewayInfo()).thenReturn(gatewayInfo);
+            PhoneAccountHandle mockPhoneAccountHandle = mock(PhoneAccountHandle.class);
+            when(mockPhoneAccountHandle.getComponentName()).thenReturn(
+                    new ComponentName(
+                            "com.android.bluetooth",
+                            "com.android.bluetooth.hfpclient.HfpClientConnectionService"));
+            doReturn(
+                    mCurrentHfpDevice.getValue() == null
+                            ? "" : mCurrentHfpDevice.getValue().getAddress()).when(
+                                    mockPhoneAccountHandle).getId();
+            doReturn(mockPhoneAccountHandle).when(mDetails).getAccountHandle();
             when(mDetails.getConnectTimeMillis()).thenReturn(connectTimeMillis);
             if (mIsConference) {
                 when(mDetails.hasProperty(Call.Details.PROPERTY_CONFERENCE)).thenReturn(true);

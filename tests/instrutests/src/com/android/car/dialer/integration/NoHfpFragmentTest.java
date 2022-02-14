@@ -16,7 +16,6 @@
 package com.android.car.dialer.integration;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
@@ -25,6 +24,8 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static com.android.car.dialer.testing.TestViewActions.selfClick;
 
 import static org.hamcrest.Matchers.allOf;
 
@@ -100,9 +101,9 @@ public class NoHfpFragmentTest {
                 matches(isDisplayed()));
 
         Intents.init();
-        // Use swipe action to perform the click action since the UI messes up and overlaps with
+        // Use selfClick action to perform the click action since the UI messes up and overlaps with
         // each other.
-        onView(withId(R.id.connect_bluetooth_button)).inRoot(isDialog()).perform(swipeLeft());
+        onView(withId(R.id.connect_bluetooth_button)).inRoot(isDialog()).perform(selfClick());
         intended(allOf(hasAction(Bluetooth_Setting_ACTION),
                 hasCategories(Collections.singleton(Bluetooth_Setting_CATEGORY))));
         Intents.release();

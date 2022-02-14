@@ -30,6 +30,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.android.car.dialer.testing.TestViewActions.bringToFrontAction;
+import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewActions.selfClickWithoutConstraints;
 import static com.android.car.dialer.testing.TestViewActions.waitAction;
 
@@ -147,7 +148,7 @@ public class DialpadTest {
         mBluetoothDevice.insertContactInBackground(contactRawData);
 
         onView(withText(R.string.contacts_title)).perform(click());
-        onView(withId(R.id.list_view))
+        onRecyclerView()
                 .perform(ViewActions.repeatedlyUntil(
                         waitAction(WAIT_ACTION_INTERVAL),
                         hasDescendant(withText(DISPLAY_NAME)), WAIT_MAX_RETRY));

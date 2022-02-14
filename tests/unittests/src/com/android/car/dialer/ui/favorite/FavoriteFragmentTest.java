@@ -16,17 +16,18 @@
 
 package com.android.car.dialer.ui.favorite;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.res.Resources;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -42,7 +43,6 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -56,6 +56,10 @@ import java.util.List;
 public class FavoriteFragmentTest {
     private static final String RAW_NUMBER = "6502530000";
 
+    private static final String RAW_NUMBER_OTHER = "6502530001";
+
+    private static final CharSequence LABEL = "Work";
+
     private FavoriteFragment mFavoriteFragment;
     @Mock
     private UiCallManager mMockUiCallManager;
@@ -65,6 +69,8 @@ public class FavoriteFragmentTest {
     private FavoriteViewModel mFavoriteViewModel;
     @Mock
     private PhoneNumber mMockPhoneNumber;
+    @Mock
+    private PhoneNumber mMockPhoneNumberOther;
 
     ActivityScenario<TestActivity> mActivityScenario;
 
@@ -76,6 +82,10 @@ public class FavoriteFragmentTest {
 
     private void startActivity() {
         when(mMockPhoneNumber.getRawNumber()).thenReturn(RAW_NUMBER);
+        when(mMockPhoneNumber.getReadableLabel(any(Resources.class))).thenReturn(LABEL);
+        when(mMockPhoneNumberOther.getRawNumber()).thenReturn(RAW_NUMBER_OTHER);
+        when(mMockPhoneNumberOther.getReadableLabel(any(Resources.class))).thenReturn(LABEL);
+
         MutableLiveData<FutureData<List<Object>>> favoriteContacts = new MutableLiveData<>(
                 new FutureData<>(false, Arrays.asList(mMockContact)));
 
@@ -97,14 +107,13 @@ public class FavoriteFragmentTest {
         });
     }
 
-    @Ignore
     @Test
     public void testOnItemClick_contactHasPrimaryNumber_placeCall() {
         when(mMockContact.getNumbers()).thenReturn(Arrays.asList(mMockPhoneNumber));
         when(mMockContact.hasPrimaryPhoneNumber()).thenReturn(true);
         when(mMockContact.getPrimaryPhoneNumber()).thenReturn(mMockPhoneNumber);
 
-        onView(withId(R.id.list_view)).perform(
+        onRecyclerView().perform(
                 RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         ArgumentCaptor<String> mCaptor = ArgumentCaptor.forClass(String.class);
@@ -112,13 +121,12 @@ public class FavoriteFragmentTest {
         assertThat(mCaptor.getValue()).isEqualTo(RAW_NUMBER);
     }
 
-    @Ignore
     @Test
     public void testOnItemClick_contactHasOnlyOneNumber_placeCall() {
         when(mMockContact.hasPrimaryPhoneNumber()).thenReturn(false);
         when(mMockContact.getNumbers()).thenReturn(Arrays.asList(mMockPhoneNumber));
 
-        onView(withId(R.id.list_view)).perform(
+        onRecyclerView().perform(
                 RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         ArgumentCaptor<String> mCaptor = ArgumentCaptor.forClass(String.class);
@@ -126,15 +134,12 @@ public class FavoriteFragmentTest {
         assertThat(mCaptor.getValue()).isEqualTo(RAW_NUMBER);
     }
 
-    @Ignore
     @Test
     public void testOnItemClick_contactHasMultiNumbers_notPlaceCall() {
-        when(mMockContact.hasPrimaryPhoneNumber()).thenReturn(false);
-        PhoneNumber otherMockPhoneNumber = mock(PhoneNumber.class);
         when(mMockContact.getNumbers()).thenReturn(
-                Arrays.asList(mMockPhoneNumber, otherMockPhoneNumber));
+                Arrays.asList(mMockPhoneNumber, mMockPhoneNumberOther));
 
-        onView(withId(R.id.list_view)).perform(
+        onRecyclerView().perform(
                 RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         verify(mMockUiCallManager, never()).placeCall(any());

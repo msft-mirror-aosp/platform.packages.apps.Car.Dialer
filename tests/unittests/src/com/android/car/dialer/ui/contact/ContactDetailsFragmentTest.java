@@ -25,6 +25,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isNotClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewActions.selfClick;
 import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
 import static com.android.car.dialer.testing.TestViewMatchers.isActivated;
@@ -61,7 +62,6 @@ import com.android.car.telephony.common.PhoneNumber;
 
 import org.hamcrest.Matcher;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -129,12 +129,11 @@ public class ContactDetailsFragmentTest {
 
     }
 
-    @Ignore
     @Test
     public void testCreateWithContact() {
         setUpFragment();
 
-        onView(withId(R.id.list_view))
+        onRecyclerView()
                 .perform(RecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, hasDescendant(
                         allOf(withId(R.id.title), withText(DISPLAY_NAME))))))
@@ -162,7 +161,7 @@ public class ContactDetailsFragmentTest {
      * Verify the phone numbers for the Contact
      */
     private void verifyPhoneNumber(int position) {
-        onView(withId(R.id.list_view))
+        onRecyclerView()
                 .perform(RecyclerViewActions.scrollToPosition(position))
                 .check(matches(atPosition(position, hasDescendant(
                         allOf(withId(R.id.title), withText(RAW_NUMBERS[position - 1]))))))

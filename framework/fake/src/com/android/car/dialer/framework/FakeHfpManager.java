@@ -87,6 +87,16 @@ public class FakeHfpManager {
         mHfpDeviceListLiveData.postValue(mDeviceList);
     }
 
+    /** Disconnects all devices. Used for tearing down tests properly. */
+    public void tearDown() {
+        for (SimulatedBluetoothDevice device : mDeviceMap.values()) {
+            device.disconnect();
+        }
+
+        mDeviceList.clear();
+        mHfpDeviceListLiveData.postValue(null);
+    }
+
     private SimulatedBluetoothDevice prepareNewDevice(int id) {
         String contactDataFile = TestData.getContactDataFile(id);
         String callLogDataFile = TestData.getCallLogDataFile(id);

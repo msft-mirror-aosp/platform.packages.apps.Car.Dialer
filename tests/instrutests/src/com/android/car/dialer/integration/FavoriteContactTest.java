@@ -205,7 +205,7 @@ public class FavoriteContactTest {
     @After
     public void tearDown() {
         Intents.release();
-        mBluetoothDevice.disconnect();
-        mFakeTelecomManager.clearCalls();
+        mFakeHfpManager.tearDown();
+        mFakeTelecomManager.tearDown();
     }
 }

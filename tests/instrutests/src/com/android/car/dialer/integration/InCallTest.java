@@ -54,7 +54,6 @@ import com.android.car.dialer.ui.TelecomActivity;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,6 +75,7 @@ public class InCallTest {
     private static final int WAIT_MAX_RETRY = 50;
     @Rule
     public final HiltAndroidRule mHiltAndroidRule = new HiltAndroidRule(this);
+
     @Inject FakeHfpManager mFakeHfpManager;
     @Inject FakeTelecomManager mFakeTelecomManager;
     private Context mContext;
@@ -93,7 +93,6 @@ public class InCallTest {
         mBluetoothDevice = mFakeHfpManager.connectHfpDevice(/* withMockData = */false);
     }
 
-    @Ignore
     @Test
     public void placeCall() {
         ContactRawData contactRawData = new ContactRawData();
@@ -108,8 +107,7 @@ public class InCallTest {
                         waitAction(WAIT_ACTION_INTERVAL),
                         hasDescendant(withText(DISPLAY_NAME)), WAIT_MAX_RETRY));
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mFakeTelecomManager.placeCall(PHONE_NUMBER));
+        onView(withText(DISPLAY_NAME)).perform(click());
 
         onView(withText(DISPLAY_NAME)).check(matches(isDisplayed()));
         onView(withText(PHONE_NUMBER_LABEL)).check(matches(isDisplayed()));
@@ -185,6 +183,7 @@ public class InCallTest {
 
     @After
     public void tearDown() {
-        mFakeHfpManager.disconnectHfpDevice(mBluetoothDevice.getDeviceId());
+        mFakeHfpManager.tearDown();
+        mFakeTelecomManager.tearDown();
     }
 }

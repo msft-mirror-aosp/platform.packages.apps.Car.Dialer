@@ -133,10 +133,6 @@ public class DialpadTest {
         onView(withId(R.id.call_button)).perform(selfClickWithoutConstraints());
 
         verify(mTelecomManager).placeCall(eq(CALL_URI), isNull());
-
-        // Teardown properly
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mFakeTelecomManager.clearCalls());
     }
 
     @Test
@@ -159,14 +155,12 @@ public class DialpadTest {
         onView(withText(DISPLAY_NAME)).check(matches(isDisplayed()));
         onView(withId(R.id.contact_result)).perform(click());
         verify(mTelecomManager).placeCall(eq(CALL_URI), isNull());
-
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mFakeTelecomManager.clearCalls());
     }
 
     @After
     public void tearDown() {
-        mBluetoothDevice.disconnect();
+        mFakeHfpManager.tearDown();
+        mFakeTelecomManager.tearDown();
         // Wait InCallActivity is launched and intended before releasing.
         SystemClock.sleep(1000);
         Intents.release();

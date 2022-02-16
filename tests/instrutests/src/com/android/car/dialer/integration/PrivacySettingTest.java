@@ -130,15 +130,12 @@ public class PrivacySettingTest {
                 () -> mFakeTelecomManager.receiveCall(CALL_ID));
 
         assertThat(mNotificationManager.getActiveNotifications().length).isEqualTo(0);
-
-        // Teardown properly
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mFakeTelecomManager.endCall(CALL_ID));
     }
 
     @After
     public void tearDown() {
-        mCallLogDataHandler.tearDown();
+        mFakeHfpManager.tearDown();
+        mFakeTelecomManager.tearDown();
     }
 
     private void waitUntilNotificationShows() {

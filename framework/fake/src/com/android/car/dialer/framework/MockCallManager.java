@@ -32,10 +32,10 @@ import android.provider.CallLog;
 import android.telecom.Call;
 import android.telecom.DisconnectCause;
 import android.telecom.GatewayInfo;
-import android.telecom.InCallService;
 import android.telecom.PhoneAccountHandle;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.dialer.framework.testdata.CallLogDataHandler;
@@ -67,7 +67,7 @@ import javax.inject.Singleton;
 public class MockCallManager {
     private static final String TAG = "CD.MockCallManager";
 
-    private InCallService mInCallService;
+    private InCallServiceProxy mInCallService;
     private final CallLogDataHandler mCallLogDataHandler;
     private final LiveData<BluetoothDevice> mCurrentHfpDevice;
 
@@ -90,15 +90,15 @@ public class MockCallManager {
     /**
      * Registers an InCallService.
      */
-    public void registerInCallService(InCallService inCallService) {
-        mInCallService = inCallService;
-    }
+    public void registerInCallService(@Nullable InCallServiceProxy inCallService) {
+        if (mInCallService != null) {
+            mInCallService.setCallList(Collections.EMPTY_LIST);
+        }
 
-    /**
-     * Returns the mocked call list.
-     */
-    public final List<Call> getCallList() {
-        return mCallList;
+        mInCallService = inCallService;
+        if (mInCallService != null) {
+            mInCallService.setCallList(mCallList);
+        }
     }
 
     /**
@@ -119,7 +119,9 @@ public class MockCallManager {
             hold(mPrimaryCall);
         }
         mCallList.add(call);
-        mInCallService.onCallAdded(call);
+        if (mInCallService != null) {
+            mInCallService.onCallAdded(call);
+        }
         updateList();
     }
 
@@ -184,7 +186,9 @@ public class MockCallManager {
         mCallList.remove(call);
         for (Call child : call.getChildren()) {
             mCallList.remove(child);
-            mInCallService.onCallRemoved(child);
+            if (mInCallService != null) {
+                mInCallService.onCallRemoved(child);
+            }
             List<Call.Callback> callbacks = mCallbacks.remove(child);
             callbacks.stream().forEach(
                     callback -> callback.onStateChanged(child, Call.STATE_DISCONNECTED));
@@ -196,7 +200,9 @@ public class MockCallManager {
             mConferenceCall = null;
         }
         Call parent = call.getParent();
-        mInCallService.onCallRemoved(call);
+        if (mInCallService != null) {
+            mInCallService.onCallRemoved(call);
+        }
         updateList();
 
         List<Call.Callback> callbacks = getCallbacks(call);
@@ -214,7 +220,9 @@ public class MockCallManager {
         // ...check if the conference still has participants
         if (mConferenceCall != null && mConferenceCall.getChildren().size() == 0) {
             mCallList.remove(mConferenceCall);
-            mInCallService.onCallRemoved(mConferenceCall);
+            if (mInCallService != null) {
+                mInCallService.onCallRemoved(mConferenceCall);
+            }
             updateList();
         }
 
@@ -231,7 +239,9 @@ public class MockCallManager {
                             : call.getDetails().getCallDirection() + 1);
             data.setNumber(detail.getNumber());
             data.setInterval(callDuration);
-            mCallLogDataHandler.addOneCallLog(data, mCurrentHfpDevice.getValue().getAddress());
+            BluetoothDevice device =
+                    mCurrentHfpDevice.getValue() == null  ? null : mCurrentHfpDevice.getValue();
+            mCallLogDataHandler.addOneCallLog(data, device == null ? null : device.getAddress());
         }
     }
 
@@ -292,7 +302,9 @@ public class MockCallManager {
 
         if (created) {
             Log.d(TAG, "created conf" + mConferenceCall);
-            mInCallService.onCallAdded(mConferenceCall);
+            if (mInCallService != null) {
+                mInCallService.onCallAdded(mConferenceCall);
+            }
         }
     }
 
@@ -536,17 +548,18 @@ public class MockCallManager {
                     new ComponentName(
                             "com.android.bluetooth",
                             "com.android.bluetooth.hfpclient.HfpClientConnectionService"));
-            doReturn(
-                    mCurrentHfpDevice.getValue() == null
-                            ? "" : mCurrentHfpDevice.getValue().getAddress()).when(
-                                    mockPhoneAccountHandle).getId();
+
+            BluetoothDevice device =
+                    mCurrentHfpDevice.getValue() == null  ? null : mCurrentHfpDevice.getValue();
+            doReturn(device == null ? "" : device.getAddress()).when(
+                    mockPhoneAccountHandle).getId();
             doReturn(mockPhoneAccountHandle).when(mDetails).getAccountHandle();
             when(mDetails.getConnectTimeMillis()).thenReturn(connectTimeMillis);
             if (mIsConference) {
                 when(mDetails.hasProperty(Call.Details.PROPERTY_CONFERENCE)).thenReturn(true);
             }
 
-            when(mCall.getDetails()).thenReturn(mDetails);
+            doReturn(mDetails).when(mCall).getDetails();
             when(mCall.getState()).thenReturn(mCallState);
         }
 

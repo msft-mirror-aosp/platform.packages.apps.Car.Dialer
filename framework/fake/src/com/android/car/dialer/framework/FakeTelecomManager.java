@@ -27,7 +27,6 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.telecom.Call;
 import android.telecom.InCallService;
@@ -50,7 +49,9 @@ public class FakeTelecomManager {
     private static final String TAG = "CD.FakeTelecomManager";
     private static final String ACTION_BIND = "proxy_bind";
 
-    private TelecomManager mSpiedTelecomManager;
+    private final Context mContext;
+    private final TelecomManager mSpiedTelecomManager;
+    private final MockCallManager mMockCallManager;
     private InCallServiceProxy mInCallService;
 
     private final ServiceConnection mInCallServiceConnection = new ServiceConnection() {
@@ -59,19 +60,24 @@ public class FakeTelecomManager {
         public void onServiceConnected(ComponentName name, IBinder binder) {
             Log.d(TAG, "fake telecom manager connected");
             mInCallService = ((InCallServiceProxy.LocalBinder) binder).getService();
+            mMockCallManager.registerInCallService(mInCallService);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.d(TAG, "onServiceDisconnected");
             mInCallService = null;
+            mMockCallManager.registerInCallService(null);
         }
     };
 
     @Inject
-    public FakeTelecomManager(@ApplicationContext Context context) {
+    public FakeTelecomManager(
+            @ApplicationContext Context context, MockCallManager mockCallManager) {
         Log.d(TAG, "Create FakeTelecomManager");
 
+        mContext = context;
+        mMockCallManager = mockCallManager;
         mSpiedTelecomManager = spy(context.getSystemService(TelecomManager.class));
 
         // Mock telecomManager.placeCall()
@@ -86,7 +92,7 @@ public class FakeTelecomManager {
 
                 return null;
             }
-        }).when(mSpiedTelecomManager).placeCall(any(Uri.class), any(Bundle.class));
+        }).when(mSpiedTelecomManager).placeCall(any(Uri.class), any());
 
         bindService(context);
     }
@@ -95,64 +101,40 @@ public class FakeTelecomManager {
      * Places a call.
      */
     public void placeCall(String id) {
-        if (mInCallService != null) {
-            mInCallService.addCall(id, Call.Details.DIRECTION_OUTGOING, Call.STATE_ACTIVE);
-        } else {
-            Log.d(TAG, "null service");
-        }
+        mMockCallManager.addCall(id, Call.Details.DIRECTION_OUTGOING, Call.STATE_ACTIVE);
     }
 
     /**
      * Receive a call.
      */
     public void receiveCall(String id) {
-        if (mInCallService != null) {
-            mInCallService.addCall(id, Call.Details.DIRECTION_INCOMING, Call.STATE_RINGING);
-        } else {
-            Log.d(TAG, "null service");
-        }
+        mMockCallManager.addCall(id, Call.Details.DIRECTION_INCOMING, Call.STATE_RINGING);
     }
 
     /** Answers an incoming call. */
     public void answerCall(String id) {
-        if (mInCallService != null) {
-            mInCallService.answerCall(id);
-        } else {
-            Log.d(TAG, "null service");
-        }
+        mMockCallManager.answerCall(id);
     }
 
     /**
      * Ends a call.
      */
     public void endCall(String id) {
-        if (mInCallService != null) {
-            mInCallService.endCall(id);
-        } else {
-            Log.d(TAG, "null service");
-        }
+        mMockCallManager.endCall(id);
     }
 
     /**
      * Removes all current calls.
      */
     public void clearCalls() {
-        if (mInCallService != null) {
-            mInCallService.clearCalls();
-        } else {
-            Log.d(TAG, "null service");
-        }
+        mMockCallManager.clearCalls();
     }
 
     /**
      * Merges the primary and secondary calls.
      */
     public void mergeCalls() {
-        if (mInCallService != null) {
-            mInCallService.mergeCalls();
-        } else {
-            Log.d(TAG, "null service");
-        }
+        mMockCallManager.mergeCalls();
     }
 
     /**
@@ -185,5 +167,13 @@ public class FakeTelecomManager {
      */
     public TelecomManager getTelecomManager() {
         return mSpiedTelecomManager;
+    }
+
+    /**
+     * Tear down the fake telecom manager and unbin incall service.
+     */
+    public void tearDown() {
+        clearCalls();
+        mContext.unbindService(mInCallServiceConnection);
     }
 }

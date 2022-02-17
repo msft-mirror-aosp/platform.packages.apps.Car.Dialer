@@ -200,8 +200,8 @@ public class RecentCallLogTest {
 
     @After
     public void tearDown() {
-        mFakeTelecomManager.clearCalls();
-        mBluetoothDevice.disconnect();
+        mFakeTelecomManager.tearDown();
+        mFakeHfpManager.tearDown();
         Intents.release();
     }
 

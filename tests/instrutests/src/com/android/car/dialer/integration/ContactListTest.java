@@ -30,6 +30,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
+import static com.android.car.dialer.testing.TestViewActions.waitAction;
 import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
 
 import static org.hamcrest.Matchers.allOf;
@@ -40,10 +41,10 @@ import static org.mockito.Mockito.verify;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.SystemClock;
 import android.telecom.TelecomManager;
 
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -76,6 +77,8 @@ public class ContactListTest {
     private static final String PHONE_NUMBER = "511";
     private static final String PHONE_NUMBER_LABEL = "Work";
     private static final Uri CALL_URI = Uri.fromParts("tel", PHONE_NUMBER, null);
+    private static final long WAIT_ACTION_INTERVAL = 100;
+    private static final int WAIT_MAX_RETRY = 50;
 
     @Inject FakeHfpManager mFakeHfpManager;
     @Inject TelecomManager mTelecomManager;
@@ -152,7 +155,11 @@ public class ContactListTest {
         mSimulatedBluetoothDevice.insertContactInBackground(contact);
 
         // Wait until the insertion is done and verify the contact is rendered correctly.
-        SystemClock.sleep(2000);
+        onRecyclerView()
+                .perform(ViewActions.repeatedlyUntil(
+                        waitAction(WAIT_ACTION_INTERVAL),
+                        hasDescendant(withText(DISPLAY_NAME)), WAIT_MAX_RETRY));
+
         onRecyclerView()
                 .perform(RecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, hasDescendant(
@@ -167,7 +174,7 @@ public class ContactListTest {
     @After
     public void tearDown() {
         Intents.release();
-        mSimulatedBluetoothDevice.disconnect();
-        mFakeTelecomManager.clearCalls();
+        mFakeHfpManager.tearDown();
+        mFakeTelecomManager.tearDown();
     }
 }

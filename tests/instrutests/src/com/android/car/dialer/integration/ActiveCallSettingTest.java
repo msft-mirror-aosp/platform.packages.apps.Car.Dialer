@@ -54,7 +54,6 @@ import androidx.test.uiautomator.Until;
 import com.android.car.dialer.R;
 import com.android.car.dialer.framework.FakeHfpManager;
 import com.android.car.dialer.framework.FakeTelecomManager;
-import com.android.car.dialer.framework.testdata.CallLogDataHandler;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 
@@ -83,7 +82,6 @@ public class ActiveCallSettingTest {
     @Inject FakeHfpManager mFakeHfpManager;
     @Inject FakeTelecomManager mFakeTelecomManager;
     @Inject SharedPreferences mSharedPreferences;
-    @Inject CallLogDataHandler mCallLogDataHandler;
     private Context mContext;
     private UiDevice mUiDevice;
 
@@ -159,7 +157,8 @@ public class ActiveCallSettingTest {
 
     @After
     public void tearDown() {
-        mCallLogDataHandler.tearDown();
+        mFakeHfpManager.tearDown();
+        mFakeTelecomManager.tearDown();
     }
 
     private void clickNotificationAnswerButton() {

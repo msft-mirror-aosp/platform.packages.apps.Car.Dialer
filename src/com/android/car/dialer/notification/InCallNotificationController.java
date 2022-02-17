@@ -122,6 +122,15 @@ public final class InCallNotificationController {
                                 .setLargeIcon(pair.second)
                                 .setContentTitle(TelecomUtils.getBidiWrappedNumber(pair.first));
 
+                        String readableNumber = TelecomUtils.getReadableNumber(
+                                mContext, callNumber);
+                        if (!TextUtils.equals(readableNumber, pair.first)) {
+                            mNotificationBuilder.setContentText(
+                                    mContext.getString(
+                                            R.string.notification_incoming_call_join_number,
+                                            TelecomUtils.getBidiWrappedNumber(readableNumber)));
+                        }
+
                         mNotificationManager.notify(
                                 callNumber,
                                 NOTIFICATION_ID,

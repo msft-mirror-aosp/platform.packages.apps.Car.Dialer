@@ -57,6 +57,8 @@ android_library {
 
     srcs: ["src/**/*.java", "fake/src/**/*.java"],
 
+    resource_dirs: ["fake/res"],
+
     asset_dirs: [
         "fake/assets",
     ],

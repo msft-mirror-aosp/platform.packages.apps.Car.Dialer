@@ -61,6 +61,7 @@ android {
 
         fake {
             java.srcDirs = ['fake/src']
+            res.srcDirs = ['fake/res']
             manifest.srcFile 'fake/AndroidManifest.xml'
             assets.srcDirs = ['fake/assets']
         }

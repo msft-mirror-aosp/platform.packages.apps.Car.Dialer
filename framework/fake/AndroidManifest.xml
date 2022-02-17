@@ -20,6 +20,13 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
-    <application android:debuggable="true"/>
+    <application android:debuggable="true">
+        <activity android:name=".ErrorDialogActivity"
+                  android:excludeFromRecents="true"
+                  android:launchMode="singleInstance"
+                  android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <meta-data android:name="distractionOptimized" android:value="true"/>
+        </activity>
+    </application>
 
 </manifest>

@@ -25,8 +25,12 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.Manifest;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.CallLog;
 import android.telecom.Call;
@@ -60,6 +64,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 /**
  * Manager class for creating and mocking calls.
  */
@@ -67,6 +73,7 @@ import javax.inject.Singleton;
 public class MockCallManager {
     private static final String TAG = "CD.MockCallManager";
 
+    private Context mContext;
     private InCallServiceProxy mInCallService;
     private final CallLogDataHandler mCallLogDataHandler;
     private final LiveData<BluetoothDevice> mCurrentHfpDevice;
@@ -81,8 +88,10 @@ public class MockCallManager {
     private Map<Call, List<Call.Callback>> mCallbacks = new HashMap<>();
 
     @Inject
-    public MockCallManager(CallLogDataHandler callLogDataHandler,
+    public MockCallManager(@ApplicationContext Context context,
+            CallLogDataHandler callLogDataHandler,
             @Named("Hfp") LiveData<BluetoothDevice> currentHfpDevice) {
+        mContext = context;
         mCallLogDataHandler = callLogDataHandler;
         mCurrentHfpDevice = currentHfpDevice;
     }
@@ -106,6 +115,18 @@ public class MockCallManager {
      */
     public void addCall(String id, int direction, int state) {
         Log.d(TAG, "Adding " + id);
+
+        // Check for phone permissions
+        int res = mContext.checkSelfPermission(Manifest.permission.CALL_PHONE);
+        if (res == PackageManager.PERMISSION_DENIED) {
+            Intent intent = new Intent(mContext, ErrorDialogActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(ErrorDialogActivity.ERROR_STRING_EXTRA,
+                    R.string.missing_phone_permission_error);
+            mContext.startActivity(intent);
+            return;
+        }
+
         // Only allow two ongoing calls at once (primary and secondary). A conference call is
         // considered as a single call.
         if (mOngoingCallList.size() == 2) {

@@ -437,6 +437,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="no_hfp"/>
       <item type="string" name="no_phone_numbers"/>
       <item type="string" name="notification_incoming_call"/>
+      <item type="string" name="notification_incoming_call_join_number"/>
       <item type="string" name="one"/>
       <item type="string" name="one_letters"/>
       <item type="string" name="ongoing_conf_title"/>

@@ -71,6 +71,7 @@ public final class InCallNotificationController {
         CharSequence name = mContext.getString(R.string.in_call_notification_channel_name);
         NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name,
                 NotificationManager.IMPORTANCE_HIGH);
+        notificationChannel.setSound(null, null);
         mNotificationManager.createNotificationChannel(notificationChannel);
 
         mNotificationBuilder = new Notification.Builder(mContext, CHANNEL_ID)

@@ -41,6 +41,7 @@
     <application
         android:name=".DialerApplication"
         android:directBootAware="true"
+        android:defaultToDeviceProtectedStorage="true"
         android:label="@string/phone_app_name"
         android:icon="@drawable/ic_app_icon"
         android:supportsRtl="true">

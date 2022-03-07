@@ -235,6 +235,12 @@ public class DialpadFragment extends Hilt_DialpadFragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mToneGenerator.release();
+    }
+
+    @Override
     protected void setupToolbar(ToolbarController toolbar) {
         // Only setup the actionbar if we're in dial mode.
         // In all the other modes, there will be another fragment in the activity

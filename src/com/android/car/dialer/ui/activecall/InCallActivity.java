@@ -100,6 +100,7 @@ public class InCallActivity extends Hilt_InCallActivity {
         L.d(TAG, "onStop");
         if (mIncomingCallLiveData.getValue() != null) {
             mInCallNotificationController.showInCallNotification(mIncomingCallLiveData.getValue());
+            mShowIncomingCall.setValue(false);
         }
     }
 

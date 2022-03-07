@@ -17,6 +17,6 @@
 
 <resources>
     <!-- Keypad dimensions -->
-    <dimen name="keypad_margin_x">@*android:dimen/car_padding_3</dimen>
-    <dimen name="keypad_margin_y">@*android:dimen/car_padding_1</dimen>
+    <dimen name="keypad_margin_x">@dimen/car_ui_padding_3</dimen>
+    <dimen name="keypad_margin_y">@dimen/car_ui_padding_1</dimen>
 </resources>

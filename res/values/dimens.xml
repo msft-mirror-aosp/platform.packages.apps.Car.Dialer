@@ -148,6 +148,7 @@
     <dimen name="car_keyline_1">32dp</dimen>
     <dimen name="car_keyline_3">128dp</dimen>
     <dimen name="car_keyline_4">168dp</dimen>
+    <dimen name="car_textview_fading_edge_length">40dp</dimen>
 
     <!-- Loading status view dimensions -->
     <dimen name="loading_info_icon_size">56dp</dimen>

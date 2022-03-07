@@ -17,7 +17,7 @@
     <color name="car_key2">@color/car_key2_light</color>
 
     <!-- InCall page -->
-    <color name="onhold_call_background">@*android:color/car_grey_900</color>
+    <color name="onhold_call_background">@color/car_grey_900</color>
 
     <!-- Components -->
     <color name="divider_color">@color/divider_color_dark</color>

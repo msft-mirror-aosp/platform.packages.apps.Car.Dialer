@@ -138,7 +138,7 @@
     <style name="Widget.Dialer.Button" parent="android:Widget.DeviceDefault.Button">
         <item name="android:ellipsize">none</item>
         <item name="android:requiresFadingEdge">horizontal</item>
-        <item name="android:fadingEdgeLength">@*android:dimen/car_textview_fading_edge_length</item>
+        <item name="android:fadingEdgeLength">@dimen/car_textview_fading_edge_length</item>
     </style>
 
     <style name="LoadingInfoMessageStyle" parent="FullScreenErrorMessageStyle">

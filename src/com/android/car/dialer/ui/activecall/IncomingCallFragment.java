@@ -24,10 +24,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.dialer.R;
-import com.android.car.telephony.common.CallDetail;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -41,10 +39,9 @@ public class IncomingCallFragment extends Hilt_IncomingCallFragment {
         TextView mCallStateView = fragmentView.findViewById(R.id.user_profile_call_state);
         mCallStateView.setText(getString(R.string.call_state_call_ringing));
 
-        InCallViewModel inCallViewModel = new ViewModelProvider(getActivity()).get(
-                InCallViewModel.class);
-        inCallViewModel.getIncomingCall().observe(this, call -> bindUserProfileView(
-                call == null ? null : CallDetail.fromTelecomCallDetail(call.getDetails())));
+        mInCallViewModel.getIncomingCallerInfoLiveData().observe(this,
+                contact -> presentCallerInfo(
+                        contact, mInCallViewModel.getIncomingCallDetail().getValue()));
         return fragmentView;
     }
 }

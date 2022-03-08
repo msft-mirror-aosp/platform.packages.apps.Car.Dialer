@@ -49,6 +49,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 @RunWith(AndroidJUnit4.class)
 public class InCallViewModelTest {
@@ -114,8 +115,8 @@ public class InCallViewModelTest {
                         mMockDialingCall, mMockActiveCall, mMockHoldingCall)));
 
         mInCallViewModel = new InCallViewModel(mMockLocalCallHandler,
-                mMockAudioRouteLiveDataFactory,
-                mMockSupportedAudioRoutesLiveDataFactory, new MutableLiveData<>());
+                mMockAudioRouteLiveDataFactory, mMockSupportedAudioRoutesLiveDataFactory,
+                Executors.newSingleThreadExecutor(), new MutableLiveData<>());
         mInCallViewModel.getIncomingCall().observeForever(s -> { });
         mInCallViewModel.getOngoingCallList().observeForever(s -> { });
         mInCallViewModel.getPrimaryCall().observeForever(s -> { });

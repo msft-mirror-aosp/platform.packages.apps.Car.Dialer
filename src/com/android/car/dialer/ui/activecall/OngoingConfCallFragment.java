@@ -57,11 +57,6 @@ public class OngoingConfCallFragment extends Hilt_OngoingConfCallFragment {
     private ConferenceProfileAdapter mConfProfileAdapter;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.ongoing_conf_call_fragment,
@@ -90,6 +85,9 @@ public class OngoingConfCallFragment extends Hilt_OngoingConfCallFragment {
             mConfProfileAdapter.setConferenceList(list);
             updateTitle(list.size());
         });
+
+        inCallViewModel.getContactListLiveData().observe(this,
+                contacts -> mConfProfileAdapter.notifyDataSetChanged());
 
         mDialpadState = inCallViewModel.getDialpadOpenState();
         mDialpadState.observe(this, isDialpadOpen -> {

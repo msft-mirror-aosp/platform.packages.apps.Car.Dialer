@@ -42,7 +42,7 @@ final class NotificationUtils {
     static CompletableFuture<Pair<String, Icon>> getDisplayNameAndRoundedAvatar(Context context,
             String number, String accountName) {
         return CompletableFuture.supplyAsync(() -> {
-            Contact contact = InMemoryPhoneBook.get().lookupContactEntry(number, accountName);
+            Contact contact = InMemoryPhoneBook.get().lookupContactEntryAsync(number, accountName);
 
             int size = context.getResources().getDimensionPixelSize(R.dimen.avatar_icon_size);
             float cornerRadiusPercent = context.getResources()

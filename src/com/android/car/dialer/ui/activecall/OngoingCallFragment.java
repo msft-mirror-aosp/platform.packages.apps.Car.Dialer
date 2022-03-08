@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.BackgroundImageView;
 import com.android.car.dialer.R;
@@ -55,13 +54,12 @@ public class OngoingCallFragment extends Hilt_OngoingCallFragment {
         mOnholdCallFragment = getChildFragmentManager().findFragmentById(R.id.onhold_user_profile);
         mDialpadFragment = getChildFragmentManager().findFragmentById(R.id.incall_dialpad_fragment);
 
-        InCallViewModel inCallViewModel = new ViewModelProvider(getActivity()).get(
-                InCallViewModel.class);
+        mInCallViewModel.getPrimaryCallerInfoLiveData().observe(this,
+                contact -> presentCallerInfo(
+                        contact, mInCallViewModel.getPrimaryCallDetail().getValue()));
+        mInCallViewModel.getCallStateAndConnectTime().observe(this, this::updateCallDescription);
 
-        inCallViewModel.getPrimaryCallDetail().observe(this, this::bindUserProfileView);
-        inCallViewModel.getCallStateAndConnectTime().observe(this, this::updateCallDescription);
-
-        mDialpadState = inCallViewModel.getDialpadOpenState();
+        mDialpadState = mInCallViewModel.getDialpadOpenState();
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
             @Override
@@ -81,7 +79,7 @@ public class OngoingCallFragment extends Hilt_OngoingCallFragment {
             }
         });
 
-        inCallViewModel.shouldShowOnholdCall().observe(this,
+        mInCallViewModel.shouldShowOnholdCall().observe(this,
                 this::maybeShowOnholdCallFragment);
 
         return fragmentView;

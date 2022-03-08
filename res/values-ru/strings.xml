@@ -31,7 +31,7 @@
     <string name="answer_call" msgid="3272474440561548115">"Ответить"</string>
     <string name="call_back" msgid="5745638356098600872">"Перезвонить"</string>
     <string name="audio_route_vehicle" msgid="6250361588960528769">"Автомобильные колонки"</string>
-    <string name="audio_route_phone_speaker" msgid="4608904003558187244">"Встроен. динамик"</string>
+    <string name="audio_route_phone_speaker" msgid="4608904003558187244">"Встроенный динамик"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"Телефон"</string>
     <string name="dial_a_number" msgid="7432322177412387160">"Набрать номер"</string>
     <string name="call_history_title" msgid="7997887846276371553">"Недавние"</string>

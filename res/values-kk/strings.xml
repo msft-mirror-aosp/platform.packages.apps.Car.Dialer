@@ -21,7 +21,7 @@
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth қолжетімді емес."</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"Қоңырау шалу не қабылдау үшін Bluetooth функциясын қосыңыз."</string>
     <string name="bluetooth_unpaired" msgid="1600552386483652892">"Қоңырау шалу немесе қабылдау үшін телефоныңызды көлікпен жұптаңыз."</string>
-    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Bluetooth-қа жалғау"</string>
+    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Bluetooth-ке жалғау"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Төтенше жағдай"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Құтқару қызметіне қоңырау шалу"</string>
     <string name="error_contact_deleted" msgid="6356539067659368396">"Бұл контакт жойылған."</string>

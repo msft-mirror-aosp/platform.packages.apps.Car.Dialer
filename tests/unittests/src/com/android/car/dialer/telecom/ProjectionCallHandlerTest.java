@@ -45,6 +45,8 @@ import android.telecom.TelecomManager;
 import androidx.annotation.Nullable;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.android.car.dialer.notification.InCallNotificationController;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -81,6 +83,10 @@ public class ProjectionCallHandlerTest {
     private TelecomManager mTelecomManager;
     @Mock
     private CarProjectionManager mCarProjectionManager;
+    @Mock
+    private UiCallManager mUiCallManager;
+    @Mock
+    private InCallNotificationController mInCallNotificationController;
 
     private ProjectionCallHandler mProjectionCallHandler;
 
@@ -93,7 +99,7 @@ public class ProjectionCallHandlerTest {
         when(mTelecomManager.isInEmergencyCall()).thenReturn(false);
 
         mProjectionCallHandler = new ProjectionCallHandler(mContext, mTelecomManager,
-                car -> mCarProjectionManager);
+                car -> mCarProjectionManager, mUiCallManager, mInCallNotificationController);
     }
 
     @Test

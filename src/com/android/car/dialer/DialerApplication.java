@@ -18,6 +18,7 @@ package com.android.car.dialer;
 
 import android.app.Application;
 import android.bluetooth.BluetoothDevice;
+import android.content.IntentFilter;
 
 import androidx.lifecycle.LiveData;
 
@@ -25,6 +26,7 @@ import com.android.car.dialer.bluetooth.CallHistoryManager;
 import com.android.car.dialer.bluetooth.UiBluetoothMonitor;
 import com.android.car.dialer.framework.AndroidFramework;
 import com.android.car.dialer.notification.MissedCallNotificationController;
+import com.android.car.dialer.storage.BluetoothBondedListReceiver;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 
@@ -54,6 +56,9 @@ public final class DialerApplication extends Hilt_DialerApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Register the broadcast receiver since ACTION_BOND_STATE_CHANGED is implicit intent.
+        registerReceiver(new BluetoothBondedListReceiver(),
+                new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
         mAndroidFramework.start();
         InMemoryPhoneBook.init(this);
     }

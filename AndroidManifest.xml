@@ -24,6 +24,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
@@ -35,6 +36,7 @@
     <uses-permission android:name="android.car.permission.ACCESS_CAR_PROJECTION_STATUS"/>
     <uses-permission android:name="android.permission.SEND_SMS"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.PROCESS_PHONE_ACCOUNT_REGISTRATION"/>
 
     <!-- The Dialer needs to be directBootAware so that it can reflect the correct call state
          when the system boots up. -->
@@ -124,6 +126,11 @@
                  android:permission="android.permission.BIND_JOB_SERVICE">
         </service>
 
+        <service
+            android:name=".service.StartAppService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+
         <receiver
             android:directBootAware="true"
             android:exported="false"
@@ -134,11 +141,11 @@
         </receiver>
 
         <receiver
-            android:directBootAware="true"
-            android:exported="false"
-            android:name="com.android.car.dialer.storage.BluetoothBondedListReceiver">
+            android:name="com.android.car.dialer.service.OnBootReceiver"
+            android:exported="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
-                <action android:name="android.bluetooth.device.action.BOND_STATE_CHANGED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

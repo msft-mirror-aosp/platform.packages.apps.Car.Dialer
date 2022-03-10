@@ -32,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.android.car.dialer.log.L;
+import com.android.car.dialer.notification.InCallNotificationController;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +56,8 @@ class ProjectionCallHandler implements InCallServiceImpl.ActiveCallListChangedCa
     private final Context mContext;
     private final TelecomManager mTelecomManager;
     private final CarProjectionManagerProvider mCarProjectionManagerProvider;
+    private final UiCallManager mUiCallManager;
+    private final InCallNotificationController mInCallNotificationController;
     private Car mCar;
     private CarProjectionManager mCarProjectionManager;
 
@@ -62,17 +65,24 @@ class ProjectionCallHandler implements InCallServiceImpl.ActiveCallListChangedCa
     private List<ProjectionStatus> mProjectionDetails = Collections.emptyList();
 
     @Inject
-    ProjectionCallHandler(@ApplicationContext Context context, TelecomManager telecomManager) {
+    ProjectionCallHandler(@ApplicationContext Context context, TelecomManager telecomManager,
+                          UiCallManager uiCallManager,
+                          InCallNotificationController inCallNotificationController) {
         this(context, telecomManager,
-                car -> (CarProjectionManager) car.getCarManager(Car.PROJECTION_SERVICE));
+                car -> (CarProjectionManager) car.getCarManager(Car.PROJECTION_SERVICE),
+                uiCallManager, inCallNotificationController);
     }
 
     @VisibleForTesting
     ProjectionCallHandler(Context context, TelecomManager telecomManager,
-            CarProjectionManagerProvider projectionManagerProvider) {
+                          CarProjectionManagerProvider projectionManagerProvider,
+                          UiCallManager uiCallManager,
+                          InCallNotificationController inCallNotificationController) {
         mContext = context;
         mTelecomManager = telecomManager;
         mCarProjectionManagerProvider = projectionManagerProvider;
+        mUiCallManager = uiCallManager;
+        mInCallNotificationController = inCallNotificationController;
     }
 
     void start() {
@@ -101,6 +111,13 @@ class ProjectionCallHandler implements InCallServiceImpl.ActiveCallListChangedCa
             int state, String packageName, List<ProjectionStatus> details) {
         mProjectionState = state;
         mProjectionDetails = details;
+
+        if (state == ProjectionStatus.PROJECTION_STATE_ACTIVE_FOREGROUND) {
+            List<Call> callList = mUiCallManager.getCallList();
+            for (Call call : callList) {
+                mInCallNotificationController.cancelInCallNotification(call);
+            }
+        }
     }
 
     @Override

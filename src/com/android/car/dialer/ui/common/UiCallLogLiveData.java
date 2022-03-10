@@ -17,7 +17,6 @@
 package com.android.car.dialer.ui.common;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
@@ -33,6 +32,7 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneCallLog;
 import com.android.car.telephony.common.PhoneNumber;
+import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -131,8 +131,7 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
             Contact contact = inMemoryPhoneBook.lookupContactEntry(
                     number, phoneCallLog.getAccountName());
 
-            String readableNumber = TextUtils.isEmpty(number)
-                    ? mContext.getString(R.string.unknown) : number;
+            String readableNumber = TelecomUtils.getReadableNumber(mContext, number);
             UiCallLog uiCallLog = new UiCallLog(
                     contact == null ? readableNumber : contact.getDisplayName(),
                     contact == null ? readableNumber : contact.getDisplayNameAlt(),

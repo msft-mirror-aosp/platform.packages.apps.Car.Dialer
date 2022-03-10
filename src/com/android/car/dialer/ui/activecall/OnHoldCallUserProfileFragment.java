@@ -37,7 +37,6 @@ import com.android.car.dialer.R;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
-import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.TelecomUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -77,7 +76,7 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         mSwapCallsView.setOnClickListener(v -> swapCalls());
 
         mInCallViewModel = new ViewModelProvider(getActivity()).get(InCallViewModel.class);
-        mInCallViewModel.getSecondaryCallDetail().observe(this, this::updateProfile);
+        mInCallViewModel.getSecondaryCallerInfoLiveData().observe(this, this::updateProfile);
         mPrimaryCallLiveData = mInCallViewModel.getPrimaryCall();
 
         mTimeTextView = fragmentView.findViewById(R.id.time);
@@ -98,12 +97,10 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         mTimeTextView.start();
     }
 
-    private void updateProfile(@Nullable CallDetail callDetail) {
+    private void updateProfileInfo(@Nullable CallDetail callDetail) {
         if (callDetail == null) {
             return;
         }
-        mInCallViewModel.getContactListLiveData().removeObservers(this);
-
         mAvatarView.setImageDrawable(mDefaultAvatar);
 
         if (callDetail.isConference()) {
@@ -113,14 +110,11 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
 
         String number = callDetail.getNumber();
         mTitle.setText(TelecomUtils.getReadableNumber(getContext(), number));
-
-        mInCallViewModel.getContactListLiveData().observe(this, contacts -> {
-            updateProfileInfo(number, callDetail.getPhoneAccountHandle().getId());
-        });
     }
 
-    private void updateProfileInfo(String number, String accountName) {
-        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(number, accountName);
+    private void updateProfile(Contact contact) {
+        CallDetail callDetail = mInCallViewModel.getSecondaryCallDetail().getValue();
+        updateProfileInfo(callDetail);
         if (contact == null) {
             return;
         }

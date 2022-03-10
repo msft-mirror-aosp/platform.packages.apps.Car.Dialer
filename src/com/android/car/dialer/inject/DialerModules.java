@@ -27,6 +27,9 @@ import com.android.car.dialer.ui.common.DialerBaseFragment;
 import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
 import com.android.car.telephony.common.Contact;
+import com.android.car.telephony.common.WorkerExecutor;
+
+import java.util.concurrent.ExecutorService;
 
 import javax.inject.Singleton;
 
@@ -54,6 +57,11 @@ public final class DialerModules {
         @Provides
         static SharedPreferences provideSharedPreferences(@ApplicationContext Context context) {
             return PreferenceManager.getDefaultSharedPreferences(context);
+        }
+
+        @Provides
+        static ExecutorService provideSingleThreadExecutorService() {
+            return WorkerExecutor.getInstance().getSingleThreadExecutor();
         }
     }
 

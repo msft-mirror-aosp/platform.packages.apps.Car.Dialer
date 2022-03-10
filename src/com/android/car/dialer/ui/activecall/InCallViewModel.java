@@ -30,6 +30,7 @@ import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
 import com.android.car.dialer.livedata.CallDetailLiveData;
 import com.android.car.dialer.livedata.CallStateLiveData;
+import com.android.car.dialer.livedata.CallerInfoLiveData;
 import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
 import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 
@@ -59,6 +61,7 @@ public class InCallViewModel extends ViewModel {
     private final AudioRouteLiveData.Factory mAudioRouteLiveDataFactory;
     private final SupportedAudioRoutesLiveData.Factory mSupportedAudioRoutesLiveDataFactory;
     private final LiveData<List<Contact>> mContactListLiveData;
+    private final ExecutorService mExecutorService;
 
     private final MutableLiveData<Boolean> mHasOngoingCallChangedLiveData;
     private final MediatorLiveData<List<Call>> mOngoingCallListLiveData;
@@ -66,10 +69,15 @@ public class InCallViewModel extends ViewModel {
     private final LiveData<List<CallDetail>> mConferenceCallDetailListLiveData;
     private final Comparator<Call> mCallComparator;
 
+    private final LiveData<CallDetail> mIncomingCallDetailLiveData;
+    private final CallerInfoLiveData mIncomingCallerInfoLiveData;
+
     private final CallDetailLiveData mCallDetailLiveData;
     private final LiveData<Integer> mCallStateLiveData;
     private final LiveData<Call> mPrimaryCallLiveData;
     private final LiveData<Call> mSecondaryCallLiveData;
+    private final LiveData<Contact> mPrimaryCallerInfoLiveData;
+    private final LiveData<Contact> mSecondaryCallerInfoLiveData;
     private final CallDetailLiveData mSecondaryCallDetailLiveData;
     private final LiveData<Pair<Call, Call>> mOngoingCallPairLiveData;
     private final MutableLiveData<Boolean> mDialpadIsOpen;
@@ -107,11 +115,13 @@ public class InCallViewModel extends ViewModel {
             LocalCallHandler localCallHandler,
             AudioRouteLiveData.Factory audioRouteLiveDataFactory,
             SupportedAudioRoutesLiveData.Factory supportedAudioRouteLiveDataFactory,
+            ExecutorService executorService,
             LiveData<List<Contact>> contactListLiveData) {
         mLocalCallHandler = localCallHandler;
         mAudioRouteLiveDataFactory = audioRouteLiveDataFactory;
         mSupportedAudioRoutesLiveDataFactory = supportedAudioRouteLiveDataFactory;
         mContactListLiveData = contactListLiveData;
+        mExecutorService = executorService;
 
         mCallComparator = new CallComparator();
 
@@ -132,12 +142,22 @@ public class InCallViewModel extends ViewModel {
                     return detailList;
                 });
 
+        mIncomingCallDetailLiveData = Transformations.switchMap(
+                mLocalCallHandler.getIncomingCallLiveData(), input -> {
+                    CallDetailLiveData callDetailLiveData = new CallDetailLiveData();
+                    callDetailLiveData.setTelecomCall(input);
+                    return callDetailLiveData;
+                });
+        mIncomingCallerInfoLiveData = new CallerInfoLiveData(
+                mIncomingCallDetailLiveData, mExecutorService);
+
         mCallDetailLiveData = new CallDetailLiveData();
         mPrimaryCallLiveData = Transformations.map(mOngoingCallListLiveData, input -> {
             Call call = input.isEmpty() ? null : input.get(0);
             mCallDetailLiveData.setTelecomCall(call);
             return call;
         });
+        mPrimaryCallerInfoLiveData = new CallerInfoLiveData(mCallDetailLiveData, mExecutorService);
         mAudioRouteLiveData = mAudioRouteLiveDataFactory.create(mCallDetailLiveData);
         mSupportedAudioRoutesLiveData = mSupportedAudioRoutesLiveDataFactory.create(
                 mCallDetailLiveData);
@@ -159,6 +179,8 @@ public class InCallViewModel extends ViewModel {
             mSecondaryCallDetailLiveData.setTelecomCall(call);
             return call;
         });
+        mSecondaryCallerInfoLiveData = new CallerInfoLiveData(
+                mSecondaryCallDetailLiveData, mExecutorService);
 
         mSecondaryCallConnectTimeLiveData = Transformations.map(mSecondaryCallDetailLiveData,
                 details -> {
@@ -202,6 +224,10 @@ public class InCallViewModel extends ViewModel {
     /** Returns the live data which monitors the current incoming call. */
     public LiveData<Call> getIncomingCall() {
         return mLocalCallHandler.getIncomingCallLiveData();
+    }
+
+    public LiveData<CallDetail> getIncomingCallDetail() {
+        return mIncomingCallDetailLiveData;
     }
 
     /** Returns {@link LiveData} for the ongoing call list which excludes the ringing call. */
@@ -303,6 +329,18 @@ public class InCallViewModel extends ViewModel {
     /** Return the livedata monitors onhold call status. */
     public LiveData<Boolean> shouldShowOnholdCall() {
         return mShowOnholdCall;
+    }
+
+    public LiveData<Contact> getPrimaryCallerInfoLiveData() {
+        return mPrimaryCallerInfoLiveData;
+    }
+
+    public LiveData<Contact> getSecondaryCallerInfoLiveData() {
+        return mSecondaryCallerInfoLiveData;
+    }
+
+    public LiveData<Contact> getIncomingCallerInfoLiveData() {
+        return mIncomingCallerInfoLiveData;
     }
 
     @Override

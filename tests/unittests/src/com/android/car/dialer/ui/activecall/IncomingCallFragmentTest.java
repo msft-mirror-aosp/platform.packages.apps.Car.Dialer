@@ -26,35 +26,30 @@ import static org.mockito.Mockito.when;
 
 import android.telecom.Call;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.R;
 import com.android.car.dialer.testing.MockEntityFactory;
 import com.android.car.dialer.testing.TestActivity;
+import com.android.car.telephony.common.CallDetail;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 
 @RunWith(AndroidJUnit4.class)
 public class IncomingCallFragmentTest {
     private static final String NUMBER = "1234567890";
-    @Mock
-    private Call mMockCall;
-    private LiveData<Call> mCallLiveData;
+    private CallDetail mCallDetail;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-
-        when(mMockCall.getState()).thenReturn(Call.STATE_RINGING);
     }
 
     @Test
@@ -79,10 +74,12 @@ public class IncomingCallFragmentTest {
         activityScenario.onActivity(activity -> {
             InCallViewModel mockInCallViewModel = new ViewModelProvider(activity).get(
                     InCallViewModel.class);
-            mCallLiveData = new MutableLiveData<>(mMockCall);
             Call.Details mockDetails = MockEntityFactory.createMockCallDetails(NUMBER);
-            when(mMockCall.getDetails()).thenReturn(mockDetails);
-            when(mockInCallViewModel.getIncomingCall()).thenReturn(mCallLiveData);
+            mCallDetail = CallDetail.fromTelecomCallDetail(mockDetails);
+            when(mockInCallViewModel.getIncomingCallDetail()).thenReturn(
+                    LiveDataFunctions.dataOf(mCallDetail));
+            when(mockInCallViewModel.getIncomingCallerInfoLiveData()).thenReturn(
+                    LiveDataFunctions.nullLiveData());
             activity.getSupportFragmentManager().beginTransaction().add(
                     R.id.test_fragment_container,
                     new IncomingCallFragment()).commit();

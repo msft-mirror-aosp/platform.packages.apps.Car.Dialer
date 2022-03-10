@@ -40,7 +40,6 @@ import com.android.car.dialer.log.L;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
-import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 
@@ -53,12 +52,14 @@ import com.bumptech.glide.request.target.Target;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/** A fragment that displays information about a call with actions. */
+/**
+ * A fragment that displays information about a call with actions.
+ */
 @AndroidEntryPoint(Fragment.class)
 public abstract class InCallFragment extends Hilt_InCallFragment {
     private static final String TAG = "CD.InCallFragment";
 
-    private InCallViewModel mInCallViewModel;
+    protected InCallViewModel mInCallViewModel;
 
     private View mUserProfileContainerView;
     private TextView mPhoneNumberView;
@@ -69,13 +70,12 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     private ImageView mAvatarView;
     private BackgroundImageView mBackgroundImage;
     private LetterTileDrawable mDefaultAvatar;
-    private String mCurrentNumber;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDefaultAvatar = TelecomUtils.createLetterTile(getContext(), null, null);
-        mInCallViewModel = new ViewModelProvider(this).get(InCallViewModel.class);
+        mInCallViewModel = new ViewModelProvider(getActivity()).get(InCallViewModel.class);
     }
 
     /**
@@ -95,35 +95,31 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         mBackgroundImage = view.findViewById(R.id.background_image);
     }
 
-    /** Presents the user profile. */
-    protected void bindUserProfileView(@Nullable CallDetail callDetail) {
-        L.i(TAG, "bindUserProfileView: %s", callDetail);
+    /**
+     * Presents the user profile.
+     */
+    protected void presentCallDetail(@Nullable CallDetail callDetail) {
+        L.i(TAG, "presentCallDetail: %s", callDetail);
         if (callDetail == null) {
             return;
         }
-        mInCallViewModel.getContactListLiveData().removeObservers(this);
 
         String number = callDetail.getNumber();
-        if (mCurrentNumber != null && mCurrentNumber.equals(number)) {
-            return;
-        }
-        mCurrentNumber = number;
-
         mNameView.setText(TelecomUtils.getReadableNumber(getContext(), number));
         ViewUtils.setVisible(mPhoneLabelView, false);
         mPhoneNumberView.setVisibility(View.GONE);
         mAvatarView.setImageDrawable(mDefaultAvatar);
-
-        mInCallViewModel.getContactListLiveData().observe(this, contacts -> updateProfileInfo(
-                number, callDetail.getPhoneAccountHandle().getId()));
     }
 
-    private void updateProfileInfo(String number, String accountName) {
-        Contact contact = InMemoryPhoneBook.get().lookupContactEntry(number, accountName);
+    protected void presentCallerInfo(Contact contact, CallDetail callDetail) {
+        presentCallDetail(callDetail);
+
+        L.i(TAG, "presentCallerInfo: " + contact);
         if (contact == null) {
             return;
         }
 
+        String number = callDetail.getNumber();
         String nameViewText = contact.getDisplayName();
         String formattedNumber = TelecomUtils.getReadableNumber(getContext(), number);
         mNameView.setText(nameViewText);
@@ -154,7 +150,7 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                            Target<Drawable> target, boolean isFirstResource) {
+                                                Target<Drawable> target, boolean isFirstResource) {
                         mBackgroundImage.setAlpha(getResources().getFloat(
                                 R.dimen.config_background_image_error_alpha));
                         mBackgroundImage.setBackgroundColor(letterTile.getColor());
@@ -163,8 +159,8 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
 
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model,
-                            Target<Drawable> target, DataSource dataSource,
-                            boolean isFirstResource) {
+                                                   Target<Drawable> target, DataSource dataSource,
+                                                   boolean isFirstResource) {
                         mBackgroundImage.setAlpha(getResources().getFloat(
                                 R.dimen.config_background_image_alpha));
                         mBackgroundImage.setBackgroundDrawable(resource, false);
@@ -173,7 +169,9 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
                 }).into(mAvatarView);
     }
 
-    /** Presents the call state and call duration. */
+    /**
+     * Presents the call state and call duration.
+     */
     protected void updateCallDescription(@Nullable Pair<Integer, Long> callStateAndConnectTime) {
         if (callStateAndConnectTime == null || callStateAndConnectTime.first == null) {
             mUserProfileCallStateText.stop();

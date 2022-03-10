@@ -110,6 +110,8 @@ public class OngoingCallFragmentTest {
             when(mockInCallViewModel.getPrimaryCallState())
                     .thenReturn(new MutableLiveData<>(Call.STATE_ACTIVE));
             when(mockInCallViewModel.getPrimaryCallDetail()).thenReturn(mMockCallDetailLiveData);
+            when(mockInCallViewModel.getPrimaryCallerInfoLiveData()).thenReturn(
+                    new MutableLiveData<>(null));
             when(mockInCallViewModel.getCallStateAndConnectTime())
                     .thenReturn(mCallStateAndConnectTimeLiveData);
             when(mockInCallViewModel.shouldShowOnholdCall()).thenReturn(mShouldShowOnHoldCall);
@@ -119,6 +121,8 @@ public class OngoingCallFragmentTest {
             when(mockInCallViewModel.getSupportedAudioRoutes())
                     .thenReturn(new MutableLiveData<>(Collections.EMPTY_LIST));
             when(mockInCallViewModel.getSecondaryCallDetail()).thenReturn(mMockCallDetailLiveData);
+            when(mockInCallViewModel.getSecondaryCallerInfoLiveData()).thenReturn(
+                    new MutableLiveData<>(null));
             when(mockInCallViewModel.getPrimaryCall()).thenReturn(new MutableLiveData<>(mMockCall));
             when(mockInCallViewModel.getSecondaryCallConnectTime())
                     .thenReturn(new MutableLiveData<>(1000L));

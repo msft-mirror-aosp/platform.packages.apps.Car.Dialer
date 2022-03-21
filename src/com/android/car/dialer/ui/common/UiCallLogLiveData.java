@@ -38,8 +38,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Represents a list of {@link UiCallLog}s and label {@link String}s for UI representation. This
@@ -49,20 +52,26 @@ import java.util.concurrent.Future;
 public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
     private static final String TAG = "CD.UiCallLogLiveData";
 
-    private final ExecutorService mExecutorService;
+    private final ExecutorService mSingleThreadExecutor;
     private Future<?> mRunnableFuture;
     private Context mContext;
 
-    public UiCallLogLiveData(Context context,
-            HeartBeatLiveData heartBeatLiveData,
+    @Inject
+    public UiCallLogLiveData(
+            @ApplicationContext Context context,
+            HeartBeatLiveData.Factory heartBeatLiveDataFactory,
             LiveData<List<PhoneCallLog>> callHistoryLiveData,
-            LiveData<List<Contact>> contactListLiveData) {
+            LiveData<List<Contact>> contactListLiveData,
+            ExecutorService singleThreadExecutor) {
         mContext = context;
-        mExecutorService = Executors.newSingleThreadExecutor();
+        mSingleThreadExecutor = singleThreadExecutor;
 
         addSource(callHistoryLiveData, this::onCallHistoryChanged);
         addSource(contactListLiveData,
                 (contacts) -> onContactsChanged(callHistoryLiveData.getValue()));
+
+        HeartBeatLiveData heartBeatLiveData =
+                heartBeatLiveDataFactory.create(DateUtils.MINUTE_IN_MILLIS);
         addSource(heartBeatLiveData, (trigger) -> updateRelativeTime());
     }
 
@@ -71,7 +80,7 @@ public class UiCallLogLiveData extends MediatorLiveData<List<Object>> {
             mRunnableFuture.cancel(true);
         }
         Runnable runnable = () -> postValue(convert(callLogs));
-        mRunnableFuture = mExecutorService.submit(runnable);
+        mRunnableFuture = mSingleThreadExecutor.submit(runnable);
     }
 
     private void onContactsChanged(List<PhoneCallLog> callLogs) {

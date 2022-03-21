@@ -17,18 +17,14 @@
 package com.android.car.dialer.ui.calllog;
 
 import android.content.Context;
-import android.text.format.DateUtils;
 
 import androidx.lifecycle.LiveData;
 
 import com.android.car.apps.common.util.FutureData;
 import com.android.car.apps.common.util.LiveDataFunctions;
-import com.android.car.dialer.bluetooth.CallHistoryManager;
-import com.android.car.dialer.livedata.HeartBeatLiveData;
 import com.android.car.dialer.livedata.SharedPreferencesLiveData;
 import com.android.car.dialer.ui.common.DialerListViewModel;
 import com.android.car.dialer.ui.common.UiCallLogLiveData;
-import com.android.car.telephony.common.InMemoryPhoneBook;
 
 import java.util.List;
 
@@ -40,8 +36,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 /** View model for CallHistoryFragment which provides call history live data. */
 @HiltViewModel
 public class CallHistoryViewModel extends DialerListViewModel {
-    private final CallHistoryManager mCallHistoryManager;
-
     private UiCallLogLiveData mUiCallLogLiveData;
     private LiveData<FutureData<List<Object>>> mUiCallLogFutureData;
 
@@ -49,14 +43,9 @@ public class CallHistoryViewModel extends DialerListViewModel {
     public CallHistoryViewModel(
             @ApplicationContext Context context,
             SharedPreferencesLiveData.Factory sharedPreferencesFactory,
-            CallHistoryManager callHistoryManager) {
+            UiCallLogLiveData uiCallLogLiveData) {
         super(context, sharedPreferencesFactory);
-        mCallHistoryManager = callHistoryManager;
-        mUiCallLogLiveData = new UiCallLogLiveData(context,
-                new HeartBeatLiveData(DateUtils.MINUTE_IN_MILLIS),
-                mCallHistoryManager.getCallHistoryLiveData(),
-                InMemoryPhoneBook.get().getContactsLiveData());
-
+        mUiCallLogLiveData = uiCallLogLiveData;
         mUiCallLogFutureData = LiveDataFunctions.loadingSwitchMap(mUiCallLogLiveData,
                 input -> LiveDataFunctions.dataOf(input));
     }

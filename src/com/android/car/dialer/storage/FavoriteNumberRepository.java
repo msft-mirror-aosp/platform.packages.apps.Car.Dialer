@@ -43,12 +43,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
@@ -63,13 +64,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 @Singleton
 public class FavoriteNumberRepository {
     private static final String TAG = "CD.FavRepository";
-    private static ExecutorService sSerializedExecutor;
-
-    static {
-        sSerializedExecutor = Executors.newSingleThreadExecutor();
-    }
 
     private final Context mContext;
+    private final ExecutorService mSerializedExecutor;
+    private final Provider<String> mCurrentHfpDeviceAddress;
     private final FavoriteNumberDao mFavoriteNumberDao;
     private final LiveData<List<FavoriteNumberEntity>> mFavoriteNumbers;
     private final FavoriteContactLiveData mFavoriteContacts;
@@ -78,9 +76,13 @@ public class FavoriteNumberRepository {
     @Inject
     FavoriteNumberRepository(
             @ApplicationContext Context context,
+            ExecutorService serializedExecutor,
+            @Named("HfpAddr") Provider<String> currentHfpDeviceAddress,
             FavoriteNumberDatabase favoriteNumberDatabase,
             LiveData<List<Contact>> contactListLiveData) {
         mContext = context.getApplicationContext();
+        mSerializedExecutor = serializedExecutor;
+        mCurrentHfpDeviceAddress = currentHfpDeviceAddress;
 
         mFavoriteNumberDao = favoriteNumberDatabase.favoriteNumberDao();
         mFavoriteNumbers = mFavoriteNumberDao.loadAll();
@@ -123,7 +125,7 @@ public class FavoriteNumberRepository {
                 phoneNumber.getRawNumber()));
         favoriteNumber.setAccountName(phoneNumber.getAccountName());
         favoriteNumber.setAccountType(phoneNumber.getAccountType());
-        sSerializedExecutor.execute(() -> mFavoriteNumberDao.insert(favoriteNumber));
+        mSerializedExecutor.execute(() -> mFavoriteNumberDao.insert(favoriteNumber));
     }
 
     /**
@@ -136,7 +138,7 @@ public class FavoriteNumberRepository {
         }
         for (FavoriteNumberEntity favoriteNumberEntity : favoriteNumbers) {
             if (matches(favoriteNumberEntity, contact, phoneNumber)) {
-                sSerializedExecutor.execute(() -> mFavoriteNumberDao.delete(favoriteNumberEntity));
+                mSerializedExecutor.execute(() -> mFavoriteNumberDao.delete(favoriteNumberEntity));
             }
         }
     }
@@ -146,7 +148,7 @@ public class FavoriteNumberRepository {
      */
     public void cleanup(Set<BluetoothDevice> pairedDevices) {
         L.d(TAG, "remove entries for unpaired devices except %s", pairedDevices);
-        sSerializedExecutor.execute(() -> {
+        mSerializedExecutor.execute(() -> {
             List<String> pairedDeviceAddresses = new ArrayList<>();
             for (BluetoothDevice device : pairedDevices) {
                 pairedDeviceAddresses.add(device.getAddress());
@@ -164,7 +166,7 @@ public class FavoriteNumberRepository {
             mConvertAllRunnableFuture.cancel(false);
         }
 
-        mConvertAllRunnableFuture = sSerializedExecutor.submit(() -> {
+        mConvertAllRunnableFuture = mSerializedExecutor.submit(() -> {
             // Don't set null value to trigger unnecessary update when results are null.
             if (mFavoriteNumbers.getValue() == null) {
                 if (results.getValue() != null) {
@@ -215,11 +217,11 @@ public class FavoriteNumberRepository {
                 new String[]{String.valueOf(contactId)},
                 /* orderBy= */null)) {
             if (cursor != null) {
-                while (cursor.moveToFirst()) {
+                while (cursor.moveToNext()) {
                     Contact contact = Contact.fromCursor(mContext, cursor);
                     contact.getNumbers().clear();
                     Contact inMemoryContact = InMemoryPhoneBook.get().lookupContactByKey(
-                            contact.getLookupKey(), contact.getAccountName());
+                            contact.getLookupKey(), mCurrentHfpDeviceAddress.get());
                     for (PhoneNumber inMemoryPhoneNumber : inMemoryContact.getNumbers()) {
                         if (numberMatches(favoriteNumber, inMemoryPhoneNumber)) {
                             contact.getNumbers().add(inMemoryPhoneNumber);

@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
+import com.android.car.dialer.log.L;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
 import com.android.car.dialer.ui.favorite.BluetoothFavoriteContactsLiveData;
 import com.android.car.telephony.common.Contact;
@@ -50,21 +51,28 @@ import dagger.hilt.components.SingletonComponent;
  * This module is excluded in the emulator build variant.
  */
 public final class HfpDataModules {
+    private static final String TAG = "CD.Log";
+
     /** Single hfp application level dependencies. */
     @InstallIn(SingletonComponent.class)
     @Module
     public static final class AppModule {
         /**
-         * This {@link LiveData} for call logs will be always be active. See {@link
-         * com.android.car.dialer.bluetooth.CallHistoryManager}.
+         * This {@link LiveData} for call logs will be always be active.
          */
         @Singleton
         @Provides
         static LiveData<List<PhoneCallLog>> provideCallHistoryLiveData(
                 @ApplicationContext Context context,
                 @Named("Hfp") LiveData<BluetoothDevice> currentHfpDevice) {
-            return LiveDataFunctions.switchMapNonNull(currentHfpDevice,
+            LiveData<List<PhoneCallLog>> callHistoryLiveData = LiveDataFunctions.switchMapNonNull(
+                    currentHfpDevice,
                     device -> CallHistoryLiveData.newInstance(context, device.getAddress()));
+
+            // Call history live data is observed forever to avoid race condition between new call
+            // log insertion timing and data change registering.
+            callHistoryLiveData.observeForever(o -> L.i(TAG, "Call history is updated"));
+            return callHistoryLiveData;
         }
 
         @Singleton

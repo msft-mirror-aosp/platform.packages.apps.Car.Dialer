@@ -35,10 +35,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import dagger.hilt.android.qualifiers.ApplicationContext;
@@ -56,13 +56,14 @@ public class ContactListViewModel extends DialerListViewModel {
     @Inject
     public ContactListViewModel(@ApplicationContext Context context,
             SharedPreferencesLiveData.Factory sharedPreferencesFactory,
-            LiveData<List<Contact>> contactListLiveData) {
+            LiveData<List<Contact>> contactListLiveData,
+            @Named("ContactSort") ExecutorService contactSortExecutor) {
         super(context, sharedPreferencesFactory);
         mContactListLiveData = contactListLiveData;
 
         SharedPreferencesLiveData preferencesLiveData = getSharedPreferencesLiveData();
         mSortedContactListLiveData = new SortedContactListLiveData(context, mContactListLiveData,
-                preferencesLiveData);
+                preferencesLiveData, contactSortExecutor);
         mContactList = LiveDataFunctions.loadingSwitchMap(mSortedContactListLiveData,
                 input -> LiveDataFunctions.dataOf(input));
     }
@@ -76,21 +77,21 @@ public class ContactListViewModel extends DialerListViewModel {
 
     private static class SortedContactListLiveData
             extends MediatorLiveData<Pair<Integer, List<Contact>>> {
-        // Class static to make sure only one task is sorting contacts at one time.
-        private static ExecutorService sExecutorService = Executors.newSingleThreadExecutor();
-
         private final LiveData<List<Contact>> mContactListLiveData;
         private final SharedPreferencesLiveData mPreferencesLiveData;
+        private final ExecutorService mContactSortExecutor;
         private final Context mContext;
 
         private Future<?> mRunnableFuture;
 
         private SortedContactListLiveData(Context context,
                 @NonNull LiveData<List<Contact>> contactListLiveData,
-                @NonNull SharedPreferencesLiveData sharedPreferencesLiveData) {
+                @NonNull SharedPreferencesLiveData sharedPreferencesLiveData,
+                ExecutorService contactSortExecutor) {
             mContext = context;
             mContactListLiveData = contactListLiveData;
             mPreferencesLiveData = sharedPreferencesLiveData;
+            mContactSortExecutor = contactSortExecutor;
 
             addSource(mPreferencesLiveData, trigger -> onSortOrderChanged());
             addSource(mContactListLiveData, this::sortContacts);
@@ -125,7 +126,7 @@ public class ContactListViewModel extends DialerListViewModel {
                 Collections.sort(contactList, comparator);
                 postValue(new Pair<>(sortMethod, contactList));
             };
-            mRunnableFuture = sExecutorService.submit(runnable);
+            mRunnableFuture = mContactSortExecutor.submit(runnable);
         }
 
         @Override

@@ -89,30 +89,35 @@ public class ContactDataHandler {
         Integer type = contactRawData.getNumberType();
         String label = contactRawData.getNumberLabel();
         String address = contactRawData.getAddress();
+        String addressLabel = contactRawData.getAddressLabel();
+        Integer addressType = contactRawData.getAddressType();
 
-        //TODO: reduce code reuse for this part and add randomly generated data.
         ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, accountName)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, accountType)
                 .withValue(ContactsContract.RawContacts.STARRED, starred)
                 .build());
 
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE,
-                        ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME,
-                        displayName)
-                .build());
+        if (!TextUtils.isEmpty(displayName)) {
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE,
+                            ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME,
+                            displayName)
+                    .build());
+        }
 
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, 0)
-                .withValue(ContactsContract.Data.MIMETYPE,
-                        ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, number)
-                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, type)
-                .withValue(ContactsContract.CommonDataKinds.Phone.LABEL, label)
-                .build());
+        if (!TextUtils.isEmpty(number)) {
+            ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, 0)
+                    .withValue(ContactsContract.Data.MIMETYPE,
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, number)
+                    .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, type)
+                    .withValue(ContactsContract.CommonDataKinds.Phone.LABEL, label)
+                    .build());
+        }
 
         if (!TextUtils.isEmpty(address)) {
             ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
@@ -121,6 +126,10 @@ public class ContactDataHandler {
                             ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
                     .withValue(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS,
                             address)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.LABEL,
+                            addressLabel)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE,
+                            addressType)
                     .build());
         }
 

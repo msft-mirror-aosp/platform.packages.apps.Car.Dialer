@@ -20,7 +20,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.text.TextUtils;
 import android.util.Log;
+
+import com.android.car.apps.common.log.L;
+import com.android.car.dialer.framework.testdata.ContactRawData;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,17 +38,27 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 public class AdbBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = "CD.ADBHandler";
-    private static final String INTENT_ACTION = "com.android.car.dialer.intent.action.adb";
-    private static final String ACTION_TAG = "action";
-    private static final String ACTION_CONNECT = "connect";
-    private static final String ACTION_DISCONNECT = "disconnect";
-    private static final String ACTION_ADDCALL = "addCall";
-    private static final String ACTION_RECEIVECALL = "rcvCall";
-    private static final String ACTION_ENDCALL = "endCall";
-    private static final String ACTION_CLEARALL = "clearAll";
-    private static final String ACTION_MERGE = "merge";
+    private static final String ACTION_PREFIX = "com.android.car.dialer.intent.action";
+    // adb shell am broadcast -a com.android.car.dialer.intent.action.connect
+    private static final String ACTION_CONNECT = ACTION_PREFIX + ".connect";
+    // adb shell am broadcast -a com.android.car.dialer.intent.action.disconnect
+    // adb shell am broadcast -a com.android.car.dialer.intent.action.disconnect --es device_id 0
+    private static final String ACTION_DISCONNECT = ACTION_PREFIX + ".disconnect";
+    private static final String ACTION_ADDCALL = ACTION_PREFIX + ".addCall";
+    private static final String ACTION_RECEIVECALL = ACTION_PREFIX + ".rcvCall";
+    private static final String ACTION_ENDCALL = ACTION_PREFIX + ".endCall";
+    private static final String ACTION_CLEARALL = ACTION_PREFIX + ".clearAll";
+    private static final String ACTION_MERGE = ACTION_PREFIX + ".merge";
+    // adb shell am broadcast -a com.android.car.dialer.intent.action.addContact --es name \
+    // Contact --number 511 --address "100\ Hello\ Street,\ World,\ CA"
+    private static final String ACTION_ADD_CONTACT = ACTION_PREFIX + ".addContact";
     private static final String EXTRA_CALL_ID = "id";
     private static final String EXTRA_DEVICE_ID = "device_id";
+    private static final String EXTRA_CONTACT_NAME = "name";
+    private static final String EXTRA_PHONE_NUMBER = "number";
+    private static final String EXTRA_PHONE_LABEL = "number_label";
+    private static final String EXTRA_ADDRESS = "address";
+    private static final String EXTRA_ADDRESS_LABEL = "address_label";
 
     private final FakeTelecomManager mFakeTelecomManager;
     private final FakeHfpManager mFakeHfpManager;
@@ -61,7 +75,14 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     public void registerReceiver(@ApplicationContext Context context) {
         Log.d(TAG, "Registered to " + context);
         IntentFilter filter = new IntentFilter();
-        filter.addAction(INTENT_ACTION);
+        filter.addAction(ACTION_CONNECT);
+        filter.addAction(ACTION_DISCONNECT);
+        filter.addAction(ACTION_ADDCALL);
+        filter.addAction(ACTION_RECEIVECALL);
+        filter.addAction(ACTION_ENDCALL);
+        filter.addAction(ACTION_CLEARALL);
+        filter.addAction(ACTION_MERGE);
+        filter.addAction(ACTION_ADD_CONTACT);
         context.registerReceiver(this, filter);
     }
 
@@ -78,8 +99,8 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        String action = intent.getStringExtra(ACTION_TAG);
         String id;
+        String action = intent.getAction();
 
         switch (action) {
             case ACTION_ADDCALL:
@@ -113,6 +134,30 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
                 id = intent.getStringExtra(EXTRA_DEVICE_ID);
                 Log.d(TAG, action + id);
                 mFakeHfpManager.disconnectHfpDevice(id);
+                break;
+            case ACTION_ADD_CONTACT:
+                id = intent.getStringExtra(EXTRA_DEVICE_ID);
+                SimulatedBluetoothDevice device = mFakeHfpManager.getHfpDevice(id);
+                if (device != null) {
+                    String contactName = intent.getStringExtra(EXTRA_CONTACT_NAME);
+                    String phoneNumber = intent.getStringExtra(EXTRA_PHONE_NUMBER);
+                    String phoneLabel = intent.getStringExtra(EXTRA_PHONE_LABEL);
+                    String address = intent.getStringExtra(EXTRA_ADDRESS);
+                    String addressLabel = intent.getStringExtra(EXTRA_ADDRESS_LABEL);
+                    if (TextUtils.isEmpty(contactName)
+                            && TextUtils.isEmpty(phoneNumber)
+                            && TextUtils.isEmpty(address)) {
+                        L.e(TAG, "Invalid contact raw data.");
+                    } else {
+                        ContactRawData contactRawData = new ContactRawData();
+                        contactRawData.setDisplayName(contactName);
+                        contactRawData.setNumber(phoneNumber);
+                        contactRawData.setNumberLabel(phoneLabel);
+                        contactRawData.setAddress(address);
+                        contactRawData.setAddressLabel(addressLabel);
+                        device.insertContactInBackground(contactRawData);
+                    }
+                }
                 break;
             default:
                 Log.d(TAG, "Unknown command " + action);

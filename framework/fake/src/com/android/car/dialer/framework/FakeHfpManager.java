@@ -17,9 +17,11 @@
 package com.android.car.dialer.framework;
 
 import android.bluetooth.BluetoothDevice;
+import android.text.TextUtils;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.framework.testdata.CallLogDataHandler;
 import com.android.car.dialer.framework.testdata.ContactDataHandler;
 import com.android.car.dialer.framework.testdata.TestData;
@@ -39,6 +41,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class FakeHfpManager {
+    private static final String TAG = "CD.FakeHfpManager";
 
     private Map<String, SimulatedBluetoothDevice> mDeviceMap = new HashMap<>();
     private List<BluetoothDevice> mDeviceList;
@@ -75,13 +78,45 @@ public class FakeHfpManager {
     }
 
     /**
+     * Returns the matching device for the given id.
+     */
+    public SimulatedBluetoothDevice getHfpDevice(String id) {
+        if (TextUtils.isEmpty(id)) {
+            L.d(TAG, "No id specified. Try to find an available device...");
+            return getAvailableHfpDevice();
+        }
+
+        SimulatedBluetoothDevice simulatedBluetoothDevice = mDeviceMap.get(id);
+        if (simulatedBluetoothDevice == null) {
+            L.e(TAG, "Device %s is not connected.", id);
+        }
+        return simulatedBluetoothDevice;
+    }
+
+    /**
+     * If there is only one device available, returns it. Otherwise log error and return null.
+     */
+    private SimulatedBluetoothDevice getAvailableHfpDevice() {
+        if (mDeviceMap.size() > 1) {
+            L.e(TAG, "Found multiple device %s.", mDeviceMap.keySet());
+            return null;
+        }
+        if (mDeviceMap.isEmpty()) {
+            L.e(TAG, "No devices are found.");
+            return null;
+        }
+        return mDeviceMap.values().iterator().next();
+    }
+
+    /**
      * Disconnects a mocked bluetooth device.
      */
     public void disconnectHfpDevice(String id) {
-        SimulatedBluetoothDevice simulatedBluetoothDevice = mDeviceMap.remove(id);
+        SimulatedBluetoothDevice simulatedBluetoothDevice = getHfpDevice(id);
         if (simulatedBluetoothDevice == null) {
             return;
         }
+        mDeviceMap.remove(simulatedBluetoothDevice.getDeviceId());
         mDeviceList.remove(simulatedBluetoothDevice.getBluetoothDevice());
         simulatedBluetoothDevice.disconnect();
         mHfpDeviceListLiveData.postValue(mDeviceList);

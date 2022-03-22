@@ -25,10 +25,12 @@ public class ContactRawData {
 
     private String mDisplayName;
     private String mNumber;
-    private Integer mNumberType = 0;
+    private Integer mNumberType = 1;
     private String mNumberLabel;
     private String mAddress;
     private Integer mStarred = 0;
+    private String mAddressLabel;
+    private Integer mAddressType = 1;
 
     /**
      * Sets display name.
@@ -63,6 +65,20 @@ public class ContactRawData {
      */
     public void setAddress(String address) {
         mAddress = address;
+    }
+
+    /**
+     * Sets the address label.
+     */
+    public void setAddressLabel(String addressLabel) {
+        mAddressLabel = addressLabel;
+    }
+
+    /**
+     * Sets the address type.
+     */
+    public void setAddressType(Integer addressType) {
+        mAddressType = addressType;
     }
 
     /**
@@ -106,6 +122,21 @@ public class ContactRawData {
     @Nullable
     public String getAddress() {
         return mAddress;
+    }
+
+    /**
+     * Returns the address label.
+     */
+    @Nullable
+    public String getAddressLabel() {
+        return mAddressLabel;
+    }
+
+    /**
+     * Returns the address type.
+     */
+    public Integer getAddressType() {
+        return mAddressType;
     }
 
     /**

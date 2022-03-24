@@ -16,10 +16,6 @@
 
 package com.android.car.dialer.ui.warning;
 
-import android.car.Car;
-import android.car.content.pm.CarPackageManager;
-import android.car.drivingstate.CarUxRestrictions;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,13 +27,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.UxrButton;
-import com.android.car.apps.common.util.CarPackageManagerUtils;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
+import com.android.car.dialer.framework.UxrButtonDecorator;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.dialpad.DialpadFragment;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -47,28 +44,9 @@ import dagger.hilt.android.AndroidEntryPoint;
  */
 @AndroidEntryPoint(Fragment.class)
 public class NoHfpFragment extends Hilt_NoHfpFragment {
-    private static final String Bluetooth_Setting_ACTION = "android.settings.BLUETOOTH_SETTINGS";
-    private static final String Bluetooth_Setting_CATEGORY = "android.intent.category.DEFAULT";
-
     @Inject UiCallManager mUiCallManager;
+    @Inject @Named("ConnectToBluetooth") UxrButtonDecorator mConnectToBluetoothButtonDecorator;
     private TextView mErrorMessageView;
-
-    private Car mCar;
-    private CarPackageManager mCarPackageManager;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mCar = Car.createCar(getActivity());
-        mCarPackageManager = (CarPackageManager) mCar.getCarManager(Car.PACKAGE_SERVICE);
-    }
-
-    @Override
-    public void onDestroy() {
-        mCar.disconnect();
-        super.onDestroy();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,17 +73,8 @@ public class NoHfpFragment extends Hilt_NoHfpFragment {
                 .addToBackStack(null)
                 .commit());
 
-        Intent launchIntent = new Intent();
-        launchIntent.setAction(Bluetooth_Setting_ACTION);
-        launchIntent.addCategory(Bluetooth_Setting_CATEGORY);
-
         UxrButton bluetoothButton = view.findViewById(R.id.connect_bluetooth_button);
-        boolean isDistractionOptimized = CarPackageManagerUtils.isDistractionOptimized(
-                mCarPackageManager, getActivity().getPackageManager(), launchIntent);
-        bluetoothButton.setUxRestrictions(isDistractionOptimized
-                ? CarUxRestrictions.UX_RESTRICTIONS_BASELINE
-                : CarUxRestrictions.UX_RESTRICTIONS_NO_SETUP);
-        bluetoothButton.setOnClickListener(v -> startActivity(launchIntent));
+        mConnectToBluetoothButtonDecorator.decorate(bluetoothButton);
 
         return view;
     }

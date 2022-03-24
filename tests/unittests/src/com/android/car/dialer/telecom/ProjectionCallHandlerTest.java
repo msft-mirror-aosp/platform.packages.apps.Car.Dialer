@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.car.Car;
 import android.car.CarProjectionManager;
 import android.car.projection.ProjectionStatus;
 import android.content.ComponentName;
@@ -87,6 +88,8 @@ public class ProjectionCallHandlerTest {
     private UiCallManager mUiCallManager;
     @Mock
     private InCallNotificationController mInCallNotificationController;
+    @Mock
+    private Car mCar;
 
     private ProjectionCallHandler mProjectionCallHandler;
 
@@ -98,7 +101,7 @@ public class ProjectionCallHandlerTest {
 
         when(mTelecomManager.isInEmergencyCall()).thenReturn(false);
 
-        mProjectionCallHandler = new ProjectionCallHandler(mContext, mTelecomManager,
+        mProjectionCallHandler = new ProjectionCallHandler(mTelecomManager, mCar,
                 car -> mCarProjectionManager, mUiCallManager, mInCallNotificationController);
     }
 

@@ -17,12 +17,17 @@
 package com.android.car.dialer.inject;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
+import android.car.Car;
+import android.car.content.pm.CarPackageManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import com.android.car.dialer.framework.ConnectToBluetoothButtonDecorator;
+import com.android.car.dialer.framework.UxrButtonDecorator;
 import com.android.car.dialer.ui.common.DialerBaseFragment;
 import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
@@ -31,11 +36,14 @@ import com.android.car.telephony.common.WorkerExecutor;
 
 import java.util.concurrent.ExecutorService;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
+import dagger.hilt.android.components.ActivityComponent;
 import dagger.hilt.android.components.FragmentComponent;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
@@ -48,9 +56,10 @@ public final class DialerModules {
     @Module
     public static final class AppModule {
 
+        @Singleton
         @Provides
-        static BluetoothAdapter provideBluetoothAdapter() {
-            return BluetoothAdapter.getDefaultAdapter();
+        static BluetoothAdapter provideBluetoothAdapter(@ApplicationContext Context context) {
+            return context.getSystemService(BluetoothManager.class).getAdapter();
         }
 
         @Singleton
@@ -63,6 +72,27 @@ public final class DialerModules {
         static ExecutorService provideSingleThreadExecutorService() {
             return WorkerExecutor.getInstance().getSingleThreadExecutor();
         }
+
+        @Singleton
+        @Provides
+        static Car provideCar(@ApplicationContext Context context) {
+            return Car.createCar(context);
+        }
+    }
+
+    /** Module providing dependencies for activities. */
+    @InstallIn(ActivityComponent.class)
+    @Module
+    public abstract static class ActivityModule {
+        @Provides
+        static CarPackageManager provideCarPackageManager(Car car) {
+            return (CarPackageManager) car.getCarManager(Car.PACKAGE_SERVICE);
+        }
+
+        @Binds
+        @Named("ConnectToBluetooth")
+        abstract UxrButtonDecorator bindConnectToBluetoothButtonDecorator(
+                ConnectToBluetoothButtonDecorator decorator);
     }
 
     /** Module providing dependencies for fragments. */

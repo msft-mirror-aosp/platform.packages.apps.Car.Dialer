@@ -69,6 +69,8 @@ android {
 }
 
 dependencies {
+    implementation project(path: ':car-apps-common')
+    implementation files(gradle.ext.lib_car_system_stubs)
     implementation 'com.google.dagger:hilt-android:2.38.1'
     annotationProcessor 'com.google.dagger:hilt-android-compiler:2.38.1'
 

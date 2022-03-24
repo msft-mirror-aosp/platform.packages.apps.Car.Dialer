@@ -18,19 +18,23 @@ package com.android.car.dialer.ui.dialpad;
 
 import static android.car.drivingstate.CarUxRestrictions.UX_RESTRICTIONS_NO_DIALPAD;
 
-import android.app.Application;
 import android.car.Car;
 import android.car.drivingstate.CarUxRestrictions;
 import android.car.drivingstate.CarUxRestrictionsManager;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 
 import com.android.car.dialer.R;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * A view model to track the current dialpad restriction based.
@@ -38,7 +42,8 @@ import com.android.car.dialer.R;
  * The current dialpad mode derives from the {@code CarUxRestrictionsManager} input, emergency
  * numbers dialing restriction configuration and the digit already dialed.
  */
-public class DialpadRestrictionViewModel extends AndroidViewModel {
+@HiltViewModel
+public class DialpadRestrictionViewModel extends ViewModel {
     /** Current dialpad restriction mode descriptor. */
     public enum DialpadUxrMode {
         /** User can dial any number. */
@@ -70,14 +75,13 @@ public class DialpadRestrictionViewModel extends AndroidViewModel {
     @NonNull
     private String mCurrentPhoneNumber = "";
 
-    public DialpadRestrictionViewModel(@NonNull Application application) {
-        super(application);
-
-        mRestrictedModeMaxDigitCount = getNoDialpadUxrMaxAllowedDigits(application);
+    @Inject
+    DialpadRestrictionViewModel(@ApplicationContext Context context, Car car) {
+        mRestrictedModeMaxDigitCount = getNoDialpadUxrMaxAllowedDigits(context);
 
         if (shouldEnforceNoDialpadRestriction(mRestrictedModeMaxDigitCount)) {
-            mRestrictionsManager = (CarUxRestrictionsManager)
-                    Car.createCar(application).getCarManager(Car.CAR_UX_RESTRICTION_SERVICE);
+            mRestrictionsManager =
+                    (CarUxRestrictionsManager) car.getCarManager(Car.CAR_UX_RESTRICTION_SERVICE);
 
             onUxRestrictionsChanged(mRestrictionsManager.getCurrentCarUxRestrictions());
             mRestrictionsManager.registerListener(this::onUxRestrictionsChanged);

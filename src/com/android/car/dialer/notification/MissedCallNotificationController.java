@@ -16,6 +16,8 @@
 
 package com.android.car.dialer.notification;
 
+import static com.android.car.messenger.common.MessagingUtils.ACTION_DIRECT_SEND;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -23,19 +25,22 @@ import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.provider.CallLog;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
 import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.R;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.livedata.UnreadMissedCallLiveData;
 import com.android.car.dialer.log.L;
+import com.android.car.dialer.sms.DirectSendActivity;
+import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.telephony.common.PhoneCallLog;
 import com.android.car.telephony.common.TelecomUtils;
@@ -67,6 +72,8 @@ public final class MissedCallNotificationController {
     }
 
     private final Context mContext;
+    private final PhoneAccountManager mPhoneAccountManager;
+    private final UiCallManager mUiCallManager;
     private final NotificationManager mNotificationManager;
     private final LiveData<List<PhoneCallLog>> mUnreadMissedCallLiveData;
     private final Observer<List<PhoneCallLog>> mUnreadMissedCallObserver;
@@ -76,8 +83,12 @@ public final class MissedCallNotificationController {
     @Inject
     MissedCallNotificationController(
             @ApplicationContext Context context,
+            PhoneAccountManager phoneAccountManager,
+            UiCallManager uiCallManager,
             @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
         mContext = context;
+        mPhoneAccountManager = phoneAccountManager;
+        mUiCallManager = uiCallManager;
         mNotificationManager =
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         CharSequence name = mContext.getString(R.string.missed_call_notification_channel_name);
@@ -117,8 +128,10 @@ public final class MissedCallNotificationController {
         String phoneNumber = callLog.getPhoneNumberString();
         String tag = getTag(callLog);
         cancelLoadingRunnable(tag);
+        String accountName = callLog.getAccountName();
+        BluetoothDevice bluetoothDevice = mPhoneAccountManager.getMatchingDevice(accountName);
         CompletableFuture<Void> updateFuture = NotificationUtils.getDisplayNameAndRoundedAvatar(
-                mContext, phoneNumber, callLog.getAccountName())
+                mContext, phoneNumber, accountName)
                 .thenAcceptAsync((pair) -> {
                     int callLogSize = callLog.getAllCallRecords().size();
                     Notification.Builder builder = new Notification.Builder(mContext, CHANNEL_ID)
@@ -136,9 +149,9 @@ public final class MissedCallNotificationController {
                             .setAutoCancel(false);
 
                     if (!TextUtils.isEmpty(phoneNumber)) {
-                        builder.addAction(getAction(phoneNumber, tag, R.string.call_back,
-                                NotificationService.ACTION_CALL_BACK_MISSED));
-                        // TODO: add action button to send message
+                        builder.addAction(getCallBackAction(phoneNumber, tag));
+                        builder.addAction(
+                                getSmsAction(phoneNumber, pair.first, bluetoothDevice, tag));
                     }
 
                     mNotificationManager.notify(
@@ -206,14 +219,14 @@ public final class MissedCallNotificationController {
         return pendingIntent;
     }
 
-    private Notification.Action getAction(String phoneNumberString, String tag,
-            @StringRes int actionText, String intentAction) {
-        CharSequence text = mContext.getString(actionText);
-        PendingIntent intent = getIntent(intentAction, phoneNumberString, tag);
+    private Notification.Action getCallBackAction(String phoneNumberString, String tag) {
+        CharSequence text = mContext.getString(R.string.call_back);
+        PendingIntent intent = getCallBackIntent(
+                NotificationService.ACTION_CALL_BACK_MISSED, phoneNumberString, tag);
         return new Notification.Action.Builder(null, text, intent).build();
     }
 
-    private PendingIntent getIntent(String action, String phoneNumberString, String tag) {
+    private PendingIntent getCallBackIntent(String action, String phoneNumberString, String tag) {
         Intent intent = new Intent(action, null, mContext, NotificationService.class);
         intent.putExtra(NotificationService.EXTRA_PHONE_NUMBER, phoneNumberString);
         intent.putExtra(NotificationService.EXTRA_NOTIFICATION_TAG, tag);
@@ -223,6 +236,25 @@ public final class MissedCallNotificationController {
                 /* requestCode= */(int) System.currentTimeMillis(),
                 intent,
                 PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    private Notification.Action getSmsAction(String phoneNumberString, String displayName,
+            BluetoothDevice device, String tag) {
+        Intent showAssistIntent = new Intent(mContext, DirectSendActivity.class);
+        showAssistIntent.setAction(ACTION_DIRECT_SEND);
+        showAssistIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Bundle bundle = mUiCallManager.buildDirectSendBundle(phoneNumberString, displayName, tag,
+                device);
+        showAssistIntent.putExtras(bundle);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                mContext,
+                // Unique id for PendingIntents with different extras
+                /* requestCode= */(int) System.currentTimeMillis(),
+                showAssistIntent,
+                PendingIntent.FLAG_IMMUTABLE);
+
+        CharSequence text = mContext.getString(R.string.message);
+        return new Notification.Action.Builder(null, text, pendingIntent).build();
     }
 
     private String getTag(@NonNull PhoneCallLog phoneCallLog) {

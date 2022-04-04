@@ -30,6 +30,13 @@ limitations under the License.
         <item name="toolbarTitleMode">@integer/config_toolbar_title_mode</item>
     </style>
 
+    <style name="Theme.Dialer.ShowAssist" parent="Theme.CarUi.NoToolbar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
     <style name="Theme.Dialer.InCall">
         <item name="carUiToolbar">false</item>
     </style>

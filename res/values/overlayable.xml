@@ -434,6 +434,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="in_call_notification_channel_name"/>
       <item type="string" name="local_favorite_number_description"/>
       <item type="string" name="local_favorites"/>
+      <item type="string" name="message"/>
       <item type="string" name="missed_call_notification_channel_name"/>
       <item type="string" name="nine"/>
       <item type="string" name="nine_letters"/>
@@ -529,6 +530,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="style" name="Theme.Dialer.BidiText"/>
       <item type="style" name="Theme.Dialer.InCall"/>
       <item type="style" name="Theme.Dialer.Setting"/>
+      <item type="style" name="Theme.Dialer.ShowAssist"/>
       <item type="style" name="Theme.Dialer.Telecom"/>
       <item type="style" name="Widget.Dialer.Button"/>
       <item type="xml" name="keypad_button_state_animation"/>

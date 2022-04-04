@@ -17,6 +17,7 @@ package com.android.car.dialer.telecom;
 
 import static com.android.car.assist.CarVoiceInteractionSession.KEY_SEND_PENDING_INTENT;
 import static com.android.car.assist.CarVoiceInteractionSession.VOICE_ACTION_SEND_SMS;
+import static com.android.car.messenger.common.MessagingUtils.ACTION_DIRECT_SEND;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -67,7 +68,6 @@ public final class UiCallManager {
     private static final String EVENT_SCO_CONNECT = "com.android.bluetooth.hfpclient.SCO_CONNECT";
     private static final String EVENT_SCO_DISCONNECT =
             "com.android.bluetooth.hfpclient.SCO_DISCONNECT";
-    private static final String ACTION_DIRECT_SEND = "ACTION_DIRECT_SEND";
 
     private Context mContext;
     private final TelecomManager mTelecomManager;
@@ -249,11 +249,21 @@ public final class UiCallManager {
     }
 
     /**
-     * Places a SMS with assisant
+     * Places a SMS with assistant.
      */
     public boolean placeSms(Activity activity, String number, String name, String uid) {
         BluetoothDevice device = mCurrentHfpDeviceLiveData.getValue();
+        Bundle bundle = buildDirectSendBundle(number, name, uid, device);
+        activity.showAssist(bundle);
 
+        return true;
+    }
+
+    /**
+     * Build the {@link Bundle} to pass to assistant to send a sms.
+     */
+    public Bundle buildDirectSendBundle(String number, String name, String uid,
+            BluetoothDevice device) {
         Bundle bundle = new Bundle();
         bundle.putString(CarVoiceInteractionSession.KEY_ACTION, VOICE_ACTION_SEND_SMS);
         bundle.putString(CarVoiceInteractionSession.KEY_PHONE_NUMBER, number);
@@ -261,22 +271,17 @@ public final class UiCallManager {
         bundle.putString(CarVoiceInteractionSession.KEY_RECIPIENT_UID, uid);
         bundle.putString(CarVoiceInteractionSession.KEY_DEVICE_ADDRESS, device.getAddress());
         bundle.putString(CarVoiceInteractionSession.KEY_DEVICE_NAME, device.getName());
-
-        Context context = activity.getApplicationContext();
-        Intent intent = new Intent(context, MessagingService.class)
+        Intent intent = new Intent(mContext, MessagingService.class)
                 .setAction(ACTION_DIRECT_SEND)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                .setClass(context, MessagingService.class);
+                .setClass(mContext, MessagingService.class);
 
         int requestCode = ACTION_DIRECT_SEND.hashCode();
         PendingIntent pendingIntent = PendingIntent.getForegroundService(
-                context, requestCode, intent,
+                mContext, requestCode, intent,
                 PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
         bundle.putParcelable(KEY_SEND_PENDING_INTENT, pendingIntent);
-        activity.showAssist(bundle);
-
-        return true;
+        return bundle;
     }
 
     /**

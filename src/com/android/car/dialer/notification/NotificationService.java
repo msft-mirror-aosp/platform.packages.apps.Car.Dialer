@@ -46,7 +46,6 @@ public class NotificationService extends Hilt_NotificationService {
     static final String ACTION_DECLINE_CALL = "CD.ACTION_DECLINE_CALL";
     static final String ACTION_SHOW_FULLSCREEN_UI = "CD.ACTION_SHOW_FULLSCREEN_UI";
     static final String ACTION_CALL_BACK_MISSED = "CD.ACTION_CALL_BACK_MISSED";
-    static final String ACTION_MESSAGE_MISSED = "CD.ACTION_MESSAGE_MISSED";
     static final String ACTION_READ_MISSED = "CD.ACTION_READ_MISSED";
     static final String EXTRA_PHONE_NUMBER = "CD.EXTRA_PHONE_NUMBER";
     static final String EXTRA_CALL_LOG_ID = "CD.EXTRA_CALL_LOG_ID";
@@ -92,11 +91,6 @@ public class NotificationService extends Hilt_NotificationService {
                 break;
             case ACTION_CALL_BACK_MISSED:
                 mUiCallManager.placeCall(phoneNumber);
-                TelecomUtils.markCallLogAsRead(context, phoneNumber);
-                mMissedCallNotificationController.cancelMissedCallNotification(notificationTag);
-                break;
-            case ACTION_MESSAGE_MISSED:
-                // TODO: call assistant to send message
                 TelecomUtils.markCallLogAsRead(context, phoneNumber);
                 mMissedCallNotificationController.cancelMissedCallNotification(notificationTag);
                 break;

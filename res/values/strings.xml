@@ -49,6 +49,8 @@
     <string name="answer_call">Answer</string>
     <!-- Call back a missed call [CHAR LIMIT=20] -->
     <string name="call_back">Call back</string>
+    <!-- Send a message back to a missed call [CHAR LIMIT=20] -->
+    <string name="message">Message</string>
 
     <!-- Audio route -->
     <!-- Label for routing phone audio to the vehicle using car speakers [CHAR LIMIT=30] -->

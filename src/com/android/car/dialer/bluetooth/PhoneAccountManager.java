@@ -65,13 +65,10 @@ public class PhoneAccountManager {
         PhoneAccountHandle phoneAccountHandle = getMatchingPhoneAccount(device);
         mTelecomManager.setUserSelectedOutgoingPhoneAccount(phoneAccountHandle);
     }
-
     /**
-     * Returns the {@link BluetoothDevice} for the given {@link PhoneAccountHandle} if the account
-     * is for hfp connection.
+     * Returns the {@link BluetoothDevice} for the given device address.
      */
-    public BluetoothDevice getMatchingDevice(
-            @Nullable PhoneAccountHandle phoneAccountHandle) {
+    public BluetoothDevice getMatchingDevice(@Nullable String deviceId) {
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT)
                 != PackageManager.PERMISSION_GRANTED) {
             return null;
@@ -81,12 +78,22 @@ public class PhoneAccountManager {
         if (bondedDevices == null) {
             return null;
         }
-        if (isHfpConnectionService(phoneAccountHandle)) {
-            for (BluetoothDevice bluetoothDevice : bondedDevices) {
-                if (TextUtils.equals(bluetoothDevice.getAddress(), phoneAccountHandle.getId())) {
-                    return bluetoothDevice;
-                }
+        for (BluetoothDevice bluetoothDevice : bondedDevices) {
+            if (TextUtils.equals(bluetoothDevice.getAddress(), deviceId)) {
+                return bluetoothDevice;
             }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the {@link BluetoothDevice} for the given {@link PhoneAccountHandle} if the account
+     * is for hfp connection.
+     */
+    public BluetoothDevice getMatchingDevice(
+            @Nullable PhoneAccountHandle phoneAccountHandle) {
+        if (isHfpConnectionService(phoneAccountHandle)) {
+            return getMatchingDevice(phoneAccountHandle.getId());
         }
         return null;
     }

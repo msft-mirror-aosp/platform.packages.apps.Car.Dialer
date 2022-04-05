@@ -30,6 +30,7 @@
     <string name="decline_call" msgid="2505987200485272226">"უარყოფა"</string>
     <string name="answer_call" msgid="3272474440561548115">"პასუხი"</string>
     <string name="call_back" msgid="5745638356098600872">"გადარეკვა"</string>
+    <string name="message" msgid="106616332778369322">"შეტყობინება"</string>
     <string name="audio_route_vehicle" msgid="6250361588960528769">"მანქანის დინამიკები"</string>
     <string name="audio_route_phone_speaker" msgid="4608904003558187244">"ტელეფონის დინამიკი"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"ტელეფონი"</string>

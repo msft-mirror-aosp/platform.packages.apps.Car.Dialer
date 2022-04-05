@@ -30,6 +30,7 @@
     <string name="decline_call" msgid="2505987200485272226">"Recusar"</string>
     <string name="answer_call" msgid="3272474440561548115">"Atender"</string>
     <string name="call_back" msgid="5745638356098600872">"Ligar de volta"</string>
+    <string name="message" msgid="106616332778369322">"Enviar mensagem"</string>
     <string name="audio_route_vehicle" msgid="6250361588960528769">"Altifalantes do automóvel"</string>
     <string name="audio_route_phone_speaker" msgid="4608904003558187244">"Altifalante do telemóvel"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"Telemóvel"</string>

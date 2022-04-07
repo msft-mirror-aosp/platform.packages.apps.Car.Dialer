@@ -3,7 +3,6 @@
 ## Overview
 Project Drift Bottle aims to enable the Car Dialer app to run without a paired phone and real
 devices.
-<!-- More details can be found here: [go/aae-project-drift-bottle](go/aae-project-drift-bottle). -->
 
 ## User Manual
 Project Drift Bottle implementation is only available on **Android S+**. To run Drift Bottle, please
@@ -27,7 +26,7 @@ Drift Bottle to run with both fake and real data but this is a feature considere
 later).
 
 ### Supported Commands
-Adb commands only work after Dialer is launched for the first time. It requires the broadcast
+**Adb commands only work after Dialer is launched for the first time.** It requires the broadcast
 receiver to be initialized. After launching Dialer, a fake bluetooth device must be connected. This
 is possible with the connect command below.
 

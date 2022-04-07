@@ -34,7 +34,10 @@ android_library {
 
     srcs: ["src/**/*.java", "real/src/**/*.java"],
 
+    libs: ["android.car-system-stubs"],
+
     static_libs: [
+        "car-apps-common-prebuilt",
         "androidx.annotation_annotation",
         "androidx.core_core",
         "hilt_android",

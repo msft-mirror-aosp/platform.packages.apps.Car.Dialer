@@ -19,6 +19,7 @@ package com.android.car.dialer.framework;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 
 import androidx.annotation.WorkerThread;
@@ -42,6 +43,7 @@ public class SimulatedBluetoothDevice {
     private ContactDataHandler mContactDataHandler;
     private CallLogDataHandler mCallLogDataHandler;
 
+    @SuppressLint("MissingPermission")
     public SimulatedBluetoothDevice(
             int deviceId,
             ContactDataHandler contactDataHandler,
@@ -52,6 +54,7 @@ public class SimulatedBluetoothDevice {
         mMockBluetoothDevice = mock(BluetoothDevice.class);
         when(mMockBluetoothDevice.getAddress()).thenReturn(
                 String.format(TestData.ACCOUNT_NAME, deviceId));
+        when(mMockBluetoothDevice.getName()).thenReturn("Simulated device: " + mDeviceId);
 
         mContactDataHandler = contactDataHandler;
         mCallLogDataHandler = callLogDataHandler;

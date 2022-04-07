@@ -36,7 +36,6 @@ public class AndroidFrameworkImpl implements AndroidFramework {
     AndroidFrameworkImpl(
             @ApplicationContext Context context,
             AdbBroadcastReceiver adbBroadcastReceiver) {
-
         mContext = context;
         mAdbBroadcastReceiver = adbBroadcastReceiver;
     }

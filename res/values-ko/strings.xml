@@ -30,6 +30,7 @@
     <string name="decline_call" msgid="2505987200485272226">"거부"</string>
     <string name="answer_call" msgid="3272474440561548115">"통화"</string>
     <string name="call_back" msgid="5745638356098600872">"전화 걸기"</string>
+    <string name="message" msgid="106616332778369322">"메시지"</string>
     <string name="audio_route_vehicle" msgid="6250361588960528769">"차량용 스피커"</string>
     <string name="audio_route_phone_speaker" msgid="4608904003558187244">"휴대전화 스피커"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"휴대전화"</string>

@@ -30,6 +30,7 @@
     <string name="decline_call" msgid="2505987200485272226">"Tolak"</string>
     <string name="answer_call" msgid="3272474440561548115">"Jawab"</string>
     <string name="call_back" msgid="5745638356098600872">"Panggil balik"</string>
+    <string name="message" msgid="106616332778369322">"Mesej"</string>
     <string name="audio_route_vehicle" msgid="6250361588960528769">"Pembesar suara kereta"</string>
     <string name="audio_route_phone_speaker" msgid="4608904003558187244">"Pembesar suara telefon"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"Telefon"</string>

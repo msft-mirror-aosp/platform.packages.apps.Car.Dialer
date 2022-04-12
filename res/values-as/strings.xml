@@ -20,7 +20,7 @@
     <string name="no_hfp" msgid="7371139867234667691">"আপোনাৰ কলটো সম্পূৰ্ণ কৰিবলৈ প্ৰথমে ব্লুটুথৰ জৰিয়তে নিজৰ ফ\'নটো গাড়ীৰ সৈতে সংযোগ কৰক।"</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"ব্লুটুথৰ সুবিধা নাই।"</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"কল কৰিবলৈ বা গ্ৰহণ কৰিবলৈ, ব্লুটুথ অন কৰক।"</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"কল কৰিবলৈ বা গ্ৰহণ কৰিবলৈ, ফ’নটো গাড়ীৰ সৈতে যোৰা লগাওক।"</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"কল কৰিবলৈ বা গ্ৰহণ কৰিবলৈ, ফ’নটো গাড়ীৰ সৈতে পেয়াৰ কৰক।"</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"ব্লুটুথৰ সৈতে সংযোগ কৰক"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"জৰুৰীকালীন"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"জৰুৰীকালীন কল"</string>

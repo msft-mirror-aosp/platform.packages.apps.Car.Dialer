@@ -43,6 +43,9 @@ common_static_libs = [
     "androidx.sqlite_sqlite-framework",
 ]
 
+// Switch away from "platform"
+CERTIFICATE = ":com-android-car-apps-test"
+
 android_app {
     name: "CarDialerApp",
 
@@ -58,8 +61,7 @@ android_app {
 
     required: ["allowed_privapp_com.android.car.dialer"],
 
-    certificate: "platform",
-    // certificate: ":com-android-car-apps-test",
+    certificate: CERTIFICATE,
 
     overrides: ["Dialer"],
 
@@ -111,8 +113,7 @@ android_test_helper_app {
 
     required: ["allowed_privapp_com.android.car.dialer"],
 
-    certificate: "platform",
-    // certificate: ":com-android-car-apps-test",
+    certificate: CERTIFICATE,
 
     overrides: ["Dialer"],
 
@@ -176,8 +177,7 @@ android_app {
 
     required: ["allowed_privapp_com.android.car.dialer"],
 
-    certificate: "platform",
-    // certificate: ":com-android-car-apps-test",
+    certificate: CERTIFICATE,
 
     overrides: ["Dialer"],
 

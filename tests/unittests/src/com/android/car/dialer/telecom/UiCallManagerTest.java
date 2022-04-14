@@ -21,7 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNotNull;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -95,8 +95,9 @@ public class UiCallManagerTest {
         }).when(mMockContext).bindService(any(Intent.class), any(ServiceConnection.class),
                 anyInt());
 
-        when(mMockPhoneAccountManager.getMatchingDevice(isNull())).thenReturn(null);
-        when(mMockPhoneAccountManager.getMatchingDevice(isNotNull())).thenReturn(
+        when(mMockPhoneAccountManager.getMatchingDevice(eq((PhoneAccountHandle) null))).thenReturn(
+                null);
+        when(mMockPhoneAccountManager.getMatchingDevice(isA(PhoneAccountHandle.class))).thenReturn(
                 mMockBluetoothDevice);
 
         mUiCallManager = new UiCallManager(mMockContext, mMockTelecomManager,

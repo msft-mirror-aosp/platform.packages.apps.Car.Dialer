@@ -28,6 +28,9 @@ common_static_libs = [
     "car-uxr-client-lib-prebuilt",
     "guava",
     "glide-prebuilt",
+    "glide-gifdecoder-prebuilt",
+    "glide-disklrucache-prebuilt",
+    "glide-annotation-and-compiler-prebuilt",
     "hilt_android",
     "libphonenumber",
     "androidx-constraintlayout_constraintlayout",
@@ -41,6 +44,7 @@ common_static_libs = [
     "androidx.room_room-runtime",
     "androidx.sqlite_sqlite",
     "androidx.sqlite_sqlite-framework",
+    "androidx.exifinterface_exifinterface",
 ]
 
 // Switch away from "platform"

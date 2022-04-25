@@ -143,7 +143,7 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
     @Override
     public void onBringToForeground(boolean showDialpad) {
         L.d(TAG, "onBringToForeground: %s", showDialpad);
-        mInCallRouter.routeToFullScreenIncomingCallPage(showDialpad);
+        mInCallRouter.routeToFullScreenIncomingCallPage(true, showDialpad);
     }
 
     public void addCallAudioStateChangedCallback(CallAudioStateCallback callback) {

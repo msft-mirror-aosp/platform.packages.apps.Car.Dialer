@@ -99,7 +99,7 @@ class InCallRouter {
         } else if (state != Call.STATE_DISCONNECTED) {
             // Don't launch the in call page if state is disconnected.
             // Otherwise, the InCallActivity finishes right after onCreate() and flashes.
-            routeToFullScreenIncomingCallPage(false);
+            routeToFullScreenIncomingCallPage(false, false);
         }
     }
 
@@ -154,7 +154,7 @@ class InCallRouter {
                 if (call.getState() != Call.STATE_DISCONNECTED) {
                     // Don't launch the in call page if state is disconnected. Otherwise, the
                     // InCallActivity finishes right after onCreate() and flashes.
-                    routeToFullScreenIncomingCallPage(false);
+                    routeToFullScreenIncomingCallPage(false, false);
                 }
                 mInCallNotificationController.cancelInCallNotification(call);
                 call.unregisterCallback(this);
@@ -165,9 +165,9 @@ class InCallRouter {
     /**
      * Launches {@link InCallActivity} and presents the on going call in the in call page.
      */
-    void routeToFullScreenIncomingCallPage(boolean showDialpad) {
+    void routeToFullScreenIncomingCallPage(boolean forceShowFullscreenUi, boolean showDialpad) {
         // It has been configured not to show the fullscreen incall ui.
-        if (!shouldShowFullScreenUi()) {
+        if (!forceShowFullscreenUi && !shouldShowFullScreenUi()) {
             return;
         }
 

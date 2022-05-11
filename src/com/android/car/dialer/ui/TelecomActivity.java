@@ -42,7 +42,7 @@ import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.dialpad.DialpadFragment;
 import com.android.car.dialer.ui.search.ContactResultsFragment;
 import com.android.car.dialer.ui.settings.DialerSettingsActivity;
-import com.android.car.dialer.ui.warning.OverlayFragment;
+import com.android.car.dialer.ui.warning.NoHfpFragment;
 import com.android.car.ui.baselayout.Insets;
 import com.android.car.ui.baselayout.InsetsChangedListener;
 import com.android.car.ui.core.CarUi;
@@ -75,7 +75,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
     private LiveData<Boolean> mRefreshUiLiveData;
     // View objects for this activity.
     private TelecomPageTab.Factory mTabFactory;
-    private int mSelectedTab = 0;
+    private boolean mTabsShown = true;
     private ToolbarController mCarUiToolbar;
 
     @Override
@@ -99,7 +99,11 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
         LiveData<Boolean> hasHfpDeviceConnectedLiveData = viewModel.hasHfpDeviceConnected();
         hasHfpDeviceConnectedLiveData.observe(this, hasHfpDeviceConnected -> {
             if (!Boolean.TRUE.equals(hasHfpDeviceConnected)) {
-                new OverlayFragment().show(getSupportFragmentManager(), null);
+                setContentFragment(new NoHfpFragment(), NoHfpFragment.class.getName());
+            } else {
+                setTabsShown(true);
+                int tabIndex = mTabFactory.getSelectedTabIndex();
+                showTabPage(tabIndex);
             }
         });
 
@@ -122,7 +126,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
     private void handleIntent() {
         Intent intent = getIntent();
         String action = intent != null ? intent.getAction() : null;
-        L.d(TAG, "handleIntent, intent: %s, action: %s", intent, action);
+        L.i(TAG, "handleIntent, intent: %s, action: %s", intent, action);
         if (action == null || action.length() == 0) {
             return;
         }
@@ -159,50 +163,28 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
         maybeStartInCallActivity(mOngoingCallListLiveData.getValue());
     }
 
+    /**
+     * Set the tabs only, hasHfpDeviceConnectedLiveData will show the fragment later.
+     */
     private void setupTabLayout() {
-        boolean[] tabSelectedListenerEnabled = new boolean[] { false };
         OnItemClickedListener<TelecomPageTab> onTabSelected = tab -> {
-            if (tabSelectedListenerEnabled[0]) {
-                mSelectedTab = mTabFactory.getTabs().indexOf(tab);
-                Fragment fragment = tab.getFragment();
-                setContentFragment(fragment, tab.getFragmentTag());
-            }
+            Fragment fragment = tab.getFragment();
+            setContentFragment(fragment, tab.getFragmentTag());
         };
-        boolean wasContentFragmentRestored = false;
-        mTabFactory = new TelecomPageTab.Factory(this, onTabSelected, getSupportFragmentManager());
-        List<TelecomPageTab> tabs = mTabFactory.recreateTabs(getBaseContext(), false);
+
+        mTabFactory = new TelecomPageTab.Factory(this, mSharedPreferences, onTabSelected,
+                getSupportFragmentManager());
+        List<TelecomPageTab> tabs = mTabFactory.getTabs();
         mCarUiToolbar.setTabs(tabs.stream()
                 .map(TelecomPageTab::getToolbarTab)
-                .collect(Collectors.toList()));
-
-        for (int i = 0; i < tabs.size(); i++) {
-            if (tabs.get(i).wasFragmentRestored()) {
-                mCarUiToolbar.selectTab(i);
-                mSelectedTab = i;
-                wasContentFragmentRestored = true;
-            }
-        }
-
-        // Select the starting tab and set up the fragment for it.
-        if (!wasContentFragmentRestored) {
-            int startTabIndex = mTabFactory.getTabIndex(getTabFromSharedPreference());
-            mCarUiToolbar.selectTab(startTabIndex);
-            mSelectedTab = startTabIndex;
-            TelecomPageTab startTab = tabs.get(startTabIndex);
-            setContentFragment(startTab.getFragment(), startTab.getFragmentTag());
-        }
-        tabSelectedListenerEnabled[0] = true;
+                .collect(Collectors.toList()), mTabFactory.getSelectedTabIndex());
     }
 
     private void refreshUi() {
-        L.v(TAG, "Refresh ui");
+        L.i(TAG, "Refresh ui");
 
-        List<TelecomPageTab> tabs = mTabFactory.recreateTabs(getBaseContext(), true);
-        mCarUiToolbar.setTabs(tabs.stream()
-                .map(TelecomPageTab::getToolbarTab)
-                .collect(Collectors.toList()));
-
-        String startTab = getTabFromSharedPreference();
+        mTabFactory.recreateFragments();
+        int startTab = mTabFactory.getStartTabIndex();
         showTabPage(startTab);
     }
 
@@ -225,7 +207,6 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
         }
     }
 
-    private boolean mTabsShown = true;
     /**
      * Sets if the toolbar tabs should be shown or hidden. Used to hide the tabs
      * on pages like search or contact details.
@@ -240,7 +221,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
             mCarUiToolbar.setTabs(mTabFactory.getTabs()
                     .stream()
                     .map(TelecomPageTab::getToolbarTab)
-                    .collect(Collectors.toList()), mSelectedTab);
+                    .collect(Collectors.toList()), mTabFactory.getSelectedTabIndex());
         } else {
             mCarUiToolbar.setTabs(Collections.emptyList());
         }
@@ -253,18 +234,35 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
             L.w(TAG, "Page %s is not a tab.", tabPage);
             return -1;
         }
+
+        showTabPage(tabIndex);
+        return tabIndex;
+    }
+
+    private void showTabPage(int tabIndex) {
+        // When call this from search page, pop the top search page and show the tabs to call
+        // mCarUiToolbar.selectTab(tabIndex) without running into errors.
         getSupportFragmentManager().executePendingTransactions();
         while (isBackNavigationAvailable()) {
             getSupportFragmentManager().popBackStackImmediate();
         }
 
+        // Compare the current selection and new selection. If they are the same, selectTab(int)
+        // won't trigger the listener to update content fragment.
+        int selectedTab = mCarUiToolbar.getSelectedTab();
+        if (selectedTab == tabIndex) {
+            Fragment fragment =
+                    getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            TelecomPageTab currentTab = mTabFactory.getTabs().get(selectedTab);
+            if (fragment != currentTab.getFragment()) {
+                setContentFragment(currentTab.getFragment(), currentTab.getFragmentTag());
+            }
+        }
         mCarUiToolbar.selectTab(tabIndex);
-        mSelectedTab = tabIndex;
-        return tabIndex;
     }
 
     private void setContentFragment(Fragment fragment, String fragmentTag) {
-        L.d(TAG, "setContentFragment: %s", fragment);
+        L.i(TAG, "setContentFragment: %s", fragment);
 
         getSupportFragmentManager().executePendingTransactions();
         while (getSupportFragmentManager().getBackStackEntryCount() > 0) {
@@ -280,7 +278,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
 
     @Override
     public void pushContentFragment(@NonNull Fragment topContentFragment, String fragmentTag) {
-        L.d(TAG, "pushContentFragment: %s", topContentFragment);
+        L.i(TAG, "pushContentFragment: %s", topContentFragment);
 
         getSupportFragmentManager()
                 .beginTransaction()
@@ -357,12 +355,6 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
      */
     private boolean isBackNavigationAvailable() {
         return getSupportFragmentManager().getBackStackEntryCount() > 1;
-    }
-
-    private String getTabFromSharedPreference() {
-        String key = getResources().getString(R.string.pref_start_page_key);
-        String defaultValue = getResources().getString(R.string.tab_config_default_value);
-        return mSharedPreferences.getString(key, defaultValue);
     }
 
     @Override

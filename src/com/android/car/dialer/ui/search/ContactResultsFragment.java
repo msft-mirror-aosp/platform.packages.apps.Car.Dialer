@@ -146,7 +146,6 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment {
 
     @Override
     protected void setupToolbar(@NonNull ToolbarController toolbar) {
-        super.setupToolbar(toolbar);
         mToolbar = toolbar;
         mToolbar.setNavButtonMode(NavButtonMode.BACK);
         mToolbar.setLogo(null);

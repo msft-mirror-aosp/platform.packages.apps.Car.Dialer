@@ -17,8 +17,10 @@
 package com.android.car.dialer.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.fragment.app.Fragment;
@@ -38,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Tab presenting fragments.
@@ -61,20 +64,20 @@ public class TelecomPageTab {
     }
 
     private final Factory mFactory;
+    @Page private final String mPage;
+    private final Tab mToolbarTab;
     private Fragment mFragment;
     private String mFragmentTag;
     private boolean mWasFragmentRestored;
-    private final Tab mToolbarTab;
 
-    private TelecomPageTab(@Nullable Drawable icon, @Nullable String text,
-            @Nullable OnItemClickedListener<TelecomPageTab> listener, Factory factory) {
+    private TelecomPageTab(@Nullable Drawable icon, @Nullable String text, @Page String page,
+                           @NonNull Consumer<TelecomPageTab> listener, Factory factory) {
         mFactory = factory;
+        mPage = page;
         mToolbarTab = Tab.builder()
                 .setIcon(icon)
                 .setText(text)
-                .setSelectedListener(listener == null
-                        ? null
-                        : tab -> listener.onItemClicked(this))
+                .setSelectedListener(tab -> listener.accept(this))
                 .build();
     }
 
@@ -143,15 +146,22 @@ public class TelecomPageTab {
                         .put(Page.DIAL_PAD, R.drawable.ic_dialpad)
                         .build();
 
+        private final Context mContext;
+        private final SharedPreferences mSharedPreferences;
         private final FragmentManager mFragmentManager;
         private final Map<String, Integer> mTabPageIndexMap;
         private final String[] mTabConfig;
         private final List<TelecomPageTab> mTabs = new ArrayList<>();
         private final OnItemClickedListener<TelecomPageTab> mSelectedListener;
+        private int mCurrentTabIndex;
+        private int mStartTabIndex;
 
         public Factory(Context context,
+                SharedPreferences sharedPreferences,
                 OnItemClickedListener<TelecomPageTab> listener,
                 FragmentManager fragmentManager) {
+            mContext = context;
+            mSharedPreferences = sharedPreferences;
             mFragmentManager = fragmentManager;
             mSelectedListener = listener;
 
@@ -161,7 +171,27 @@ public class TelecomPageTab {
             for (int i = 0; i < getTabCount(); i++) {
                 mTabPageIndexMap.put(mTabConfig[i], i);
             }
+
+            String startTab = getTabFromSharedPreference();
+            mStartTabIndex = getTabIndex(startTab);
+
+            createTabs(context);
+            mCurrentTabIndex = mStartTabIndex;
+            for (int i = 0; i < mTabs.size(); i++) {
+                if (mTabs.get(i).wasFragmentRestored()) {
+                    mCurrentTabIndex = i;
+                }
+            }
         }
+
+        @TelecomPageTab.Page
+        private String getTabFromSharedPreference() {
+            String key = mContext.getResources().getString(R.string.pref_start_page_key);
+            String defaultValue =
+                    mContext.getResources().getString(R.string.tab_config_default_value);
+            return mSharedPreferences.getString(key, defaultValue);
+        }
+
 
         private Fragment createFragment(@Page String page) {
             switch (page) {
@@ -181,19 +211,32 @@ public class TelecomPageTab {
         /**
          * Create the tab for the given {@param tabIndex}
          */
-        public List<TelecomPageTab> recreateTabs(Context context, boolean forceInit) {
-            mTabs.clear();
+        private void createTabs(Context context) {
             for (int i = 0; i < getTabCount(); i++) {
                 String page = mTabConfig[i];
                 TelecomPageTab telecomPageTab = new TelecomPageTab(
                         context.getDrawable(TAB_ICONS.get(page)),
                         context.getString(TAB_LABELS.get(page)),
-                        mSelectedListener,
+                        page,
+                        tab -> {
+                            mCurrentTabIndex = getTabIndex(tab.mPage);
+                            if (mSelectedListener != null) {
+                                mSelectedListener.onItemClicked(tab);
+                            }
+                        },
                         this);
-                telecomPageTab.initFragment(mFragmentManager, page, forceInit);
+                telecomPageTab.initFragment(mFragmentManager, page, false);
                 mTabs.add(telecomPageTab);
             }
-            return mTabs;
+        }
+
+        /**
+         * Recreate fragments to refresh ui.
+         */
+        public void recreateFragments() {
+            for (TelecomPageTab tab : mTabs) {
+                tab.initFragment(mFragmentManager, tab.mPage, true);
+            }
         }
 
         public int getTabCount() {
@@ -212,6 +255,14 @@ public class TelecomPageTab {
          */
         public List<TelecomPageTab> getTabs() {
             return mTabs;
+        }
+
+        public int getSelectedTabIndex() {
+            return mCurrentTabIndex;
+        }
+
+        public int getStartTabIndex() {
+            return mStartTabIndex;
         }
     }
 }

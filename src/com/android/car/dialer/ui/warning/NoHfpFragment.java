@@ -22,7 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.fragment.app.Fragment;
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -31,7 +31,13 @@ import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.framework.UxrButtonDecorator;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.ui.TelecomActivity;
+import com.android.car.dialer.ui.common.DialerBaseFragment;
 import com.android.car.dialer.ui.dialpad.DialpadFragment;
+import com.android.car.ui.baselayout.Insets;
+import com.android.car.ui.toolbar.ToolbarController;
+
+import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,7 +48,7 @@ import dagger.hilt.android.AndroidEntryPoint;
  * A fragment that informs the user that there is no bluetooth device attached that can make
  * phone calls.
  */
-@AndroidEntryPoint(Fragment.class)
+@AndroidEntryPoint(DialerBaseFragment.class)
 public class NoHfpFragment extends Hilt_NoHfpFragment {
     @Inject UiCallManager mUiCallManager;
     @Inject @Named("ConnectToBluetooth") UxrButtonDecorator mConnectToBluetoothButtonDecorator;
@@ -77,5 +83,18 @@ public class NoHfpFragment extends Hilt_NoHfpFragment {
         mConnectToBluetoothButtonDecorator.decorate(bluetoothButton);
 
         return view;
+    }
+
+    @Override
+    public void onCarUiInsetsChanged(Insets insets) {
+        requireView().setPadding(0, 0, 0, 0);
+    }
+
+    @Override
+    protected void setupToolbar(@NonNull ToolbarController toolbar) {
+        ((TelecomActivity) requireActivity()).setTabsShown(false);
+        toolbar.setLogo(null);
+        toolbar.setTitle((CharSequence) null);
+        toolbar.setMenuItems(Collections.emptyList());
     }
 }

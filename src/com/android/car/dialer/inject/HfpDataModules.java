@@ -103,8 +103,13 @@ public final class HfpDataModules {
         @Provides
         static LiveData<Boolean> hasHfpDeviceConnectedLiveData(
                 @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
-            return Transformations.map(hfpDeviceListLiveData,
-                    devices -> devices != null && !devices.isEmpty());
+            // Connecting or disconnecting a phone will send PHONE_ACCOUNT_REGISTERED or
+            // PHONE_ACCOUNT_UNREGISTERED intents twice making it set the same value twice.
+            // Emit the extra update by using distinctUntilChanged(LiveData).
+            return Transformations.distinctUntilChanged(
+                    Transformations.map(
+                            hfpDeviceListLiveData,
+                            devices -> devices != null && !devices.isEmpty()));
         }
 
         @ActivityRetainedScoped

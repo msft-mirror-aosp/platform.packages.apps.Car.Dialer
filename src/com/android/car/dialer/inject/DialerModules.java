@@ -32,9 +32,9 @@ import com.android.car.dialer.ui.common.DialerBaseFragment;
 import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
 import com.android.car.telephony.common.Contact;
-import com.android.car.telephony.common.WorkerExecutor;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -48,10 +48,14 @@ import dagger.hilt.android.components.FragmentComponent;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 
-/** Dialer modules. */
+/**
+ * Dialer modules.
+ */
 public final class DialerModules {
 
-    /** Application level module. */
+    /**
+     * Application level module.
+     */
     @InstallIn(SingletonComponent.class)
     @Module
     public static final class AppModule {
@@ -69,8 +73,19 @@ public final class DialerModules {
         }
 
         @Provides
-        static ExecutorService provideSingleThreadExecutorService() {
-            return WorkerExecutor.getInstance().getSingleThreadExecutor();
+        static ExecutorService provideSingleThreadExecutor() {
+            return Executors.newSingleThreadExecutor();
+        }
+
+        /**
+         * Singleton executor service to sort contacts to make sure only one thread sorts the
+         * contact list at one time.
+         */
+        @Singleton
+        @Provides
+        @Named("ContactSort")
+        static ExecutorService provideContactSortExecutor() {
+            return Executors.newSingleThreadExecutor();
         }
 
         @Singleton
@@ -80,7 +95,9 @@ public final class DialerModules {
         }
     }
 
-    /** Module providing dependencies for activities. */
+    /**
+     * Module providing dependencies for activities.
+     */
     @InstallIn(ActivityComponent.class)
     @Module
     public abstract static class ActivityModule {
@@ -93,9 +110,12 @@ public final class DialerModules {
         @Named("ConnectToBluetooth")
         abstract UxrButtonDecorator bindConnectToBluetoothButtonDecorator(
                 ConnectToBluetoothButtonDecorator decorator);
+
     }
 
-    /** Module providing dependencies for fragments. */
+    /**
+     * Module providing dependencies for fragments.
+     */
     @InstallIn(FragmentComponent.class)
     @Module
     public static final class FragmentModule {
@@ -111,7 +131,9 @@ public final class DialerModules {
         }
     }
 
-    /** Do not initialize. */
+    /**
+     * Do not initialize.
+     */
     private DialerModules() {
     }
 }

@@ -26,7 +26,7 @@ android_library {
     // required to access any private API.
     sdk_version: "system_current",
 
-    min_sdk_version: "29",
+    min_sdk_version: "31",
 
     target_sdk_version: "31",
 
@@ -52,7 +52,7 @@ android_library {
     // required to access any private API and spy() on any framework class.
     sdk_version: "system_current",
 
-    min_sdk_version: "29",
+    min_sdk_version: "31",
 
     target_sdk_version: "31",
 

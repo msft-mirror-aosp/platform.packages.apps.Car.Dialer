@@ -21,6 +21,10 @@ import android.os.Looper;
 
 import androidx.lifecycle.LiveData;
 
+import dagger.assisted.Assisted;
+import dagger.assisted.AssistedFactory;
+import dagger.assisted.AssistedInject;
+
 /**
  * Emits a true value in a fixed periodical pace. The first beat begins when this live data becomes
  * active.
@@ -32,7 +36,8 @@ public class HeartBeatLiveData extends LiveData<Boolean> {
     private long mPulseRate;
     private Handler mMainThreadHandler = new Handler(Looper.getMainLooper());
 
-    public HeartBeatLiveData(long rateInMillis) {
+    @AssistedInject
+    public HeartBeatLiveData(@Assisted long rateInMillis) {
         mPulseRate = rateInMillis;
     }
 
@@ -55,4 +60,14 @@ public class HeartBeatLiveData extends LiveData<Boolean> {
             mMainThreadHandler.postDelayed(this, mPulseRate);
         }
     };
+
+    /**
+     * Factory to create {@link HeartBeatLiveData} instances via the {@link AssistedInject}
+     * constructor.
+     */
+    @AssistedFactory
+    public interface Factory {
+        /** Creates a {@link HeartBeatLiveData} instance for the given interval. */
+        HeartBeatLiveData create(long rateInMillis);
+    }
 }

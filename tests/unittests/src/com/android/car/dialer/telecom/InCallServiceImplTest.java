@@ -93,6 +93,8 @@ public class InCallServiceImplTest {
     @Mock
     private ProjectionCallHandler mProjectionCallHandler;
     @Mock
+    private SelfManagedCallHandler mSelfManagedCallHandler;
+    @Mock
     private PhoneAccountHandle mMockPhoneAccountHandle;
 
     @Before
@@ -113,6 +115,7 @@ public class InCallServiceImplTest {
         sharedPreferences.edit()
                 .putBoolean(
                         mContext.getString(R.string.pref_show_fullscreen_active_call_ui_key), true)
+                .putBoolean(mContext.getString(R.string.pref_no_incoming_call_hun_key), false)
                 .commit();
 
         mInCallServiceImpl =
@@ -120,7 +123,9 @@ public class InCallServiceImplTest {
         mInCallServiceImpl.mPhoneAccountManager = mPhoneAccountManager;
         mInCallNotificationController = new InCallNotificationController(mContext);
         mInCallServiceImpl.mInCallRouter = new InCallRouter(mContext, sharedPreferences,
-                mInCallNotificationController, mProjectionCallHandler);
+                mInCallNotificationController);
+        mInCallServiceImpl.mProjectionCallHandler = mProjectionCallHandler;
+        mInCallServiceImpl.mSelfManagedCallHandler = mSelfManagedCallHandler;
         mInCallServiceImpl.mCurrentHfpDeviceLiveData = LiveDataFunctions.nullLiveData();
 
         mInCallServiceImpl.addActiveCallListChangedCallback(mActiveCallListChangedCallback);
@@ -143,7 +148,7 @@ public class InCallServiceImplTest {
 
     @Test
     public void onActiveCallAdded_startInCallActivity() {
-        when(mMockTelecomCall.getState()).thenReturn(Call.STATE_ACTIVE);
+        when(mMockCallDetails.getState()).thenReturn(Call.STATE_ACTIVE);
         mInCallServiceImpl.onCallAdded(mMockTelecomCall);
 
         ArgumentCaptor<Call> callCaptor = ArgumentCaptor.forClass(Call.class);
@@ -157,7 +162,7 @@ public class InCallServiceImplTest {
 
     @Test
     public void onCallRemoved() {
-        when(mMockTelecomCall.getState()).thenReturn(Call.STATE_ACTIVE);
+        when(mMockCallDetails.getState()).thenReturn(Call.STATE_ACTIVE);
         mInCallServiceImpl.onCallRemoved(mMockTelecomCall);
 
         ArgumentCaptor<Call> callCaptor = ArgumentCaptor.forClass(Call.class);
@@ -168,7 +173,7 @@ public class InCallServiceImplTest {
 
     @Test
     public void onRingingCallAdded_showNotification() {
-        when(mMockTelecomCall.getState()).thenReturn(Call.STATE_RINGING);
+        when(mMockCallDetails.getState()).thenReturn(Call.STATE_RINGING);
         mInCallServiceImpl.onCallAdded(mMockTelecomCall);
 
         ArgumentCaptor<Call> callCaptor = ArgumentCaptor.forClass(Call.class);

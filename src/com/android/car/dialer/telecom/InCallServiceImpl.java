@@ -31,6 +31,7 @@ import com.android.car.apps.common.log.L;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.framework.InCallServiceProxy;
 
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
@@ -52,7 +53,12 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
     private CopyOnWriteArrayList<CallAudioStateCallback> mCallAudioStateCallbacks =
             new CopyOnWriteArrayList<>();
 
+    private final ArrayList<ActiveCallListChangedCallback>
+            mActiveCallListChangedCallbacks = new ArrayList<>();
+
     @Inject InCallRouter mInCallRouter;
+    @Inject SelfManagedCallHandler mSelfManagedCallHandler;
+    @Inject ProjectionCallHandler mProjectionCallHandler;
     @Inject PhoneAccountManager mPhoneAccountManager;
     @Inject @Named("Hfp") LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
 
@@ -85,19 +91,23 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
     @Override
     public void onCreate() {
         super.onCreate();
-        mInCallRouter.start();
+        mProjectionCallHandler.start();
+        mActiveCallListChangedCallbacks.add(mProjectionCallHandler);
+        mActiveCallListChangedCallbacks.add(mSelfManagedCallHandler);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mInCallRouter.stop();
+        mActiveCallListChangedCallbacks.remove(mSelfManagedCallHandler);
+        mActiveCallListChangedCallbacks.remove(mProjectionCallHandler);
+        mProjectionCallHandler.stop();
     }
 
     @Override
     public void onCallAdded(Call telecomCall) {
         L.d(TAG, "onCallAdded: %s", telecomCall);
-        if (telecomCall.getState() == Call.STATE_SELECT_PHONE_ACCOUNT) {
+        if (telecomCall.getDetails().getState() == Call.STATE_SELECT_PHONE_ACCOUNT) {
             BluetoothDevice currentHfpDevice = mCurrentHfpDeviceLiveData.getValue();
             PhoneAccountHandle currentPhoneAccountHandle =
                     mPhoneAccountManager.getMatchingPhoneAccount(currentHfpDevice);
@@ -107,12 +117,20 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
                 L.e(TAG, "Not able to get the phone account handle for current hfp device.");
             }
         }
+        boolean isHandled = routeToActiveCallListChangedCallback(telecomCall);
+        if (isHandled) {
+            return;
+        }
         mInCallRouter.onCallAdded(telecomCall);
     }
 
     @Override
     public void onCallRemoved(Call telecomCall) {
         L.d(TAG, "onCallRemoved: %s", telecomCall);
+        for (InCallServiceImpl.ActiveCallListChangedCallback callback :
+                mActiveCallListChangedCallbacks) {
+            callback.onTelecomCallRemoved(telecomCall);
+        }
         mInCallRouter.onCallRemoved(telecomCall);
     }
 
@@ -155,11 +173,26 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
     }
 
     public void addActiveCallListChangedCallback(ActiveCallListChangedCallback callback) {
-        mInCallRouter.registerActiveCallListChangedCallback(callback);
+        mActiveCallListChangedCallbacks.add(callback);
     }
 
     public void removeActiveCallListChangedCallback(ActiveCallListChangedCallback callback) {
-        mInCallRouter.unregisterActiveCallHandler(callback);
+        mActiveCallListChangedCallbacks.remove(callback);
+    }
+
+    /**
+     * Dispatches the call to {@link InCallServiceImpl.ActiveCallListChangedCallback}.
+     */
+    private boolean routeToActiveCallListChangedCallback(Call call) {
+        boolean isHandled = false;
+        for (InCallServiceImpl.ActiveCallListChangedCallback callback :
+                mActiveCallListChangedCallbacks) {
+            if (callback.onTelecomCallAdded(call)) {
+                isHandled = true;
+            }
+        }
+
+        return isHandled;
     }
 
     /**

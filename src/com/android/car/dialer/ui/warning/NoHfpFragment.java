@@ -35,9 +35,9 @@ import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.common.DialerBaseFragment;
 import com.android.car.dialer.ui.dialpad.DialpadFragment;
 import com.android.car.ui.baselayout.Insets;
+import com.android.car.ui.toolbar.NavButtonMode;
+import com.android.car.ui.toolbar.SearchMode;
 import com.android.car.ui.toolbar.ToolbarController;
-
-import java.util.Collections;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -73,11 +73,9 @@ public class NoHfpFragment extends Hilt_NoHfpFragment {
 
         View emergencyButton = view.findViewById(R.id.emergency_call_button);
         ViewUtils.setVisible(emergencyButton, mUiCallManager.isEmergencyCallSupported());
-        emergencyButton.setOnClickListener(v -> getParentFragmentManager()
-                .beginTransaction()
-                .replace(android.R.id.content, DialpadFragment.newEmergencyDialpad())
-                .addToBackStack(null)
-                .commit());
+        emergencyButton.setOnClickListener(v ->
+                ((TelecomActivity) requireActivity()).pushContentFragment(
+                        DialpadFragment.newEmergencyDialpad(), null));
 
         UxrButton bluetoothButton = view.findViewById(R.id.connect_bluetooth_button);
         mConnectToBluetoothButtonDecorator.decorate(bluetoothButton);
@@ -95,6 +93,8 @@ public class NoHfpFragment extends Hilt_NoHfpFragment {
         ((TelecomActivity) requireActivity()).setTabsShown(false);
         toolbar.setLogo(null);
         toolbar.setTitle((CharSequence) null);
-        toolbar.setMenuItems(Collections.emptyList());
+        toolbar.setMenuItems(null);
+        toolbar.setNavButtonMode(NavButtonMode.DISABLED);
+        toolbar.setSearchMode(SearchMode.DISABLED);
     }
 }

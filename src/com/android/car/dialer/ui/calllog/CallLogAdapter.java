@@ -25,8 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.ui.common.DialerUtils;
 import com.android.car.dialer.ui.common.entity.HeaderViewHolder;
 import com.android.car.dialer.ui.common.entity.UiCallLog;

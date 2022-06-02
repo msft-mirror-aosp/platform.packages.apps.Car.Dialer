@@ -25,7 +25,7 @@ import android.content.IntentFilter;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
-import com.android.car.dialer.log.L;
+import com.android.car.apps.common.log.L;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

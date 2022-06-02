@@ -24,9 +24,9 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.BluetoothState;
-import com.android.car.dialer.log.L;
 
 import java.util.List;
 import java.util.Set;

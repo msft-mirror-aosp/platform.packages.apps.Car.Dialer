@@ -29,8 +29,8 @@ import android.text.TextUtils;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.TelecomUtils;
 

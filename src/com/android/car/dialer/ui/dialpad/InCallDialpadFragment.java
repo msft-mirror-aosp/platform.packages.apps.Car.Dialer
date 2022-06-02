@@ -30,8 +30,8 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.ui.activecall.InCallViewModel;
 import com.android.car.dialer.ui.dialpad.DialpadRestrictionViewModel.DialpadUxrMode;
 import com.android.car.telephony.common.TelecomUtils;

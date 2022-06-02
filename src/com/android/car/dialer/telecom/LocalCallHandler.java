@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.android.car.dialer.log.L;
+import com.android.car.apps.common.log.L;
 
 import com.google.common.base.Predicate;
 

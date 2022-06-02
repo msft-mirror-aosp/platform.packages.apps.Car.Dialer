@@ -24,9 +24,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
 import com.android.car.dialer.ui.favorite.BluetoothFavoriteContactsLiveData;
 import com.android.car.telephony.common.Contact;

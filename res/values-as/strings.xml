@@ -20,7 +20,7 @@
     <string name="no_hfp" msgid="7371139867234667691">"আপোনাৰ কলটো সম্পূৰ্ণ কৰিবলৈ প্ৰথমে ব্লুটুথৰ জৰিয়তে নিজৰ ফ\'নটো গাড়ীৰ সৈতে সংযোগ কৰক।"</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"ব্লুটুথৰ সুবিধা নাই।"</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"কল কৰিবলৈ বা গ্ৰহণ কৰিবলৈ, ব্লুটুথ অন কৰক।"</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"কল কৰিবলৈ বা গ্ৰহণ কৰিবলৈ, ফ’নটো গাড়ীৰ সৈতে যোৰা লগাওক।"</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"কল কৰিবলৈ বা গ্ৰহণ কৰিবলৈ, ফ’নটো গাড়ীৰ সৈতে পেয়াৰ কৰক।"</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"ব্লুটুথৰ সৈতে সংযোগ কৰক"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"জৰুৰীকালীন"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"জৰুৰীকালীন কল"</string>
@@ -63,6 +63,7 @@
     <string name="no_phone_numbers" msgid="8738691115921148445">"কোনো ফ\'ন নম্বৰ নাই"</string>
     <string name="in_call_notification_channel_name" msgid="1978093630512401778">"অন্তৰ্গামী কলৰ জাননী"</string>
     <string name="notification_incoming_call" msgid="1722904631804432389">"অন্তৰ্গামী কল"</string>
+    <string name="notification_incoming_call_join_number" msgid="6751753093958677973">"অন্তৰ্গামী কল * <xliff:g id="PHONE_NUMBER">%1$s</xliff:g>"</string>
     <string name="missed_call_notification_channel_name" msgid="1135686963409691772">"মিছড কলৰ জাননী"</string>
     <plurals name="notification_missed_call" formatted="false" msgid="1018870358427938752">
       <item quantity="one">মিছড কল(<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
@@ -82,11 +83,13 @@
     <string name="family_name_first_title" msgid="7721976826282427987">"উপাধি"</string>
     <!-- no translation found for sort_order_default_value (5876201942256731358) -->
     <skip />
-    <string name="audio_route_dialog_title" msgid="2904553846970171054">"কল অডিঅ\'ৰ বাবে এয়া ব্যৱহাৰ কৰক:"</string>
+    <string name="audio_route_dialog_title" msgid="2262715267187794363"></string>
     <string name="audio_route_dialog_subtitle" msgid="8780526104805330121"></string>
     <string name="ongoing_conf_title" msgid="4161590966144000887">"কনফাৰেন্স"</string>
     <string name="ongoing_conf_title_format" msgid="7667048745156395220">"%1$s (%2$d) - "</string>
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"ডায়েল কৰা সুবিধাটো অক্ষম কৰা হৈছে"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"গাড়ী চলাই থকাৰ সময়ত ডায়েলপেডৰ ব্যৱহাৰ সীমিত কৰা হৈছে"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"ডায়েলাৰ এছএমএছ"</string>
+    <string name="sms_notification_text" msgid="9193883830187173056">"এছএমএছ পঠিয়াই থকা হৈছে"</string>
 </resources>

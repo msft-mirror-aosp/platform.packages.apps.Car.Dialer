@@ -27,9 +27,9 @@ import android.telecom.PhoneAccountHandle;
 
 import androidx.lifecycle.LiveData;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.framework.InCallServiceProxy;
-import com.android.car.dialer.log.L;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 

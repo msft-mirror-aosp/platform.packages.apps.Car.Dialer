@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.LiveData;
 
-import com.android.car.dialer.log.L;
+import com.android.car.apps.common.log.L;
 
 import java.util.Collections;
 import java.util.Set;

@@ -33,9 +33,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.apps.common.BackgroundImageView;
 import com.android.car.apps.common.LetterTileDrawable;
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.Contact;

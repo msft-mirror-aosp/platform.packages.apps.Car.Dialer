@@ -28,10 +28,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.ui.core.CarUi;

@@ -26,13 +26,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.livedata.AudioRouteLiveData;
 import com.android.car.dialer.livedata.CallDetailLiveData;
 import com.android.car.dialer.livedata.CallStateLiveData;
 import com.android.car.dialer.livedata.CallerInfoLiveData;
 import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;

@@ -41,9 +41,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.ui.AlertDialogBuilder;

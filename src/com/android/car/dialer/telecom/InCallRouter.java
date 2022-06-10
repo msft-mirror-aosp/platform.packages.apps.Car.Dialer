@@ -23,9 +23,9 @@ import android.telecom.Call;
 
 import androidx.annotation.MainThread;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.dialer.ui.activecall.InCallViewModel;

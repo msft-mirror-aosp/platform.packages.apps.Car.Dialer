@@ -24,7 +24,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.android.car.dialer.log.L;
+import com.android.car.apps.common.log.L;
 import com.android.car.telephony.common.TelecomUtils;
 
 /**

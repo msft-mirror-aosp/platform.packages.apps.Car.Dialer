@@ -23,7 +23,7 @@ import android.text.TextUtils;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.LiveData;
 
-import com.android.car.dialer.log.L;
+import com.android.car.apps.common.log.L;
 
 import dagger.assisted.Assisted;
 import dagger.assisted.AssistedFactory;

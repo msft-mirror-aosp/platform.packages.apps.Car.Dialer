@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.provider.CallLog;
 import android.telecom.Call;
 import android.telephony.PhoneNumberUtils;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -31,9 +32,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.Themes;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.notification.NotificationService;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.activecall.InCallActivity;
@@ -47,9 +48,9 @@ import com.android.car.ui.baselayout.Insets;
 import com.android.car.ui.baselayout.InsetsChangedListener;
 import com.android.car.ui.core.CarUi;
 import com.android.car.ui.toolbar.MenuItem;
+import com.android.car.ui.toolbar.TabLayout;
 import com.android.car.ui.toolbar.ToolbarController;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,7 +102,6 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
             if (!Boolean.TRUE.equals(hasHfpDeviceConnected)) {
                 setContentFragment(new NoHfpFragment(), NoHfpFragment.class.getName());
             } else {
-                setTabsShown(true);
                 int tabIndex = mTabFactory.getSelectedTabIndex();
                 showTabPage(tabIndex);
             }
@@ -217,13 +217,10 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
             // as that would interrupt the ripple animation.
             return;
         }
-        if (shown) {
-            mCarUiToolbar.setTabs(mTabFactory.getTabs()
-                    .stream()
-                    .map(TelecomPageTab::getToolbarTab)
-                    .collect(Collectors.toList()), mTabFactory.getSelectedTabIndex());
-        } else {
-            mCarUiToolbar.setTabs(Collections.emptyList());
+        TabLayout tabLayout = requireViewById(R.id.car_ui_toolbar_tabs);
+        int childCount = tabLayout.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            tabLayout.getChildAt(i).setVisibility(shown ?  View.VISIBLE : View.GONE);
         }
         mTabsShown = shown;
     }
@@ -240,13 +237,6 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
     }
 
     private void showTabPage(int tabIndex) {
-        // When call this from search page, pop the top search page and show the tabs to call
-        // mCarUiToolbar.selectTab(tabIndex) without running into errors.
-        getSupportFragmentManager().executePendingTransactions();
-        while (isBackNavigationAvailable()) {
-            getSupportFragmentManager().popBackStackImmediate();
-        }
-
         // Compare the current selection and new selection. If they are the same, selectTab(int)
         // won't trigger the listener to update content fragment.
         int selectedTab = mCarUiToolbar.getSelectedTab();

@@ -372,9 +372,9 @@ public class InCallViewModel extends ViewModel {
         }
         ongoingCallList.sort(mCallComparator);
 
-        L.d(TAG, "size:" + activeCallList.size() + " activeList" + activeCallList);
-        L.d(TAG, "conf:%s" + conferenceList, conferenceList.size());
-        L.d(TAG, "ongoing:%s" + ongoingCallList, ongoingCallList.size());
+        L.d(TAG, "activeList(%d): %s", activeCallList.size(), activeCallList);
+        L.d(TAG, "conf(%d): %s", conferenceList.size(), conferenceList);
+        L.d(TAG, "ongoing(%d): %s", ongoingCallList.size(), ongoingCallList);
         mConferenceCallListLiveData.setValue(conferenceList);
         mOngoingCallListLiveData.setValue(ongoingCallList);
     }

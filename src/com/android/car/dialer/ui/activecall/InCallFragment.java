@@ -114,7 +114,7 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     protected void presentCallerInfo(Contact contact, CallDetail callDetail) {
         presentCallDetail(callDetail);
 
-        L.i(TAG, "presentCallerInfo: " + contact);
+        L.i(TAG, "presentCallerInfo: %s", contact);
         if (contact == null) {
             return;
         }

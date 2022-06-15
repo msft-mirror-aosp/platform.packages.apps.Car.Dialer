@@ -131,7 +131,7 @@ public final class UiCallManager {
     }
 
     public void setMuted(boolean muted) {
-        L.d(TAG, "setMuted: " + muted);
+        L.d(TAG, "setMuted: %b", muted);
         if (mInCallService == null) {
             return;
         }
@@ -191,7 +191,7 @@ public final class UiCallManager {
         } else {
             CallAudioState audioState = getCallAudioStateOrNull();
             int audioRoute = audioState != null ? audioState.getRoute() : 0;
-            L.d(TAG, "getAudioRoute " + audioRoute);
+            L.d(TAG, "getAudioRoute: %d", audioRoute);
             return audioRoute;
         }
     }
@@ -229,7 +229,7 @@ public final class UiCallManager {
     public boolean placeCall(String number) {
         if (isValidNumber(number)) {
             Uri uri = Uri.fromParts("tel", number, null);
-            L.d(TAG, "android.telecom.TelecomManager#placeCall: %s", number);
+            L.d(TAG, "android.telecom.TelecomManager#placeCall: %s", TelecomUtils.piiLog(number));
 
             try {
                 mTelecomManager.placeCall(uri, null);
@@ -241,7 +241,7 @@ public final class UiCallManager {
                 return false;
             }
         } else {
-            L.d(TAG, "invalid number dialed", number);
+            L.d(TAG, "invalid number %s dialed", number);
             Toast.makeText(mContext, R.string.error_invalid_phone_number,
                     Toast.LENGTH_SHORT).show();
             return false;

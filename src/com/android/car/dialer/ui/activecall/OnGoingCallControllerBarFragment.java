@@ -334,7 +334,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
             return;
         }
 
-        L.i(TAG, "Audio Route State: " + audioRoute);
+        L.i(TAG, "Audio Route State: %d", audioRoute);
         mActiveRoute = audioRoute;
         updateAudioRouteListItems();
         AudioRouteInfo audioRouteInfo = getAudioRouteInfo(audioRoute);

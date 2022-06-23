@@ -30,7 +30,7 @@ import android.telecom.TelecomManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.android.car.dialer.log.L;
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.notification.InCallNotificationController;
 
 import java.util.Collections;

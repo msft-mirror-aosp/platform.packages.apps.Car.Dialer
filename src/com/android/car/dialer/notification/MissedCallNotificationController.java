@@ -34,11 +34,11 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.livedata.UnreadMissedCallLiveData;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.sms.DirectSendActivity;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.TelecomActivity;

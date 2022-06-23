@@ -22,7 +22,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.android.car.dialer.log.L;
+import com.android.car.apps.common.log.L;
 
 import dagger.hilt.android.AndroidEntryPoint;
 

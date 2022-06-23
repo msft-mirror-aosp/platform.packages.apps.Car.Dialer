@@ -33,10 +33,10 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 
 /**
  * A widget that supports different {@link State}s: NEW, LOADING, CONTENT, EMPTY OR ERROR.

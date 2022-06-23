@@ -22,8 +22,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.LiveDataFunctions;
-import com.android.car.dialer.log.L;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;

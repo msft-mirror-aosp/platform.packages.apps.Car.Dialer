@@ -18,7 +18,7 @@ package com.android.car.dialer.livedata;
 
 import androidx.lifecycle.MediatorLiveData;
 
-import com.android.car.dialer.log.L;
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
 

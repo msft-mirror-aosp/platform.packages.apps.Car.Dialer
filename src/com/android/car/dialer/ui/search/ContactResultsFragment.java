@@ -25,8 +25,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.common.DialerListBaseFragment;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
@@ -146,7 +146,6 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment {
 
     @Override
     protected void setupToolbar(@NonNull ToolbarController toolbar) {
-        super.setupToolbar(toolbar);
         mToolbar = toolbar;
         mToolbar.setNavButtonMode(NavButtonMode.BACK);
         mToolbar.setLogo(null);

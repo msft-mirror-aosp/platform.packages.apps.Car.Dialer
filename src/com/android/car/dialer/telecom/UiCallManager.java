@@ -40,10 +40,10 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.assist.CarVoiceInteractionSession;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.sms.MessagingService;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.TelecomUtils;

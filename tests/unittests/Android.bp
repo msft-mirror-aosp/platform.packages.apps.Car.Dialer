@@ -8,6 +8,9 @@ package {
 android_test {
     name: "CarDialerUnitTests",
 
+    // CERTIFICATE is defined in Dialer app build file.
+    certificate: CERTIFICATE,
+
     min_sdk_version: "31",
 
     target_sdk_version: "31",

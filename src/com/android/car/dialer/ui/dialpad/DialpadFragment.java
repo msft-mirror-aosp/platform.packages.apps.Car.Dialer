@@ -36,10 +36,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.dialpad.DialpadRestrictionViewModel.DialpadUxrMode;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.Contact;
@@ -47,6 +48,8 @@ import com.android.car.telephony.common.InMemoryPhoneBook;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 import com.android.car.ui.recyclerview.CarUiRecyclerView;
+import com.android.car.ui.toolbar.NavButtonMode;
+import com.android.car.ui.toolbar.SearchMode;
 import com.android.car.ui.toolbar.ToolbarController;
 import com.android.car.uxr.LifeCycleObserverUxrContentLimiter;
 import com.android.car.uxr.UxrContentLimiterImpl;
@@ -247,6 +250,12 @@ public class DialpadFragment extends Hilt_DialpadFragment {
         // at the same time, and we don't want to mess up it's action bar.
         if (mMode == MODE_DIAL) {
             super.setupToolbar(toolbar);
+        } else if (mMode == MODE_EMERGENCY) {
+            ((TelecomActivity) requireActivity()).setTabsShown(false);
+            toolbar.setNavButtonMode(NavButtonMode.BACK);
+            toolbar.setMenuItems(null);
+            toolbar.setLogo(null);
+            toolbar.setSearchMode(SearchMode.DISABLED);
         }
     }
 

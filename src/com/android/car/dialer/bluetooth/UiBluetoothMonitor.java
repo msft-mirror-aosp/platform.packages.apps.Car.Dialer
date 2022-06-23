@@ -21,7 +21,7 @@ import android.bluetooth.BluetoothDevice;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 
-import com.android.car.dialer.log.L;
+import com.android.car.apps.common.log.L;
 
 import java.util.List;
 import java.util.Set;

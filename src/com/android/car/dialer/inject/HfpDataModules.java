@@ -24,9 +24,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.livedata.CallHistoryLiveData;
-import com.android.car.dialer.log.L;
 import com.android.car.dialer.storage.FavoriteNumberRepository;
 import com.android.car.dialer.ui.favorite.BluetoothFavoriteContactsLiveData;
 import com.android.car.telephony.common.Contact;
@@ -103,8 +103,13 @@ public final class HfpDataModules {
         @Provides
         static LiveData<Boolean> hasHfpDeviceConnectedLiveData(
                 @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
-            return Transformations.map(hfpDeviceListLiveData,
-                    devices -> devices != null && !devices.isEmpty());
+            // Connecting or disconnecting a phone will send PHONE_ACCOUNT_REGISTERED or
+            // PHONE_ACCOUNT_UNREGISTERED intents twice making it set the same value twice.
+            // Emit the extra update by using distinctUntilChanged(LiveData).
+            return Transformations.distinctUntilChanged(
+                    Transformations.map(
+                            hfpDeviceListLiveData,
+                            devices -> devices != null && !devices.isEmpty()));
         }
 
         @ActivityRetainedScoped

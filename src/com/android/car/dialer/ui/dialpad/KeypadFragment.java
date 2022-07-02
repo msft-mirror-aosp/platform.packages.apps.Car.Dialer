@@ -100,7 +100,7 @@ public class KeypadFragment extends Fragment {
 
             boolean isInCallKeypad = getParentFragment() instanceof InCallDialpadFragment;
             restrictionViewModel.getDialpadMode().observe(
-                    this,
+                    getViewLifecycleOwner(),
                     dialpadUxrMode -> {
                         if (isInCallKeypad) {
                             // Disable the keypad in-call, if any restriction level is active.

@@ -110,7 +110,7 @@ public abstract class AbstractDialpadFragment extends DialerBaseFragment impleme
             mInputMotionAnimator = (ValueAnimator) AnimatorInflater.loadAnimator(getContext(),
                     R.animator.scale_down);
             float startTextSize = mTitleView.getTextSize() * getResources().getFloat(
-                    R.integer.config_dial_motion_scale_start);
+                    R.dimen.config_dial_motion_scale_start);
             mScaleSpan = new ScaleSpan(startTextSize);
         }
     }

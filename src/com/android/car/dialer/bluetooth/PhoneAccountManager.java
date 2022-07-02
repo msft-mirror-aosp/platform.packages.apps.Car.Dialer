@@ -29,9 +29,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.Constants;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -43,6 +45,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 /** User phone account handle management. */
 @Singleton
 public class PhoneAccountManager {
+    private static final String TAG = "CD.PhoneAccountMgr";
     private final Context mContext;
     private final TelecomManager mTelecomManager;
     private final BluetoothAdapter mBluetoothAdapter;
@@ -65,12 +68,14 @@ public class PhoneAccountManager {
         PhoneAccountHandle phoneAccountHandle = getMatchingPhoneAccount(device);
         mTelecomManager.setUserSelectedOutgoingPhoneAccount(phoneAccountHandle);
     }
+
     /**
      * Returns the {@link BluetoothDevice} for the given device address.
      */
     public BluetoothDevice getMatchingDevice(@Nullable String deviceId) {
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT)
                 != PackageManager.PERMISSION_GRANTED) {
+            L.w(TAG, "Permission is denied to get paired bluetooth devices.");
             return null;
         }
         Set<BluetoothDevice> bondedDevices =
@@ -101,6 +106,12 @@ public class PhoneAccountManager {
     /** Returns the list of hfp {@link BluetoothDevice}s for current callable phone accounts. */
     @NonNull
     public List<BluetoothDevice> getHfpDeviceList() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            L.w(TAG, "Permission is denied to get call capable phone accounts.");
+            return Collections.EMPTY_LIST;
+        }
+
         List<PhoneAccountHandle> phoneAccountHandles =
                 mTelecomManager.getCallCapablePhoneAccounts(true);
         List<BluetoothDevice> hfpDeviceList = new ArrayList<>();
@@ -116,6 +127,11 @@ public class PhoneAccountManager {
     /** Returns the {@link PhoneAccountHandle} for the given bluetooth device. */
     public PhoneAccountHandle getMatchingPhoneAccount(@Nullable BluetoothDevice bluetoothDevice) {
         if (bluetoothDevice == null) {
+            return null;
+        }
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            L.w(TAG, "Permission is denied to get call capable phone accounts.");
             return null;
         }
 

@@ -20,6 +20,6 @@
     android:duration="@integer/config_dial_motion_duration"
     android:interpolator="@android:interpolator/fast_out_slow_in">
     <propertyValuesHolder
-        android:valueFrom="@integer/config_dial_motion_scale_start"
+        android:valueFrom="@dimen/config_dial_motion_scale_start"
         android:valueTo="1"/>
 </animator>

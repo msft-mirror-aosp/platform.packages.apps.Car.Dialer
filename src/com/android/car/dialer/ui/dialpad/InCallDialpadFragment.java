@@ -63,7 +63,7 @@ public class InCallDialpadFragment extends Hilt_InCallDialpadFragment {
         mCallStateView = rootView.findViewById(R.id.call_state);
 
         InCallViewModel viewModel = new ViewModelProvider(getActivity()).get(InCallViewModel.class);
-        viewModel.getCallStateAndConnectTime().observe(this, (pair) -> {
+        viewModel.getCallStateAndConnectTime().observe(getViewLifecycleOwner(), (pair) -> {
             if (mCallStateView == null) {
                 return;
             }

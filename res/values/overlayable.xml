@@ -89,6 +89,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="car_textview_fading_edge_length"/>
       <item type="dimen" name="config_background_image_alpha"/>
       <item type="dimen" name="config_background_image_error_alpha"/>
+      <item type="dimen" name="config_dial_motion_scale_start"/>
       <item type="dimen" name="connect_bluetooth_button_margin_top"/>
       <item type="dimen" name="contact_avatar_corner_radius_percent"/>
       <item type="dimen" name="contact_details_action_bar_avatar_size"/>
@@ -340,7 +341,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="voice_channel_view"/>
       <item type="id" name="zero"/>
       <item type="integer" name="config_dial_motion_duration"/>
-      <item type="integer" name="config_dial_motion_scale_start"/>
       <item type="integer" name="config_dialed_number_alignment"/>
       <item type="integer" name="config_dialed_number_gravity"/>
       <item type="integer" name="config_no_dialpad_uxr_max_allow_digits"/>

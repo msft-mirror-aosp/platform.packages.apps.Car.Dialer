@@ -117,6 +117,17 @@ android {
             // storePassword 'android'
         }
     }
+    lintOptions {
+        // Ignore duplicate resources due to existence of overlayable.xml
+        ignore 'DuplicateDefinition'
+        // Ignore protected permissions since Dialer is system app
+        ignore 'ProtectedPermissions'
+        // Ignore ImageView using android:tint
+        ignore 'UseAppTint'
+        // Ignore quantity errors for translations
+        ignore 'MissingQuantity'
+        ignore 'ImpliedQuantity'
+    }
 }
 
 dependencies {

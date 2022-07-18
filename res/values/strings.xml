@@ -83,7 +83,9 @@
     <!-- String constant for the dialpad -->
     <string name="tab_config_dial_pad" translatable="false">DIAL_PAD</string>
     <!-- Default value for start page list preference -->
-    <string name="tab_config_default_value">@string/tab_config_call_history</string>
+    <string name="tab_config_default_value" translatable="false">
+        @string/tab_config_call_history
+    </string>
 
     <!-- Headers for call history -->
     <!-- Header in call log to group calls from the current day. [CHAR LIMIT=30] -->
@@ -241,7 +243,9 @@
     <!-- Title of family name [CHAR LIMIT=40]-->
     <string name="family_name_first_title">Last name</string>
     <!-- Default value for sort order list preference -->
-    <string name="sort_order_default_value">@string/given_name_first_key</string>
+    <string name="sort_order_default_value" translatable="false">
+        @string/given_name_first_key
+    </string>
 
     <!-- Audio route selection dialog. Placeholder resources for overriding -->
     <string name="audio_route_dialog_title"></string>

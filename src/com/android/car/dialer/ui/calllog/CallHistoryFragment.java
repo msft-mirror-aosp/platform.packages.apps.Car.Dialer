@@ -49,7 +49,7 @@ public class CallHistoryFragment extends Hilt_CallHistoryFragment {
         CallHistoryViewModel viewModel = new ViewModelProvider(this).get(
                 CallHistoryViewModel.class);
 
-        viewModel.getCallHistory().observe(this, uiCallLogs -> {
+        viewModel.getCallHistory().observe(getViewLifecycleOwner(), uiCallLogs -> {
             if (uiCallLogs.isLoading()) {
                 showLoading();
             } else if (uiCallLogs.getData().isEmpty()) {
@@ -60,7 +60,7 @@ public class CallHistoryFragment extends Hilt_CallHistoryFragment {
                 showContent();
             }
         });
-        viewModel.getSortOrderLiveData().observe(this,
+        viewModel.getSortOrderLiveData().observe(getViewLifecycleOwner(),
                 v -> mCallLogAdapter.setSortMethod(v));
     }
 }

@@ -76,11 +76,13 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         mSwapCallsView.setOnClickListener(v -> swapCalls());
 
         mInCallViewModel = new ViewModelProvider(getActivity()).get(InCallViewModel.class);
-        mInCallViewModel.getSecondaryCallerInfoLiveData().observe(this, this::updateProfile);
+        mInCallViewModel.getSecondaryCallerInfoLiveData().observe(
+                getViewLifecycleOwner(), this::updateProfile);
         mPrimaryCallLiveData = mInCallViewModel.getPrimaryCall();
 
         mTimeTextView = fragmentView.findViewById(R.id.time);
-        mInCallViewModel.getSecondaryCallConnectTime().observe(this, this::updateConnectTime);
+        mInCallViewModel.getSecondaryCallConnectTime().observe(
+                getViewLifecycleOwner(), this::updateConnectTime);
 
         return fragmentView;
     }

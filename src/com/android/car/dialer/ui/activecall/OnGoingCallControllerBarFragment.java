@@ -35,7 +35,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
-import androidx.core.util.Preconditions;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -51,6 +50,7 @@ import com.android.car.ui.recyclerview.CarUiContentListItem;
 import com.android.car.ui.recyclerview.CarUiListItem;
 import com.android.car.ui.recyclerview.CarUiListItemAdapter;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.ArrayList;
@@ -198,11 +198,13 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
             }
         });
 
-        mCallAudioState.observe(this, state -> mMuteButton.setActivated(state.isMuted()));
+        mCallAudioState.observe(
+                getViewLifecycleOwner(), state -> mMuteButton.setActivated(state.isMuted()));
 
         View dialPadButton = fragmentView.findViewById(R.id.toggle_dialpad_button);
         dialPadButton.setOnClickListener(v -> mDialpadState.setValue(!mDialpadState.getValue()));
-        mDialpadState.observe(this, activated -> dialPadButton.setActivated(activated));
+        mDialpadState.observe(
+                getViewLifecycleOwner(), activated -> dialPadButton.setActivated(activated));
 
         View endCallButton = fragmentView.findViewById(R.id.end_call_button);
         endCallButton.setOnClickListener(v -> onEndCall());
@@ -210,9 +212,9 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
         mAudioRouteView = fragmentView.findViewById(R.id.voice_channel_view);
         mAudioRouteButton = fragmentView.findViewById(R.id.voice_channel_button);
         mAudioRouteText = fragmentView.findViewById(R.id.voice_channel_text);
-        mPrimaryCallDetailLiveData.observe(this,
+        mPrimaryCallDetailLiveData.observe(getViewLifecycleOwner(),
                 primaryCallDetail -> mAudioRouteView.setEnabled(primaryCallDetail != null));
-        mAudioRoutes.observe(this, audioRoutes -> {
+        mAudioRoutes.observe(getViewLifecycleOwner(), audioRoutes -> {
             if (audioRoutes.size() > 1) {
                 mAudioRouteView.setOnClickListener((v) -> {
                     mAudioRouteView.setActivated(true);

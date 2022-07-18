@@ -110,7 +110,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
         ContactDetailsAdapter contactDetailsAdapter = mContactDetailsAdapterFactory.create(mContact,
                 this, getActivity());
         getRecyclerView().setAdapter(contactDetailsAdapter);
-        mContactDetailsLiveData.observe(this, contact -> {
+        mContactDetailsLiveData.observe(getViewLifecycleOwner(), contact -> {
             if (contact.isLoading()) {
                 showLoading();
             } else {
@@ -120,7 +120,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
             }
         });
 
-        mPhoneNumberRefreshEvent.observe(this, refresh -> {
+        mPhoneNumberRefreshEvent.observe(getViewLifecycleOwner(), refresh -> {
             int itemCount = contactDetailsAdapter.getItemCount();
             for (int i = 0; i < itemCount; i++) {
                 if (contactDetailsAdapter.getItemViewType(i) == ContactDetailsAdapter.ID_NUMBER) {

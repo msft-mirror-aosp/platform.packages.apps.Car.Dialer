@@ -16,6 +16,7 @@
 
 package com.android.car.dialer.telecom;
 
+import android.car.drivingstate.CarUxRestrictions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.apps.common.log.L;
+import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
 import com.google.common.base.Predicate;
 
@@ -47,9 +49,10 @@ import dagger.hilt.android.scopes.ViewModelScoped;
  * change and call audio state change.
  */
 @ViewModelScoped
-public class LocalCallHandler {
+public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsChangedListener {
     private static final String TAG = "CD.CallHandler";
     private final Context mContext;
+    private final CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private final Call.Callback mRingingCallStateChangeCallback;
 
     private final MutableLiveData<CallAudioState> mCallAudioStateLiveData = new MutableLiveData<>();
@@ -103,8 +106,11 @@ public class LocalCallHandler {
      * @param context Application context.
      */
     @Inject
-    public LocalCallHandler(@ApplicationContext Context context) {
+    public LocalCallHandler(@ApplicationContext Context context,
+                            CarUxRestrictionsUtil carUxRestrictionsUtil) {
         mContext = context;
+        mCarUxRestrictionsUtil = carUxRestrictionsUtil;
+        mCarUxRestrictionsUtil.register(this);
 
         mCallListLiveData = new MutableLiveData<>();
         mIncomingCallLiveData = new MutableLiveData<>();
@@ -173,6 +179,12 @@ public class LocalCallHandler {
      */
     private void notifyCallListChanged() {
         List<Call> callList = new ArrayList<>(mInCallService.getCallList());
+        // If car is not driving(parked or idle), filter self managed calls.
+        if (!mCarUxRestrictionsUtil.getCurrentRestrictions()
+                .isRequiresDistractionOptimization()) {
+            callList = filter(callList, call -> call != null
+                    && !call.getDetails().hasProperty(Call.Details.PROPERTY_SELF_MANAGED));
+        }
 
         List<Call> activeCallList = filter(callList,
                 call -> call != null && call.getState() != Call.STATE_RINGING);
@@ -186,7 +198,7 @@ public class LocalCallHandler {
     }
 
     private void notifyCallAdded(Call call) {
-        if (call.getState() == Call.STATE_RINGING) {
+        if (call.getDetails().getState() == Call.STATE_RINGING) {
             call.registerCallback(mRingingCallStateChangeCallback);
         }
     }
@@ -214,5 +226,10 @@ public class LocalCallHandler {
             }
         }
         return filteredResults;
+    }
+
+    @Override
+    public void onRestrictionsChanged(@NonNull CarUxRestrictions carUxRestrictions) {
+        notifyCallListChanged();
     }
 }

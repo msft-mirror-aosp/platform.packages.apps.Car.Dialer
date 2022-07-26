@@ -21,16 +21,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.telecom.Call;
 
-import androidx.annotation.MainThread;
-
 import com.android.car.apps.common.log.L;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.dialer.ui.activecall.InCallViewModel;
-
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -51,47 +47,26 @@ class InCallRouter {
     private final Context mContext;
     private final SharedPreferences mSharedPreferences;
     private final InCallNotificationController mInCallNotificationController;
-    private final ArrayList<InCallServiceImpl.ActiveCallListChangedCallback>
-            mActiveCallListChangedCallbacks = new ArrayList<>();
-    private final ProjectionCallHandler mProjectionCallHandler;
 
     @Inject
     InCallRouter(
             @ApplicationContext Context context,
             SharedPreferences sharedPreferences,
-            InCallNotificationController inCallNotificationController,
-            ProjectionCallHandler projectionCallHandler) {
+            InCallNotificationController inCallNotificationController) {
         mContext = context;
         mSharedPreferences = sharedPreferences;
         mInCallNotificationController = inCallNotificationController;
-        mProjectionCallHandler = projectionCallHandler;
-    }
-
-    void start() {
-        mProjectionCallHandler.start();
-        mActiveCallListChangedCallbacks.add(mProjectionCallHandler);
-    }
-
-    void stop() {
-        mActiveCallListChangedCallbacks.remove(mProjectionCallHandler);
-        mProjectionCallHandler.stop();
     }
 
     /**
-     * Routes the added call to the correct path:
+     * Routes the added call to the correct UI presentation:
      * <ul>
-     * <li> First dispatches it to the {@link InCallServiceImpl.ActiveCallListChangedCallback}s.
-     * <li> If the ringing call is not handled by callbacks, it will show a HUN.
+     * <li> If it is a ringing call, it will show a HUN.
      * <li> If the call is in other state and not handled by callbacks, it will try to launch the in
      * call page.
      */
     void onCallAdded(Call call) {
-        boolean isHandled = routeToActiveCallListChangedCallback(call);
-        if (isHandled) {
-            return;
-        }
-
-        int state = call.getState();
+        int state = call.getDetails().getState();
         if (state == Call.STATE_RINGING) {
             routeToNotification(call);
             // Otherwise, no operations. Incoming call will be displayed outside of Dialer app
@@ -104,40 +79,10 @@ class InCallRouter {
     }
 
     /**
-     * Called by {@link InCallServiceImpl#onCallRemoved(Call)}. It notifies the {@link
-     * InCallServiceImpl.ActiveCallListChangedCallback}s to update the active call list.
+     * Called by {@link InCallServiceImpl#onCallRemoved(Call)}.
      */
     void onCallRemoved(Call call) {
-        for (InCallServiceImpl.ActiveCallListChangedCallback callback :
-                mActiveCallListChangedCallbacks) {
-            callback.onTelecomCallRemoved(call);
-        }
-    }
-
-    @MainThread
-    void registerActiveCallListChangedCallback(
-            InCallServiceImpl.ActiveCallListChangedCallback callback) {
-        mActiveCallListChangedCallbacks.add(callback);
-    }
-
-    @MainThread
-    void unregisterActiveCallHandler(InCallServiceImpl.ActiveCallListChangedCallback callback) {
-        mActiveCallListChangedCallbacks.remove(callback);
-    }
-
-    /**
-     * Dispatches the call to {@link InCallServiceImpl.ActiveCallListChangedCallback}.
-     */
-    private boolean routeToActiveCallListChangedCallback(Call call) {
-        boolean isHandled = false;
-        for (InCallServiceImpl.ActiveCallListChangedCallback callback :
-                mActiveCallListChangedCallbacks) {
-            if (callback.onTelecomCallAdded(call)) {
-                isHandled = true;
-            }
-        }
-
-        return isHandled;
+        // No-op
     }
 
     /**
@@ -151,7 +96,7 @@ class InCallRouter {
             @Override
             public void onStateChanged(Call call, int state) {
                 L.d(TAG, "Ringing call state changed to %d", state);
-                if (call.getState() != Call.STATE_DISCONNECTED) {
+                if (call.getDetails().getState() != Call.STATE_DISCONNECTED) {
                     // Don't launch the in call page if state is disconnected. Otherwise, the
                     // InCallActivity finishes right after onCreate() and flashes.
                     routeToFullScreenIncomingCallPage(false, false);

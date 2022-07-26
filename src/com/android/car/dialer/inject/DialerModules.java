@@ -32,6 +32,7 @@ import com.android.car.dialer.ui.common.DialerBaseFragment;
 import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
 import com.android.car.telephony.common.Contact;
+import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -92,6 +93,13 @@ public final class DialerModules {
         @Provides
         static Car provideCar(@ApplicationContext Context context) {
             return Car.createCar(context);
+        }
+
+        @Singleton
+        @Provides
+        static CarUxRestrictionsUtil provideCarUxRestrictionsUtil(
+                @ApplicationContext Context context) {
+            return CarUxRestrictionsUtil.getInstance(context);
         }
     }
 

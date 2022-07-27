@@ -90,12 +90,15 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
             }
             mInCallService.addActiveCallListChangedCallback(mActiveCallListChangedCallback);
             mInCallService.addCallAudioStateChangedCallback(mCallAudioStateCallback);
-            notifyCallListChanged();
+            // Register will call onRestrictionsChanged(CarUxRestrictions) and notify call list
+            // changed, so we don't need to call notifyCallListChanged() again.
+            mCarUxRestrictionsUtil.register(LocalCallHandler.this);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
             L.d(TAG, "onServiceDisconnected: %s", name);
+            mCarUxRestrictionsUtil.unregister(LocalCallHandler.this);
             mInCallService = null;
         }
     };
@@ -110,7 +113,6 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
                             CarUxRestrictionsUtil carUxRestrictionsUtil) {
         mContext = context;
         mCarUxRestrictionsUtil = carUxRestrictionsUtil;
-        mCarUxRestrictionsUtil.register(this);
 
         mCallListLiveData = new MutableLiveData<>();
         mIncomingCallLiveData = new MutableLiveData<>();

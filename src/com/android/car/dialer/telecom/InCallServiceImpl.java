@@ -93,6 +93,7 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
         super.onCreate();
         mProjectionCallHandler.start();
         mActiveCallListChangedCallbacks.add(mProjectionCallHandler);
+        mSelfManagedCallHandler.start();
         mActiveCallListChangedCallbacks.add(mSelfManagedCallHandler);
     }
 
@@ -100,6 +101,7 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
     public void onDestroy() {
         super.onDestroy();
         mActiveCallListChangedCallbacks.remove(mSelfManagedCallHandler);
+        mSelfManagedCallHandler.stop();
         mActiveCallListChangedCallbacks.remove(mProjectionCallHandler);
         mProjectionCallHandler.stop();
     }

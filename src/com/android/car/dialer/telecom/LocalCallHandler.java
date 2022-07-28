@@ -98,8 +98,7 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
         @Override
         public void onServiceDisconnected(ComponentName name) {
             L.d(TAG, "onServiceDisconnected: %s", name);
-            mCarUxRestrictionsUtil.unregister(LocalCallHandler.this);
-            mInCallService = null;
+            cleanup();
         }
     };
 
@@ -157,9 +156,19 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
         return mIncomingCallLiveData;
     }
 
+    @Override
+    public void onRestrictionsChanged(@NonNull CarUxRestrictions carUxRestrictions) {
+        notifyCallListChanged();
+    }
+
     /** Disconnects the {@link InCallServiceImpl} and cleanup. */
     public void tearDown() {
         mContext.unbindService(mInCallServiceConnection);
+        cleanup();
+    }
+
+    private void cleanup() {
+        mCarUxRestrictionsUtil.unregister(this);
         if (mInCallService != null) {
             for (Call call : mInCallService.getCallList()) {
                 notifyCallRemoved(call);
@@ -228,10 +237,5 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
             }
         }
         return filteredResults;
-    }
-
-    @Override
-    public void onRestrictionsChanged(@NonNull CarUxRestrictions carUxRestrictions) {
-        notifyCallListChanged();
     }
 }

@@ -40,8 +40,20 @@ public class SelfManagedCallHandler implements InCallServiceImpl.ActiveCallListC
         mCarUxRestrctionsUtil = carUxRestrictionsUtil;
         mSelfManagedCallList = new ArrayList<>();
         mInCallRouter = inCallRouter;
+    }
 
-        carUxRestrictionsUtil.register(this);
+    /**
+     * Starts this handler to listen to ux restrictions changes.
+     */
+    public void start() {
+        mCarUxRestrctionsUtil.register(this);
+    }
+
+    /**
+     * Stops this handler to listen to ux restrictions changes.
+     */
+    public void stop() {
+        mCarUxRestrctionsUtil.unregister(this);
     }
 
     @Override

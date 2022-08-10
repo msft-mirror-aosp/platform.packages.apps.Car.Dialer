@@ -39,6 +39,15 @@ limitations under the License.
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
         <TextView
+            android:id="@+id/self_managed_call_app_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.InCallUserPhoneNumber"
+            android:singleLine="true"
+            android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_profile_title"/>
+        <TextView
             android:id="@+id/user_profile_phone_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -53,7 +62,7 @@ limitations under the License.
             app:layout_constrainedWidth="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/user_profile_phone_number"
-            app:layout_constraintTop_toBottomOf="@id/user_profile_title"/>
+            app:layout_constraintTop_toBottomOf="@id/self_managed_call_app_info"/>
         <TextView
             android:id="@+id/user_profile_phone_number"
             android:layout_width="wrap_content"
@@ -66,7 +75,7 @@ limitations under the License.
             app:layout_goneMarginStart="@dimen/in_call_margin_between_avatar_and_text"
             app:layout_constraintStart_toEndOf="@id/user_profile_phone_label"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_profile_title"/>
+            app:layout_constraintTop_toBottomOf="@id/self_managed_call_app_info"/>
 
         <!-- A textView without a fixed width will call requestLayout() every time its text is changed -->
         <!-- So we have to make this Chronometer match_parent to avoid redrawing the whole screen -->

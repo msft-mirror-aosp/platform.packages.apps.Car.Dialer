@@ -16,11 +16,17 @@
 
 package com.android.car.dialer.ui.activecall;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.telecom.Call;
+import android.telecom.PhoneAccountHandle;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageView;
@@ -62,6 +68,8 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     protected InCallViewModel mInCallViewModel;
 
     private View mUserProfileContainerView;
+    @Nullable
+    private TextView mSelfManagedCallAppInfo;
     private TextView mPhoneNumberView;
     @Nullable
     private TextView mPhoneLabelView;
@@ -88,6 +96,8 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         mNameView = mUserProfileContainerView.findViewById(R.id.user_profile_title);
         mAvatarView = mUserProfileContainerView.findViewById(R.id.user_profile_avatar);
         mAvatarView.setOutlineProvider(ContactAvatarOutputlineProvider.get());
+        mSelfManagedCallAppInfo = mUserProfileContainerView.findViewById(
+                R.id.self_managed_call_app_info);
         mPhoneNumberView = mUserProfileContainerView.findViewById(R.id.user_profile_phone_number);
         mPhoneLabelView = mUserProfileContainerView.findViewById(R.id.user_profile_phone_label);
         mUserProfileCallStateText = mUserProfileContainerView.findViewById(
@@ -104,11 +114,49 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             return;
         }
 
+        ViewUtils.setVisible(mSelfManagedCallAppInfo, false);
+        if (callDetail.isSelfManaged()) {
+            PhoneAccountHandle phoneAccountHandle = callDetail.getPhoneAccountHandle();
+            if (phoneAccountHandle != null) {
+                String packageName = phoneAccountHandle.getComponentName().getPackageName();
+                try {
+                    PackageManager packageManager = getContext().getPackageManager();
+                    ApplicationInfo applicationInfo = packageManager.getApplicationInfo(
+                            packageName, PackageManager.GET_META_DATA);
+                    Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
+                    CharSequence appName = packageManager.getApplicationLabel(applicationInfo);
+
+                    SpannableString spannableString = new SpannableString("  " + appName);
+                    int size = getResources().getDimensionPixelSize(R.dimen.inline_icon_size);
+                    appIcon.setBounds(0, 0, size, size);
+                    ImageSpan imageSpan = new ImageSpan(appIcon, ImageSpan.ALIGN_BASELINE);
+                    spannableString.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    mSelfManagedCallAppInfo.setText(spannableString);
+
+                    ViewUtils.setVisible(mSelfManagedCallAppInfo, true);
+                } catch (PackageManager.NameNotFoundException e) {
+                    L.e(TAG, e, "Failed to get self managed call app info.");
+                }
+            }
+        }
+
+        String callerDisplayName = callDetail.getCallerDisplayName();
         String number = callDetail.getNumber();
-        mNameView.setText(TelecomUtils.getReadableNumber(getContext(), number));
-        ViewUtils.setVisible(mPhoneLabelView, false);
         mPhoneNumberView.setVisibility(View.GONE);
-        mAvatarView.setImageDrawable(mDefaultAvatar);
+        if (!TextUtils.isEmpty(callerDisplayName)) {
+            mNameView.setText(callerDisplayName);
+            mAvatarView.setImageDrawable(TelecomUtils.createLetterTile(
+                    getContext(), TelecomUtils.getInitials(callerDisplayName), callerDisplayName));
+            if (!TextUtils.isEmpty(number)) {
+                mPhoneNumberView.setText(TelecomUtils.getReadableNumber(getContext(), number));
+                mPhoneNumberView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            mNameView.setText(TelecomUtils.getReadableNumber(getContext(), number));
+            mAvatarView.setImageDrawable(mDefaultAvatar);
+        }
+
+        ViewUtils.setVisible(mPhoneLabelView, false);
     }
 
     protected void presentCallerInfo(Contact contact, CallDetail callDetail) {

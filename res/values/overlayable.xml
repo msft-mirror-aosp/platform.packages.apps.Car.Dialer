@@ -315,6 +315,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="pound"/>
       <item type="id" name="restricted_dialing_mode_label"/>
       <item type="id" name="ringing_call_controller_bar"/>
+      <item type="id" name="self_managed_call_app_info"/>
       <item type="id" name="seven"/>
       <item type="id" name="show_contact_detail_id"/>
       <item type="id" name="six"/>

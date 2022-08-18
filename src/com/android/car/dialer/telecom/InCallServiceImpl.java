@@ -32,6 +32,7 @@ import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.framework.InCallServiceProxy;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
@@ -119,6 +120,20 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
                 L.e(TAG, "Not able to get the phone account handle for current hfp device.");
             }
         }
+
+        if (telecomCall.getDetails().getState() == Call.STATE_RINGING) {
+            telecomCall.registerCallback(new Call.Callback() {
+                @Override
+                public void onStateChanged(Call call, int state) {
+                    // Listens to user action of answering the call or rejecting the call.
+                    handleOtherActiveCalls(telecomCall);
+                    telecomCall.unregisterCallback(this);
+                }
+            });
+        } else {
+            handleOtherActiveCalls(telecomCall);
+        }
+
         boolean isHandled = routeToActiveCallListChangedCallback(telecomCall);
         if (isHandled) {
             return;
@@ -195,6 +210,35 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
         }
 
         return isHandled;
+    }
+
+    private void handleOtherActiveCalls(Call telecomCall) {
+        // Telecom does not always put other active calls from different phone accounts on hold.
+        if (telecomCall.getDetails().getState() != Call.STATE_HOLDING
+                && telecomCall.getDetails().getState() != Call.STATE_DISCONNECTED) {
+            for (Call call : getCallList()) {
+                // Same call, do nothing.
+                if (telecomCall.equals(call)) {
+                    continue;
+                }
+                // Same phone account handle, let Telecom do the job.
+                if (Objects.equals(telecomCall.getDetails().getAccountHandle(),
+                        call.getDetails().getAccountHandle())) {
+                    continue;
+                }
+                if (call.getDetails().getState() == Call.STATE_ACTIVE) {
+                    if (call.getDetails().can(Call.Details.CAPABILITY_SUPPORT_HOLD)
+                            || call.getDetails().can(Call.Details.CAPABILITY_HOLD)) {
+                        L.i(TAG, "Hold the holdable call: %s", call);
+                        call.hold();
+                    } else {
+                        // TODO: check with UX how to let user know the other call is ended.
+                        L.i(TAG, "End the unholdable call %s", call);
+                        call.disconnect();
+                    }
+                }
+            }
+        }
     }
 
     /**

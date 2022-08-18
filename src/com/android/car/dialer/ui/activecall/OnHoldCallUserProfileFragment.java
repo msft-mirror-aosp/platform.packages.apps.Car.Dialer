@@ -19,6 +19,7 @@ package com.android.car.dialer.ui.activecall;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.telecom.Call;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,15 +108,25 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         if (callDetail == null) {
             return;
         }
-        mAvatarView.setImageDrawable(mDefaultAvatar);
 
         if (callDetail.isConference()) {
             mTitle.setText(getString(R.string.ongoing_conf_title));
+            mAvatarView.setImageDrawable(mDefaultAvatar);
             return;
         }
-
-        String number = callDetail.getNumber();
-        mTitle.setText(TelecomUtils.getReadableNumber(getContext(), number));
+        String callerDisplayName = callDetail.getCallerDisplayName();
+        if (TextUtils.isEmpty(callerDisplayName)) {
+            mAvatarView.setImageDrawable(mDefaultAvatar);
+            String number = callDetail.getNumber();
+            mTitle.setText(TelecomUtils.getReadableNumber(getContext(), number));
+        } else {
+            mTitle.setText(callerDisplayName);
+            mAvatarView.setImageDrawable(
+                    TelecomUtils.createLetterTile(
+                            getContext(),
+                            TelecomUtils.getInitials(callerDisplayName),
+                            callerDisplayName));
+        }
     }
 
     private void updateProfile(Contact contact) {

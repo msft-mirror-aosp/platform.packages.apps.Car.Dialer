@@ -27,22 +27,48 @@ android {
         testInstrumentationRunnerArguments clearPackageData: 'true', coverage: 'true'
     }
 
+    signingConfigs {
+        "default" {
+            storeFile file(gradle.ext.aaosCertPath)
+            storePassword 'carapps'
+            keyAlias 'carapps'
+            keyPassword 'carapps'
+        }
+
+        platform {
+            storeFile file(gradle.ext.platformCertPath)
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+
     flavorDimensions 'devMode'
     productFlavors {
         fake {
             dimension 'devMode'
             versionNameSuffix '-fake'
             testInstrumentationRunner 'com.android.car.dialer.integration.DialerHiltTestRunner'
+            signingConfig signingConfigs.default
         }
 
         emulator {
             dimension 'devMode'
             versionNameSuffix '-emulator'
             testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+            signingConfig signingConfigs.default
         }
 
         production {
             dimension 'devMode'
+            signingConfig signingConfigs.default
+        }
+
+        platform {
+            dimension 'devMode'
+            if (file(gradle.ext.platformCertPath).exists()) {
+                signingConfig signingConfigs.platform
+            }
         }
     }
 
@@ -106,17 +132,6 @@ android {
         }
     }
 
-    signingConfigs {
-        debug {
-            storeFile file('../libs/certs/com_android_car_apps_test.jks')
-            storePassword 'carapps'
-            keyAlias 'carapps'
-            keyPassword 'carapps'
-            // The following signs the apk with platform key.
-            // storeFile file('../../../../vendor/google/certs/devkeys/platform.keystore')
-            // storePassword 'android'
-        }
-    }
     lintOptions {
         // Ignore duplicate resources due to existence of overlayable.xml
         ignore 'DuplicateDefinition'

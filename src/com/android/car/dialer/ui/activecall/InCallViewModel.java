@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
@@ -198,6 +199,21 @@ public class InCallViewModel extends ViewModel {
         mDialpadIsOpen.setValue(false);
 
         mShowOnholdCall = new ShowOnholdCallLiveData(mSecondaryCallLiveData, mDialpadIsOpen);
+    }
+
+    /** Returns if primary and secondary calls can merge. */
+    public boolean canMerge() {
+        CallDetail callDetail = mCallDetailLiveData.getValue();
+        CallDetail otherCallDetail = mSecondaryCallDetailLiveData.getValue();
+
+        if (callDetail == null || otherCallDetail == null) {
+            return false;
+        }
+        // No CAPABILITY_MERGE_CONFERENCE check since Bluetooth doesn't set it for phone calls that
+        // can merge.
+        return !callDetail.isConference()
+                && Objects.equals(callDetail.getPhoneAccountHandle(),
+                    otherCallDetail.getPhoneAccountHandle());
     }
 
     /** Merge primary and secondary calls into a conference */

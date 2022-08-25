@@ -19,6 +19,7 @@ package com.android.car.dialer.ui.activecall;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.telecom.Call;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,8 @@ import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.TelecomUtils;
 
+import java.util.Objects;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
@@ -53,6 +56,7 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
     private ImageView mAvatarView;
     private View mSwapCallsView;
     private LiveData<Call> mPrimaryCallLiveData;
+    private LiveData<Call> mSecondaryCallLiveData;
     private LetterTileDrawable mDefaultAvatar;
     private Chronometer mTimeTextView;
 
@@ -79,6 +83,7 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         mInCallViewModel.getSecondaryCallerInfoLiveData().observe(
                 getViewLifecycleOwner(), this::updateProfile);
         mPrimaryCallLiveData = mInCallViewModel.getPrimaryCall();
+        mSecondaryCallLiveData = mInCallViewModel.getSecondaryCall();
 
         mTimeTextView = fragmentView.findViewById(R.id.time);
         mInCallViewModel.getSecondaryCallConnectTime().observe(
@@ -103,15 +108,25 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         if (callDetail == null) {
             return;
         }
-        mAvatarView.setImageDrawable(mDefaultAvatar);
 
         if (callDetail.isConference()) {
             mTitle.setText(getString(R.string.ongoing_conf_title));
+            mAvatarView.setImageDrawable(mDefaultAvatar);
             return;
         }
-
-        String number = callDetail.getNumber();
-        mTitle.setText(TelecomUtils.getReadableNumber(getContext(), number));
+        String callerDisplayName = callDetail.getCallerDisplayName();
+        if (TextUtils.isEmpty(callerDisplayName)) {
+            mAvatarView.setImageDrawable(mDefaultAvatar);
+            String number = callDetail.getNumber();
+            mTitle.setText(TelecomUtils.getReadableNumber(getContext(), number));
+        } else {
+            mTitle.setText(callerDisplayName);
+            mAvatarView.setImageDrawable(
+                    TelecomUtils.createLetterTile(
+                            getContext(),
+                            TelecomUtils.getInitials(callerDisplayName),
+                            callerDisplayName));
+        }
     }
 
     private void updateProfile(Contact contact) {
@@ -127,9 +142,20 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
     }
 
     private void swapCalls() {
-        // Hold primary call and the secondary call will automatically come to the foreground.
-        if (mPrimaryCallLiveData.getValue().getState() != Call.STATE_HOLDING) {
-            mPrimaryCallLiveData.getValue().hold();
+        Call primaryCall = mPrimaryCallLiveData.getValue();
+        Call secondaryCall = mSecondaryCallLiveData.getValue();
+
+        // Hold primary call and the secondary call will automatically come to the foreground
+        // for the same phone account handle.
+        if (primaryCall.getDetails().getState() != Call.STATE_HOLDING) {
+            primaryCall.hold();
+        }
+
+        // For different phone account handles, we will unhold the other call.
+        if (!Objects.equals(
+                primaryCall.getDetails().getAccountHandle(),
+                secondaryCall.getDetails().getAccountHandle())) {
+            secondaryCall.unhold();
         }
     }
 }

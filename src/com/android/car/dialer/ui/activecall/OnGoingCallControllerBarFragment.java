@@ -43,6 +43,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.ui.AlertDialogBuilder;
@@ -86,6 +87,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
                     .build();
 
     @Inject UiCallManager mUiCallManager;
+    @Inject PhoneAccountManager mPhoneAccountManager;
     private InCallViewModel mInCallViewModel;
 
     private AlertDialog mAudioRouteSelectionDialog;
@@ -100,7 +102,6 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     private View mPauseButton;
     private LiveData<Call> mPrimaryCallLiveData;
     private LiveData<CallDetail> mPrimaryCallDetailLiveData;
-    private LiveData<List<Call>> mOngoingCallListLiveData;
     private LiveData<Pair<Call, Call>> mOngoingCallPairLiveData;
     private MutableLiveData<Boolean> mDialpadState;
     private LiveData<List<Call>> mCallListLiveData;
@@ -139,7 +140,6 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
         mPrimaryCallDetailLiveData = mInCallViewModel.getPrimaryCallDetail();
         mOngoingCallPairLiveData = mInCallViewModel.getOngoingCallPair();
 
-        mOngoingCallListLiveData = mInCallViewModel.getOngoingCallList();
         mDialpadState = mInCallViewModel.getDialpadOpenState();
         mCallAudioState = mInCallViewModel.getCallAudioState();
         mAudioRoutes = mInCallViewModel.getSupportedAudioRoutes();
@@ -168,9 +168,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
         mCallListLiveData.observe(this, v -> updatePauseButtonEnabledState());
 
         mOngoingCallPairLiveData.observe(this, pair -> {
-            boolean isPrimaryCallConference = pair.first != null
-                    && pair.first.getDetails().hasProperty(Call.Details.PROPERTY_CONFERENCE);
-            if (!isPrimaryCallConference && pair.second != null) {
+            if (mInCallViewModel.canMerge()) {
                 mPauseButton.setVisibility(View.GONE);
                 mMergeButton.setVisibility(View.VISIBLE);
             } else {
@@ -284,9 +282,11 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     }
 
     private void updatePauseButtonEnabledState() {
-        boolean hasOnlyOneCall = mOngoingCallListLiveData.getValue() != null
-                && mOngoingCallListLiveData.getValue().size() == 1;
-        boolean shouldEnablePauseButton = hasOnlyOneCall && (mPrimaryCallState == Call.STATE_HOLDING
+        CallDetail primaryCallDetail = mPrimaryCallDetailLiveData.getValue();
+        boolean holdable = primaryCallDetail != null
+                && (primaryCallDetail.can(Call.Details.CAPABILITY_HOLD)
+                || primaryCallDetail.can(Call.Details.CAPABILITY_SUPPORT_HOLD));
+        boolean shouldEnablePauseButton =  holdable && (mPrimaryCallState == Call.STATE_HOLDING
                 || mPrimaryCallState == Call.STATE_ACTIVE);
 
         mPauseButton.setEnabled(shouldEnablePauseButton);
@@ -349,12 +349,25 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     }
 
     private void updateMuteButtonEnabledState(Integer audioRoute) {
-        if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
+        CallDetail primaryCallDetail = mPrimaryCallDetailLiveData.getValue();
+        if (primaryCallDetail == null) {
+            return;
+        }
+        if (!primaryCallDetail.can(Call.Details.CAPABILITY_MUTE)) {
+            mMuteButton.setEnabled(false);
+        } else if (audioRoute != CallAudioState.ROUTE_BLUETOOTH
+                && isBluetoothCall(mPrimaryCallDetailLiveData.getValue())) {
+            // If it is bluetooth call but audio route is not bluetooth, disable the mute button.
+            mMuteButton.setEnabled(false);
+        } else {
             mMuteButton.setEnabled(true);
             mMuteButton.setActivated(mUiCallManager.getMuted());
-        } else {
-            mMuteButton.setEnabled(false);
         }
+    }
+
+    private boolean isBluetoothCall(CallDetail callDetail) {
+        return callDetail != null
+                && mPhoneAccountManager.isHfpConnectionService(callDetail.getPhoneAccountHandle());
     }
 
     @NonNull

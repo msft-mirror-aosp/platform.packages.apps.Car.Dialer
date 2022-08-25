@@ -24,7 +24,7 @@
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"ବ୍ଲୁଟୁଥ୍‍କୁ ସଂଯୋଗ କରନ୍ତୁ"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"ଜରୁରୀକାଳୀନ"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"ଜରୁରୀକାଳୀନ କଲ୍"</string>
-    <string name="error_contact_deleted" msgid="6356539067659368396">"ବୋଧହୁଏ ଏହି ଯୋଗାଯୋଗଟି ଡିଲିଟ୍ ହୋଇଯାଇଛି।"</string>
+    <string name="error_contact_deleted" msgid="6356539067659368396">"ବୋଧହୁଏ ଏହି କଣ୍ଟାକ୍ଟଟି ଡିଲିଟ ହୋଇଯାଇଛି।"</string>
     <string name="error_invalid_phone_number" msgid="5349049631580646136">"ଏହି ନମ୍ବରକୁ ଡାଏଲ୍ କରାଯାଇ ପାରିବ ନାହିଁ। ଏହା ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।"</string>
     <string name="error_telephony_not_available" msgid="8715829862083386178">"ଫୋନ୍ କଲ୍ ଉପଲବ୍ଧ ନାହିଁ। ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।"</string>
     <string name="decline_call" msgid="2505987200485272226">"ଅସ୍ୱୀକାର କରନ୍ତୁ"</string>
@@ -72,7 +72,7 @@
     <string name="swap_call_label" msgid="309322319645637302">"କଲଗୁଡ଼ିକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ"</string>
     <string name="setting_title" msgid="1296639422364732365">"ସେଟିଂସ୍"</string>
     <string name="pref_start_page_title" msgid="1953465507368478503">"ଆରମ୍ଭ ସ୍କ୍ରିନ୍"</string>
-    <string name="sort_order_title" msgid="975104366728292702">"ଯୋଗାଯୋଗ କ୍ରମ"</string>
+    <string name="sort_order_title" msgid="975104366728292702">"କଣ୍ଟାକ୍ଟ କ୍ରମ"</string>
     <string name="pref_connected_phone_title" msgid="5472866963149472593">"ସଂଯୁକ୍ତ ଫୋନ୍"</string>
     <string name="pref_no_incoming_call_hun_title" msgid="2314257779205958332">"ଗୋପନୀୟତା"</string>
     <string name="pref_no_incoming_call_hun_summary" msgid="8833377984331845097">"କ୍ଲଷ୍ଟରରେ କଲ୍ ଆଲର୍ଟଗୁଡ଼ିକ କେବଳ ଦେଖାନ୍ତୁ"</string>

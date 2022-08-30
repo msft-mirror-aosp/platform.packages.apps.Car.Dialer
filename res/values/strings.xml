@@ -275,4 +275,8 @@
     <!-- Sending SMS notification text -->
     <string name="sms_notification_text">Sending SMS</string>
 
+    <string name="self_managed_call_description">
+        <xliff:g id="self_managed_app_name" example="Meet">%1$s</xliff:g>\u0020Call
+    </string>
+
 </resources>

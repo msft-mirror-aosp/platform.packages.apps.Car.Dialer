@@ -134,6 +134,11 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="favorite_card_space_vertical"/>
       <item type="dimen" name="favorite_item_padding"/>
       <item type="dimen" name="favorites_avatar_margin_bottom"/>
+      <item type="dimen" name="in_call_app_icon_margin_end"/>
+      <item type="dimen" name="in_call_app_info_height"/>
+      <item type="dimen" name="in_call_app_info_icon_size"/>
+      <item type="dimen" name="in_call_app_info_margin_x"/>
+      <item type="dimen" name="in_call_app_info_margin_y"/>
       <item type="dimen" name="in_call_avatar_icon_size"/>
       <item type="dimen" name="in_call_avatar_icon_size_small"/>
       <item type="dimen" name="in_call_button_size"/>
@@ -235,6 +240,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="address_button"/>
       <item type="id" name="answer_call_button"/>
       <item type="id" name="answer_call_text"/>
+      <item type="id" name="app_icon"/>
+      <item type="id" name="app_name"/>
       <item type="id" name="avatar"/>
       <item type="id" name="background_image"/>
       <item type="id" name="button_wrapper"/>
@@ -315,7 +322,6 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="pound"/>
       <item type="id" name="restricted_dialing_mode_label"/>
       <item type="id" name="ringing_call_controller_bar"/>
-      <item type="id" name="self_managed_call_app_info"/>
       <item type="id" name="seven"/>
       <item type="id" name="show_contact_detail_id"/>
       <item type="id" name="six"/>
@@ -470,6 +476,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="select_number_dialog_always_button"/>
       <item type="string" name="select_number_dialog_just_once_button"/>
       <item type="string" name="select_number_dialog_title"/>
+      <item type="string" name="self_managed_call_description"/>
       <item type="string" name="setting_title"/>
       <item type="string" name="seven"/>
       <item type="string" name="seven_letters"/>

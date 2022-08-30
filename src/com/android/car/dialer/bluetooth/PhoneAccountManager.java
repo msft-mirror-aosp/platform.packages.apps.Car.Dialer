@@ -20,7 +20,9 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
@@ -28,6 +30,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.util.Pair;
 
 import com.android.car.apps.common.log.L;
 import com.android.car.dialer.Constants;
@@ -157,5 +160,32 @@ public class PhoneAccountManager {
                 phoneAccountHandle.getComponentName().getClassName())
                 || Constants.HFP_CLIENT_CONNECTION_SERVICE_CLASS_NAME_T.equals(
                 phoneAccountHandle.getComponentName().getClassName());
+    }
+
+    /**
+     * Get the calling app icon and app name. Bluetooth phone call will show Dialer's app icon and
+     * app name.
+     */
+    public Pair<Drawable, CharSequence> getAppInfo(
+            @Nullable PhoneAccountHandle phoneAccountHandle, boolean isSelfManaged) {
+        PackageManager packageManager = mContext.getPackageManager();
+
+        ApplicationInfo appInfo = mContext.getApplicationInfo();
+        if (isSelfManaged) {
+            if (phoneAccountHandle != null) {
+                String packageName = phoneAccountHandle.getComponentName().getPackageName();
+                try {
+                    appInfo = packageManager.getApplicationInfo(
+                            packageName, PackageManager.GET_META_DATA);
+                } catch (PackageManager.NameNotFoundException e) {
+                    L.e(TAG, e, "Failed to get self managed call app info.");
+                }
+            }
+        }
+
+        Drawable appIcon = packageManager.getApplicationIcon(appInfo);
+        CharSequence appName = packageManager.getApplicationLabel(appInfo);
+        return Pair.create(appIcon, appName);
+
     }
 }

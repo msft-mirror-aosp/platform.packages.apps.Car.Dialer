@@ -10,84 +10,106 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="start|center_vertical"
-    android:orientation="horizontal"
-    android:paddingStart="@dimen/in_call_user_profile_margin"
-    android:paddingEnd="@dimen/in_call_user_profile_margin">
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/in_call_app_info_height"
+        android:layout_marginTop="@dimen/in_call_app_info_margin_y"
+        android:layout_marginStart="@dimen/in_call_app_info_margin_x"
+        android:layout_marginEnd="@dimen/in_call_app_info_margin_x"
+        android:orientation="horizontal"
+        android:gravity="start|center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/app_icon"
+            android:layout_width="@dimen/in_call_app_info_icon_size"
+            android:layout_height="@dimen/in_call_app_info_icon_size"
+            android:layout_marginEnd="@dimen/in_call_app_icon_margin_end"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/user_profile_avatar"
         android:layout_width="@dimen/in_call_avatar_icon_size"
         android:layout_height="@dimen/in_call_avatar_icon_size"
-        android:scaleType="fitCenter"/>
+        android:layout_marginStart="@dimen/in_call_user_profile_margin"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <TextView
+        android:id="@+id/user_profile_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent">
-        <TextView
-            android:id="@+id/user_profile_title"
-            android:theme="@style/Theme.Dialer.BidiText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.InCallUserTitle"
-            android:singleLine="true"
-            android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-        <TextView
-            android:id="@+id/self_managed_call_app_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.InCallUserPhoneNumber"
-            android:singleLine="true"
-            android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_profile_title"/>
-        <TextView
-            android:id="@+id/user_profile_phone_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:theme="@style/Theme.Dialer.BidiText"
-            android:textAppearance="@style/TextAppearance.InCallUserPhoneNumber"
-            android:singleLine="true"
-            android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
-            android:layout_marginEnd="@dimen/in_call_margin_label_end"
-            android:layout_marginTop="@dimen/in_call_phone_number_margin_top"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/user_profile_phone_number"
-            app:layout_constraintTop_toBottomOf="@id/self_managed_call_app_info"/>
-        <TextView
-            android:id="@+id/user_profile_phone_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:theme="@style/Theme.Dialer.BidiText"
-            android:textAppearance="@style/TextAppearance.InCallUserPhoneNumber"
-            android:singleLine="true"
-            android:layout_marginTop="@dimen/in_call_phone_number_margin_top"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_goneMarginStart="@dimen/in_call_margin_between_avatar_and_text"
-            app:layout_constraintStart_toEndOf="@id/user_profile_phone_label"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/self_managed_call_app_info"/>
+        android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
+        android:layout_marginEnd="@dimen/in_call_user_profile_margin"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.InCallUserTitle"
+        android:theme="@style/Theme.Dialer.BidiText"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/user_profile_phone_number"
+        app:layout_constraintStart_toEndOf="@id/user_profile_avatar" />
 
-        <!-- A textView without a fixed width will call requestLayout() every time its text is changed -->
-        <!-- So we have to make this Chronometer match_parent to avoid redrawing the whole screen -->
-        <Chronometer
-            android:id="@+id/user_profile_call_state"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.InCallState"
-            android:singleLine="true"
-            android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
-            android:layout_marginTop="@dimen/in_call_state_margin_top"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/user_profile_phone_number"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</LinearLayout>
+    <TextView
+        android:id="@+id/user_profile_phone_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
+        android:layout_marginEnd="@dimen/in_call_margin_label_end"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.InCallUserPhoneNumber"
+        android:theme="@style/Theme.Dialer.BidiText"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toTopOf="@+id/user_profile_phone_number"
+        app:layout_constraintStart_toEndOf="@id/user_profile_avatar"
+        app:layout_constraintEnd_toStartOf="@+id/user_profile_phone_number"/>
+
+    <TextView
+        android:id="@id/user_profile_phone_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/in_call_phone_number_margin_top"
+        android:layout_marginEnd="@dimen/in_call_user_profile_margin"
+        android:textAppearance="@style/TextAppearance.InCallUserPhoneNumber"
+        android:theme="@style/Theme.Dialer.BidiText"
+        android:singleLine="true"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@id/user_profile_title"
+        app:layout_constraintBottom_toTopOf="@+id/user_profile_call_state"
+        app:layout_constraintStart_toEndOf="@id/user_profile_phone_label"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_goneMarginStart="@dimen/in_call_margin_between_avatar_and_text" />
+
+    <!-- A textView without a fixed width will call requestLayout() every time its text changes -->
+    <!-- So we have to make this Chronometer match_parent to avoid redrawing the whole screen -->
+    <Chronometer
+        android:id="@id/user_profile_call_state"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
+        android:layout_marginTop="@dimen/in_call_state_margin_top"
+        android:layout_marginEnd="@dimen/in_call_user_profile_margin"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.InCallState"
+        app:layout_constraintTop_toBottomOf="@id/user_profile_phone_number"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/user_profile_avatar"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

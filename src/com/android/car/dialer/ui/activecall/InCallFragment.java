@@ -16,17 +16,11 @@
 
 package com.android.car.dialer.ui.activecall;
 
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.telecom.Call;
-import android.telecom.PhoneAccountHandle;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextUtils;
-import android.text.style.ImageSpan;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageView;
@@ -43,6 +37,7 @@ import com.android.car.apps.common.LetterTileDrawable;
 import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
@@ -56,6 +51,8 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
@@ -66,10 +63,13 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     private static final String TAG = "CD.InCallFragment";
 
     protected InCallViewModel mInCallViewModel;
+    @Inject PhoneAccountManager mPhoneAccountManager;
 
     private View mUserProfileContainerView;
     @Nullable
-    private TextView mSelfManagedCallAppInfo;
+    private ImageView mAppIconView;
+    @Nullable
+    private TextView mAppNameView;
     private TextView mPhoneNumberView;
     @Nullable
     private TextView mPhoneLabelView;
@@ -96,13 +96,14 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         mNameView = mUserProfileContainerView.findViewById(R.id.user_profile_title);
         mAvatarView = mUserProfileContainerView.findViewById(R.id.user_profile_avatar);
         mAvatarView.setOutlineProvider(ContactAvatarOutputlineProvider.get());
-        mSelfManagedCallAppInfo = mUserProfileContainerView.findViewById(
-                R.id.self_managed_call_app_info);
         mPhoneNumberView = mUserProfileContainerView.findViewById(R.id.user_profile_phone_number);
         mPhoneLabelView = mUserProfileContainerView.findViewById(R.id.user_profile_phone_label);
         mUserProfileCallStateText = mUserProfileContainerView.findViewById(
                 R.id.user_profile_call_state);
         mBackgroundImage = view.findViewById(R.id.background_image);
+
+        mAppIconView = mUserProfileContainerView.findViewById(R.id.app_icon);
+        mAppNameView = mUserProfileContainerView.findViewById(R.id.app_name);
     }
 
     /**
@@ -114,31 +115,12 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             return;
         }
 
-        ViewUtils.setVisible(mSelfManagedCallAppInfo, false);
-        if (callDetail.isSelfManaged()) {
-            PhoneAccountHandle phoneAccountHandle = callDetail.getPhoneAccountHandle();
-            if (phoneAccountHandle != null) {
-                String packageName = phoneAccountHandle.getComponentName().getPackageName();
-                try {
-                    PackageManager packageManager = getContext().getPackageManager();
-                    ApplicationInfo applicationInfo = packageManager.getApplicationInfo(
-                            packageName, PackageManager.GET_META_DATA);
-                    Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
-                    CharSequence appName = packageManager.getApplicationLabel(applicationInfo);
-
-                    SpannableString spannableString = new SpannableString("  " + appName);
-                    int size = getResources().getDimensionPixelSize(R.dimen.inline_icon_size);
-                    appIcon.setBounds(0, 0, size, size);
-                    ImageSpan imageSpan = new ImageSpan(appIcon, ImageSpan.ALIGN_BASELINE);
-                    spannableString.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    mSelfManagedCallAppInfo.setText(spannableString);
-
-                    ViewUtils.setVisible(mSelfManagedCallAppInfo, true);
-                } catch (PackageManager.NameNotFoundException e) {
-                    L.e(TAG, e, "Failed to get self managed call app info.");
-                }
-            }
+        Pair<Drawable, CharSequence> appInfo = mPhoneAccountManager.getAppInfo(
+                callDetail.getPhoneAccountHandle(), callDetail.isSelfManaged());
+        if (mAppIconView != null) {
+            mAppIconView.setImageDrawable(appInfo.first);
         }
+        ViewUtils.setText(mAppNameView, appInfo.second);
 
         String callerDisplayName = callDetail.getCallerDisplayName();
         String number = callDetail.getNumber();
@@ -156,7 +138,13 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             mAvatarView.setImageDrawable(mDefaultAvatar);
         }
 
-        ViewUtils.setVisible(mPhoneLabelView, false);
+        if (callDetail.isSelfManaged()) {
+            ViewUtils.setText(mPhoneLabelView,
+                    getString(R.string.self_managed_call_description, appInfo.second));
+            ViewUtils.setVisible(mPhoneLabelView, true);
+        } else {
+            ViewUtils.setVisible(mPhoneLabelView, false);
+        }
     }
 
     protected void presentCallerInfo(Contact contact, CallDetail callDetail) {
@@ -173,7 +161,6 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         mNameView.setText(nameViewText);
 
         if (TextUtils.equals(nameViewText, formattedNumber)) {
-            ViewUtils.setVisible(mPhoneLabelView, false);
             mPhoneNumberView.setVisibility(View.GONE);
         } else {
             PhoneNumber phoneNumber = contact.getPhoneNumber(number);
@@ -182,8 +169,6 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             if (!TextUtils.isEmpty(phoneNumberLabel)) {
                 ViewUtils.setText(mPhoneLabelView, phoneNumberLabel);
                 ViewUtils.setVisible(mPhoneLabelView, true);
-            } else {
-                ViewUtils.setVisible(mPhoneLabelView, false);
             }
             mPhoneNumberView.setText(formattedNumber);
             mPhoneNumberView.setVisibility(View.VISIBLE);

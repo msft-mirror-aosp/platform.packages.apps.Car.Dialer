@@ -32,7 +32,7 @@ android {
     }
 
     signingConfigs {
-        "default" {
+        aaos {
             storeFile file(gradle.ext.aaosCertPath)
             storePassword 'carapps'
             keyAlias 'carapps'
@@ -40,10 +40,12 @@ android {
         }
 
         platform {
-            storeFile file(gradle.ext.platformCertPath)
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            if (file(gradle.ext.platformCertPath).exists()) {
+                storeFile file(gradle.ext.platformCertPath)
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
         }
     }
 
@@ -51,24 +53,22 @@ android {
     productFlavors {
         fake {
             dimension 'devMode'
-            signingConfig signingConfigs.default
+            signingConfig signingConfigs.aaos
         }
 
         emulator {
             dimension 'devMode'
-            signingConfig signingConfigs.default
+            signingConfig signingConfigs.aaos
         }
 
         production {
             dimension 'devMode'
-            signingConfig signingConfigs.default
+            signingConfig signingConfigs.aaos
         }
 
         platform {
             dimension 'devMode'
-            if (file(gradle.ext.platformCertPath).exists()) {
-                signingConfig signingConfigs.platform
-            }
+            signingConfig signingConfigs.platform
         }
     }
     sourceSets {

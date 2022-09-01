@@ -16,6 +16,7 @@
 
 package com.android.car.dialer.ui.activecall;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.telecom.Call;
@@ -29,18 +30,22 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.LetterTileDrawable;
 import com.android.car.dialer.R;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.TelecomUtils;
 
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -51,9 +56,13 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFragment {
 
     private InCallViewModel mInCallViewModel;
+    @Inject
+    PhoneAccountManager mPhoneAccountManager;
 
     private TextView mTitle;
     private ImageView mAvatarView;
+    @Nullable
+    private ImageView mAppIconView;
     private View mSwapCallsView;
     private LiveData<Call> mPrimaryCallLiveData;
     private LiveData<Call> mSecondaryCallLiveData;
@@ -75,6 +84,7 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
         mTitle = fragmentView.findViewById(R.id.title);
         mAvatarView = fragmentView.findViewById(R.id.icon);
         mAvatarView.setOutlineProvider(ContactAvatarOutputlineProvider.get());
+        mAppIconView = fragmentView.findViewById(R.id.app_icon);
 
         mSwapCallsView = fragmentView.findViewById(R.id.swap_calls_view);
         mSwapCallsView.setOnClickListener(v -> swapCalls());
@@ -107,6 +117,12 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
     private void updateProfileInfo(@Nullable CallDetail callDetail) {
         if (callDetail == null) {
             return;
+        }
+
+        Pair<Drawable, CharSequence> appInfo = mPhoneAccountManager.getAppInfo(
+                callDetail.getPhoneAccountHandle(), callDetail.isSelfManaged());
+        if (mAppIconView != null) {
+            mAppIconView.setImageDrawable(appInfo.first);
         }
 
         if (callDetail.isConference()) {

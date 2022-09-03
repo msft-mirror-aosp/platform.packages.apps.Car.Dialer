@@ -89,4 +89,6 @@
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
     <string name="sms_notification_title" msgid="5980540487139970307">"SMS преку бирач"</string>
     <string name="sms_notification_text" msgid="9193883830187173056">"Се испраќа SMS"</string>
+    <!-- no translation found for self_managed_call_description (7626811322858259206) -->
+    <skip />
 </resources>

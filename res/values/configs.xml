@@ -57,7 +57,8 @@
     when call is answered-->
     <bool name="config_should_show_active_call_setting">true</bool>
 
-    <!-- Config for enabling incoming call HUN fullscreen intent -->
+    <!-- Config for enabling incoming call HUN fullscreen intent. The HUN will not persist if
+    it is disabled. -->
     <bool name="config_show_hun_fullscreen_incall_ui">true</bool>
 
     <!-- A config determines whether to show a heads up notification when there's a incoming call-->

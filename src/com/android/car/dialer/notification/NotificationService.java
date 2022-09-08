@@ -17,6 +17,7 @@
 package com.android.car.dialer.notification;
 
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
@@ -28,6 +29,7 @@ import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.TelecomUtils;
+import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
 import java.util.List;
 
@@ -54,6 +56,7 @@ public class NotificationService extends Hilt_NotificationService {
     @Inject InCallNotificationController mInCallNotificationController;
     @Inject MissedCallNotificationController mMissedCallNotificationController;
     @Inject UiCallManager mUiCallManager;
+    @Inject CarUxRestrictionsUtil mCarUxRestrictionsUtil;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -83,7 +86,16 @@ public class NotificationService extends Hilt_NotificationService {
                 mInCallNotificationController.cancelInCallNotification(phoneNumber);
                 break;
             case ACTION_SHOW_FULLSCREEN_UI:
-                Intent inCallActivityIntent = new Intent(context, InCallActivity.class);
+                ComponentName componentName = intent.getParcelableExtra(
+                        Intent.EXTRA_COMPONENT_NAME);
+                Intent inCallActivityIntent;
+                if (componentName != null && !mCarUxRestrictionsUtil.getCurrentRestrictions()
+                        .isRequiresDistractionOptimization()) {
+                    inCallActivityIntent = new Intent();
+                    inCallActivityIntent.setComponent(componentName);
+                } else {
+                    inCallActivityIntent = new Intent(context, InCallActivity.class);
+                }
                 inCallActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 inCallActivityIntent.putExtra(Constants.Intents.EXTRA_SHOW_INCOMING_CALL, true);
                 startActivity(inCallActivityIntent);

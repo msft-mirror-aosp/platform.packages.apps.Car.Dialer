@@ -58,6 +58,9 @@ public class SelfManagedCallHandler implements InCallServiceImpl.ActiveCallListC
 
     @Override
     public boolean onTelecomCallAdded(Call telecomCall) {
+        if (telecomCall.getDetails().getState() == Call.STATE_RINGING) {
+            return false;
+        }
         if (telecomCall.getDetails().hasProperty(Call.Details.PROPERTY_SELF_MANAGED)) {
             mSelfManagedCallList.add(telecomCall);
             return !mCarUxRestrctionsUtil.getCurrentRestrictions()
@@ -68,6 +71,9 @@ public class SelfManagedCallHandler implements InCallServiceImpl.ActiveCallListC
 
     @Override
     public boolean onTelecomCallRemoved(Call telecomCall) {
+        if (telecomCall.getDetails().getState() == Call.STATE_RINGING) {
+            return false;
+        }
         if (telecomCall.getDetails().hasProperty(Call.Details.PROPERTY_SELF_MANAGED)) {
             mSelfManagedCallList.remove(telecomCall);
             return !mCarUxRestrctionsUtil.getCurrentRestrictions()

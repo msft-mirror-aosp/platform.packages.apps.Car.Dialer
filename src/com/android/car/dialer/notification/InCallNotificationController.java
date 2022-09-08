@@ -20,17 +20,25 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
+import android.os.Bundle;
 import android.telecom.Call;
+import android.telecom.PhoneAccountHandle;
 import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
+import androidx.core.util.Pair;
 
+import com.android.car.apps.common.BitmapUtils;
 import com.android.car.apps.common.log.L;
 import com.android.car.dialer.R;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.TelecomUtils;
 
@@ -54,14 +62,17 @@ public final class InCallNotificationController {
     private boolean mShowFullscreenIncallUi;
 
     private final Context mContext;
+    private final PhoneAccountManager mPhoneAccountManager;
     private final NotificationManager mNotificationManager;
     private final Notification.Builder mNotificationBuilder;
     private final Set<String> mActiveInCallNotifications;
     private CompletableFuture<Void> mNotificationFuture;
 
     @Inject
-    public InCallNotificationController(@ApplicationContext Context context) {
+    public InCallNotificationController(
+            @ApplicationContext Context context, PhoneAccountManager phoneAccountManager) {
         mContext = context;
+        mPhoneAccountManager = phoneAccountManager;
 
         mShowFullscreenIncallUi = mContext.getResources().getBoolean(
                 R.bool.config_show_hun_fullscreen_incall_ui);
@@ -74,12 +85,13 @@ public final class InCallNotificationController {
         notificationChannel.setSound(null, null);
         mNotificationManager.createNotificationChannel(notificationChannel);
 
+        Bundle extras = new Bundle();
+        extras.putBoolean("com.android.car.notification.EXTRA_USE_LAUNCHER_ICON", false);
         mNotificationBuilder = new Notification.Builder(mContext, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_phone)
-                .setColor(mContext.getColor(R.color.notification_app_icon_color))
                 .setCategory(Notification.CATEGORY_CALL)
                 .setOngoing(true)
-                .setAutoCancel(false);
+                .setAutoCancel(false)
+                .addExtras(extras);
 
         mActiveInCallNotifications = new HashSet<>();
     }
@@ -97,19 +109,36 @@ public final class InCallNotificationController {
         String callNumber = callDetail.getNumber();
         mActiveInCallNotifications.add(callNumber);
 
+        // HUN will not persist if the fullscreen intent is disabled.
         if (mShowFullscreenIncallUi) {
             mNotificationBuilder.setFullScreenIntent(
                     getFullscreenIntent(call), /* highPriority= */true);
         }
+
+        Pair<Drawable, CharSequence> appInfo = mPhoneAccountManager.getAppInfo(
+                callDetail.getPhoneAccountHandle(), callDetail.isSelfManaged());
+        Bitmap appIcon = BitmapUtils.fromDrawable(appInfo.first, null);
         mNotificationBuilder
-                .setLargeIcon((Icon) null)
-                .setContentTitle(TelecomUtils.getBidiWrappedNumber(callNumber))
+                .setSmallIcon(Icon.createWithBitmap(appIcon))
+                // Per notification design, HUN only shows the large icon which is the app icon
+                .setLargeIcon(appIcon)
                 .setContentText(mContext.getString(R.string.notification_incoming_call))
                 .setActions(
                         getAction(call, R.string.answer_call, R.drawable.ic_answer_icon,
                                 NotificationService.ACTION_ANSWER_CALL),
                         getAction(call, R.string.decline_call, R.drawable.ic_decline_icon,
                                 NotificationService.ACTION_DECLINE_CALL));
+        String callerDisplayName = callDetail.getCallerDisplayName();
+        if (TextUtils.isEmpty(callerDisplayName)) {
+            mNotificationBuilder.setContentTitle(TelecomUtils.getBidiWrappedNumber(callNumber))
+                    .setContentText(mContext.getString(R.string.notification_incoming_call));
+        } else {
+            mNotificationBuilder.setContentTitle(callerDisplayName)
+                    .setContentText(mContext.getString(
+                            R.string.notification_incoming_call_join_number,
+                            TelecomUtils.getBidiWrappedNumber(callNumber)));
+
+        }
         mNotificationManager.notify(
                 callNumber,
                 NOTIFICATION_ID,
@@ -120,13 +149,12 @@ public final class InCallNotificationController {
                 .thenAcceptAsync((pair) -> {
                     // Check that the notification hasn't already been dismissed
                     if (mActiveInCallNotifications.contains(callNumber)) {
-                        mNotificationBuilder
-                                .setLargeIcon(pair.second)
-                                .setContentTitle(TelecomUtils.getBidiWrappedNumber(pair.first));
-
                         String readableNumber = TelecomUtils.getReadableNumber(
                                 mContext, callNumber);
                         if (!TextUtils.equals(readableNumber, pair.first)) {
+                            // A contact is found, update contact name and content text
+                            mNotificationBuilder
+                                    .setContentTitle(TelecomUtils.getBidiWrappedNumber(pair.first));
                             mNotificationBuilder.setContentText(
                                     mContext.getString(
                                             R.string.notification_incoming_call_join_number,
@@ -164,6 +192,23 @@ public final class InCallNotificationController {
 
     private PendingIntent getFullscreenIntent(Call call) {
         Intent intent = getIntent(NotificationService.ACTION_SHOW_FULLSCREEN_UI, call);
+        CallDetail callDetail = CallDetail.fromTelecomCallDetail(call.getDetails());
+
+        // Only put the extra component name for the self managed calls.
+        if (callDetail.isSelfManaged()) {
+            Bundle extras = call.getDetails().getExtras();
+            ComponentName componentName = extras == null ? null
+                    : extras.getParcelable(Intent.EXTRA_COMPONENT_NAME);
+            if (componentName == null) {
+                PhoneAccountHandle phoneAccountHandle = callDetail.getPhoneAccountHandle();
+                Intent launchIntentForSelfManagedCall = mPhoneAccountManager.getLaunchIntent(
+                        phoneAccountHandle);
+                if (launchIntentForSelfManagedCall != null) {
+                    componentName = launchIntentForSelfManagedCall.getComponent();
+                }
+            }
+            intent.putExtra(Intent.EXTRA_COMPONENT_NAME, componentName);
+        }
         return PendingIntent.getService(mContext, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
@@ -187,4 +232,5 @@ public final class InCallNotificationController {
                 CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber());
         return intent;
     }
+
 }

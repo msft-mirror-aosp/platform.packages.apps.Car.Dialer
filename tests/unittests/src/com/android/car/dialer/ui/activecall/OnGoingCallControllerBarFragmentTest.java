@@ -31,6 +31,7 @@ import static com.android.car.dialer.testing.TestViewMatchers.isActivated;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -72,6 +73,7 @@ public class OnGoingCallControllerBarFragmentTest {
     private MutableLiveData<CallAudioState> mCallAudioStateLiveData;
     private LiveData<Pair<Call, Call>> mOngoingCallPairLiveData;
     private List<Call> mCallList;
+    private CallDetail mCallDetail;
     @Mock
     private Call mMockCall;
     @Mock
@@ -82,6 +84,9 @@ public class OnGoingCallControllerBarFragmentTest {
         MockitoAnnotations.initMocks(this);
 
         when(mMockCall.getDetails()).thenReturn(mMockDetails);
+        when(mMockDetails.can(eq(Call.Details.CAPABILITY_SUPPORT_HOLD))).thenReturn(true);
+        mCallDetail = CallDetail.fromTelecomCallDetail(mMockDetails);
+
         mPrimaryCallLiveData = new MutableLiveData<>(mMockCall);
         mCallList = new ArrayList<>();
         mCallList.add(mMockCall);
@@ -91,7 +96,7 @@ public class OnGoingCallControllerBarFragmentTest {
                         : new Pair<>(mMockCall, null));
 
         mCallStateLiveData = new MutableLiveData<>();
-        mCallDetailLiveData = new MutableLiveData<>();
+        mCallDetailLiveData = new MutableLiveData<>(mCallDetail);
         mDialpadStateLiveData = new MutableLiveData<>(false);
         mCallAudioStateLiveData = new MutableLiveData<>();
     }
@@ -214,6 +219,8 @@ public class OnGoingCallControllerBarFragmentTest {
             when(mockInCallViewModel.getCallAudioState()).thenReturn(mCallAudioStateLiveData);
             when(mockInCallViewModel.getOngoingCallPair()).thenReturn(mOngoingCallPairLiveData);
             when(mockInCallViewModel.getOngoingCallList()).thenReturn(mCallListLiveData);
+            // Can merge if there are multiple calls in the list.
+            when(mockInCallViewModel.canMerge()).thenReturn(mCallList.size() > 1);
 
             mAudioRouteList.add(CallAudioState.ROUTE_BLUETOOTH);
             when(mockInCallViewModel.getSupportedAudioRoutes()).thenReturn(

@@ -24,6 +24,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -183,7 +184,7 @@ public class InCallServiceImplTest {
 
         ArgumentCaptor<Call.Callback> callbackListCaptor = ArgumentCaptor.forClass(
                 Call.Callback.class);
-        verify(mMockTelecomCall).registerCallback(callbackListCaptor.capture());
+        verify(mMockTelecomCall, atLeastOnce()).registerCallback(callbackListCaptor.capture());
 
         NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(
                 Context.NOTIFICATION_SERVICE);

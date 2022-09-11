@@ -91,6 +91,5 @@
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
     <string name="sms_notification_title" msgid="5980540487139970307">"שליחת SMS דרך החייגן"</string>
     <string name="sms_notification_text" msgid="9193883830187173056">"מתבצעת שליחה של SMS"</string>
-    <!-- no translation found for self_managed_call_description (7626811322858259206) -->
-    <skip />
+    <string name="self_managed_call_description" msgid="7626811322858259206">"שיחה של <xliff:g id="SELF_MANAGED_APP_NAME">%1$s</xliff:g>"</string>
 </resources>

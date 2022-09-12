@@ -70,7 +70,7 @@ android {
 
         platform {
             dimension 'devMode'
-                signingConfig signingConfigs.platform
+            signingConfig signingConfigs.platform
         }
     }
 
@@ -81,6 +81,10 @@ android {
         }
 
         production {
+            java.srcDirs = ['src']
+        }
+
+        platform {
             java.srcDirs = ['src']
         }
 
@@ -114,6 +118,11 @@ android {
             testCoverageEnabled = true
             signingConfig android.buildTypes.release.signingConfig
         }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
+        }
     }
 
     project.gradle.taskGraph.whenReady {
@@ -145,6 +154,8 @@ android {
         // Ignore quantity errors for translations
         ignore 'MissingQuantity'
         ignore 'ImpliedQuantity'
+        // Ignore missing translations
+        ignore 'MissingTranslation'
     }
 }
 

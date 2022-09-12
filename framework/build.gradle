@@ -81,6 +81,10 @@ android {
             java.srcDirs = ['real/src']
         }
 
+        platform {
+            java.srcDirs = ['real/src']
+        }
+
         emulator {
             java.srcDirs = ['real/src']
         }

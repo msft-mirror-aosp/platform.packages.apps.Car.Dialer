@@ -123,6 +123,9 @@ android_test_helper_app {
 
     libs: common_libs,
 
+    manifest: "AndroidManifest.xml",
+    additional_manifests: ["AndroidManifestForTesting.xml"],
+
     static_libs: common_static_libs + [
         "car-dialer-fake-framework-dep",
         "car-dialer-testing",

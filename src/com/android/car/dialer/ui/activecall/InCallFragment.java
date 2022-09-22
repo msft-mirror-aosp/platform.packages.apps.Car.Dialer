@@ -37,6 +37,7 @@ import com.android.car.apps.common.LetterTileDrawable;
 import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.ui.view.ContactAvatarOutputlineProvider;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
@@ -50,6 +51,8 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /**
@@ -60,8 +63,13 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     private static final String TAG = "CD.InCallFragment";
 
     protected InCallViewModel mInCallViewModel;
+    @Inject PhoneAccountManager mPhoneAccountManager;
 
     private View mUserProfileContainerView;
+    @Nullable
+    private ImageView mAppIconView;
+    @Nullable
+    private TextView mAppNameView;
     private TextView mPhoneNumberView;
     @Nullable
     private TextView mPhoneLabelView;
@@ -93,6 +101,9 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         mUserProfileCallStateText = mUserProfileContainerView.findViewById(
                 R.id.user_profile_call_state);
         mBackgroundImage = view.findViewById(R.id.background_image);
+
+        mAppIconView = mUserProfileContainerView.findViewById(R.id.app_icon);
+        mAppNameView = mUserProfileContainerView.findViewById(R.id.app_name);
     }
 
     /**
@@ -104,17 +115,42 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             return;
         }
 
+        Pair<Drawable, CharSequence> appInfo = mPhoneAccountManager.getAppInfo(
+                callDetail.getPhoneAccountHandle(), callDetail.isSelfManaged());
+        if (mAppIconView != null) {
+            mAppIconView.setImageDrawable(appInfo.first);
+        }
+        ViewUtils.setText(mAppNameView, appInfo.second);
+
+        String callerDisplayName = callDetail.getCallerDisplayName();
         String number = callDetail.getNumber();
-        mNameView.setText(TelecomUtils.getReadableNumber(getContext(), number));
-        ViewUtils.setVisible(mPhoneLabelView, false);
         mPhoneNumberView.setVisibility(View.GONE);
-        mAvatarView.setImageDrawable(mDefaultAvatar);
+        if (!TextUtils.isEmpty(callerDisplayName)) {
+            mNameView.setText(callerDisplayName);
+            mAvatarView.setImageDrawable(TelecomUtils.createLetterTile(
+                    getContext(), TelecomUtils.getInitials(callerDisplayName), callerDisplayName));
+            if (!TextUtils.isEmpty(number)) {
+                mPhoneNumberView.setText(TelecomUtils.getReadableNumber(getContext(), number));
+                mPhoneNumberView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            mNameView.setText(TelecomUtils.getReadableNumber(getContext(), number));
+            mAvatarView.setImageDrawable(mDefaultAvatar);
+        }
+
+        if (callDetail.isSelfManaged()) {
+            ViewUtils.setText(mPhoneLabelView,
+                    getString(R.string.self_managed_call_description, appInfo.second));
+            ViewUtils.setVisible(mPhoneLabelView, true);
+        } else {
+            ViewUtils.setVisible(mPhoneLabelView, false);
+        }
     }
 
     protected void presentCallerInfo(Contact contact, CallDetail callDetail) {
         presentCallDetail(callDetail);
 
-        L.i(TAG, "presentCallerInfo: " + contact);
+        L.i(TAG, "presentCallerInfo: %s", contact);
         if (contact == null) {
             return;
         }
@@ -125,7 +161,6 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         mNameView.setText(nameViewText);
 
         if (TextUtils.equals(nameViewText, formattedNumber)) {
-            ViewUtils.setVisible(mPhoneLabelView, false);
             mPhoneNumberView.setVisibility(View.GONE);
         } else {
             PhoneNumber phoneNumber = contact.getPhoneNumber(number);
@@ -134,8 +169,6 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             if (!TextUtils.isEmpty(phoneNumberLabel)) {
                 ViewUtils.setText(mPhoneLabelView, phoneNumberLabel);
                 ViewUtils.setVisible(mPhoneLabelView, true);
-            } else {
-                ViewUtils.setVisible(mPhoneLabelView, false);
             }
             mPhoneNumberView.setText(formattedNumber);
             mPhoneNumberView.setVisibility(View.VISIBLE);

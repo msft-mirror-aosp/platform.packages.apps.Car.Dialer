@@ -17,17 +17,19 @@
 package com.android.car.dialer.ui.settings;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.android.car.dialer.Constants;
+import com.android.car.dialer.ui.common.DialerUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * ViewModel for {@link DialerSettingsFragment}
@@ -35,13 +37,16 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class DialerSettingsViewModel extends ViewModel {
 
+    private final Context mContext;
     private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
     @Inject
     public DialerSettingsViewModel(
+            @ApplicationContext Context context,
             @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
             @Named("Hfp") LiveData<Boolean> hasHfpDeviceConnectedLiveData) {
+        mContext = context;
         mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
         mHasHfpDeviceConnectedLiveData = hasHfpDeviceConnectedLiveData;
     }
@@ -51,8 +56,8 @@ public class DialerSettingsViewModel extends ViewModel {
      * device connected.
      */
     public LiveData<String> getCurrentHfpConnectedDeviceName() {
-        return Transformations.map(mCurrentHfpDeviceLiveData, (device) ->
-                device != null ? device.getName() : Constants.EMPTY_STRING);
+        return Transformations.map(mCurrentHfpDeviceLiveData,
+                device -> DialerUtils.getDeviceName(mContext, device));
     }
 
     /** Returns a {@link LiveData} which monitors if there are any connected HFP devices. */

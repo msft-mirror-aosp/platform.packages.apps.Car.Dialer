@@ -23,3 +23,10 @@
 
 # Unexpected reference to missing service class: META-INF/services/javax.annotation.processing.Processor.
 -dontwarn javax.annotation.processing.Processor
+
+# AbstractMethodError
+-keep public interface android.car.Car$CarServiceLifecycleListener { *; }
+-keep public interface android.car.CarProjectionManager$ProjectionStatusListener { *; }
+
+# NPE where void onRestrictionsChanged(@NonNull CarUxRestrictions carUxRestrictions) passes null
+-keep class android.car.drivingstate.** { *; }

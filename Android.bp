@@ -80,7 +80,7 @@ android_app {
     ],
 
     optimize: {
-        proguard_flags_files: ["proguard.flags"],
+        proguard_flags_files: ["proguard-rules.pro"],
     },
 
     privileged: true,
@@ -122,6 +122,9 @@ android_test_helper_app {
     overrides: ["Dialer"],
 
     libs: common_libs,
+
+    manifest: "AndroidManifest.xml",
+    additional_manifests: ["AndroidManifestForTesting.xml"],
 
     static_libs: common_static_libs + [
         "car-dialer-fake-framework-dep",

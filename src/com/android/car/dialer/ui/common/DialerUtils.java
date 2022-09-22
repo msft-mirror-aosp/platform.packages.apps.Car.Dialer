@@ -16,15 +16,20 @@
 
 package com.android.car.dialer.ui.common;
 
+import android.Manifest;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.apps.common.log.L;
+import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
@@ -166,5 +171,21 @@ public class DialerUtils {
      */
     public static int validateListLimitingAnchor(int newSize, int oldAnchorIndex) {
         return newSize < oldAnchorIndex ? 0 : oldAnchorIndex;
+    }
+
+    /**
+     * Util methods that checks permission and returns a bluetooth device name
+     */
+    public static String getDeviceName(Context context, @Nullable BluetoothDevice bluetoothDevice) {
+        if (bluetoothDevice == null) {
+            return Constants.EMPTY_STRING;
+        }
+
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
+                != PackageManager.PERMISSION_GRANTED) {
+            L.w(TAG, "Permission is denied to get device name.");
+            return Constants.EMPTY_STRING;
+        }
+        return bluetoothDevice.getName();
     }
 }

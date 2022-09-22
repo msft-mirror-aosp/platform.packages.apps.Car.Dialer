@@ -69,7 +69,7 @@ public class FavoriteFragment extends Hilt_FavoriteFragment {
         FavoriteViewModel favoriteViewModel = new ViewModelProvider(getActivity()).get(
                 FavoriteViewModel.class);
         favoriteAdapter.setOnListItemClickedListener(this::onItemClicked);
-        favoriteViewModel.getFavoriteContacts().observe(this, contacts -> {
+        favoriteViewModel.getFavoriteContacts().observe(getViewLifecycleOwner(), contacts -> {
             if (contacts.isLoading()) {
                 showLoading();
             } else if (contacts.getData() == null) {
@@ -86,7 +86,7 @@ public class FavoriteFragment extends Hilt_FavoriteFragment {
                 showContent();
             }
         });
-        favoriteViewModel.getSortOrderLiveData().observe(this,
+        favoriteViewModel.getSortOrderLiveData().observe(getViewLifecycleOwner(),
                 v -> favoriteAdapter.setSortMethod(v));
 
         mContentLimitingAdapter =

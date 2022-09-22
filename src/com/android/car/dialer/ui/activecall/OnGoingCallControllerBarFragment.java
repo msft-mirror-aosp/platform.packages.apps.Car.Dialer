@@ -35,7 +35,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.util.Pair;
-import androidx.core.util.Preconditions;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -44,6 +43,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.ui.AlertDialogBuilder;
@@ -51,6 +51,7 @@ import com.android.car.ui.recyclerview.CarUiContentListItem;
 import com.android.car.ui.recyclerview.CarUiListItem;
 import com.android.car.ui.recyclerview.CarUiListItemAdapter;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.ArrayList;
@@ -86,6 +87,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
                     .build();
 
     @Inject UiCallManager mUiCallManager;
+    @Inject PhoneAccountManager mPhoneAccountManager;
     private InCallViewModel mInCallViewModel;
 
     private AlertDialog mAudioRouteSelectionDialog;
@@ -100,7 +102,6 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     private View mPauseButton;
     private LiveData<Call> mPrimaryCallLiveData;
     private LiveData<CallDetail> mPrimaryCallDetailLiveData;
-    private LiveData<List<Call>> mOngoingCallListLiveData;
     private LiveData<Pair<Call, Call>> mOngoingCallPairLiveData;
     private MutableLiveData<Boolean> mDialpadState;
     private LiveData<List<Call>> mCallListLiveData;
@@ -139,7 +140,6 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
         mPrimaryCallDetailLiveData = mInCallViewModel.getPrimaryCallDetail();
         mOngoingCallPairLiveData = mInCallViewModel.getOngoingCallPair();
 
-        mOngoingCallListLiveData = mInCallViewModel.getOngoingCallList();
         mDialpadState = mInCallViewModel.getDialpadOpenState();
         mCallAudioState = mInCallViewModel.getCallAudioState();
         mAudioRoutes = mInCallViewModel.getSupportedAudioRoutes();
@@ -168,9 +168,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
         mCallListLiveData.observe(this, v -> updatePauseButtonEnabledState());
 
         mOngoingCallPairLiveData.observe(this, pair -> {
-            boolean isPrimaryCallConference = pair.first != null
-                    && pair.first.getDetails().hasProperty(Call.Details.PROPERTY_CONFERENCE);
-            if (!isPrimaryCallConference && pair.second != null) {
+            if (mInCallViewModel.canMerge()) {
                 mPauseButton.setVisibility(View.GONE);
                 mMergeButton.setVisibility(View.VISIBLE);
             } else {
@@ -198,11 +196,13 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
             }
         });
 
-        mCallAudioState.observe(this, state -> mMuteButton.setActivated(state.isMuted()));
+        mCallAudioState.observe(
+                getViewLifecycleOwner(), state -> mMuteButton.setActivated(state.isMuted()));
 
         View dialPadButton = fragmentView.findViewById(R.id.toggle_dialpad_button);
         dialPadButton.setOnClickListener(v -> mDialpadState.setValue(!mDialpadState.getValue()));
-        mDialpadState.observe(this, activated -> dialPadButton.setActivated(activated));
+        mDialpadState.observe(
+                getViewLifecycleOwner(), activated -> dialPadButton.setActivated(activated));
 
         View endCallButton = fragmentView.findViewById(R.id.end_call_button);
         endCallButton.setOnClickListener(v -> onEndCall());
@@ -210,9 +210,9 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
         mAudioRouteView = fragmentView.findViewById(R.id.voice_channel_view);
         mAudioRouteButton = fragmentView.findViewById(R.id.voice_channel_button);
         mAudioRouteText = fragmentView.findViewById(R.id.voice_channel_text);
-        mPrimaryCallDetailLiveData.observe(this,
+        mPrimaryCallDetailLiveData.observe(getViewLifecycleOwner(),
                 primaryCallDetail -> mAudioRouteView.setEnabled(primaryCallDetail != null));
-        mAudioRoutes.observe(this, audioRoutes -> {
+        mAudioRoutes.observe(getViewLifecycleOwner(), audioRoutes -> {
             if (audioRoutes.size() > 1) {
                 mAudioRouteView.setOnClickListener((v) -> {
                     mAudioRouteView.setActivated(true);
@@ -282,9 +282,11 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     }
 
     private void updatePauseButtonEnabledState() {
-        boolean hasOnlyOneCall = mOngoingCallListLiveData.getValue() != null
-                && mOngoingCallListLiveData.getValue().size() == 1;
-        boolean shouldEnablePauseButton = hasOnlyOneCall && (mPrimaryCallState == Call.STATE_HOLDING
+        CallDetail primaryCallDetail = mPrimaryCallDetailLiveData.getValue();
+        boolean holdable = primaryCallDetail != null
+                && (primaryCallDetail.can(Call.Details.CAPABILITY_HOLD)
+                || primaryCallDetail.can(Call.Details.CAPABILITY_SUPPORT_HOLD));
+        boolean shouldEnablePauseButton =  holdable && (mPrimaryCallState == Call.STATE_HOLDING
                 || mPrimaryCallState == Call.STATE_ACTIVE);
 
         mPauseButton.setEnabled(shouldEnablePauseButton);
@@ -334,7 +336,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
             return;
         }
 
-        L.i(TAG, "Audio Route State: " + audioRoute);
+        L.i(TAG, "Audio Route State: %d", audioRoute);
         mActiveRoute = audioRoute;
         updateAudioRouteListItems();
         AudioRouteInfo audioRouteInfo = getAudioRouteInfo(audioRoute);
@@ -347,12 +349,25 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     }
 
     private void updateMuteButtonEnabledState(Integer audioRoute) {
-        if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
+        CallDetail primaryCallDetail = mPrimaryCallDetailLiveData.getValue();
+        if (primaryCallDetail == null) {
+            return;
+        }
+        if (!primaryCallDetail.can(Call.Details.CAPABILITY_MUTE)) {
+            mMuteButton.setEnabled(false);
+        } else if (audioRoute != CallAudioState.ROUTE_BLUETOOTH
+                && isBluetoothCall(mPrimaryCallDetailLiveData.getValue())) {
+            // If it is bluetooth call but audio route is not bluetooth, disable the mute button.
+            mMuteButton.setEnabled(false);
+        } else {
             mMuteButton.setEnabled(true);
             mMuteButton.setActivated(mUiCallManager.getMuted());
-        } else {
-            mMuteButton.setEnabled(false);
         }
+    }
+
+    private boolean isBluetoothCall(CallDetail callDetail) {
+        return callDetail != null
+                && mPhoneAccountManager.isHfpConnectionService(callDetail.getPhoneAccountHandle());
     }
 
     @NonNull

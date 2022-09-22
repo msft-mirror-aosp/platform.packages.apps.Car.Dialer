@@ -31,18 +31,44 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    signingConfigs {
+        aaos {
+            storeFile file(gradle.ext.aaosCertPath)
+            storePassword 'carapps'
+            keyAlias 'carapps'
+            keyPassword 'carapps'
+        }
+
+        platform {
+            if (file(gradle.ext.platformCertPath).exists()) {
+                storeFile file(gradle.ext.platformCertPath)
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
+        }
+    }
+
     flavorDimensions 'devMode'
     productFlavors {
         fake {
             dimension 'devMode'
+            signingConfig signingConfigs.aaos
         }
 
         emulator {
             dimension 'devMode'
+            signingConfig signingConfigs.aaos
         }
 
         production {
             dimension 'devMode'
+            signingConfig signingConfigs.aaos
+        }
+
+        platform {
+            dimension 'devMode'
+            signingConfig signingConfigs.platform
         }
     }
     sourceSets {
@@ -52,6 +78,10 @@ android {
         }
 
         production {
+            java.srcDirs = ['real/src']
+        }
+
+        platform {
             java.srcDirs = ['real/src']
         }
 

@@ -54,10 +54,11 @@ public class OngoingCallFragment extends Hilt_OngoingCallFragment {
         mOnholdCallFragment = getChildFragmentManager().findFragmentById(R.id.onhold_user_profile);
         mDialpadFragment = getChildFragmentManager().findFragmentById(R.id.incall_dialpad_fragment);
 
-        mInCallViewModel.getPrimaryCallerInfoLiveData().observe(this,
+        mInCallViewModel.getPrimaryCallerInfoLiveData().observe(getViewLifecycleOwner(),
                 contact -> presentCallerInfo(
                         contact, mInCallViewModel.getPrimaryCallDetail().getValue()));
-        mInCallViewModel.getCallStateAndConnectTime().observe(this, this::updateCallDescription);
+        mInCallViewModel.getCallStateAndConnectTime().observe(getViewLifecycleOwner(),
+                this::updateCallDescription);
 
         mDialpadState = mInCallViewModel.getDialpadOpenState();
 
@@ -69,8 +70,9 @@ public class OngoingCallFragment extends Hilt_OngoingCallFragment {
                 }
             }
         };
-        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
-        mDialpadState.observe(this, isDialpadOpen -> {
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(), callback);
+        mDialpadState.observe(getViewLifecycleOwner(), isDialpadOpen -> {
             callback.setEnabled(isDialpadOpen);
             if (isDialpadOpen) {
                 onOpenDialpad();
@@ -79,7 +81,7 @@ public class OngoingCallFragment extends Hilt_OngoingCallFragment {
             }
         });
 
-        mInCallViewModel.shouldShowOnholdCall().observe(this,
+        mInCallViewModel.shouldShowOnholdCall().observe(getViewLifecycleOwner(),
                 this::maybeShowOnholdCallFragment);
 
         return fragmentView;

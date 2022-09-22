@@ -78,19 +78,19 @@ public class OngoingConfCallFragment extends Hilt_OngoingConfCallFragment {
         InCallViewModel inCallViewModel = new ViewModelProvider(getActivity()).get(
                 InCallViewModel.class);
 
-        inCallViewModel.getCallStateAndConnectTime().observe(this,
+        inCallViewModel.getCallStateAndConnectTime().observe(getViewLifecycleOwner(),
                 this::updateCallDescription);
 
-        inCallViewModel.getConferenceCallDetailList().observe(this, list -> {
+        inCallViewModel.getConferenceCallDetailList().observe(getViewLifecycleOwner(), list -> {
             mConfProfileAdapter.setConferenceList(list);
             updateTitle(list.size());
         });
 
-        inCallViewModel.getContactListLiveData().observe(this,
+        inCallViewModel.getContactListLiveData().observe(getViewLifecycleOwner(),
                 contacts -> mConfProfileAdapter.notifyDataSetChanged());
 
         mDialpadState = inCallViewModel.getDialpadOpenState();
-        mDialpadState.observe(this, isDialpadOpen -> {
+        mDialpadState.observe(getViewLifecycleOwner(), isDialpadOpen -> {
             if (isDialpadOpen) {
                 onOpenDialpad();
             } else {
@@ -98,7 +98,7 @@ public class OngoingConfCallFragment extends Hilt_OngoingConfCallFragment {
             }
         });
 
-        inCallViewModel.shouldShowOnholdCall().observe(this,
+        inCallViewModel.shouldShowOnholdCall().observe(getViewLifecycleOwner(),
                 this::updateOnholdCallFragmentVisibility);
 
         return fragmentView;

@@ -58,6 +58,7 @@ import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.dialer.ui.activecall.InCallActivity;
+import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
 import org.junit.After;
@@ -134,7 +135,8 @@ public class InCallServiceImplTest {
         mInCallNotificationController = new InCallNotificationController(
                 mContext, mPhoneAccountManager);
         mInCallServiceImpl.mInCallRouter = new InCallRouter(mContext, sharedPreferences,
-                mInCallNotificationController, mPhoneAccountManager, mCarUxRestrictionsUtil);
+                mInCallNotificationController, mPhoneAccountManager,
+                new SelfManagedCallUtil(mContext, mCarUxRestrictionsUtil));
         mInCallServiceImpl.mProjectionCallHandler = mProjectionCallHandler;
         mInCallServiceImpl.mSelfManagedCallHandler = mSelfManagedCallHandler;
         mInCallServiceImpl.mCurrentHfpDeviceLiveData = LiveDataFunctions.nullLiveData();

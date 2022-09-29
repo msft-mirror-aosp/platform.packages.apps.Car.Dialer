@@ -29,7 +29,7 @@ import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.TelecomUtils;
-import com.android.car.ui.utils.CarUxRestrictionsUtil;
+import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 
 import java.util.List;
 
@@ -56,7 +56,7 @@ public class NotificationService extends Hilt_NotificationService {
     @Inject InCallNotificationController mInCallNotificationController;
     @Inject MissedCallNotificationController mMissedCallNotificationController;
     @Inject UiCallManager mUiCallManager;
-    @Inject CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    @Inject SelfManagedCallUtil mSelfManagedCallUtil;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -89,8 +89,7 @@ public class NotificationService extends Hilt_NotificationService {
                 ComponentName componentName = intent.getParcelableExtra(
                         Intent.EXTRA_COMPONENT_NAME);
                 Intent inCallActivityIntent;
-                if (componentName != null && !mCarUxRestrictionsUtil.getCurrentRestrictions()
-                        .isRequiresDistractionOptimization()) {
+                if (componentName != null && mSelfManagedCallUtil.canShowCalInCallView()) {
                     inCallActivityIntent = new Intent();
                     inCallActivityIntent.setComponent(componentName);
                 } else {

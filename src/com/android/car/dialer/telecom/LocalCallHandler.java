@@ -31,6 +31,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.apps.common.log.L;
+import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
 import com.google.common.base.Predicate;
@@ -53,6 +54,7 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
     private static final String TAG = "CD.CallHandler";
     private final Context mContext;
     private final CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    private final SelfManagedCallUtil mSelfManagedCallUtil;
     private final Call.Callback mRingingCallStateChangeCallback;
 
     private final MutableLiveData<CallAudioState> mCallAudioStateLiveData = new MutableLiveData<>();
@@ -108,10 +110,13 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
      * @param context Application context.
      */
     @Inject
-    public LocalCallHandler(@ApplicationContext Context context,
-                            CarUxRestrictionsUtil carUxRestrictionsUtil) {
+    public LocalCallHandler(
+            @ApplicationContext Context context,
+            CarUxRestrictionsUtil carUxRestrictionsUtil,
+            SelfManagedCallUtil selfManagedCallUtil) {
         mContext = context;
         mCarUxRestrictionsUtil = carUxRestrictionsUtil;
+        mSelfManagedCallUtil = selfManagedCallUtil;
 
         mCallListLiveData = new MutableLiveData<>();
         mIncomingCallLiveData = new MutableLiveData<>();
@@ -191,8 +196,7 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
     private void notifyCallListChanged() {
         List<Call> callList = new ArrayList<>(mInCallService.getCallList());
         // If car is not driving(parked or idle), filter self managed calls.
-        if (!mCarUxRestrictionsUtil.getCurrentRestrictions()
-                .isRequiresDistractionOptimization()) {
+        if (mSelfManagedCallUtil.canShowCalInCallView()) {
             callList = filter(callList, call -> call != null
                     && !call.getDetails().hasProperty(Call.Details.PROPERTY_SELF_MANAGED));
         }

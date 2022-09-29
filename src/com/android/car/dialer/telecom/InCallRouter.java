@@ -31,7 +31,7 @@ import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.dialer.ui.activecall.InCallViewModel;
-import com.android.car.ui.utils.CarUxRestrictionsUtil;
+import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 
 import javax.inject.Inject;
 
@@ -53,7 +53,7 @@ class InCallRouter {
     private final SharedPreferences mSharedPreferences;
     private final InCallNotificationController mInCallNotificationController;
     private final PhoneAccountManager mPhoneAccountManager;
-    private final CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    private final SelfManagedCallUtil mSelfManagedCallUtil;
 
     @Inject
     InCallRouter(
@@ -61,12 +61,12 @@ class InCallRouter {
             SharedPreferences sharedPreferences,
             InCallNotificationController inCallNotificationController,
             PhoneAccountManager phoneAccountManager,
-            CarUxRestrictionsUtil carUxRestrictionsUtil) {
+            SelfManagedCallUtil selfManagedCallUtil) {
         mContext = context;
         mSharedPreferences = sharedPreferences;
         mInCallNotificationController = inCallNotificationController;
         mPhoneAccountManager = phoneAccountManager;
-        mCarUxRestrictionsUtil = carUxRestrictionsUtil;
+        mSelfManagedCallUtil = selfManagedCallUtil;
     }
 
     /**
@@ -108,9 +108,7 @@ class InCallRouter {
             public void onStateChanged(Call call, int state) {
                 L.d(TAG, "Ringing call state changed to %d", state);
                 if (call.getDetails().getState() != Call.STATE_DISCONNECTED) {
-                    if (call.getDetails().hasProperty(Call.Details.PROPERTY_SELF_MANAGED)
-                            && !mCarUxRestrictionsUtil.getCurrentRestrictions()
-                            .isRequiresDistractionOptimization()) {
+                    if (mSelfManagedCallUtil.shouldShowCalInCallView(call)) {
                         routeToSelfManagedInCallActivity(call);
                     } else {
                         // Don't launch the in call page if state is disconnected. Otherwise, the

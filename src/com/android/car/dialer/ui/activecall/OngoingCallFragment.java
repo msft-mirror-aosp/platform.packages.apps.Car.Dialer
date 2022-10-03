@@ -54,6 +54,8 @@ public class OngoingCallFragment extends Hilt_OngoingCallFragment {
         mOnholdCallFragment = getChildFragmentManager().findFragmentById(R.id.onhold_user_profile);
         mDialpadFragment = getChildFragmentManager().findFragmentById(R.id.incall_dialpad_fragment);
 
+        mInCallViewModel.getPrimaryCallDetail().observe(
+                getViewLifecycleOwner(), callDetail -> presentCallDetail(callDetail));
         mInCallViewModel.getPrimaryCallerInfoLiveData().observe(getViewLifecycleOwner(),
                 contact -> presentCallerInfo(
                         contact, mInCallViewModel.getPrimaryCallDetail().getValue()));

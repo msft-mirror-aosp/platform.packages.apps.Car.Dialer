@@ -38,12 +38,10 @@ android {
         }
 
         platform {
-            if (file(gradle.ext.platformCertPath).exists()) {
-                storeFile file(gradle.ext.platformCertPath)
-                storePassword 'android'
-                keyAlias 'androiddebugkey'
-                keyPassword 'android'
-            }
+            storeFile file(gradle.ext.platformCertPath)
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
         }
     }
 
@@ -70,7 +68,9 @@ android {
 
         platform {
             dimension 'devMode'
-            signingConfig signingConfigs.platform
+            if (file(gradle.ext.platformCertPath).exists()) {
+                signingConfig signingConfigs.platform
+            }
         }
     }
 

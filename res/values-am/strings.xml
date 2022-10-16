@@ -31,8 +31,8 @@
     <string name="answer_call" msgid="3272474440561548115">"ያንሱ"</string>
     <string name="call_back" msgid="5745638356098600872">"መልሰው ይደውሉ"</string>
     <string name="message" msgid="106616332778369322">"መልዕክት"</string>
-    <string name="audio_route_vehicle" msgid="6250361588960528769">"የመኪና ድምጽ ማጉያዎች"</string>
-    <string name="audio_route_phone_speaker" msgid="4608904003558187244">"የስልክ ድምጽ ማጉያ"</string>
+    <string name="audio_route_vehicle" msgid="6250361588960528769">"የመኪና ድምፅ ማጉያዎች"</string>
+    <string name="audio_route_phone_speaker" msgid="4608904003558187244">"የስልክ ድምፅ ማጉያ"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"ስልክ"</string>
     <string name="dial_a_number" msgid="7432322177412387160">"ወደ አንድ የስልክ ቁጥር ደውል"</string>
     <string name="call_history_title" msgid="7997887846276371553">"የቅርብ ጊዜዎቹ"</string>

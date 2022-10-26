@@ -42,6 +42,7 @@ public class CallerInfoLiveData extends MediatorLiveData<Contact> {
     private final ExecutorService mExecutorService;
     private final LiveData<String> mPhoneNumberLiveData;
     private final LiveData<String> mAccountNameLiveData;
+    private final LiveData<String> mCallerDisplayNameLiveData;
     private final LiveData<List<Contact>> mContactListLiveData;
     private Future<?> mLookupFuture;
 
@@ -57,10 +58,15 @@ public class CallerInfoLiveData extends MediatorLiveData<Contact> {
                 LiveDataFunctions.mapNonNull(
                         mCallDetailLiveData,
                         callDetail -> callDetail.getPhoneAccountHandle().getId()));
+        mCallerDisplayNameLiveData = Transformations.distinctUntilChanged(
+                LiveDataFunctions.mapNonNull(
+                        mCallDetailLiveData,
+                        callDetail -> callDetail.getCallerDisplayName()));
 
         mContactListLiveData = LiveDataFunctions.switchMapNonNull(mAccountNameLiveData,
                 accountName -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(accountName));
 
+        addSource(mCallerDisplayNameLiveData, callerDisplayName -> lookupContact());
         addSource(mPhoneNumberLiveData, number -> lookupContact());
         addSource(mContactListLiveData, contacts -> lookupContact());
     }

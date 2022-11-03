@@ -19,6 +19,7 @@ import static com.android.car.assist.CarVoiceInteractionSession.KEY_SEND_PENDING
 import static com.android.car.assist.CarVoiceInteractionSession.VOICE_ACTION_SEND_SMS;
 import static com.android.car.messenger.common.MessagingUtils.ACTION_DIRECT_SEND;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
@@ -26,6 +27,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -38,6 +40,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.apps.common.log.L;
@@ -45,6 +48,7 @@ import com.android.car.assist.CarVoiceInteractionSession;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.sms.MessagingService;
+import com.android.car.dialer.ui.common.DialerUtils;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.TelecomUtils;
 
@@ -131,7 +135,7 @@ public final class UiCallManager {
     }
 
     public void setMuted(boolean muted) {
-        L.d(TAG, "setMuted: " + muted);
+        L.d(TAG, "setMuted: %b", muted);
         if (mInCallService == null) {
             return;
         }
@@ -191,7 +195,7 @@ public final class UiCallManager {
         } else {
             CallAudioState audioState = getCallAudioStateOrNull();
             int audioRoute = audioState != null ? audioState.getRoute() : 0;
-            L.d(TAG, "getAudioRoute " + audioRoute);
+            L.d(TAG, "getAudioRoute: %d", audioRoute);
             return audioRoute;
         }
     }
@@ -227,9 +231,15 @@ public final class UiCallManager {
      * @return {@code true} if a call is successfully placed, false if number is invalid.
      */
     public boolean placeCall(String number) {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED) {
+            L.w(TAG, "Permission is denied to place call.");
+            return false;
+        }
+
         if (isValidNumber(number)) {
             Uri uri = Uri.fromParts("tel", number, null);
-            L.d(TAG, "android.telecom.TelecomManager#placeCall: %s", number);
+            L.d(TAG, "android.telecom.TelecomManager#placeCall: %s", TelecomUtils.piiLog(number));
 
             try {
                 mTelecomManager.placeCall(uri, null);
@@ -241,7 +251,7 @@ public final class UiCallManager {
                 return false;
             }
         } else {
-            L.d(TAG, "invalid number dialed", number);
+            L.d(TAG, "invalid number %s dialed", number);
             Toast.makeText(mContext, R.string.error_invalid_phone_number,
                     Toast.LENGTH_SHORT).show();
             return false;
@@ -263,14 +273,15 @@ public final class UiCallManager {
      * Build the {@link Bundle} to pass to assistant to send a sms.
      */
     public Bundle buildDirectSendBundle(String number, String name, String uid,
-            BluetoothDevice device) {
+                                        BluetoothDevice device) {
         Bundle bundle = new Bundle();
         bundle.putString(CarVoiceInteractionSession.KEY_ACTION, VOICE_ACTION_SEND_SMS);
         bundle.putString(CarVoiceInteractionSession.KEY_PHONE_NUMBER, number);
         bundle.putString(CarVoiceInteractionSession.KEY_RECIPIENT_NAME, name);
         bundle.putString(CarVoiceInteractionSession.KEY_RECIPIENT_UID, uid);
         bundle.putString(CarVoiceInteractionSession.KEY_DEVICE_ADDRESS, device.getAddress());
-        bundle.putString(CarVoiceInteractionSession.KEY_DEVICE_NAME, device.getName());
+        bundle.putString(CarVoiceInteractionSession.KEY_DEVICE_NAME,
+                DialerUtils.getDeviceName(mContext, device));
         Intent intent = new Intent(mContext, MessagingService.class)
                 .setAction(ACTION_DIRECT_SEND)
                 .setClass(mContext, MessagingService.class);
@@ -307,6 +318,12 @@ public final class UiCallManager {
 
     /** Check if emergency call is supported by any phone account. */
     public boolean isEmergencyCallSupported() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            L.w(TAG, "Permission is denied to get call capable phone accounts.");
+            return false;
+        }
+
         List<PhoneAccountHandle> phoneAccountHandleList =
                 mTelecomManager.getCallCapablePhoneAccounts();
         for (PhoneAccountHandle phoneAccountHandle : phoneAccountHandleList) {

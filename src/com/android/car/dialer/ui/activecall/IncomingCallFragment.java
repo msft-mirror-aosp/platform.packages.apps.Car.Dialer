@@ -39,7 +39,7 @@ public class IncomingCallFragment extends Hilt_IncomingCallFragment {
         TextView mCallStateView = fragmentView.findViewById(R.id.user_profile_call_state);
         mCallStateView.setText(getString(R.string.call_state_call_ringing));
 
-        mInCallViewModel.getIncomingCallerInfoLiveData().observe(this,
+        mInCallViewModel.getIncomingCallerInfoLiveData().observe(getViewLifecycleOwner(),
                 contact -> presentCallerInfo(
                         contact, mInCallViewModel.getIncomingCallDetail().getValue()));
         return fragmentView;

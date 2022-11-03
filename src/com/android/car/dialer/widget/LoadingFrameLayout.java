@@ -340,7 +340,7 @@ public class LoadingFrameLayout extends FrameLayout {
         }
 
         private void setMessage(@StringRes int messageResId) {
-            if (messageResId > Constants.INVALID_RES_ID) {
+            if (messageResId != Constants.INVALID_RES_ID) {
                 ViewUtils.setText(mMessageView, messageResId);
             } else {
                 ViewUtils.setVisible(mMessageView, false);
@@ -349,7 +349,7 @@ public class LoadingFrameLayout extends FrameLayout {
         }
 
         private void setSecondaryMessage(@StringRes int secondaryMessageResId) {
-            if (secondaryMessageResId > Constants.INVALID_RES_ID) {
+            if (secondaryMessageResId != Constants.INVALID_RES_ID) {
                 ViewUtils.setText(mSecondaryMessageView, secondaryMessageResId);
             } else {
                 ViewUtils.setVisible(mSecondaryMessageView, false);
@@ -364,7 +364,7 @@ public class LoadingFrameLayout extends FrameLayout {
         }
 
         private void setActionButtonText(@StringRes int actionButtonTextResId) {
-            if (actionButtonTextResId > Constants.INVALID_RES_ID) {
+            if (actionButtonTextResId != Constants.INVALID_RES_ID) {
                 ViewUtils.setText(mActionButton, actionButtonTextResId);
             }
             mActionButtonTextResId = actionButtonTextResId;
@@ -376,7 +376,7 @@ public class LoadingFrameLayout extends FrameLayout {
         }
 
         private void setIcon(@DrawableRes int iconResId) {
-            if (iconResId > Constants.INVALID_RES_ID) {
+            if (iconResId != Constants.INVALID_RES_ID) {
                 if (mIconView != null) {
                     mIconView.setImageResource(iconResId);
                 }

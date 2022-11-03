@@ -44,6 +44,7 @@ public class CallHistoryLiveData extends AsyncQueryLiveData<List<PhoneCallLog>> 
             CallType.INCOMING_TYPE,
             CallType.OUTGOING_TYPE,
             CallType.MISSED_TYPE,
+            CallType.VOICEMAIL_TYPE
     })
     public @interface CallType {
         int CALL_TYPE_ALL = -1;

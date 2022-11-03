@@ -51,7 +51,7 @@ public class ContactListFragment extends Hilt_ContactListFragment {
 
         ContactListViewModel contactListViewModel = new ViewModelProvider(this).get(
                 ContactListViewModel.class);
-        contactListViewModel.getAllContacts().observe(this, contacts -> {
+        contactListViewModel.getAllContacts().observe(getViewLifecycleOwner(), contacts -> {
             if (contacts.isLoading()) {
                 showLoading();
             } else if (contacts.getData() == null) {

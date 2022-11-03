@@ -81,7 +81,7 @@ public abstract class DialerBaseFragment extends Hilt_DialerBaseFragment impleme
         TelecomActivityViewModel viewModel = new ViewModelProvider(requireActivity()).get(
                 TelecomActivityViewModel.class);
         LiveData<String> toolbarTitleLiveData = viewModel.getToolbarTitle();
-        toolbarTitleLiveData.observe(this, toolbar::setTitle);
+        toolbarTitleLiveData.observe(getViewLifecycleOwner(), toolbar::setTitle);
 
         toolbar.setNavButtonMode(NavButtonMode.DISABLED);
         toolbar.setSearchMode(SearchMode.DISABLED);

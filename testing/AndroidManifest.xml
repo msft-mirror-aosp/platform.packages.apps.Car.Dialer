@@ -17,9 +17,13 @@
 
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.android.car.dialer.testing">
 
-    <application android:testOnly="false" android:debuggable="true">
+    <application
+        android:testOnly="false"
+        android:debuggable="true"
+        tools:ignore="HardcodedDebugMode">
         <activity android:name="com.android.car.dialer.testing.TestActivity"
                   android:exported="true" android:theme="@style/Theme.CarUi.NoToolbar">
         </activity>

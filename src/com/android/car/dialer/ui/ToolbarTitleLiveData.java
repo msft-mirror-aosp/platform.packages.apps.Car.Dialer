@@ -25,6 +25,7 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.dialer.R;
+import com.android.car.dialer.ui.common.DialerUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -100,7 +101,7 @@ class ToolbarTitleLiveData extends MediatorLiveData<String> {
                 return;
             }
 
-            setValue(currentHfpDevice.getName());
+            setValue(DialerUtils.getDeviceName(mContext, currentHfpDevice));
         }
     }
 }

@@ -21,6 +21,7 @@ import android.telecom.Call;
 
 import androidx.annotation.NonNull;
 
+import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
 import java.util.ArrayList;
@@ -31,13 +32,17 @@ import javax.inject.Inject;
 /**Handles the driving state change and show incall ui for self managed calls when start driving. */
 public class SelfManagedCallHandler implements InCallServiceImpl.ActiveCallListChangedCallback,
         CarUxRestrictionsUtil.OnUxRestrictionsChangedListener {
-    private final CarUxRestrictionsUtil mCarUxRestrctionsUtil;
+    private final SelfManagedCallUtil mSelfManagedCallUtil;
+    private final CarUxRestrictionsUtil mCarUxRestrictionsUtil;
     private final List<Call> mSelfManagedCallList;
     private final InCallRouter mInCallRouter;
     @Inject
-    SelfManagedCallHandler(CarUxRestrictionsUtil carUxRestrictionsUtil,
-                           InCallRouter inCallRouter) {
-        mCarUxRestrctionsUtil = carUxRestrictionsUtil;
+    SelfManagedCallHandler(
+            SelfManagedCallUtil selfManagedCallUtil,
+            CarUxRestrictionsUtil carUxRestrictionsUtil,
+            InCallRouter inCallRouter) {
+        mSelfManagedCallUtil = selfManagedCallUtil;
+        mCarUxRestrictionsUtil = carUxRestrictionsUtil;
         mSelfManagedCallList = new ArrayList<>();
         mInCallRouter = inCallRouter;
     }
@@ -46,32 +51,36 @@ public class SelfManagedCallHandler implements InCallServiceImpl.ActiveCallListC
      * Starts this handler to listen to ux restrictions changes.
      */
     public void start() {
-        mCarUxRestrctionsUtil.register(this);
+        mCarUxRestrictionsUtil.register(this);
     }
 
     /**
      * Stops this handler to listen to ux restrictions changes.
      */
     public void stop() {
-        mCarUxRestrctionsUtil.unregister(this);
+        mCarUxRestrictionsUtil.unregister(this);
     }
 
     @Override
     public boolean onTelecomCallAdded(Call telecomCall) {
+        if (telecomCall.getDetails().getState() == Call.STATE_RINGING) {
+            return false;
+        }
         if (telecomCall.getDetails().hasProperty(Call.Details.PROPERTY_SELF_MANAGED)) {
             mSelfManagedCallList.add(telecomCall);
-            return !mCarUxRestrctionsUtil.getCurrentRestrictions()
-                    .isRequiresDistractionOptimization();
+            return mSelfManagedCallUtil.canShowCalInCallView();
         }
         return false;
     }
 
     @Override
     public boolean onTelecomCallRemoved(Call telecomCall) {
+        if (telecomCall.getDetails().getState() == Call.STATE_RINGING) {
+            return false;
+        }
         if (telecomCall.getDetails().hasProperty(Call.Details.PROPERTY_SELF_MANAGED)) {
             mSelfManagedCallList.remove(telecomCall);
-            return !mCarUxRestrctionsUtil.getCurrentRestrictions()
-                    .isRequiresDistractionOptimization();
+            return mSelfManagedCallUtil.canShowCalInCallView();
         }
         return false;
     }

@@ -24,6 +24,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -35,6 +36,8 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.IBinder;
 import android.service.notification.StatusBarNotification;
@@ -43,6 +46,7 @@ import android.telecom.CallAudioState;
 import android.telecom.GatewayInfo;
 import android.telecom.PhoneAccountHandle;
 
+import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -54,6 +58,8 @@ import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.dialer.ui.activecall.InCallActivity;
+import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
+import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
 import org.junit.After;
 import org.junit.Before;
@@ -97,6 +103,8 @@ public class InCallServiceImplTest {
     private SelfManagedCallHandler mSelfManagedCallHandler;
     @Mock
     private PhoneAccountHandle mMockPhoneAccountHandle;
+    @Mock
+    private CarUxRestrictionsUtil mCarUxRestrictionsUtil;
 
     @Before
     public void setUp() throws TimeoutException {
@@ -122,9 +130,13 @@ public class InCallServiceImplTest {
         mInCallServiceImpl =
                 ((InCallServiceImpl.LocalBinder) binder).getService();
         mInCallServiceImpl.mPhoneAccountManager = mPhoneAccountManager;
-        mInCallNotificationController = new InCallNotificationController(mContext);
+        when(mPhoneAccountManager.getAppInfo(any(PhoneAccountHandle.class), anyBoolean()))
+                .thenReturn(Pair.create(new ColorDrawable(Color.BLUE), "Phone"));
+        mInCallNotificationController = new InCallNotificationController(
+                mContext, mPhoneAccountManager);
         mInCallServiceImpl.mInCallRouter = new InCallRouter(mContext, sharedPreferences,
-                mInCallNotificationController);
+                mInCallNotificationController, mPhoneAccountManager,
+                new SelfManagedCallUtil(mContext, mCarUxRestrictionsUtil));
         mInCallServiceImpl.mProjectionCallHandler = mProjectionCallHandler;
         mInCallServiceImpl.mSelfManagedCallHandler = mSelfManagedCallHandler;
         mInCallServiceImpl.mCurrentHfpDeviceLiveData = LiveDataFunctions.nullLiveData();

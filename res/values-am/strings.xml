@@ -31,8 +31,8 @@
     <string name="answer_call" msgid="3272474440561548115">"ያንሱ"</string>
     <string name="call_back" msgid="5745638356098600872">"መልሰው ይደውሉ"</string>
     <string name="message" msgid="106616332778369322">"መልዕክት"</string>
-    <string name="audio_route_vehicle" msgid="6250361588960528769">"የመኪና ድምጽ ማጉያዎች"</string>
-    <string name="audio_route_phone_speaker" msgid="4608904003558187244">"የስልክ ድምጽ ማጉያ"</string>
+    <string name="audio_route_vehicle" msgid="6250361588960528769">"የመኪና ድምፅ ማጉያዎች"</string>
+    <string name="audio_route_phone_speaker" msgid="4608904003558187244">"የስልክ ድምፅ ማጉያ"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"ስልክ"</string>
     <string name="dial_a_number" msgid="7432322177412387160">"ወደ አንድ የስልክ ቁጥር ደውል"</string>
     <string name="call_history_title" msgid="7997887846276371553">"የቅርብ ጊዜዎቹ"</string>
@@ -62,7 +62,7 @@
     <string name="no_phone_numbers" msgid="8738691115921148445">"ስልክ ቁጥሮች የሉም"</string>
     <string name="in_call_notification_channel_name" msgid="1978093630512401778">"የገቢ ጥሪ ማሳወቂያ"</string>
     <string name="notification_incoming_call" msgid="1722904631804432389">"ገቢ ጥሪ"</string>
-    <string name="notification_incoming_call_join_number" msgid="6751753093958677973">"ገቢ ጥሪ * <xliff:g id="PHONE_NUMBER">%1$s</xliff:g>"</string>
+    <string name="notification_incoming_call_join_number" msgid="3531262061121638116">"ገቢ ጥሪ • <xliff:g id="PHONE_NUMBER">%1$s</xliff:g>"</string>
     <string name="missed_call_notification_channel_name" msgid="1135686963409691772">"ያመለጠ ጥሪ ማሳወቂያ"</string>
     <plurals name="notification_missed_call" formatted="false" msgid="1018870358427938752">
       <item quantity="one">ያመለጡ ጥሪዎች(<xliff:g id="NUMBER">%1$d</xliff:g>) </item>

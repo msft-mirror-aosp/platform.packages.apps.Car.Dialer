@@ -79,7 +79,7 @@
     <string name="pref_show_fullscreen_active_call_ui_title" msgid="6924304583510509581">"चालू कॉल"</string>
     <string name="pref_show_fullscreen_active_call_ui_summary" msgid="1629142960991476502">"कॉल पर बात करने के दौरान, चालू कॉल वाली स्क्रीन दिखाएं"</string>
     <string name="given_name_first_title" msgid="8072187841056104968">"नाम"</string>
-    <string name="family_name_first_title" msgid="7721976826282427987">"उपनाम"</string>
+    <string name="family_name_first_title" msgid="7721976826282427987">"सरनेम"</string>
     <string name="audio_route_dialog_title" msgid="2262715267187794363"></string>
     <string name="audio_route_dialog_subtitle" msgid="8780526104805330121"></string>
     <string name="ongoing_conf_title" msgid="4161590966144000887">"कॉन्फ़्रेंस"</string>

@@ -37,6 +37,7 @@ import com.android.car.telephony.common.TelecomUtils;
 import com.android.car.ui.AlertDialogBuilder;
 import com.android.car.ui.recyclerview.CarUiRadioButtonListItem;
 import com.android.car.ui.recyclerview.CarUiRadioButtonListItemAdapter;
+import com.android.car.ui.recyclerview.CarUiRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -157,10 +158,10 @@ public class DialerUtils {
     /**
      * Return the first visible item position in a {@link LinearLayoutManager}.
      */
-    public static int getFirstVisibleItemPosition(@NonNull LinearLayoutManager layoutManager) {
-        int firstItem = layoutManager.findFirstCompletelyVisibleItemPosition();
+    public static int getFirstVisibleItemPosition(@NonNull CarUiRecyclerView carUiRecyclerView) {
+        int firstItem = carUiRecyclerView.findFirstCompletelyVisibleItemPosition();
         if (firstItem == RecyclerView.NO_POSITION) {
-            firstItem = layoutManager.findFirstVisibleItemPosition();
+            firstItem = carUiRecyclerView.findFirstVisibleItemPosition();
         }
         return firstItem;
     }

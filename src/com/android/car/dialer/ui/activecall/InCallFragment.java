@@ -127,8 +127,12 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         mPhoneNumberView.setVisibility(View.GONE);
         if (!TextUtils.isEmpty(callerDisplayName)) {
             mNameView.setText(callerDisplayName);
-            mAvatarView.setImageDrawable(TelecomUtils.createLetterTile(
-                    getContext(), TelecomUtils.getInitials(callerDisplayName), callerDisplayName));
+            LetterTileDrawable letterTile = TelecomUtils.createLetterTile(
+                    getContext(), TelecomUtils.getInitials(callerDisplayName), callerDisplayName);
+            mAvatarView.setImageDrawable(letterTile);
+            mBackgroundImage.setAlpha(getResources().getFloat(
+                    R.dimen.config_background_image_error_alpha));
+            mBackgroundImage.setBackgroundColor(letterTile.getColor());
             if (!TextUtils.isEmpty(number)) {
                 mPhoneNumberView.setText(TelecomUtils.getReadableNumber(getContext(), number));
                 mPhoneNumberView.setVisibility(View.VISIBLE);
@@ -136,6 +140,9 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         } else {
             mNameView.setText(TelecomUtils.getReadableNumber(getContext(), number));
             mAvatarView.setImageDrawable(mDefaultAvatar);
+            mBackgroundImage.setAlpha(getResources().getFloat(
+                    R.dimen.config_background_image_error_alpha));
+            mBackgroundImage.setBackgroundColor(mDefaultAvatar.getColor());
         }
 
         if (callDetail.isSelfManaged()) {
@@ -151,6 +158,7 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         presentCallDetail(callDetail);
 
         L.i(TAG, "presentCallerInfo: %s", contact);
+        // When contact is not null, the call detail must not be null.
         if (contact == null) {
             return;
         }

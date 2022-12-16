@@ -16,17 +16,22 @@
 
 package com.android.car.dialer.telecom;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.telecom.Call;
+import android.telecom.PhoneAccountHandle;
 
 import com.android.car.apps.common.log.L;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
+import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.dialer.ui.activecall.InCallViewModel;
+import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 
 import javax.inject.Inject;
 
@@ -47,15 +52,21 @@ class InCallRouter {
     private final Context mContext;
     private final SharedPreferences mSharedPreferences;
     private final InCallNotificationController mInCallNotificationController;
+    private final PhoneAccountManager mPhoneAccountManager;
+    private final SelfManagedCallUtil mSelfManagedCallUtil;
 
     @Inject
     InCallRouter(
             @ApplicationContext Context context,
             SharedPreferences sharedPreferences,
-            InCallNotificationController inCallNotificationController) {
+            InCallNotificationController inCallNotificationController,
+            PhoneAccountManager phoneAccountManager,
+            SelfManagedCallUtil selfManagedCallUtil) {
         mContext = context;
         mSharedPreferences = sharedPreferences;
         mInCallNotificationController = inCallNotificationController;
+        mPhoneAccountManager = phoneAccountManager;
+        mSelfManagedCallUtil = selfManagedCallUtil;
     }
 
     /**
@@ -97,9 +108,13 @@ class InCallRouter {
             public void onStateChanged(Call call, int state) {
                 L.d(TAG, "Ringing call state changed to %d", state);
                 if (call.getDetails().getState() != Call.STATE_DISCONNECTED) {
-                    // Don't launch the in call page if state is disconnected. Otherwise, the
-                    // InCallActivity finishes right after onCreate() and flashes.
-                    routeToFullScreenIncomingCallPage(false, false);
+                    if (mSelfManagedCallUtil.shouldShowCalInCallView(call)) {
+                        routeToSelfManagedInCallActivity(call);
+                    } else {
+                        // Don't launch the in call page if state is disconnected. Otherwise, the
+                        // InCallActivity finishes right after onCreate() and flashes.
+                        routeToFullScreenIncomingCallPage(false, false);
+                    }
                 }
                 mInCallNotificationController.cancelInCallNotification(call);
                 call.unregisterCallback(this);
@@ -136,5 +151,26 @@ class InCallRouter {
         return mSharedPreferences
                 .getBoolean(mContext.getString(R.string.pref_show_fullscreen_active_call_ui_key),
                         shouldShowFullScreenUiByDefault);
+    }
+
+    void routeToSelfManagedInCallActivity(Call call) {
+        Intent intent;
+        Bundle extras = call.getDetails().getExtras();
+        ComponentName componentName = extras == null ? null
+                : extras.getParcelable(Intent.EXTRA_COMPONENT_NAME);
+        if (componentName == null) {
+            PhoneAccountHandle phoneAccountHandle = call.getDetails().getAccountHandle();
+            intent = mPhoneAccountManager.getLaunchIntent(phoneAccountHandle);
+        } else {
+            intent = new Intent();
+            intent.setComponent(componentName);
+        }
+
+        if (intent == null) {
+            L.w(TAG, "Could not find launch intent to show the incall ui for the call.");
+            return;
+        }
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
     }
 }

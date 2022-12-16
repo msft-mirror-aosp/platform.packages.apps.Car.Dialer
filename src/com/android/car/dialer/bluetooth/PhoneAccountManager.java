@@ -20,6 +20,7 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -187,5 +188,21 @@ public class PhoneAccountManager {
         CharSequence appName = packageManager.getApplicationLabel(appInfo);
         return Pair.create(appIcon, appName);
 
+    }
+
+    /**
+     * Get the launch intent for the calling app with the given {@link PhoneAccountHandle}.
+     */
+    @Nullable
+    public Intent getLaunchIntent(PhoneAccountHandle phoneAccountHandle) {
+        if (phoneAccountHandle == null) {
+            return null;
+        }
+        String packageName = phoneAccountHandle.getComponentName().getPackageName();
+        if (TextUtils.isEmpty(packageName)) {
+            L.w(TAG, "Package not found.");
+            return null;
+        }
+        return mContext.getPackageManager().getLaunchIntentForPackage(packageName);
     }
 }

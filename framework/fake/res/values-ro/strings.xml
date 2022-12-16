@@ -16,5 +16,5 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="missing_phone_permission_error" msgid="3612495509188457942">"Nu puteți efectua apeluri deoarece aplicația nu are permisiunea pentru telefon"</string>
+    <string name="missing_phone_permission_error" msgid="3612495509188457942">"Nu poți efectua apeluri deoarece aplicația nu are permisiunea pentru telefon"</string>
 </resources>

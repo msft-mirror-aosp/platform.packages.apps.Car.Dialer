@@ -18,10 +18,10 @@
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="phone_app_name" msgid="238824437273544459">"Telefonoa"</string>
     <string name="no_hfp" msgid="7371139867234667691">"Dei egiteko, konektatu telefonoa autoarekin Bluetooth bidez."</string>
-    <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth-a ez dago erabilgarri."</string>
-    <string name="bluetooth_disabled" msgid="1275246762067907843">"Deiak jaso edo egiteko, aktibatu Bluetooth-a."</string>
+    <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetootha ez dago erabilgarri."</string>
+    <string name="bluetooth_disabled" msgid="1275246762067907843">"Deiak jaso edo egiteko, aktibatu Bluetootha."</string>
     <string name="bluetooth_unpaired" msgid="1600552386483652892">"Deiak jaso edo egiteko, parekatu telefonoa autoarekin."</string>
-    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Konektatu Bluetooth-era"</string>
+    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Konektatu Bluetoothera"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Larrialdi-deia"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Larrialdi-deia"</string>
     <string name="error_contact_deleted" msgid="6356539067659368396">"Baliteke kontaktua ezabatu izatea."</string>
@@ -62,7 +62,7 @@
     <string name="no_phone_numbers" msgid="8738691115921148445">"Ez dago telefono-zenbakirik"</string>
     <string name="in_call_notification_channel_name" msgid="1978093630512401778">"Jasotako dei bati buruzko jakinarazpena"</string>
     <string name="notification_incoming_call" msgid="1722904631804432389">"Jasotako deia"</string>
-    <string name="notification_incoming_call_join_number" msgid="6751753093958677973">"Dei bat jasotzen ari zara * <xliff:g id="PHONE_NUMBER">%1$s</xliff:g>"</string>
+    <string name="notification_incoming_call_join_number" msgid="3531262061121638116">"Jasotako deia • <xliff:g id="PHONE_NUMBER">%1$s</xliff:g>"</string>
     <string name="missed_call_notification_channel_name" msgid="1135686963409691772">"Dei galduaren jakinarazpena"</string>
     <plurals name="notification_missed_call" formatted="false" msgid="1018870358427938752">
       <item quantity="other">Dei galduak (<xliff:g id="NUMBER">%1$d</xliff:g>) </item>

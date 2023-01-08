@@ -74,7 +74,7 @@
     <string name="pref_start_page_title" msgid="1953465507368478503">"Бастау экраны"</string>
     <string name="sort_order_title" msgid="975104366728292702">"Контактілер реті"</string>
     <string name="pref_connected_phone_title" msgid="5472866963149472593">"Қосылған телефон"</string>
-    <string name="pref_no_incoming_call_hun_title" msgid="2314257779205958332">"Құпиялылық"</string>
+    <string name="pref_no_incoming_call_hun_title" msgid="2314257779205958332">"Құпиялық"</string>
     <string name="pref_no_incoming_call_hun_summary" msgid="8833377984331845097">"Қоңырау туралы хабарландыруларды тек құралдар панелінде көрсету"</string>
     <string name="pref_show_fullscreen_active_call_ui_title" msgid="6924304583510509581">"Белсенді қоңырау"</string>
     <string name="pref_show_fullscreen_active_call_ui_summary" msgid="1629142960991476502">"Қоңырауға жауап бергенде \"Белсенді қоңырау\" экранын көрсету"</string>

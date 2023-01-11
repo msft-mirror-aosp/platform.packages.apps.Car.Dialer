@@ -38,6 +38,7 @@
     <uses-permission android:name="android.permission.PROCESS_PHONE_ACCOUNT_REGISTRATION"/>
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <!-- The Dialer needs to be directBootAware so that it can reflect the correct call state
          when the system boots up. -->

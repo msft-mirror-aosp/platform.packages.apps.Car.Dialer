@@ -22,6 +22,7 @@ android_library {
 
     static_libs: [
         "car-ui-lib-prebuilt",
+        "car-ui-lib-testing",
         "androidx.lifecycle_lifecycle-extensions",
         "androidx.test.espresso.core",
         "androidx.test.espresso.contrib",

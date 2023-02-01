@@ -31,7 +31,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewActions.waitAction;
-import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
+import static com.android.car.ui.testing.matchers.CarUiRecyclerViewMatcher.atPosition;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,11 +41,11 @@ import static org.mockito.Mockito.verify;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.telecom.TelecomManager;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -57,6 +57,7 @@ import com.android.car.dialer.framework.SimulatedBluetoothDevice;
 import com.android.car.dialer.framework.testdata.ContactRawData;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.activecall.InCallActivity;
+import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
 import org.junit.After;
 import org.junit.Before;
@@ -110,6 +111,7 @@ public class ContactListTest {
             contact.setDisplayName(DISPLAY_NAME + " " + i);
             contact.setNumber(PHONE_NUMBER + i);
             contact.setNumberLabel(PHONE_NUMBER_LABEL + " " + i);
+            contact.setNumberType(ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM);
             mSimulatedBluetoothDevice.insertContactInBackground(contact);
         }
 
@@ -122,7 +124,7 @@ public class ContactListTest {
         // Verify contacts are rendered correctly.
         for (int i = 0; i < 3; i++) {
             onRecyclerView()
-                    .perform(RecyclerViewActions.scrollToPosition(i))
+                    .perform(CarUiRecyclerViewActions.scrollToPosition(i))
                     .check(matches(atPosition(i, hasDescendant(
                             allOf(withId(R.id.title), withText(DISPLAY_NAME + " " + i))))))
                     .check(matches(atPosition(i, hasDescendant(
@@ -152,6 +154,7 @@ public class ContactListTest {
         contact.setDisplayName(DISPLAY_NAME);
         contact.setNumber(PHONE_NUMBER);
         contact.setNumberLabel(PHONE_NUMBER_LABEL);
+        contact.setNumberType(ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM);
         mSimulatedBluetoothDevice.insertContactInBackground(contact);
 
         // Wait until the insertion is done and verify the contact is rendered correctly.
@@ -161,7 +164,7 @@ public class ContactListTest {
                         hasDescendant(withText(DISPLAY_NAME)), WAIT_MAX_RETRY));
 
         onRecyclerView()
-                .perform(RecyclerViewActions.scrollToPosition(0))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, hasDescendant(
                         allOf(withId(R.id.title), withText(DISPLAY_NAME))))))
                 .check(matches(atPosition(0, hasDescendant(

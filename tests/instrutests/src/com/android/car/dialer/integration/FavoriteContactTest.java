@@ -34,8 +34,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewActions.selfClick;
 import static com.android.car.dialer.testing.TestViewActions.selfClickWithoutConstraints;
-import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
 import static com.android.car.dialer.testing.TestViewMatchers.isActivated;
+import static com.android.car.ui.testing.matchers.CarUiRecyclerViewMatcher.atPosition;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
@@ -46,11 +46,11 @@ import static org.mockito.Mockito.verify;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.telecom.TelecomManager;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -63,6 +63,7 @@ import com.android.car.dialer.framework.testdata.ContactRawData;
 import com.android.car.dialer.testing.TestViewActions;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.activecall.InCallActivity;
+import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
 import org.junit.After;
 import org.junit.Before;
@@ -125,6 +126,7 @@ public class FavoriteContactTest {
         ContactRawData contact = new ContactRawData();
         contact.setDisplayName(PHONE_FAVORITE_CONTACT);
         contact.setNumber(PHONE_NUMBER);
+        contact.setNumberType(ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM);
         contact.setNumberLabel(PHONE_FAVORITE_LABEL);
         contact.setStarred(true);
         mBluetoothDevice.insertContactInBackground(contact);
@@ -134,14 +136,14 @@ public class FavoriteContactTest {
                 .perform(ViewActions.repeatedlyUntil(
                         TestViewActions.waitAction(WAIT_ACTION_INTERVAL),
                         hasDescendant(withText(PHONE_FAVORITE_CONTACT)), WAIT_MAX_RETRY))
-                .perform(RecyclerViewActions.scrollToPosition(0))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, withText(R.string.phone_favorites))))
-                .perform(RecyclerViewActions.scrollToPosition(1))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(1))
                 .check(matches(atPosition(1, hasDescendant(
                         allOf(withId(R.id.title), withText(PHONE_FAVORITE_CONTACT))))))
                 .check(matches(atPosition(1, hasDescendant(
                         allOf(withId(R.id.text), withText(PHONE_FAVORITE_LABEL))))))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
+                .perform(CarUiRecyclerViewActions.actionOnItemAtPosition(1, click()));
 
         verify(mTelecomManager).placeCall(eq(CALL_URI), isNull());
     }
@@ -152,16 +154,17 @@ public class FavoriteContactTest {
         ContactRawData contact = new ContactRawData();
         contact.setDisplayName(LOCAL_FAVORITE_CONTACT);
         contact.setNumber(PHONE_NUMBER);
+        contact.setNumberType(ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM);
         contact.setNumberLabel(LOCAL_FAVORITE_LABEL);
         contact.setStarred(false);
         mBluetoothDevice.insertContactInBackground(contact);
 
         onRecyclerView()
-                .perform(RecyclerViewActions.scrollToPosition(0))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, withText(R.string.local_favorites))))
-                .perform(RecyclerViewActions.scrollToPosition(1))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(1))
                 .check(matches(atPosition(1, withText(R.string.add_favorite_button))))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
+                .perform(CarUiRecyclerViewActions.actionOnItemAtPosition(1, click()));
         onView(withId(R.id.car_ui_toolbar_search_bar)).perform(
                 TestViewActions.setTextWithoutConstraints(PHONE_NUMBER));
 
@@ -169,7 +172,7 @@ public class FavoriteContactTest {
                 .perform(ViewActions.repeatedlyUntil(
                         TestViewActions.waitAction(WAIT_ACTION_INTERVAL),
                         hasDescendant(withText(LOCAL_FAVORITE_CONTACT)), WAIT_MAX_RETRY))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+                .perform(CarUiRecyclerViewActions.actionOnItemAtPosition(0, click()));
         onView(withId(R.id.car_ui_list_item_touch_interceptor)).inRoot(isDialog()).perform(
                 selfClickWithoutConstraints());
         onView(withText(R.string.confirm_add_favorites_dialog)).inRoot(isDialog()).perform(click());
@@ -179,12 +182,12 @@ public class FavoriteContactTest {
                 .perform(ViewActions.repeatedlyUntil(
                         TestViewActions.waitAction(WAIT_ACTION_INTERVAL),
                         hasDescendant(withText(LOCAL_FAVORITE_CONTACT)), WAIT_MAX_RETRY))
-                .perform(RecyclerViewActions.scrollToPosition(1))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(1))
                 .check(matches(atPosition(1, hasDescendant(
                         allOf(withId(R.id.title), withText(LOCAL_FAVORITE_CONTACT))))))
                 .check(matches(atPosition(1, hasDescendant(
                         allOf(withId(R.id.text), withText(LOCAL_FAVORITE_LABEL))))))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
+                .perform(CarUiRecyclerViewActions.actionOnItemAtPosition(1, click()));
         verify(mTelecomManager).placeCall(eq(CALL_URI), isNull());
 
         // Remove the local favorite
@@ -198,7 +201,7 @@ public class FavoriteContactTest {
         onView(withText(R.string.favorites_title)).check(matches(isDisplayed())).perform(click());
         // Verify there is no local favorites.
         onRecyclerView()
-                .perform(RecyclerViewActions.scrollToPosition(1))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(1))
                 .check(matches(atPosition(1, withText(R.string.add_favorite_button))));
     }
 

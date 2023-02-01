@@ -44,6 +44,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.provider.ContactsContract;
 import android.telecom.TelecomManager;
 
 import androidx.test.core.app.ActivityScenario;
@@ -140,6 +141,7 @@ public class DialpadTest {
         ContactRawData contactRawData = new ContactRawData();
         contactRawData.setNumber(PHONE_NUMBER);
         contactRawData.setNumberLabel(PHONE_NUMBER_LABEL);
+        contactRawData.setNumberType(ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM);
         contactRawData.setDisplayName(DISPLAY_NAME);
         mBluetoothDevice.insertContactInBackground(contactRawData);
 

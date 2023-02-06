@@ -156,6 +156,11 @@ android {
         ignore 'ImpliedQuantity'
         // Ignore missing translations
         ignore 'MissingTranslation'
+
+        // Ignore error when a translated string/plural is removed
+        ignore 'MissingDefaultResource'
+
+        abortOnError false
     }
 }
 

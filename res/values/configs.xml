@@ -49,6 +49,10 @@
     <bool name="config_show_contact_details_send_message_button">true</bool>
     <!-- A config determines whether to show toolbar in the contact details page.-->
     <bool name="config_show_toolbar_with_contact_details">false</bool>
+    <!-- A config determines whether to show settings as tab in toolbar.-->
+    <bool name="config_show_settings_as_toolbar_tab">false</bool>
+    <!-- A config determines whether to show settings in toolbar menu items-->
+    <bool name="config_show_settings_in_menu_items">true</bool>
 
     <!-- Use app name as toolbar title. Supported value see @attr/toolbarTitleMode -->
     <integer name="config_toolbar_title_mode">0</integer>

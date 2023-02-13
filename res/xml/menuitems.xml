@@ -22,5 +22,6 @@
     <MenuItem
         app:settings="true"
         app:id="@+id/menu_item_setting"
-        app:onClick="onMenuItemClicked"/>
+        app:onClick="onMenuItemClicked"
+        app:visible="@bool/config_show_settings_in_menu_items"/>
 </MenuItems>

@@ -32,6 +32,7 @@ import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.contact.ContactListFragment;
 import com.android.car.dialer.ui.dialpad.DialpadFragment;
 import com.android.car.dialer.ui.favorite.FavoriteFragment;
+import com.android.car.dialer.ui.settings.DialerSettingsFragment;
 import com.android.car.ui.toolbar.Tab;
 
 import com.google.common.collect.ImmutableMap;
@@ -54,13 +55,15 @@ public class TelecomPageTab {
             TelecomPageTab.Page.FAVORITES,
             TelecomPageTab.Page.CALL_HISTORY,
             TelecomPageTab.Page.CONTACTS,
-            TelecomPageTab.Page.DIAL_PAD
+            TelecomPageTab.Page.DIAL_PAD,
+            TelecomPageTab.Page.SETTINGS
     })
     public @interface Page {
         String FAVORITES = "FAVORITE";
         String CALL_HISTORY = "CALL_HISTORY";
         String CONTACTS = "CONTACTS";
         String DIAL_PAD = "DIAL_PAD";
+        String SETTINGS = "SETTINGS";
     }
 
     private final Factory mFactory;
@@ -136,6 +139,7 @@ public class TelecomPageTab {
                         .put(Page.CALL_HISTORY, R.string.call_history_title)
                         .put(Page.CONTACTS, R.string.contacts_title)
                         .put(Page.DIAL_PAD, R.string.dialpad_title)
+                        .put(Page.SETTINGS, R.string.setting_title)
                         .build();
 
         private static final ImmutableMap<String, Integer> TAB_ICONS =
@@ -144,6 +148,7 @@ public class TelecomPageTab {
                         .put(Page.CALL_HISTORY, R.drawable.ic_history)
                         .put(Page.CONTACTS, R.drawable.ic_contact)
                         .put(Page.DIAL_PAD, R.drawable.ic_dialpad)
+                        .put(Page.SETTINGS, R.drawable.ic_settings)
                         .build();
 
         private final Context mContext;
@@ -203,6 +208,8 @@ public class TelecomPageTab {
                     return ContactListFragment.newInstance();
                 case Page.DIAL_PAD:
                     return DialpadFragment.newPlaceCallDialpad();
+                case Page.SETTINGS:
+                    return DialerSettingsFragment.newInstance();
                 default:
                     throw new UnsupportedOperationException("Tab is not supported.");
             }

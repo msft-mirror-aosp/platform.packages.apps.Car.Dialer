@@ -32,6 +32,7 @@ import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.contact.ContactListFragment;
 import com.android.car.dialer.ui.dialpad.DialpadFragment;
 import com.android.car.dialer.ui.favorite.FavoriteFragment;
+import com.android.car.dialer.ui.search.ContactResultsFragment;
 import com.android.car.dialer.ui.settings.DialerSettingsFragment;
 import com.android.car.ui.toolbar.Tab;
 
@@ -56,6 +57,7 @@ public class TelecomPageTab {
             TelecomPageTab.Page.CALL_HISTORY,
             TelecomPageTab.Page.CONTACTS,
             TelecomPageTab.Page.DIAL_PAD,
+            TelecomPageTab.Page.SEARCH,
             TelecomPageTab.Page.SETTINGS
     })
     public @interface Page {
@@ -63,6 +65,7 @@ public class TelecomPageTab {
         String CALL_HISTORY = "CALL_HISTORY";
         String CONTACTS = "CONTACTS";
         String DIAL_PAD = "DIAL_PAD";
+        String SEARCH = "SEARCH";
         String SETTINGS = "SETTINGS";
     }
 
@@ -139,6 +142,7 @@ public class TelecomPageTab {
                         .put(Page.CALL_HISTORY, R.string.call_history_title)
                         .put(Page.CONTACTS, R.string.contacts_title)
                         .put(Page.DIAL_PAD, R.string.dialpad_title)
+                        .put(Page.SEARCH, R.string.search_title)
                         .put(Page.SETTINGS, R.string.setting_title)
                         .build();
 
@@ -148,7 +152,8 @@ public class TelecomPageTab {
                         .put(Page.CALL_HISTORY, R.drawable.ic_history)
                         .put(Page.CONTACTS, R.drawable.ic_contact)
                         .put(Page.DIAL_PAD, R.drawable.ic_dialpad)
-                        .put(Page.SETTINGS, R.drawable.ic_settings)
+                        .put(Page.SEARCH, R.drawable.ic_search)
+                        .put(Page.SETTINGS, R.drawable.car_ui_icon_settings)
                         .build();
 
         private final Context mContext;
@@ -208,6 +213,8 @@ public class TelecomPageTab {
                     return ContactListFragment.newInstance();
                 case Page.DIAL_PAD:
                     return DialpadFragment.newPlaceCallDialpad();
+                case Page.SEARCH:
+                    return ContactResultsFragment.newInstance(null);
                 case Page.SETTINGS:
                     return DialerSettingsFragment.newInstance();
                 default:

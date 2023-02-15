@@ -74,6 +74,7 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment {
 
     private CarUiRecyclerView.OnScrollListener mOnScrollChangeListener;
     private ToolbarController mToolbar;
+    private boolean mShowSearchAsToolbarTab;
 
     private LifeCycleObserverUxrContentLimiter mUxrContentLimiter;
 
@@ -126,6 +127,9 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment {
                 }
             }
         };
+
+        mShowSearchAsToolbarTab = getResources().getBoolean(
+            R.bool.config_show_search_as_toolbar_tab);
     }
 
     @Override
@@ -147,12 +151,18 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment {
     @Override
     protected void setupToolbar(@NonNull ToolbarController toolbar) {
         mToolbar = toolbar;
-        mToolbar.setNavButtonMode(NavButtonMode.BACK);
-        mToolbar.setLogo(null);
-        ((TelecomActivity) requireActivity()).setTabsShown(false);
+
+        if (mShowSearchAsToolbarTab) {
+            super.setupToolbar(mToolbar);
+        } else {
+            mToolbar.setNavButtonMode(NavButtonMode.BACK);
+            mToolbar.setLogo(null);
+            ((TelecomActivity) requireActivity()).setTabsShown(false);
+            mToolbar.setSearchIcon(R.drawable.ic_app_icon);
+        }
+
         mToolbar.setSearchMode(SearchMode.SEARCH);
         mToolbar.registerSearchListener(mToolbarSearchListener);
-        mToolbar.setSearchIcon(R.drawable.ic_app_icon);
         setSearchQuery(mContactResultsViewModel.getSearchQuery());
 
         if (mToolbar.canShowSearchResultsView()) {

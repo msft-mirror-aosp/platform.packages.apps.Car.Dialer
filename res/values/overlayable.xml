@@ -47,8 +47,10 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="bool" name="config_show_postal_address"/>
       <item type="bool" name="config_show_type_down_list_on_dialpad"/>
       <item type="bool" name="config_show_toolbar_with_contact_details"/>
+      <item type="bool" name="config_show_search_as_toolbar_tab" />
       <item type="bool" name="config_show_settings_as_toolbar_tab"/>
-      <item type="bool" name="config_show_settings_in_menu_items"/>
+      <item type="bool" name="config_show_search_in_menu_items" />
+      <item type="bool" name="config_show_settings_in_menu_items" />
       <item type="color" name="add_favorite_background_color"/>
       <item type="color" name="audio_output_accent"/>
       <item type="color" name="call_button_outline"/>
@@ -231,6 +233,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="drawable" name="ic_pause_activatable"/>
       <item type="drawable" name="ic_phone"/>
       <item type="drawable" name="ic_place"/>
+      <item type="drawable" name="ic_search"/>
       <item type="drawable" name="ic_settings"/>
       <item type="drawable" name="ic_smartphone"/>
       <item type="drawable" name="ic_smartphone_activatable"/>

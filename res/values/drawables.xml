@@ -16,4 +16,6 @@
 <resources>
      <!-- Drawable to use for settings icon -->
     <drawable name="ic_settings">@drawable/car_ui_icon_settings</drawable>
+    <!-- Drawable to use for search icon -->
+    <drawable name="ic_search">@drawable/car_ui_icon_search</drawable>
 </resources>

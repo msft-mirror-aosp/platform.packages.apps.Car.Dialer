@@ -18,6 +18,7 @@ package com.android.car.dialer.livedata;
 
 import android.text.TextUtils;
 
+import androidx.core.util.Pair;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
@@ -37,13 +38,9 @@ import java.util.concurrent.Future;
  * {@link Contact}.
  */
 public class CallerInfoLiveData extends MediatorLiveData<Contact> {
-    private static final String TAG = "CD.CallProfile";
+    private static final String TAG = "CD.CallerInfo";
     private final LiveData<CallDetail> mCallDetailLiveData;
     private final ExecutorService mExecutorService;
-    private final LiveData<String> mPhoneNumberLiveData;
-    private final LiveData<String> mAccountNameLiveData;
-    private final LiveData<String> mCallerDisplayNameLiveData;
-    private final LiveData<List<Contact>> mContactListLiveData;
     private Future<?> mLookupFuture;
 
     public CallerInfoLiveData(
@@ -51,24 +48,20 @@ public class CallerInfoLiveData extends MediatorLiveData<Contact> {
         mCallDetailLiveData = callDetailLiveData;
         mExecutorService = executorService;
 
-        mPhoneNumberLiveData = Transformations.distinctUntilChanged(
+        LiveData<Pair<String, String>> callMetadata = Transformations.distinctUntilChanged(
                 LiveDataFunctions.mapNonNull(
-                        mCallDetailLiveData, callDetail -> callDetail.getNumber()));
-        mAccountNameLiveData = Transformations.distinctUntilChanged(
+                        mCallDetailLiveData, callDetail -> Pair.create(
+                                callDetail.getNumber(), callDetail.getCallerDisplayName())));
+        addSource(callMetadata, number -> lookupContact());
+
+        LiveData<String> accountNameLiveData = Transformations.distinctUntilChanged(
                 LiveDataFunctions.mapNonNull(
                         mCallDetailLiveData,
                         callDetail -> callDetail.getPhoneAccountHandle().getId()));
-        mCallerDisplayNameLiveData = Transformations.distinctUntilChanged(
-                LiveDataFunctions.mapNonNull(
-                        mCallDetailLiveData,
-                        callDetail -> callDetail.getCallerDisplayName()));
-
-        mContactListLiveData = LiveDataFunctions.switchMapNonNull(mAccountNameLiveData,
+        LiveData<List<Contact>> contactListLiveData = LiveDataFunctions.switchMapNonNull(
+                accountNameLiveData,
                 accountName -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(accountName));
-
-        addSource(mCallerDisplayNameLiveData, callerDisplayName -> lookupContact());
-        addSource(mPhoneNumberLiveData, number -> lookupContact());
-        addSource(mContactListLiveData, contacts -> lookupContact());
+        addSource(contactListLiveData, contacts -> lookupContact());
     }
 
     private void lookupContact() {
@@ -78,14 +71,14 @@ public class CallerInfoLiveData extends MediatorLiveData<Contact> {
             mLookupFuture = null;
         }
 
-        String number = mPhoneNumberLiveData.getValue();
-        if (TextUtils.isEmpty(number)) {
+        CallDetail callDetail = mCallDetailLiveData.getValue();
+        if (callDetail == null || TextUtils.isEmpty(callDetail.getNumber())) {
             setValue(null);
             return;
         }
 
-        // CallDetail can not be null when phone number is not null.
-        String accountName = mAccountNameLiveData.getValue();
+        String number = callDetail.getNumber();
+        String accountName = callDetail.getPhoneAccountHandle().getId();
         Contact contact = InMemoryPhoneBook.get().lookupContactEntry(number, accountName);
         setValue(contact);
         if (contact == null) {
@@ -93,9 +86,7 @@ public class CallerInfoLiveData extends MediatorLiveData<Contact> {
                 Contact dbContact = InMemoryPhoneBook.get().lookupContactEntryAsync(
                         number, accountName);
                 // Check if the call has changed, abandon if true.
-                if (TextUtils.equals(number, mPhoneNumberLiveData.getValue())
-                        && TextUtils.equals(accountName, mAccountNameLiveData.getValue())
-                        && dbContact != null) {
+                if (callDetail.equals(mCallDetailLiveData.getValue()) && dbContact != null) {
                     postValue(dbContact);
                 }
             });

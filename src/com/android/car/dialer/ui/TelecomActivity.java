@@ -16,9 +16,11 @@
 
 package com.android.car.dialer.ui;
 
+import android.Manifest;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.CallLog;
 import android.telecom.Call;
@@ -139,8 +141,13 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
                 break;
 
             case Intent.ACTION_CALL:
-                number = PhoneNumberUtils.getNumberFromIntent(intent, this);
-                mUiCallManager.placeCall(number);
+                if (checkCallingPermission(Manifest.permission.CALL_PHONE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    number = PhoneNumberUtils.getNumberFromIntent(intent, this);
+                    mUiCallManager.placeCall(number);
+                } else {
+                    L.w(TAG, "The calling app doesn't have phone call permission");
+                }
                 break;
 
             case Intent.ACTION_SEARCH:
@@ -150,7 +157,12 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
             case Intent.ACTION_VIEW:
                 if (CallLog.Calls.CONTENT_TYPE.equals(intent.getType())) {
                     showTabPage(TelecomPageTab.Page.CALL_HISTORY);
-                    NotificationService.readAllMissedCall(this);
+                    if (checkCallingPermission(Manifest.permission.WRITE_CALL_LOG)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        NotificationService.readAllMissedCall(this);
+                    } else {
+                        L.w(TAG, "The calling app doesn't have write call log permission");
+                    }
                 }
                 break;
             default:

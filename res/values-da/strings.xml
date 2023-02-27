@@ -38,7 +38,7 @@
     <string name="call_history_title" msgid="7997887846276371553">"Seneste"</string>
     <string name="contacts_title" msgid="9201954388634537346">"Kontakter"</string>
     <string name="favorites_title" msgid="4767723901530488145">"Favoritter"</string>
-    <string name="dialpad_title" msgid="3746259645005208554">"Numerisk tastatur"</string>
+    <string name="dialpad_title" msgid="3746259645005208554">"Opkaldstastatur"</string>
     <string name="call_log_header_today" msgid="2069013936632793214">"I dag"</string>
     <string name="call_log_header_yesterday" msgid="4613686845163357847">"I går"</string>
     <string name="call_log_header_older" msgid="3971634717537073179">"Ældre"</string>
@@ -85,7 +85,7 @@
     <string name="ongoing_conf_title" msgid="4161590966144000887">"Møde"</string>
     <string name="ongoing_conf_header_title" msgid="3534072126439808273">"Møde (<xliff:g id="COUNT">%1$d</xliff:g>)"</string>
     <string name="dialing_disabled_warning" msgid="8094136040809498594">"Opkald er deaktiveret"</string>
-    <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"Det numeriske tastatur kan ikke bruges under kørsel"</string>
+    <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"Opkaldstastatur kan ikke bruges under kørsel"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
     <string name="sms_notification_title" msgid="5980540487139970307">"Sms sendes via appen Opkald"</string>
     <string name="sms_notification_text" msgid="9193883830187173056">"Sms sendes"</string>

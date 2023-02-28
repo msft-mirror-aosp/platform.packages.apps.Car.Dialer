@@ -16,19 +16,14 @@
 
 package com.android.car.dialer.ui;
 
-import android.bluetooth.BluetoothDevice;
 import android.telecom.Call;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.android.car.apps.common.log.L;
+import com.android.car.dialer.livedata.RefreshUiEvent;
 import com.android.car.dialer.telecom.LocalCallHandler;
-import com.android.car.dialer.ui.common.SingleLiveEvent;
 
 import java.util.List;
 
@@ -42,11 +37,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
  */
 @HiltViewModel
 public class TelecomActivityViewModel extends ViewModel {
-    private static final String TAG = "CD.TelecomActivityViewModel";
-
     private final LocalCallHandler mLocalCallHandler;
-    private final LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
-    private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
     private RefreshUiEvent mRefreshTabsLiveData;
@@ -56,20 +47,16 @@ public class TelecomActivityViewModel extends ViewModel {
 
     @Inject
     public TelecomActivityViewModel(
-            @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
-            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
             @Named("Hfp") LiveData<Boolean> hasHfpDeviceConnectedLiveData,
+            RefreshUiEvent refreshUiEvent,
             LocalCallHandler localCallHandler,
             ToolbarTitleLiveData toolbarTitleLiveData) {
         mLocalCallHandler = localCallHandler;
-        mHfpDeviceListLiveData = hfpDeviceListLiveData;
-        mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
         mHasHfpDeviceConnectedLiveData = hasHfpDeviceConnectedLiveData;
         mToolbarTitleLiveData = toolbarTitleLiveData;
+        mRefreshTabsLiveData = refreshUiEvent;
 
         mToolbarTitleMode = mToolbarTitleLiveData.getToolbarTitleModeLiveData();
-        mRefreshTabsLiveData = new RefreshUiEvent(mHfpDeviceListLiveData,
-                mCurrentHfpDeviceLiveData);
     }
 
     /**
@@ -108,39 +95,5 @@ public class TelecomActivityViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         mLocalCallHandler.tearDown();
-    }
-
-    /**
-     * This is an event live data to determine if the Ui needs to be refreshed.
-     */
-    @VisibleForTesting
-    static class RefreshUiEvent extends SingleLiveEvent<Boolean> {
-        private LiveData<BluetoothDevice> mCurrentHfpDevice;
-        private BluetoothDevice mBluetoothDevice;
-
-        @VisibleForTesting
-        RefreshUiEvent(
-                LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
-                LiveData<BluetoothDevice> currentHfpDevice) {
-            mCurrentHfpDevice = currentHfpDevice;
-            addSource(hfpDeviceListLiveData, v -> update(v));
-        }
-
-        private void update(List<BluetoothDevice> hfpDeviceList) {
-            L.v(TAG, "HfpDeviceList update");
-            if (mBluetoothDevice != null && !listContainsDevice(hfpDeviceList, mBluetoothDevice)) {
-                setValue(true);
-            }
-            mBluetoothDevice = mCurrentHfpDevice.getValue();
-        }
-
-        private boolean listContainsDevice(@Nullable List<BluetoothDevice> hfpDeviceList,
-                @NonNull BluetoothDevice device) {
-            if (hfpDeviceList != null && hfpDeviceList.contains(device)) {
-                return true;
-            }
-
-            return false;
-        }
     }
 }

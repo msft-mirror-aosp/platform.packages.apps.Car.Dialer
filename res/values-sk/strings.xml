@@ -64,8 +64,7 @@
     <string name="notification_incoming_call" msgid="1722904631804432389">"Prichádzajúci hovor"</string>
     <string name="notification_incoming_call_join_number" msgid="3531262061121638116">"Prichádzajúci hovor • <xliff:g id="PHONE_NUMBER">%1$s</xliff:g>"</string>
     <string name="missed_call_notification_channel_name" msgid="1135686963409691772">"Upozornenie na zmeškaný hovor"</string>
-    <!-- no translation found for notification_missed_call (7505605344790234498) -->
-    <skip />
+    <string name="notification_missed_call" msgid="7505605344790234498">"{count,plural, =1{Zmeškaný hovor}few{Zmeškané hovory (#)}many{Zmeškané hovory (#)}other{Zmeškané hovory (#)}}"</string>
     <string name="onhold_call_separator" msgid="2357788035385100805">"•"</string>
     <string name="swap_call_label" msgid="309322319645637302">"Prepnúť hovory"</string>
     <string name="setting_title" msgid="1296639422364732365">"Nastavenia"</string>

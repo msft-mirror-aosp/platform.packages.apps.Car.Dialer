@@ -45,7 +45,8 @@ import dagger.hilt.android.AndroidEntryPoint;
  */
 @AndroidEntryPoint(DialerListBaseFragment.class)
 public class FavoriteFragment extends Hilt_FavoriteFragment {
-    @Inject UiCallManager mUiCallManager;
+    @Inject
+    UiCallManager mUiCallManager;
 
     private DelegatingContentLimitingAdapter<FavoriteContactViewHolder>
             mContentLimitingAdapter;
@@ -143,7 +144,11 @@ public class FavoriteFragment extends Hilt_FavoriteFragment {
                     if (mContentLimitingAdapter.getItemViewType(position)
                             == FavoriteAdapter.TYPE_HEADER
                             || mContentLimitingAdapter.getItemViewType(position)
-                            == mContentLimitingAdapter.getScrollingLimitedMessageViewType()) {
+                            == mContentLimitingAdapter.getScrollingLimitedMessageViewType()
+                            || (mContentLimitingAdapter.getItemViewType(position)
+                            == FavoriteAdapter.TYPE_ADD_FAVORITE
+                            && !context.getResources().getBoolean(
+                            R.bool.config_add_favorite_button_span_size_one))) {
                         return getSpanCount();
                     }
                     return 1;

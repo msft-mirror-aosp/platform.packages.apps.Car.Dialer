@@ -19,6 +19,7 @@ package com.android.car.dialer.bluetooth;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -205,4 +206,18 @@ public class PhoneAccountManager {
         }
         return mContext.getPackageManager().getLaunchIntentForPackage(packageName);
     }
+
+    /**
+     * Get the component name of the launch intent for the calling app with the given
+     * {@link PhoneAccountHandle}.
+     */
+    @Nullable
+    public ComponentName getLaunchIntentComponentName(PhoneAccountHandle phoneAccountHandle) {
+        Intent intent = getLaunchIntent(phoneAccountHandle);
+        if (intent != null) {
+            return intent.getComponent();
+        }
+        return null;
+    }
+
 }

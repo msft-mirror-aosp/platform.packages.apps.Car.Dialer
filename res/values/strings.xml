@@ -279,4 +279,11 @@
         <xliff:g id="self_managed_app_name" example="Meet">%1$s</xliff:g>\u0020Call
     </string>
 
+    <string name="self_managed_call_current_speaker">
+        Speaking:\u0020<xliff:g id="caller_name" example="John">%1$s</xliff:g>
+    </string>
+    <string name="self_managed_call_participants">
+        Participants:\u0020<xliff:g id="count" example="5">%1$d</xliff:g>
+    </string>
+
 </resources>

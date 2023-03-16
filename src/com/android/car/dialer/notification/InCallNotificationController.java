@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
+import android.net.Uri;
 import android.os.Bundle;
 import android.telecom.Call;
 import android.telecom.PhoneAccountHandle;
@@ -130,31 +131,36 @@ public final class InCallNotificationController {
                         getAction(call, R.string.decline_call, R.drawable.ic_decline_icon,
                                 NotificationService.ACTION_DECLINE_CALL));
         String callerDisplayName = callDetail.getCallerDisplayName();
+        Uri callerImageUri = callDetail.getCallerImageUri();
         if (TextUtils.isEmpty(callerDisplayName)) {
             String readableNumber = TelecomUtils.getReadableNumber(mContext, callNumber);
             mNotificationBuilder.setContentTitle(TelecomUtils.getBidiWrappedNumber(readableNumber))
+                    .setContentText(mContext.getString(R.string.notification_incoming_call));
+        } else if (TextUtils.isEmpty(callNumber)) {
+            mNotificationBuilder.setContentTitle(callerDisplayName)
                     .setContentText(mContext.getString(R.string.notification_incoming_call));
         } else {
             mNotificationBuilder.setContentTitle(callerDisplayName)
                     .setContentText(mContext.getString(
                             R.string.notification_incoming_call_join_number,
                             TelecomUtils.getBidiWrappedNumber(callNumber)));
-
         }
+
         mNotificationManager.notify(
                 callNumber,
                 NOTIFICATION_ID,
                 mNotificationBuilder.build());
 
         mNotificationFuture = NotificationUtils.getDisplayNameAndRoundedAvatar(
-                mContext, callNumber, callDetail.getPhoneAccountHandle().getId())
+                mContext, callNumber, callDetail.getPhoneAccountHandle().getId(), callerDisplayName,
+                        callerImageUri)
                 .thenAcceptAsync((pair) -> {
                     // Check that the notification hasn't already been dismissed
                     if (mActiveInCallNotifications.contains(callNumber)) {
                         String readableNumber = TelecomUtils.getReadableNumber(
                                 mContext, callNumber);
-                        if (!TextUtils.equals(readableNumber, pair.first)) {
-                            // A contact is found, update contact name and content text
+                        if (!TextUtils.isEmpty(callNumber)
+                                && !TextUtils.equals(readableNumber, pair.first)) {
                             mNotificationBuilder
                                     .setContentTitle(TelecomUtils.getBidiWrappedNumber(pair.first));
                             mNotificationBuilder.setContentText(
@@ -185,9 +191,6 @@ public final class InCallNotificationController {
      * notification needs to call this explicitly.
      */
     void cancelInCallNotification(String callId) {
-        if (TextUtils.isEmpty(callId)) {
-            return;
-        }
         mActiveInCallNotifications.remove(callId);
         mNotificationManager.cancel(callId, NOTIFICATION_ID);
     }
@@ -198,16 +201,11 @@ public final class InCallNotificationController {
 
         // Only put the extra component name for the self managed calls.
         if (callDetail.isSelfManaged()) {
-            Bundle extras = call.getDetails().getExtras();
-            ComponentName componentName = extras == null ? null
-                    : extras.getParcelable(Intent.EXTRA_COMPONENT_NAME);
+            ComponentName componentName = callDetail.getInCallViewComponentName();
             if (componentName == null) {
                 PhoneAccountHandle phoneAccountHandle = callDetail.getPhoneAccountHandle();
-                Intent launchIntentForSelfManagedCall = mPhoneAccountManager.getLaunchIntent(
-                        phoneAccountHandle);
-                if (launchIntentForSelfManagedCall != null) {
-                    componentName = launchIntentForSelfManagedCall.getComponent();
-                }
+                componentName =
+                        mPhoneAccountManager.getLaunchIntentComponentName(phoneAccountHandle);
             }
             intent.putExtra(Intent.EXTRA_COMPONENT_NAME, componentName);
         }

@@ -79,7 +79,7 @@ limitations under the License.
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constrainedWidth="true"
         app:layout_constraintTop_toBottomOf="@id/user_profile_title"
-        app:layout_constraintBottom_toTopOf="@+id/user_profile_call_state"
+        app:layout_constraintBottom_toTopOf="@+id/call_metadata"
         app:layout_constraintStart_toEndOf="@id/user_profile_avatar"
         app:layout_constraintEnd_toStartOf="@+id/user_profile_phone_number"/>
 
@@ -96,6 +96,32 @@ limitations under the License.
         app:layout_constraintStart_toEndOf="@id/user_profile_phone_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_goneMarginStart="@dimen/in_call_margin_between_avatar_and_text" />
+    <LinearLayout
+        android:id="@id/call_metadata"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/in_call_metadata_margin_top"
+        android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
+        android:layout_marginEnd="@dimen/in_call_user_profile_margin"
+        android:orientation="horizontal"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/user_profile_phone_label"
+        app:layout_constraintBottom_toTopOf="@+id/user_profile_call_state"
+        app:layout_constraintStart_toEndOf="@id/user_profile_avatar" >
+        <TextView
+            android:id="@+id/current_speaker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/in_call_metadata_margin_end"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.InCallState"/>
+        <TextView
+            android:id="@+id/participants"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textAppearance="@style/TextAppearance.InCallState"/>
+    </LinearLayout>
 
     <!-- A textView without a fixed width will call requestLayout() every time its text changes -->
     <!-- So we have to make this Chronometer match_parent to avoid redrawing the whole screen -->
@@ -108,7 +134,7 @@ limitations under the License.
         android:layout_marginEnd="@dimen/in_call_user_profile_margin"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.InCallState"
-        app:layout_constraintTop_toBottomOf="@id/user_profile_phone_label"
+        app:layout_constraintTop_toBottomOf="@id/call_metadata"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/user_profile_avatar"
         app:layout_constraintEnd_toEndOf="parent"/>

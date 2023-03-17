@@ -101,4 +101,8 @@
     <!-- Config if dialogs should allow a default dismiss button-->
     <bool name="config_dialog_allow_dismiss_button">false</bool>
 
+    <!-- A config to determine how add favorite button should be in recycler view. If false
+    it takes up entire row. -->
+    <bool name="config_add_favorite_button_span_size_one">true</bool>
+
 </resources>

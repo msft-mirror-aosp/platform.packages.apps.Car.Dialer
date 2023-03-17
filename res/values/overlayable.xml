@@ -35,6 +35,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="bool" name="config_should_show_active_call_setting"/>
       <item type="bool" name="config_should_show_incoming_call_hun_setting"/>
       <item type="bool" name="config_should_suppress_incoming_call_hun"/>
+      <item type="bool" name="config_add_favorite_button_span_size_one" />
       <item type="bool" name="config_show_calllog_action_button_for_non_contact"/>
       <item type="bool" name="config_show_contact_detail_button_for_empty_contact"/>
       <item type="bool" name="config_show_contact_details_action_bar_avatar"/>

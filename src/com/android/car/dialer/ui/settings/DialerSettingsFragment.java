@@ -89,4 +89,16 @@ public class DialerSettingsFragment extends Hilt_DialerSettingsFragment {
             super.setupToolbar(toolbar);
         }
     }
+
+    @Override
+    protected void setupChildFragmentToolbar(@NonNull Preference preference) {
+        if (mShowSettingsAsToolbarTab) {
+            ToolbarController toolbar = getPreferenceToolbar(this);
+            if (toolbar != null) {
+                toolbar.setNavButtonMode(NavButtonMode.BACK);
+            }
+        } else {
+            super.setupChildFragmentToolbar(preference);
+        }
+    }
 }

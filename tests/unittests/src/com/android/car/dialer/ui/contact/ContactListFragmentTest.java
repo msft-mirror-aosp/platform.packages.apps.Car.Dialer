@@ -52,7 +52,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -67,6 +66,7 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.PostalAddress;
 import com.android.car.telephony.common.TelecomUtils;
+import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -142,7 +142,7 @@ public class ContactListFragmentTest {
         setUpFragment();
 
         onRecyclerView().perform(
-                RecyclerViewActions.actionOnItemAtPosition(0, click()));
+                CarUiRecyclerViewActions.actionOnItemAtPosition(0, click()));
         mActivityScenario.moveToState(Lifecycle.State.STARTED);
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(mMockUiCallManager).placeCall(captor.capture());

@@ -191,11 +191,11 @@
     <!-- Name of missed call notification channel in app info [CHAR LIMIT=50] -->
     <string name="missed_call_notification_channel_name">Missed call notification</string>
     <!-- Title for missed call notification [CHAR LIMIT=40]-->
-    <plurals name="notification_missed_call">
-        <item quantity="one">Missed call</item>
-        <item quantity="other">Missed calls(<xliff:g id="number" example="2">%1$d</xliff:g>)
-        </item>
-    </plurals>
+    <string name="notification_missed_call"> {count, plural,
+        =1 {Missed call}
+        other {Missed calls(#)}
+    }
+    </string>
 
     <!-- Onhold User Profile Info -->
     <!-- Text to show the call is onhold [CHAR LIMIT=40]-->

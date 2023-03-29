@@ -27,8 +27,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewActions.selfClick;
-import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
 import static com.android.car.dialer.testing.TestViewMatchers.isActivated;
+import static com.android.car.ui.testing.matchers.CarUiRecyclerViewMatcher.atPosition;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +50,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.android.car.apps.common.util.FutureData;
@@ -59,6 +58,7 @@ import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testing.TestActivity;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
+import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -134,7 +134,7 @@ public class ContactDetailsFragmentTest {
         setUpFragment();
 
         onRecyclerView()
-                .perform(RecyclerViewActions.scrollToPosition(0))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, hasDescendant(
                         allOf(withId(R.id.title), withText(DISPLAY_NAME))))))
                 .check(matches(atPosition(0, isNotClickable())));
@@ -162,7 +162,7 @@ public class ContactDetailsFragmentTest {
      */
     private void verifyPhoneNumber(int position) {
         onRecyclerView()
-                .perform(RecyclerViewActions.scrollToPosition(position))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(position))
                 .check(matches(atPosition(position, hasDescendant(
                         allOf(withId(R.id.title), withText(RAW_NUMBERS[position - 1]))))))
                 .check(matches(atPosition(position, hasDescendant(

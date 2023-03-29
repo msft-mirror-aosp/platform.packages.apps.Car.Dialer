@@ -32,7 +32,6 @@ import android.content.res.Resources;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.android.car.apps.common.util.FutureData;
@@ -41,6 +40,7 @@ import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.dialer.testing.TestActivity;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
+import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -114,7 +114,7 @@ public class FavoriteFragmentTest {
         when(mMockContact.getPrimaryPhoneNumber()).thenReturn(mMockPhoneNumber);
 
         onRecyclerView().perform(
-                RecyclerViewActions.actionOnItemAtPosition(0, click()));
+                CarUiRecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         ArgumentCaptor<String> mCaptor = ArgumentCaptor.forClass(String.class);
         verify(mMockUiCallManager).placeCall(mCaptor.capture());
@@ -127,7 +127,7 @@ public class FavoriteFragmentTest {
         when(mMockContact.getNumbers()).thenReturn(Arrays.asList(mMockPhoneNumber));
 
         onRecyclerView().perform(
-                RecyclerViewActions.actionOnItemAtPosition(0, click()));
+                CarUiRecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         ArgumentCaptor<String> mCaptor = ArgumentCaptor.forClass(String.class);
         verify(mMockUiCallManager).placeCall(mCaptor.capture());
@@ -140,7 +140,7 @@ public class FavoriteFragmentTest {
                 Arrays.asList(mMockPhoneNumber, mMockPhoneNumberOther));
 
         onRecyclerView().perform(
-                RecyclerViewActions.actionOnItemAtPosition(0, click()));
+                CarUiRecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         verify(mMockUiCallManager, never()).placeCall(any());
     }

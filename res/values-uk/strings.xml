@@ -64,12 +64,7 @@
     <string name="notification_incoming_call" msgid="1722904631804432389">"Вхідний виклик"</string>
     <string name="notification_incoming_call_join_number" msgid="3531262061121638116">"Вхідний виклик • <xliff:g id="PHONE_NUMBER">%1$s</xliff:g>"</string>
     <string name="missed_call_notification_channel_name" msgid="1135686963409691772">"Сповіщення про пропущений виклик"</string>
-    <plurals name="notification_missed_call" formatted="false" msgid="1018870358427938752">
-      <item quantity="one">Пропущені виклики (<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
-      <item quantity="few">Пропущені виклики (<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
-      <item quantity="many">Пропущені виклики (<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
-      <item quantity="other">Пропущені виклики (<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
-    </plurals>
+    <string name="notification_missed_call" msgid="7505605344790234498">"{count,plural, =1{Пропущений виклик}one{Пропущені виклики (#)}few{Пропущені виклики (#)}many{Пропущені виклики (#)}other{Пропущені виклики (#)}}"</string>
     <string name="onhold_call_separator" msgid="2357788035385100805">"•"</string>
     <string name="swap_call_label" msgid="309322319645637302">"Перейти до іншого виклику"</string>
     <string name="setting_title" msgid="1296639422364732365">"Налаштування"</string>

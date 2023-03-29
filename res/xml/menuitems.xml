@@ -18,9 +18,11 @@
     <MenuItem
         app:search="true"
         app:id="@+id/menu_item_search"
-        app:onClick="onMenuItemClicked"/>
+        app:onClick="onMenuItemClicked"
+        app:visible="@bool/config_show_search_in_menu_items"/>
     <MenuItem
         app:settings="true"
         app:id="@+id/menu_item_setting"
-        app:onClick="onMenuItemClicked"/>
+        app:onClick="onMenuItemClicked"
+        app:visible="@bool/config_show_settings_in_menu_items"/>
 </MenuItems>

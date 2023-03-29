@@ -18,13 +18,19 @@ package com.android.car.dialer.ui.settings;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 
 import com.android.car.dialer.R;
+import com.android.car.dialer.ui.TelecomActivity;
+import com.android.car.dialer.ui.TelecomActivityViewModel;
 import com.android.car.ui.preference.PreferenceFragment;
+import com.android.car.ui.toolbar.NavButtonMode;
+import com.android.car.ui.toolbar.SearchMode;
+import com.android.car.ui.toolbar.ToolbarController;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -33,6 +39,15 @@ import dagger.hilt.android.AndroidEntryPoint;
  */
 @AndroidEntryPoint(PreferenceFragment.class)
 public class DialerSettingsFragment extends Hilt_DialerSettingsFragment {
+
+    private boolean mShowSettingsAsToolbarTab;
+
+    /**
+     *  Creates a new DialerSettingsFragment.
+     */
+    public static DialerSettingsFragment newInstance() {
+        return new DialerSettingsFragment();
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,10 +61,32 @@ public class DialerSettingsFragment extends Hilt_DialerSettingsFragment {
                 preference.setSummary(name);
             }
         });
+
+        mShowSettingsAsToolbarTab = getResources().getBoolean(
+            R.bool.config_show_settings_as_toolbar_tab);
     }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings_page, rootKey);
+    }
+
+    @Override
+    protected void setupToolbar(@NonNull ToolbarController toolbar) {
+        if (mShowSettingsAsToolbarTab && (requireActivity() instanceof TelecomActivity)) {
+            TelecomActivityViewModel viewModel = new ViewModelProvider(requireActivity()).get(
+                    TelecomActivityViewModel.class);
+            LiveData<String> toolbarTitleLiveData = viewModel.getToolbarTitle();
+            toolbarTitleLiveData.observe(getViewLifecycleOwner(), toolbar::setTitle);
+
+            toolbar.setNavButtonMode(NavButtonMode.DISABLED);
+            toolbar.setSearchMode(SearchMode.DISABLED);
+            toolbar.setLogo(requireActivity().getDrawable(R.drawable.ic_app_icon));
+            ((TelecomActivity) requireActivity()).setTabsShown(true);
+
+            toolbar.setMenuItems(R.xml.menuitems);
+        } else {
+            super.setupToolbar(toolbar);
+        }
     }
 }

@@ -96,7 +96,9 @@ class ProjectionCallHandler implements InCallServiceImpl.ActiveCallListChangedCa
 
     @Override
     public void onProjectionStatusChanged(
-            int state, String packageName, List<ProjectionStatus> details) {
+        int state, String packageName, List<ProjectionStatus> details) {
+        int previousState = mProjectionState;
+
         mProjectionState = state;
         mProjectionDetails = details;
 
@@ -104,6 +106,15 @@ class ProjectionCallHandler implements InCallServiceImpl.ActiveCallListChangedCa
             List<Call> callList = mUiCallManager.getCallList();
             for (Call call : callList) {
                 mInCallNotificationController.cancelInCallNotification(call);
+            }
+        } else if (previousState == ProjectionStatus.PROJECTION_STATE_ACTIVE_FOREGROUND) {
+            // Switching away from active foreground projection, so need to show incoming call
+            // notification(s).
+            List<Call> callList = mUiCallManager.getCallList();
+            for (Call call : callList) {
+                if (call.getDetails().getState() == Call.STATE_RINGING) {
+                    mInCallNotificationController.showInCallNotification(call);
+                }
             }
         }
     }

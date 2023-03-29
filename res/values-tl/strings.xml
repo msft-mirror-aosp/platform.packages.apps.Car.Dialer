@@ -64,10 +64,7 @@
     <string name="notification_incoming_call" msgid="1722904631804432389">"Papasok na tawag"</string>
     <string name="notification_incoming_call_join_number" msgid="3531262061121638116">"Papasok na tawag • <xliff:g id="PHONE_NUMBER">%1$s</xliff:g>"</string>
     <string name="missed_call_notification_channel_name" msgid="1135686963409691772">"Notification ng hindi nasagot na tawag"</string>
-    <plurals name="notification_missed_call" formatted="false" msgid="1018870358427938752">
-      <item quantity="one">Mga hindi nasagot na tawag(<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
-      <item quantity="other">Mga hindi nasagot na tawag(<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
-    </plurals>
+    <string name="notification_missed_call" msgid="7505605344790234498">"{count,plural, =1{Hindi nasagot na tawag}one{Mga hindi nasagot na tawag(#)}other{Mga hindi nasagot na tawag(#)}}"</string>
     <string name="onhold_call_separator" msgid="2357788035385100805">"•"</string>
     <string name="swap_call_label" msgid="309322319645637302">"Magpalit ng tawag"</string>
     <string name="setting_title" msgid="1296639422364732365">"Mga Setting"</string>

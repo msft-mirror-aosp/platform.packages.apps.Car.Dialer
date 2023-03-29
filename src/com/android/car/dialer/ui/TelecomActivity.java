@@ -104,6 +104,11 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
             if (!Boolean.TRUE.equals(hasHfpDeviceConnected)) {
                 setContentFragment(new NoHfpFragment(), NoHfpFragment.class.getName());
             } else {
+                getSupportFragmentManager().executePendingTransactions();
+                if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+                    // Retain the backstack when day/night mode change.
+                    return;
+                }
                 int tabIndex = mTabFactory.getSelectedTabIndex();
                 showTabPage(tabIndex);
             }

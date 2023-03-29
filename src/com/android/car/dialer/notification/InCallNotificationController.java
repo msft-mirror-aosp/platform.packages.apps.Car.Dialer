@@ -130,7 +130,8 @@ public final class InCallNotificationController {
                                 NotificationService.ACTION_DECLINE_CALL));
         String callerDisplayName = callDetail.getCallerDisplayName();
         if (TextUtils.isEmpty(callerDisplayName)) {
-            mNotificationBuilder.setContentTitle(TelecomUtils.getBidiWrappedNumber(callNumber))
+            String readableNumber = TelecomUtils.getReadableNumber(mContext, callNumber);
+            mNotificationBuilder.setContentTitle(TelecomUtils.getBidiWrappedNumber(readableNumber))
                     .setContentText(mContext.getString(R.string.notification_incoming_call));
         } else {
             mNotificationBuilder.setContentTitle(callerDisplayName)

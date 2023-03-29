@@ -47,6 +47,16 @@
     <bool name="config_show_contact_details_action_bar_avatar">true</bool>
     <!-- A config determines whether to show the send message button in the contact details page.-->
     <bool name="config_show_contact_details_send_message_button">true</bool>
+    <!-- A config determines whether to show toolbar in the contact details page.-->
+    <bool name="config_show_toolbar_with_contact_details">false</bool>
+    <!-- A config determines whether to show search as tab in toolbar.-->
+    <bool name="config_show_search_as_toolbar_tab">false</bool>
+    <!-- A config determines whether to show settings as tab in toolbar.-->
+    <bool name="config_show_settings_as_toolbar_tab">false</bool>
+    <!-- A config determines whether to show search in toolbar menu items-->
+    <bool name="config_show_search_in_menu_items">true</bool>
+    <!-- A config determines whether to show settings in toolbar menu items-->
+    <bool name="config_show_settings_in_menu_items">true</bool>
 
     <!-- Use app name as toolbar title. Supported value see @attr/toolbarTitleMode -->
     <integer name="config_toolbar_title_mode">0</integer>
@@ -90,5 +100,9 @@
 
     <!-- Config if dialogs should allow a default dismiss button-->
     <bool name="config_dialog_allow_dismiss_button">false</bool>
+
+    <!-- A config to determine how add favorite button should be in recycler view. If false
+    it takes up entire row. -->
+    <bool name="config_add_favorite_button_span_size_one">true</bool>
 
 </resources>

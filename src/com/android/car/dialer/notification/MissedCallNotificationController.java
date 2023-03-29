@@ -25,6 +25,7 @@ import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.icu.text.MessageFormat;
 import android.os.Bundle;
 import android.provider.CallLog;
 import android.text.TextUtils;
@@ -49,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -134,12 +136,17 @@ public final class MissedCallNotificationController {
                 mContext, phoneNumber, accountName)
                 .thenAcceptAsync((pair) -> {
                     int callLogSize = callLog.getAllCallRecords().size();
+                    MessageFormat msgFmt = new MessageFormat(mContext.getResources().getString(
+                            R.string.notification_missed_call), Locale.getDefault());
+                    Map<String, Object> strArgs = new HashMap<>();
+                    strArgs.put("count", callLogSize);
+                    String contentTitle = msgFmt.format(strArgs);
+
                     Notification.Builder builder = new Notification.Builder(mContext, CHANNEL_ID)
                             .setSmallIcon(R.drawable.ic_phone)
                             .setColor(mContext.getColor(R.color.notification_app_icon_color))
                             .setLargeIcon(pair.second)
-                            .setContentTitle(mContext.getResources().getQuantityString(
-                                    R.plurals.notification_missed_call, callLogSize, callLogSize))
+                            .setContentTitle(contentTitle)
                             .setContentText(TelecomUtils.getBidiWrappedNumber(pair.first))
                             .setContentIntent(getContentPendingIntent())
                             .setDeleteIntent(getDeleteIntent(callLog))

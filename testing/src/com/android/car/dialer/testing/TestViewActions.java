@@ -17,9 +17,7 @@
 package com.android.car.dialer.testing;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.any;
@@ -27,11 +25,12 @@ import static org.hamcrest.Matchers.any;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
+
+import com.android.car.ui.testing.matchers.CarUiRecyclerViewMatcher;
 
 import org.hamcrest.Matcher;
 
@@ -168,7 +167,6 @@ public final class TestViewActions {
 
     /** Returns the {@link ViewInteraction} for Dialer list views. */
     public static ViewInteraction onRecyclerView() {
-        return onView(allOf(isAssignableFrom(RecyclerView.class),
-                withParent(withId(R.id.car_ui_recycler_view))));
+        return onView(allOf(isDisplayed(), new CarUiRecyclerViewMatcher()));
     }
 }

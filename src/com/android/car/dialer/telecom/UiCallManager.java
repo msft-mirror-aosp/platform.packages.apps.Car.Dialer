@@ -212,13 +212,18 @@ public final class UiCallManager {
                 && primaryCall.getDetails().hasProperty(Call.Details.PROPERTY_CONFERENCE);
         Call call = isConference ? primaryCall.getChildren().get(0) : primaryCall;
 
+        // For bluetooth call, we need to send the sco call events for hfp client to handle.
         if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
             call.sendCallEvent(EVENT_SCO_CONNECT, null);
             setMuted(false);
         } else if ((audioRoute & CallAudioState.ROUTE_WIRED_OR_EARPIECE) != 0) {
             call.sendCallEvent(EVENT_SCO_DISCONNECT, null);
         }
-        // TODO: Implement routing audio if current call is not a bluetooth call.
+        // The following doesn't really switch audio route for a bluetooth call. The api works only
+        //  if the call is non bluetooth call(a self managed call for example).
+        if (mInCallService != null) {
+            mInCallService.setAudioRoute(audioRoute);
+        }
     }
 
     private CallAudioState getCallAudioStateOrNull() {

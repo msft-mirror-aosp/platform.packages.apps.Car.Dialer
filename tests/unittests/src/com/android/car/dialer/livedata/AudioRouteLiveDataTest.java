@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -62,7 +63,8 @@ public class AudioRouteLiveDataTest {
 
         when(mMockUiCallManager.getAudioRoute(anyInt())).thenReturn(CallAudioState.ROUTE_EARPIECE);
 
-        mAudioRouteLiveData = new AudioRouteLiveData(mCallDetailLiveData, mMockUiCallManager);
+        mAudioRouteLiveData = new AudioRouteLiveData(mCallDetailLiveData,
+                new MutableLiveData<>(), mMockUiCallManager);
     }
 
     @Test

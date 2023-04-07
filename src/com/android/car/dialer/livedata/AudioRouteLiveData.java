@@ -16,6 +16,9 @@
 
 package com.android.car.dialer.livedata;
 
+import android.telecom.CallAudioState;
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 
 import com.android.car.apps.common.log.L;
@@ -38,11 +41,13 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
     @AssistedInject
     public AudioRouteLiveData(
             @Assisted CallDetailLiveData primaryCallDetailLiveData,
+            @Assisted LiveData<CallAudioState> callAudioStateLiveData,
             UiCallManager callManager) {
         mUiCallManager = callManager;
         mPrimaryCallDetailLiveData = primaryCallDetailLiveData;
 
         addSource(mPrimaryCallDetailLiveData, this::updateOngoingCallAudioRoute);
+        addSource(callAudioStateLiveData, callAudioState -> updateAudioRoute());
     }
 
     @Override
@@ -76,6 +81,7 @@ public class AudioRouteLiveData extends MediatorLiveData<Integer> {
     @AssistedFactory
     public interface Factory {
         /** Creates an {@link AudioRouteLiveData} instance. */
-        AudioRouteLiveData create(CallDetailLiveData primaryCallDetailLiveData);
+        AudioRouteLiveData create(CallDetailLiveData primaryCallDetailLiveData,
+                                  LiveData<CallAudioState> callAudioStateLiveData);
     }
 }

@@ -16,6 +16,7 @@
 
 package com.android.car.dialer.ui.settings;
 
+import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
@@ -38,11 +39,11 @@ public class DialerSettingsActivity extends Hilt_DialerSettingsActivity {
         super.onCreate(savedInstanceState);
         L.d(TAG, "onCreate");
 
-        LiveData<Boolean> hasHfpDeviceConnectedLiveData = new ViewModelProvider(this)
+        LiveData<BluetoothDevice> currentHfpDeviceLiveData = new ViewModelProvider(this)
                 .get(DialerSettingsViewModel.class)
-                .hasHfpDeviceConnected();
-        hasHfpDeviceConnectedLiveData.observe(this, hasHfpDeviceConnected -> {
-            if (!Boolean.TRUE.equals(hasHfpDeviceConnected)) {
+                .getCurrentHfpDeviceLiveData();
+        currentHfpDeviceLiveData.observe(this, currentHfpDevice -> {
+            if (currentHfpDevice == null) {
                 // Simply finishes settings activity and returns to main activity to show error.
                 finish();
             }

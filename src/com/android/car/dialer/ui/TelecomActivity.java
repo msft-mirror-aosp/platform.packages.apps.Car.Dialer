@@ -18,6 +18,7 @@ package com.android.car.dialer.ui;
 
 import android.Manifest;
 import android.app.SearchManager;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -25,7 +26,6 @@ import android.os.Bundle;
 import android.provider.CallLog;
 import android.telecom.Call;
 import android.telephony.PhoneNumberUtils;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -50,7 +50,6 @@ import com.android.car.ui.baselayout.Insets;
 import com.android.car.ui.baselayout.InsetsChangedListener;
 import com.android.car.ui.core.CarUi;
 import com.android.car.ui.toolbar.MenuItem;
-import com.android.car.ui.toolbar.TabLayout;
 import com.android.car.ui.toolbar.ToolbarController;
 
 import java.util.List;
@@ -76,9 +75,9 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
     @Inject UiCallManager mUiCallManager;
     private LiveData<List<Call>> mOngoingCallListLiveData;
     private LiveData<Boolean> mRefreshUiLiveData;
+    private LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
     // View objects for this activity.
     private TelecomPageTab.Factory mTabFactory;
-    private boolean mTabsShown = true;
     private ToolbarController mCarUiToolbar;
 
     @Override
@@ -91,7 +90,12 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
 
         mCarUiToolbar = CarUi.requireToolbar(this);
 
-        setupTabLayout();
+        OnItemClickedListener<TelecomPageTab> onTabSelected = tab -> {
+            Fragment fragment = tab.getFragment();
+            setContentFragment(fragment, tab.getFragmentTag());
+        };
+        mTabFactory = new TelecomPageTab.Factory(this, mSharedPreferences, onTabSelected,
+                getSupportFragmentManager());
 
         TelecomActivityViewModel viewModel = new ViewModelProvider(this).get(
                 TelecomActivityViewModel.class);
@@ -99,18 +103,19 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
         mRefreshUiLiveData = viewModel.getRefreshTabsLiveData();
         mRefreshUiLiveData.observe(this, v -> refreshUi());
 
-        LiveData<Boolean> hasHfpDeviceConnectedLiveData = viewModel.hasHfpDeviceConnected();
-        hasHfpDeviceConnectedLiveData.observe(this, hasHfpDeviceConnected -> {
-            if (!Boolean.TRUE.equals(hasHfpDeviceConnected)) {
+        mCurrentHfpDeviceLiveData = viewModel.getCurrentHfpDeviceLiveData();
+        mCurrentHfpDeviceLiveData.observe(this, currentHfpDevice -> {
+            if (currentHfpDevice == null) {
                 setContentFragment(new NoHfpFragment(), NoHfpFragment.class.getName());
             } else {
                 getSupportFragmentManager().executePendingTransactions();
-                if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
-                    // Retain the backstack when day/night mode change.
-                    return;
+                Fragment noHfpFragment = getSupportFragmentManager().findFragmentByTag(
+                        NoHfpFragment.class.getName());
+                // Error page or no tab page
+                if (noHfpFragment != null || getSupportFragmentManager().findFragmentById(
+                        R.id.fragment_container) == null) {
+                    showTabPage(mTabFactory.getStartTabIndex());
                 }
-                int tabIndex = mTabFactory.getSelectedTabIndex();
-                showTabPage(tabIndex);
             }
         });
 
@@ -180,23 +185,6 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
         maybeStartInCallActivity(mOngoingCallListLiveData.getValue());
     }
 
-    /**
-     * Set the tabs only, hasHfpDeviceConnectedLiveData will show the fragment later.
-     */
-    private void setupTabLayout() {
-        OnItemClickedListener<TelecomPageTab> onTabSelected = tab -> {
-            Fragment fragment = tab.getFragment();
-            setContentFragment(fragment, tab.getFragmentTag());
-        };
-
-        mTabFactory = new TelecomPageTab.Factory(this, mSharedPreferences, onTabSelected,
-                getSupportFragmentManager());
-        List<TelecomPageTab> tabs = mTabFactory.getTabs();
-        mCarUiToolbar.setTabs(tabs.stream()
-                .map(TelecomPageTab::getToolbarTab)
-                .collect(Collectors.toList()), mTabFactory.getSelectedTabIndex());
-    }
-
     private void refreshUi() {
         L.i(TAG, "Refresh ui");
 
@@ -228,18 +216,23 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
      * Sets if the toolbar tabs should be shown or hidden. Used to hide the tabs
      * on pages like search or contact details.
      */
-    public void setTabsShown(boolean shown) {
-        if (mTabsShown == shown) {
-            // We don't want the tabs to be redisplayed if they already are displayed,
-            // as that would interrupt the ripple animation.
-            return;
+    public void setTabsShown(boolean shown, Fragment fragment) {
+        if (shown) {
+            int selectedTabIndex = mTabFactory.getTabIndex(fragment);
+            // Default to index 0 if fragment is not a tab page.
+            selectedTabIndex = selectedTabIndex < 0 ? 0 : selectedTabIndex;
+            if (selectedTabIndex == mCarUiToolbar.getSelectedTab()) {
+                // We don't want the tabs to be redisplayed if they already are displayed,
+                // as that would interrupt the ripple animation.
+                return;
+            }
+            List<TelecomPageTab> tabs = mTabFactory.getTabs();
+            mCarUiToolbar.setTabs(tabs.stream()
+                    .map(TelecomPageTab::getToolbarTab)
+                    .collect(Collectors.toList()), selectedTabIndex);
+        } else {
+            mCarUiToolbar.setTabs(null);
         }
-        TabLayout tabLayout = requireViewById(R.id.car_ui_toolbar_tabs);
-        int childCount = tabLayout.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            tabLayout.getChildAt(i).setVisibility(shown ?  View.VISIBLE : View.GONE);
-        }
-        mTabsShown = shown;
     }
 
     private int showTabPage(@TelecomPageTab.Page String tabPage) {
@@ -254,18 +247,18 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
     }
 
     private void showTabPage(int tabIndex) {
-        // Compare the current selection and new selection. If they are the same, selectTab(int)
-        // won't trigger the listener to update content fragment.
-        int selectedTab = mCarUiToolbar.getSelectedTab();
-        if (selectedTab == tabIndex) {
-            Fragment fragment =
-                    getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-            TelecomPageTab currentTab = mTabFactory.getTabs().get(selectedTab);
-            if (fragment != currentTab.getFragment()) {
-                setContentFragment(currentTab.getFragment(), currentTab.getFragmentTag());
-            }
+        // When handle DAIL intent to show dialpad, we need to check if currently bluetooth is
+        // connected. This is called onCreate() where we need a livedata that is already active.
+        if (mCurrentHfpDeviceLiveData.getValue() == null) {
+            return;
         }
-        mCarUiToolbar.selectTab(tabIndex);
+
+        Fragment fragment =
+                getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        TelecomPageTab currentTab = mTabFactory.getTabs().get(tabIndex);
+        if (fragment != currentTab.getFragment()) {
+            setContentFragment(currentTab.getFragment(), currentTab.getFragmentTag());
+        }
     }
 
     private void setContentFragment(Fragment fragment, String fragmentTag) {

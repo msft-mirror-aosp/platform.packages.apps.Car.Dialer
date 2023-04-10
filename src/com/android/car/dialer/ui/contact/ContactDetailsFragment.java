@@ -190,7 +190,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
         } else {
             toolbar.setLogo(null);
             toolbar.setSearchMode(SearchMode.DISABLED);
-            ((TelecomActivity) requireActivity()).setTabsShown(false);
+            ((TelecomActivity) requireActivity()).setTabsShown(false, this);
         }
         toolbar.setMenuItems(null);
         toolbar.setNavButtonMode(NavButtonMode.BACK);

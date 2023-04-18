@@ -87,4 +87,8 @@
     <string name="sms_notification_title" msgid="5980540487139970307">"SMS z telefonu"</string>
     <string name="sms_notification_text" msgid="9193883830187173056">"Wysyłam SMS-a"</string>
     <string name="self_managed_call_description" msgid="7626811322858259206">"Połącz przez <xliff:g id="SELF_MANAGED_APP_NAME">%1$s</xliff:g>"</string>
+    <!-- no translation found for self_managed_call_current_speaker (7995502777230960442) -->
+    <skip />
+    <!-- no translation found for self_managed_call_participants (6303695666595174477) -->
+    <skip />
 </resources>

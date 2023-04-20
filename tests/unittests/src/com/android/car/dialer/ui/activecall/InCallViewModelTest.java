@@ -100,7 +100,7 @@ public class InCallViewModelTest {
 
         when(mMockDialingCall.getDetails()).thenReturn(mMockDetails);
 
-        when(mMockAudioRouteLiveDataFactory.create(any())).thenReturn(
+        when(mMockAudioRouteLiveDataFactory.create(any(), any())).thenReturn(
                 mock(AudioRouteLiveData.class));
         when(mMockSupportedAudioRoutesLiveDataFactory.create(any())).thenReturn(
                 mock(SupportedAudioRoutesLiveData.class));

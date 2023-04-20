@@ -159,7 +159,8 @@ public class InCallViewModel extends ViewModel {
             return call;
         });
         mPrimaryCallerInfoLiveData = new CallerInfoLiveData(mCallDetailLiveData, mExecutorService);
-        mAudioRouteLiveData = mAudioRouteLiveDataFactory.create(mCallDetailLiveData);
+        mAudioRouteLiveData = mAudioRouteLiveDataFactory.create(mCallDetailLiveData,
+                mLocalCallHandler.getCallAudioStateLiveData());
         mSupportedAudioRoutesLiveData = mSupportedAudioRoutesLiveDataFactory.create(
                 mCallDetailLiveData);
 

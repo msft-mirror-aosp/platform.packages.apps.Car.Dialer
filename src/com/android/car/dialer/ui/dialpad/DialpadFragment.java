@@ -251,7 +251,7 @@ public class DialpadFragment extends Hilt_DialpadFragment {
         if (mMode == MODE_DIAL) {
             super.setupToolbar(toolbar);
         } else if (mMode == MODE_EMERGENCY) {
-            ((TelecomActivity) requireActivity()).setTabsShown(false);
+            ((TelecomActivity) requireActivity()).setTabsShown(false, this);
             toolbar.setNavButtonMode(NavButtonMode.BACK);
             toolbar.setMenuItems(null);
             toolbar.setLogo(null);

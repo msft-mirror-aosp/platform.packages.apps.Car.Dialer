@@ -213,6 +213,7 @@ dependencies {
     androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'
 
     emulatorImplementation project(path: ':car-dialer-app:testing')
+    emulatorImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'
     androidTestEmulatorImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline-extended:2.28.1'
     androidTestEmulatorImplementation 'org.hamcrest:hamcrest:2.2'
 

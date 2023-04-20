@@ -20,31 +20,21 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
 /** View model for {@link NoHfpFragment} */
 @HiltViewModel
 public class NoHfpViewModel extends ViewModel {
-
-    private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
     private final BluetoothErrorStringLiveData mBluetoothErrorStringLiveData;
 
     @Inject
     NoHfpViewModel(
-            @Named("Hfp") LiveData<Boolean> hasHfpDeviceConnectedLiveData,
             BluetoothErrorStringLiveData bluetoothErrorStringLiveData) {
-        mHasHfpDeviceConnectedLiveData = hasHfpDeviceConnectedLiveData;
         mBluetoothErrorStringLiveData = bluetoothErrorStringLiveData;
     }
 
     public LiveData<String> getBluetoothErrorStringLiveData() {
         return mBluetoothErrorStringLiveData;
-    }
-
-    /** Returns a {@link LiveData} which monitors if there are any connected HFP devices. */
-    public LiveData<Boolean> hasHfpDeviceConnected() {
-        return mHasHfpDeviceConnectedLiveData;
     }
 }

@@ -86,7 +86,7 @@ public abstract class DialerBaseFragment extends Hilt_DialerBaseFragment impleme
         toolbar.setNavButtonMode(NavButtonMode.DISABLED);
         toolbar.setSearchMode(SearchMode.DISABLED);
         toolbar.setLogo(requireActivity().getDrawable(R.drawable.ic_app_icon));
-        ((TelecomActivity) requireActivity()).setTabsShown(true);
+        ((TelecomActivity) requireActivity()).setTabsShown(true, this);
 
         toolbar.setMenuItems(R.xml.menuitems);
     }

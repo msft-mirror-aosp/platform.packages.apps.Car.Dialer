@@ -68,7 +68,7 @@
     <string name="onhold_call_separator" msgid="2357788035385100805">"•"</string>
     <string name="swap_call_label" msgid="309322319645637302">"ጥሪዎችን ቀይር"</string>
     <string name="setting_title" msgid="1296639422364732365">"ቅንብሮች"</string>
-    <string name="pref_start_page_title" msgid="1953465507368478503">"የመጀመሪያ ማያ ገጽ"</string>
+    <string name="pref_start_page_title" msgid="1953465507368478503">"የመጀመሪያ ማያ ገፅ"</string>
     <string name="sort_order_title" msgid="975104366728292702">"የእውቂያ ቅደም ተከተል"</string>
     <string name="pref_connected_phone_title" msgid="5472866963149472593">"የተገናኘ ስልክ"</string>
     <string name="pref_no_incoming_call_hun_title" msgid="2314257779205958332">"ግላዊነት"</string>
@@ -87,8 +87,6 @@
     <string name="sms_notification_title" msgid="5980540487139970307">"ደዋይ ኤስኤምኤስ"</string>
     <string name="sms_notification_text" msgid="9193883830187173056">"ኤስኤምኤስን በመላክ ላይ"</string>
     <string name="self_managed_call_description" msgid="7626811322858259206">"የ<xliff:g id="SELF_MANAGED_APP_NAME">%1$s</xliff:g> ጥሪ"</string>
-    <!-- no translation found for self_managed_call_current_speaker (7995502777230960442) -->
-    <skip />
-    <!-- no translation found for self_managed_call_participants (6303695666595174477) -->
-    <skip />
+    <string name="self_managed_call_current_speaker" msgid="7995502777230960442">"በመናገር ላይ፦ <xliff:g id="CALLER_NAME">%1$s</xliff:g>"</string>
+    <string name="self_managed_call_participants" msgid="6303695666595174477">"ተሳታፊዎች፦ <xliff:g id="COUNT">%1$d</xliff:g>"</string>
 </resources>

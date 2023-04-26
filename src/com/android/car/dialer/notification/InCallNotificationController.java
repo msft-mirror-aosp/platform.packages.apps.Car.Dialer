@@ -23,7 +23,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
@@ -32,6 +31,7 @@ import android.os.Bundle;
 import android.telecom.Call;
 import android.telecom.PhoneAccountHandle;
 import android.text.TextUtils;
+import android.util.TypedValue;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
@@ -216,7 +216,9 @@ public final class InCallNotificationController {
     private Notification.Action getAction(Call call, @StringRes int actionText,
             @DrawableRes int actionIcon, String intentAction) {
         CharSequence text = mContext.getString(actionText);
-        Icon icon = actionIcon == Resources.ID_NULL ? null : Icon.createWithResource(mContext,
+        TypedValue typedValue = new TypedValue();
+        mContext.getResources().getValue(actionIcon, typedValue, true);
+        Icon icon = typedValue.string == null ? null : Icon.createWithResource(mContext,
                 actionIcon);
         PendingIntent intent = PendingIntent.getService(
                 mContext,

@@ -35,7 +35,7 @@
     <string name="audio_route_phone_speaker" msgid="4608904003558187244">"Puhelimen kaiutin"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"Puhelin"</string>
     <string name="dial_a_number" msgid="7432322177412387160">"Soita numeroon"</string>
-    <string name="call_history_title" msgid="7997887846276371553">"Viimeaikaiset"</string>
+    <string name="call_history_title" msgid="7997887846276371553">"Äskeiset"</string>
     <string name="contacts_title" msgid="9201954388634537346">"Yhteystiedot"</string>
     <string name="favorites_title" msgid="4767723901530488145">"Suosikit"</string>
     <string name="dialpad_title" msgid="3746259645005208554">"Näppäimistö"</string>
@@ -64,10 +64,7 @@
     <string name="notification_incoming_call" msgid="1722904631804432389">"Saapuva puhelu"</string>
     <string name="notification_incoming_call_join_number" msgid="3531262061121638116">"Saapuva puhelu • <xliff:g id="PHONE_NUMBER">%1$s</xliff:g>"</string>
     <string name="missed_call_notification_channel_name" msgid="1135686963409691772">"Ilmoitus vastaamattomasta puhelusta"</string>
-    <plurals name="notification_missed_call" formatted="false" msgid="1018870358427938752">
-      <item quantity="other">Vastaamattomia puheluita (<xliff:g id="NUMBER">%1$d</xliff:g>) </item>
-      <item quantity="one">Vastaamaton puhelu</item>
-    </plurals>
+    <string name="notification_missed_call" msgid="7505605344790234498">"{count,plural, =1{Vastaamaton puhelu}other{Vastaamattomat puhelut (#)}}"</string>
     <string name="onhold_call_separator" msgid="2357788035385100805">"•"</string>
     <string name="swap_call_label" msgid="309322319645637302">"Vaihda puhelua"</string>
     <string name="setting_title" msgid="1296639422364732365">"Asetukset"</string>

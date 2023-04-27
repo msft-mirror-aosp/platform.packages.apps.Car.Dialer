@@ -65,7 +65,8 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
     // Key to load and save the contact entity instance.
     private static final String KEY_CONTACT_ENTITY = "ContactEntity";
 
-    @Inject ContactDetailsAdapter.Factory mContactDetailsAdapterFactory;
+    @Inject
+    ContactDetailsAdapter.Factory mContactDetailsAdapterFactory;
     private Contact mContact;
     private LiveData<FutureData<Contact>> mContactDetailsLiveData;
     private ContactDetailsViewModel mContactDetailsViewModel;
@@ -73,6 +74,7 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
 
     private boolean mShowActionBarView;
     private boolean mShowActionBarAvatar;
+    private boolean mShowToolbarContactDetail;
 
     /**
      * Creates a new ContactDetailsFragment using a {@link Contact}.
@@ -102,6 +104,8 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
                 R.bool.config_show_contact_details_action_bar_view);
         mShowActionBarAvatar = getResources().getBoolean(
                 R.bool.config_show_contact_details_action_bar_avatar);
+        mShowToolbarContactDetail = getResources().getBoolean(
+                R.bool.config_show_toolbar_with_contact_details);
     }
 
     @Override
@@ -139,8 +143,12 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
         if (toolbar == null) {
             return;
         }
-        toolbar.setTitle((CharSequence) null);
-        toolbar.setLogo(null);
+
+        if (!mShowToolbarContactDetail) {
+            toolbar.setTitle((CharSequence) null);
+            toolbar.setLogo(null);
+        }
+
         if (mShowActionBarView) {
             toolbar.setTitle(contact == null ? getString(R.string.error_contact_deleted)
                     : contact.getDisplayName());
@@ -177,11 +185,15 @@ public class ContactDetailsFragment extends Hilt_ContactDetailsFragment implemen
 
     @Override
     protected void setupToolbar(@NonNull ToolbarController toolbar) {
-        toolbar.setNavButtonMode(NavButtonMode.BACK);
+        if (mShowToolbarContactDetail) {
+            super.setupToolbar(toolbar);
+        } else {
+            toolbar.setLogo(null);
+            toolbar.setSearchMode(SearchMode.DISABLED);
+            ((TelecomActivity) requireActivity()).setTabsShown(false);
+        }
         toolbar.setMenuItems(null);
-        toolbar.setLogo(null);
-        toolbar.setSearchMode(SearchMode.DISABLED);
-        ((TelecomActivity) requireActivity()).setTabsShown(false);
+        toolbar.setNavButtonMode(NavButtonMode.BACK);
     }
 
     @Override

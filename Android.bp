@@ -129,6 +129,7 @@ android_test_helper_app {
     static_libs: common_static_libs + [
         "car-dialer-fake-framework-dep",
         "car-dialer-testing",
+        "car-ui-lib-testing",
     ],
 
     plugins: [

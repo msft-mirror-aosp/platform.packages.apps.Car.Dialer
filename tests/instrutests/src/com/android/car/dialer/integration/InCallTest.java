@@ -29,7 +29,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
 import static com.android.car.dialer.testing.TestViewActions.selfClick;
 import static com.android.car.dialer.testing.TestViewActions.waitAction;
-import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
+import static com.android.car.ui.testing.matchers.CarUiRecyclerViewMatcher.atPosition;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.startsWith;
@@ -38,10 +38,10 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
+import android.provider.ContactsContract;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -51,6 +51,7 @@ import com.android.car.dialer.framework.FakeTelecomManager;
 import com.android.car.dialer.framework.SimulatedBluetoothDevice;
 import com.android.car.dialer.framework.testdata.ContactRawData;
 import com.android.car.dialer.ui.TelecomActivity;
+import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
 import org.junit.After;
 import org.junit.Before;
@@ -98,6 +99,7 @@ public class InCallTest {
         ContactRawData contactRawData = new ContactRawData();
         contactRawData.setNumber(PHONE_NUMBER);
         contactRawData.setNumberLabel(PHONE_NUMBER_LABEL);
+        contactRawData.setNumberType(ContactsContract.CommonDataKinds.Phone.TYPE_CUSTOM);
         contactRawData.setDisplayName(DISPLAY_NAME);
         mBluetoothDevice.insertContactInBackground(contactRawData);
 
@@ -171,10 +173,10 @@ public class InCallTest {
 
         onView(withText(startsWith("Conference (2)"))).check(matches(isDisplayed()));
         onRecyclerView()
-                .perform(RecyclerViewActions.scrollToPosition(0))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, hasDescendant(
                         allOf(withId(R.id.user_profile_title), withText(PHONE_NUMBER))))))
-                .perform(RecyclerViewActions.scrollToPosition(1))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(1))
                 .check(matches(atPosition(1, hasDescendant(
                         allOf(withId(R.id.user_profile_title), withText(PHONE_NUMBER_2))))));
 

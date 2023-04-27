@@ -25,7 +25,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
-import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
+import static com.android.car.ui.testing.matchers.CarUiRecyclerViewMatcher.atPosition;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -46,7 +46,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.android.car.apps.common.util.FutureData;
@@ -59,6 +58,7 @@ import com.android.car.dialer.ui.contact.ContactDetailsViewModel;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
+import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -143,7 +143,7 @@ public class ContactResultsFragmentTest {
                 Arrays.asList(mContactResult1, mContactResult2, mContactResult3));
         setUpFragment();
 
-        onRecyclerView().perform(RecyclerViewActions.scrollToPosition(0))
+        onRecyclerView().perform(CarUiRecyclerViewActions.scrollToPosition(0))
                 .check(matches(atPosition(0, hasDescendant(
                         allOf(withId(R.id.contact_name), withText(DISPLAY_NAMES[0]))))))
                 .check(matches(atPosition(1, hasDescendant(
@@ -159,7 +159,7 @@ public class ContactResultsFragmentTest {
         setUpFragment();
 
         onRecyclerView().perform(
-                RecyclerViewActions.actionOnItemAtPosition(1, click()));
+                CarUiRecyclerViewActions.actionOnItemAtPosition(1, click()));
 
         // verify contact detail is shown.
         verifyShowContactDetail();

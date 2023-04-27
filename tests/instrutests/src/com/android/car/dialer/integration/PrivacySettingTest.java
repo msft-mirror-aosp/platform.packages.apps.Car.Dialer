@@ -26,7 +26,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.android.car.dialer.testing.TestViewActions.onRecyclerView;
-import static com.android.car.dialer.testing.TestViewMatchers.atPosition;
+import static com.android.car.ui.testing.matchers.CarUiRecyclerViewMatcher.atPosition;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -39,7 +39,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
@@ -52,6 +51,7 @@ import com.android.car.dialer.framework.FakeHfpManager;
 import com.android.car.dialer.framework.FakeTelecomManager;
 import com.android.car.dialer.framework.testdata.CallLogDataHandler;
 import com.android.car.dialer.ui.TelecomActivity;
+import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
 import org.junit.After;
 import org.junit.Before;
@@ -100,7 +100,7 @@ public class PrivacySettingTest {
     @Test
     public void defaultOff_hasHUN() {
         onRecyclerView()
-                .perform(RecyclerViewActions.scrollToPosition(2))
+                .perform(CarUiRecyclerViewActions.scrollToPosition(2))
                 .check(matches(atPosition(2, hasDescendant(
                         allOf(withId(android.R.id.title),
                                 withText(R.string.pref_no_incoming_call_hun_title))))))
@@ -122,7 +122,7 @@ public class PrivacySettingTest {
     public void toggleOn_noHUN() {
         // Turn on
         onRecyclerView()
-                .perform(RecyclerViewActions.actionOnItemAtPosition(2, click()))
+                .perform(CarUiRecyclerViewActions.actionOnItemAtPosition(2, click()))
                 .check(matches(atPosition(2, hasDescendant(
                         allOf(withId(android.R.id.switch_widget), isChecked())))));
 

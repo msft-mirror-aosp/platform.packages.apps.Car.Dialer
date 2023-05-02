@@ -28,11 +28,11 @@ import androidx.lifecycle.ViewModel;
 
 import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.LiveDataFunctions;
-import com.android.car.dialer.livedata.AudioRouteLiveData;
-import com.android.car.dialer.livedata.CallDetailLiveData;
-import com.android.car.dialer.livedata.CallStateLiveData;
+import com.android.car.telephony.calling.AudioRouteLiveData;
+import com.android.car.telephony.calling.CallDetailLiveData;
+import com.android.car.telephony.calling.CallStateLiveData;
 import com.android.car.dialer.livedata.CallerInfoLiveData;
-import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
+import com.android.car.telephony.calling.SupportedAudioRoutesLiveData;
 import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
@@ -435,8 +435,8 @@ public class InCallViewModel extends ViewModel {
             } else if (!callHasParent && otherCallHasParent) {
                 return -1;
             }
-            int carCallRank = CALL_STATE_RANK.indexOf(call.getState());
-            int otherCarCallRank = CALL_STATE_RANK.indexOf(otherCall.getState());
+            int carCallRank = CALL_STATE_RANK.indexOf(call.getDetails().getState());
+            int otherCarCallRank = CALL_STATE_RANK.indexOf(otherCall.getDetails().getState());
 
             return otherCarCallRank - carCallRank;
         }

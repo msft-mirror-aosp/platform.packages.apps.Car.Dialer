@@ -25,9 +25,11 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.CallLog;
 import android.telecom.Call;
+import android.telecom.TelecomManager;
 import android.telephony.PhoneNumberUtils;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;

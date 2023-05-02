@@ -34,9 +34,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.android.car.dialer.livedata.AudioRouteLiveData;
-import com.android.car.dialer.livedata.SupportedAudioRoutesLiveData;
 import com.android.car.dialer.telecom.LocalCallHandler;
+import com.android.car.telephony.calling.AudioRouteLiveData;
+import com.android.car.telephony.calling.SupportedAudioRoutesLiveData;
 import com.android.car.telephony.common.CallDetail;
 
 import org.junit.Before;
@@ -63,13 +63,19 @@ public class InCallViewModelTest {
     @Mock
     private Call mMockActiveCall;
     @Mock
+    private Call.Details mMockActiveCallDetails;
+    @Mock
     private Call mMockDialingCall;
+    @Mock
+    private Call.Details mMockDialingCallDetails;
     @Mock
     private Call mMockHoldingCall;
     @Mock
+    private Call.Details mMockHoldingCallDetails;
+    @Mock
     private Call mMockRingingCall;
     @Mock
-    private Call.Details mMockDetails;
+    private Call.Details mMockRingingCallDetails;
     @Captor
     private ArgumentCaptor<Call.Callback> mCallbackCaptor;
     @Mock
@@ -84,21 +90,23 @@ public class InCallViewModelTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        when(mMockActiveCall.getState()).thenReturn(Call.STATE_ACTIVE);
-        when(mMockDialingCall.getState()).thenReturn(Call.STATE_DIALING);
-        when(mMockHoldingCall.getState()).thenReturn(Call.STATE_HOLDING);
-        when(mMockRingingCall.getState()).thenReturn(Call.STATE_RINGING);
+        when(mMockActiveCallDetails.getState()).thenReturn(Call.STATE_ACTIVE);
+        when(mMockActiveCall.getDetails()).thenReturn(mMockActiveCallDetails);
+        when(mMockDialingCallDetails.getState()).thenReturn(Call.STATE_DIALING);
+        when(mMockDialingCall.getDetails()).thenReturn(mMockDialingCallDetails);
+        when(mMockHoldingCallDetails.getState()).thenReturn(Call.STATE_HOLDING);
+        when(mMockHoldingCall.getDetails()).thenReturn(mMockHoldingCallDetails);
+        when(mMockRingingCallDetails.getState()).thenReturn(Call.STATE_RINGING);
+        when(mMockRingingCall.getDetails()).thenReturn(mMockRingingCallDetails);
         doNothing().when(mMockActiveCall).registerCallback(mCallbackCaptor.capture());
 
         // Set up call details
         GatewayInfo gatewayInfo = new GatewayInfo("", GATEWAY_ADDRESS, GATEWAY_ADDRESS);
         DisconnectCause disconnectCause = new DisconnectCause(1, LABEL, null, "");
-        when(mMockDetails.getHandle()).thenReturn(GATEWAY_ADDRESS);
-        when(mMockDetails.getDisconnectCause()).thenReturn(disconnectCause);
-        when(mMockDetails.getGatewayInfo()).thenReturn(gatewayInfo);
-        when(mMockDetails.getConnectTimeMillis()).thenReturn(CONNECT_TIME_MILLIS);
-
-        when(mMockDialingCall.getDetails()).thenReturn(mMockDetails);
+        when(mMockDialingCallDetails.getHandle()).thenReturn(GATEWAY_ADDRESS);
+        when(mMockDialingCallDetails.getDisconnectCause()).thenReturn(disconnectCause);
+        when(mMockDialingCallDetails.getGatewayInfo()).thenReturn(gatewayInfo);
+        when(mMockDialingCallDetails.getConnectTimeMillis()).thenReturn(CONNECT_TIME_MILLIS);
 
         when(mMockAudioRouteLiveDataFactory.create(any(), any())).thenReturn(
                 mock(AudioRouteLiveData.class));
@@ -140,8 +148,8 @@ public class InCallViewModelTest {
         Call.Callback callback = mCallbackCaptor.getValue();
         assertThat(callback).isNotNull();
 
-        when(mMockActiveCall.getState()).thenReturn(Call.STATE_HOLDING);
-        when(mMockHoldingCall.getState()).thenReturn(Call.STATE_ACTIVE);
+        when(mMockActiveCallDetails.getState()).thenReturn(Call.STATE_HOLDING);
+        when(mMockHoldingCallDetails.getState()).thenReturn(Call.STATE_ACTIVE);
         callback.onStateChanged(mMockActiveCall, Call.STATE_HOLDING);
 
         List<Call> callListInOrder =

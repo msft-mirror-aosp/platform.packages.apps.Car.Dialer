@@ -30,7 +30,7 @@
     <string name="decline_call" msgid="2505987200485272226">"अस्वीकार गर्नुहोस्"</string>
     <string name="answer_call" msgid="3272474440561548115">"उठाउनुहोस्"</string>
     <string name="call_back" msgid="5745638356098600872">"कल ब्याक गर्नुहोस्"</string>
-    <string name="message" msgid="106616332778369322">"सन्देश पठाउनुहोस्"</string>
+    <string name="message" msgid="106616332778369322">"म्यासेज पठाउनुहोस्"</string>
     <string name="audio_route_vehicle" msgid="6250361588960528769">"कारका स्पिकरहरू"</string>
     <string name="audio_route_phone_speaker" msgid="4608904003558187244">"फोनको स्पिकर"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"फोन"</string>

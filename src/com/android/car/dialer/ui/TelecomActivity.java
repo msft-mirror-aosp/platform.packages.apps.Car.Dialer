@@ -347,6 +347,7 @@ public class TelecomActivity extends Hilt_TelecomActivity implements
 
         L.d(TAG, "Start InCallActivity");
         Intent launchIntent = new Intent(getApplicationContext(), InCallActivity.class);
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(launchIntent);
     }
 

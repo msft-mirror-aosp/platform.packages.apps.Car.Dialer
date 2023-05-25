@@ -30,6 +30,7 @@ import androidx.lifecycle.LiveData;
 import com.android.car.apps.common.log.L;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.framework.InCallServiceProxy;
+import com.android.car.telephony.calling.InCallServiceManager;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -57,6 +58,7 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
     private final ArrayList<ActiveCallListChangedCallback>
             mActiveCallListChangedCallbacks = new ArrayList<>();
 
+    @Inject InCallServiceManager mInCallServiceManager;
     @Inject InCallRouter mInCallRouter;
     @Inject SelfManagedCallHandler mSelfManagedCallHandler;
     @Inject ProjectionCallHandler mProjectionCallHandler;
@@ -92,6 +94,7 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
     @Override
     public void onCreate() {
         super.onCreate();
+        mInCallServiceManager.setInCallService(this);
         mProjectionCallHandler.start();
         mActiveCallListChangedCallbacks.add(mProjectionCallHandler);
         mSelfManagedCallHandler.start();
@@ -105,6 +108,7 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
         mSelfManagedCallHandler.stop();
         mActiveCallListChangedCallbacks.remove(mProjectionCallHandler);
         mProjectionCallHandler.stop();
+        mInCallServiceManager.setInCallService(null);
     }
 
     @Override

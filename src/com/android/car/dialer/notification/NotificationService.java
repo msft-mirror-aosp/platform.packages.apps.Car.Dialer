@@ -34,6 +34,7 @@ import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -57,6 +58,7 @@ public class NotificationService extends Hilt_NotificationService {
     @Inject MissedCallNotificationController mMissedCallNotificationController;
     @Inject UiCallManager mUiCallManager;
     @Inject SelfManagedCallUtil mSelfManagedCallUtil;
+    @Inject Provider<List<Call>> mCallListProvider;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -122,7 +124,7 @@ public class NotificationService extends Hilt_NotificationService {
     }
 
     private void answerCall(String callId) {
-        List<Call> callList = mUiCallManager.getCallList();
+        List<Call> callList = mCallListProvider.get();
         for (Call call : callList) {
             if (call.getDetails() != null && TextUtils.equals(
                     CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber(), callId)) {
@@ -133,7 +135,7 @@ public class NotificationService extends Hilt_NotificationService {
     }
 
     private void declineCall(String callId) {
-        List<Call> callList = mUiCallManager.getCallList();
+        List<Call> callList = mCallListProvider.get();
         for (Call call : callList) {
             if (call.getDetails() != null && TextUtils.equals(
                     CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber(), callId)) {

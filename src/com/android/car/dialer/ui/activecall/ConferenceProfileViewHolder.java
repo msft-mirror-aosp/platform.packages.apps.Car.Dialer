@@ -17,6 +17,7 @@
 package com.android.car.dialer.ui.activecall;
 
 import android.content.Context;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -64,15 +65,31 @@ public class ConferenceProfileViewHolder extends RecyclerView.ViewHolder {
         Contact contact = InMemoryPhoneBook.get().lookupContactEntry(
                 number, callDetail.getPhoneAccountHandle().getId());
         String readableNumber = TelecomUtils.getReadableNumber(mContext, number);
-        if (contact == null) {
-            mAvatar.setImageDrawable(TelecomUtils.createLetterTile(mContext, null, null));
+        String callerDisplayName = callDetail.getCallerDisplayName();
+        String initials;
+        String identifier;
+        if (!TextUtils.isEmpty(callerDisplayName)) {
+            mTitle.setText(callerDisplayName);
+            mNumber.setText(readableNumber);
+            mNumber.setVisibility(View.VISIBLE);
+            initials = TelecomUtils.getInitials(callerDisplayName);
+            identifier = callerDisplayName;
+        } else if (contact == null) {
             mTitle.setText(readableNumber);
-            ViewUtils.setVisible(mLabel, false);
             mNumber.setVisibility(View.GONE);
+            initials = null;
+            identifier = null;
         } else {
-            TelecomUtils.setContactBitmapAsync(mContext, mAvatar,
-                    contact.getAvatarUri(), contact.getInitials(), contact.getDisplayName());
             mTitle.setText(contact.getDisplayName());
+            mNumber.setText(readableNumber);
+            mNumber.setVisibility(View.VISIBLE);
+            initials = contact.getInitials();
+            identifier = contact.getDisplayName();
+        }
+
+        if (contact == null) {
+            ViewUtils.setVisible(mLabel, false);
+        } else {
             CharSequence phoneNumberLabel = contact.getPhoneNumber(number).getReadableLabel(
                     mContext.getResources());
             if (!TextUtils.isEmpty(phoneNumberLabel)) {
@@ -81,8 +98,12 @@ public class ConferenceProfileViewHolder extends RecyclerView.ViewHolder {
             } else {
                 ViewUtils.setVisible(mLabel, false);
             }
-            mNumber.setText(readableNumber);
-            mNumber.setVisibility(View.VISIBLE);
         }
+
+        Uri callerImageUri = callDetail.getCallerImageUri();
+        if (callerImageUri == null && contact != null) {
+            callerImageUri = contact.getAvatarUri();
+        }
+        TelecomUtils.setContactBitmapAsync(mContext, mAvatar, callerImageUri, initials, identifier);
     }
 }

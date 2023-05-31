@@ -45,6 +45,7 @@ import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.telecom.UiCallManager;
+import com.android.car.telephony.calling.InCallServiceManager;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.ui.AlertDialogBuilder;
 import com.android.car.ui.recyclerview.CarUiContentListItem;
@@ -86,7 +87,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
                             R.drawable.ic_audio_route_speaker_activatable))
                     .build();
 
-    @Inject UiCallManager mUiCallManager;
+    @Inject InCallServiceManager mInCallServiceManager;
     @Inject PhoneAccountManager mPhoneAccountManager;
     private InCallViewModel mInCallViewModel;
 
@@ -294,11 +295,11 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     }
 
     private void onMuteMic() {
-        mUiCallManager.setMuted(true);
+        mInCallServiceManager.setMuted(true);
     }
 
     private void onUnmuteMic() {
-        mUiCallManager.setMuted(false);
+        mInCallServiceManager.setMuted(false);
     }
 
     private void onHoldCall() {
@@ -325,7 +326,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
             // AudioRouteButton is disabled if it is null. Simply ignore it.
             return;
         }
-        mUiCallManager.setAudioRoute(audioRoute, primaryCall);
+        mInCallServiceManager.setAudioRoute(audioRoute, primaryCall);
         mActiveRoute = audioRoute;
         updateAudioRouteListItems();
         mAudioRouteSelectionDialog.dismiss();
@@ -361,7 +362,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
             mMuteButton.setEnabled(false);
         } else {
             mMuteButton.setEnabled(true);
-            mMuteButton.setActivated(mUiCallManager.getMuted());
+            mMuteButton.setActivated(mInCallServiceManager.getMuted());
         }
     }
 

@@ -22,18 +22,23 @@ import android.car.Car;
 import android.car.content.pm.CarPackageManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.telecom.Call;
 
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import com.android.car.dialer.framework.ConnectToBluetoothButtonDecorator;
 import com.android.car.dialer.framework.UxrButtonDecorator;
+import com.android.car.dialer.telecom.InCallServiceImpl;
 import com.android.car.dialer.ui.common.DialerBaseFragment;
 import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
+import com.android.car.telephony.calling.InCallServiceManager;
 import com.android.car.telephony.common.Contact;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -100,6 +105,22 @@ public final class DialerModules {
         static CarUxRestrictionsUtil provideCarUxRestrictionsUtil(
                 @ApplicationContext Context context) {
             return CarUxRestrictionsUtil.getInstance(context);
+        }
+
+        @Singleton
+        @Provides
+        static InCallServiceManager provideInCallServiceManager() {
+            return new InCallServiceManager();
+        }
+
+        @Provides
+        static List<Call> provideCallList(InCallServiceManager inCallServiceManager) {
+            InCallServiceImpl inCallService =
+                    (InCallServiceImpl) inCallServiceManager.getInCallService();
+            if (inCallService != null) {
+                return inCallService.getCallList();
+            }
+            return Collections.emptyList();
         }
     }
 

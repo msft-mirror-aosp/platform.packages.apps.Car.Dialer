@@ -154,10 +154,13 @@ public class ContactResultsFragment extends Hilt_ContactResultsFragment {
 
         if (mShowSearchAsToolbarTab) {
             super.setupToolbar(mToolbar);
+            if (getFragmentManager().getBackStackEntryCount() > 1) {
+                mToolbar.setNavButtonMode(NavButtonMode.BACK);
+            }
         } else {
             mToolbar.setNavButtonMode(NavButtonMode.BACK);
             mToolbar.setLogo(null);
-            ((TelecomActivity) requireActivity()).setTabsShown(false);
+            ((TelecomActivity) requireActivity()).setTabsShown(false, this);
             mToolbar.setSearchIcon(R.drawable.ic_app_icon);
         }
 

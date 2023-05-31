@@ -21,7 +21,6 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.android.car.apps.common.log.L;
@@ -98,20 +97,6 @@ public final class HfpDataModules {
     @InstallIn(ActivityRetainedComponent.class)
     @Module
     public static final class ActivityRetainedModule {
-        @ActivityRetainedScoped
-        @Named("Hfp")
-        @Provides
-        static LiveData<Boolean> hasHfpDeviceConnectedLiveData(
-                @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData) {
-            // Connecting or disconnecting a phone will send PHONE_ACCOUNT_REGISTERED or
-            // PHONE_ACCOUNT_UNREGISTERED intents twice making it set the same value twice.
-            // Emit the extra update by using distinctUntilChanged(LiveData).
-            return Transformations.distinctUntilChanged(
-                    Transformations.map(
-                            hfpDeviceListLiveData,
-                            devices -> devices != null && !devices.isEmpty()));
-        }
-
         @ActivityRetainedScoped
         @Provides
         @Named("BluetoothFavorite")

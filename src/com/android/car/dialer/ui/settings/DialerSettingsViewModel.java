@@ -39,16 +39,13 @@ public class DialerSettingsViewModel extends ViewModel {
 
     private final Context mContext;
     private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
-    private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
 
     @Inject
     public DialerSettingsViewModel(
             @ApplicationContext Context context,
-            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
-            @Named("Hfp") LiveData<Boolean> hasHfpDeviceConnectedLiveData) {
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
         mContext = context;
         mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
-        mHasHfpDeviceConnectedLiveData = hasHfpDeviceConnectedLiveData;
     }
 
     /**
@@ -61,8 +58,8 @@ public class DialerSettingsViewModel extends ViewModel {
     }
 
     /** Returns a {@link LiveData} which monitors if there are any connected HFP devices. */
-    public LiveData<Boolean> hasHfpDeviceConnected() {
-        return mHasHfpDeviceConnectedLiveData;
+    public LiveData<BluetoothDevice> getCurrentHfpDeviceLiveData() {
+        return mCurrentHfpDeviceLiveData;
     }
 
 }

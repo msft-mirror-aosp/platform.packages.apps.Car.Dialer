@@ -44,9 +44,9 @@
     <string name="call_log_header_older" msgid="3971634717537073179">"較早"</string>
     <string name="call_logs_empty" msgid="3084720078894119049">"沒有最近通話記錄"</string>
     <string name="contact_list_empty" msgid="4225504548491888138">"沒有聯絡人"</string>
-    <string name="available_after_sync" msgid="33765918799197782">"同步處理後才有可找到聯絡人。請確保您已允許分享手機上的聯絡人。"</string>
+    <string name="available_after_sync" msgid="33765918799197782">"同步處理後才有可找到聯絡人。請確保你已允許分享手機上的聯絡人。"</string>
     <string name="favorites_empty" msgid="5794510741132758130">"沒有常用聯絡人"</string>
-    <string name="no_favorites_added" msgid="2359050103464783907">"您尚未新增任何常用聯絡人"</string>
+    <string name="no_favorites_added" msgid="2359050103464783907">"你尚未新增任何常用聯絡人"</string>
     <string name="add_favorite_button" msgid="7914955940249767808">"新增常用聯絡人"</string>
     <string name="search_title" msgid="5412680850141871664">"搜尋聯絡人"</string>
     <string name="search_hint" msgid="3099066132607042439">"搜尋聯絡人"</string>
@@ -87,4 +87,6 @@
     <string name="sms_notification_title" msgid="5980540487139970307">"撥號器短訊"</string>
     <string name="sms_notification_text" msgid="9193883830187173056">"正在傳送短訊"</string>
     <string name="self_managed_call_description" msgid="7626811322858259206">"<xliff:g id="SELF_MANAGED_APP_NAME">%1$s</xliff:g> 通話"</string>
+    <string name="self_managed_call_current_speaker" msgid="7995502777230960442">"正在說話：<xliff:g id="CALLER_NAME">%1$s</xliff:g>"</string>
+    <string name="self_managed_call_participants" msgid="6303695666595174477">"參與者：<xliff:g id="COUNT">%1$d</xliff:g> 位"</string>
 </resources>

@@ -87,4 +87,6 @@
     <string name="sms_notification_title" msgid="5980540487139970307">"撥號簡訊"</string>
     <string name="sms_notification_text" msgid="9193883830187173056">"正在傳送簡訊"</string>
     <string name="self_managed_call_description" msgid="7626811322858259206">"「<xliff:g id="SELF_MANAGED_APP_NAME">%1$s</xliff:g>」通話"</string>
+    <string name="self_managed_call_current_speaker" msgid="7995502777230960442">"說話者：<xliff:g id="CALLER_NAME">%1$s</xliff:g>"</string>
+    <string name="self_managed_call_participants" msgid="6303695666595174477">"參與者：<xliff:g id="COUNT">%1$d</xliff:g>"</string>
 </resources>

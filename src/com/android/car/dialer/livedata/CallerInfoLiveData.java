@@ -16,9 +16,10 @@
 
 package com.android.car.dialer.livedata;
 
+import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.core.util.Pair;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Transformations;
@@ -30,6 +31,7 @@ import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.InMemoryPhoneBook;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -48,10 +50,14 @@ public class CallerInfoLiveData extends MediatorLiveData<Contact> {
         mCallDetailLiveData = callDetailLiveData;
         mExecutorService = executorService;
 
-        LiveData<Pair<String, String>> callMetadata = Transformations.distinctUntilChanged(
+        LiveData<CallMetadata> callMetadata = Transformations.distinctUntilChanged(
                 LiveDataFunctions.mapNonNull(
-                        mCallDetailLiveData, callDetail -> Pair.create(
-                                callDetail.getNumber(), callDetail.getCallerDisplayName())));
+                        mCallDetailLiveData, callDetail -> new CallMetadata(
+                                callDetail.getNumber(),
+                                callDetail.getCallerDisplayName(),
+                                callDetail.getCallerImageUri(),
+                                callDetail.getCurrentSpeaker(),
+                                callDetail.getParticipantCount())));
         addSource(callMetadata, number -> lookupContact());
 
         LiveData<String> accountNameLiveData = Transformations.distinctUntilChanged(
@@ -90,6 +96,43 @@ public class CallerInfoLiveData extends MediatorLiveData<Contact> {
                     postValue(dbContact);
                 }
             });
+        }
+    }
+
+    private static class CallMetadata {
+        private String mNumber;
+        private String mCallerDisplayName;
+        private Uri mCallerImageUri;
+        private String mCurrentSpeaker;
+        private int mParticipantCount;
+
+        CallMetadata(
+                String number,
+                String callerDisplayName,
+                Uri callerImageUri,
+                String currentSpeaker,
+                int participantCount) {
+            mNumber = number;
+            mCallerDisplayName = callerDisplayName;
+            mCallerImageUri = callerImageUri;
+            mCurrentSpeaker = currentSpeaker;
+            mParticipantCount = participantCount;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            return obj instanceof CallMetadata
+                    && TextUtils.equals(mNumber, ((CallMetadata) obj).mNumber)
+                    && TextUtils.equals(mCallerDisplayName, ((CallMetadata) obj).mCallerDisplayName)
+                    && Objects.equals(mCallerImageUri, ((CallMetadata) obj).mCallerImageUri)
+                    && TextUtils.equals(mCurrentSpeaker, ((CallMetadata) obj).mCurrentSpeaker)
+                    && mParticipantCount == ((CallMetadata) obj).mParticipantCount;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mNumber, mCallerDisplayName, mCallerImageUri, mCurrentSpeaker,
+                    mParticipantCount);
         }
     }
 

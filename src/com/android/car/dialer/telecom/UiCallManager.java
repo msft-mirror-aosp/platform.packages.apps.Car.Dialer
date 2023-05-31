@@ -23,37 +23,27 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothDevice;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.telecom.Call;
-import android.telecom.CallAudioState;
 import android.telecom.PhoneAccount;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.LiveData;
 
 import com.android.car.apps.common.log.L;
 import com.android.car.assist.CarVoiceInteractionSession;
 import com.android.car.dialer.R;
-import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.sms.MessagingService;
 import com.android.car.dialer.ui.common.DialerUtils;
-import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.TelecomUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -69,47 +59,20 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 public final class UiCallManager {
     private static String TAG = "CD.TelecomMgr";
 
-    private static final String EVENT_SCO_CONNECT = "com.android.bluetooth.hfpclient.SCO_CONNECT";
-    private static final String EVENT_SCO_DISCONNECT =
-            "com.android.bluetooth.hfpclient.SCO_DISCONNECT";
-
     private Context mContext;
     private final TelecomManager mTelecomManager;
-    private final PhoneAccountManager mPhoneAccountManager;
-    private InCallServiceImpl mInCallService;
     private LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
 
     @Inject
     UiCallManager(
             @ApplicationContext Context context,
             TelecomManager telecomManager,
-            PhoneAccountManager phoneAccountManager,
             @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData) {
         L.d(TAG, "SetUp");
         mContext = context;
         mTelecomManager = telecomManager;
-        mPhoneAccountManager = phoneAccountManager;
         mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
-
-        Intent intent = new Intent(context, InCallServiceImpl.class);
-        intent.setAction(InCallServiceImpl.ACTION_LOCAL_BIND);
-        context.bindService(intent, mInCallServiceConnection, Context.BIND_AUTO_CREATE);
     }
-
-    private final ServiceConnection mInCallServiceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            L.d(TAG, "onServiceConnected: %s, service: %s", name, binder);
-            mInCallService = ((InCallServiceImpl.LocalBinder) binder).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            L.d(TAG, "onServiceDisconnected: %s", name);
-            mInCallService = null;
-        }
-    };
 
     /**
      * Tears down the {@link UiCallManager}. Calling this function will null out the global
@@ -117,112 +80,8 @@ public final class UiCallManager {
      * {@link UiCallManager}.
      */
     public void tearDown() {
-        if (mInCallService != null) {
-            mContext.unbindService(mInCallServiceConnection);
-            mInCallService = null;
-        }
         // Clear out the mContext reference to avoid memory leak.
         mContext = null;
-    }
-
-    public boolean getMuted() {
-        L.d(TAG, "getMuted");
-        if (mInCallService == null) {
-            return false;
-        }
-        CallAudioState audioState = mInCallService.getCallAudioState();
-        return audioState != null && audioState.isMuted();
-    }
-
-    public void setMuted(boolean muted) {
-        L.d(TAG, "setMuted: %b", muted);
-        if (mInCallService == null) {
-            return;
-        }
-        mInCallService.setMuted(muted);
-    }
-
-    public int getSupportedAudioRouteMask() {
-        L.d(TAG, "getSupportedAudioRouteMask");
-
-        CallAudioState audioState = getCallAudioStateOrNull();
-        return audioState != null ? audioState.getSupportedRouteMask() : 0;
-    }
-
-    /** Returns a list of supported CallAudioRoute for the given {@link PhoneAccountHandle}. */
-    public List<Integer> getSupportedAudioRoute(@Nullable PhoneAccountHandle phoneAccountHandle) {
-        List<Integer> audioRouteList = new ArrayList<>();
-
-        BluetoothDevice device = mPhoneAccountManager.getMatchingDevice(phoneAccountHandle);
-        if (device != null) {
-            // if this is bluetooth phone call, we can only select audio route between vehicle
-            // and phone.
-            // Vehicle speaker route.
-            audioRouteList.add(CallAudioState.ROUTE_BLUETOOTH);
-            // Headset route.
-            audioRouteList.add(CallAudioState.ROUTE_EARPIECE);
-        } else {
-            // Most likely we are making phone call with on board SIM card.
-            int supportedAudioRouteMask = getSupportedAudioRouteMask();
-
-            if ((supportedAudioRouteMask & CallAudioState.ROUTE_EARPIECE) != 0) {
-                audioRouteList.add(CallAudioState.ROUTE_EARPIECE);
-            } else if ((supportedAudioRouteMask & CallAudioState.ROUTE_WIRED_HEADSET) != 0) {
-                audioRouteList.add(CallAudioState.ROUTE_WIRED_HEADSET);
-            }
-            if ((supportedAudioRouteMask & CallAudioState.ROUTE_BLUETOOTH) != 0) {
-                audioRouteList.add(CallAudioState.ROUTE_BLUETOOTH);
-            }
-            if ((supportedAudioRouteMask & CallAudioState.ROUTE_SPEAKER) != 0) {
-                audioRouteList.add(CallAudioState.ROUTE_SPEAKER);
-            }
-        }
-
-        return audioRouteList;
-    }
-
-    /**
-     * Returns the current audio route given the SCO state. See {@link CallDetail#getScoState()}.
-     * The available routes are defined in {@link CallAudioState}.
-     */
-    public int getAudioRoute(int scoState) {
-        if (scoState != CallDetail.STATE_AUDIO_ERROR) {
-            if (scoState == CallDetail.STATE_AUDIO_CONNECTED) {
-                return CallAudioState.ROUTE_BLUETOOTH;
-            } else {
-                return CallAudioState.ROUTE_EARPIECE;
-            }
-        } else {
-            CallAudioState audioState = getCallAudioStateOrNull();
-            int audioRoute = audioState != null ? audioState.getRoute() : 0;
-            L.d(TAG, "getAudioRoute: %d", audioRoute);
-            return audioRoute;
-        }
-    }
-
-    /**
-     * Re-route the audio out phone of the ongoing phone call.
-     */
-    public void setAudioRoute(int audioRoute, Call primaryCall) {
-        if (primaryCall == null) {
-            return;
-        }
-
-        boolean isConference = !primaryCall.getChildren().isEmpty()
-                && primaryCall.getDetails().hasProperty(Call.Details.PROPERTY_CONFERENCE);
-        Call call = isConference ? primaryCall.getChildren().get(0) : primaryCall;
-
-        if (audioRoute == CallAudioState.ROUTE_BLUETOOTH) {
-            call.sendCallEvent(EVENT_SCO_CONNECT, null);
-            setMuted(false);
-        } else if ((audioRoute & CallAudioState.ROUTE_WIRED_OR_EARPIECE) != 0) {
-            call.sendCallEvent(EVENT_SCO_DISCONNECT, null);
-        }
-        // TODO: Implement routing audio if current call is not a bluetooth call.
-    }
-
-    private CallAudioState getCallAudioStateOrNull() {
-        return mInCallService != null ? mInCallService.getCallAudioState() : null;
     }
 
     /**
@@ -335,10 +194,5 @@ public final class UiCallManager {
             }
         }
         return false;
-    }
-
-    /** Return the current active call list from delegated {@link InCallServiceImpl} */
-    public List<Call> getCallList() {
-        return mInCallService == null ? Collections.emptyList() : mInCallService.getCallList();
     }
 }

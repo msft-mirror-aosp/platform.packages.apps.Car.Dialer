@@ -16,6 +16,7 @@
 
 package com.android.car.dialer.ui;
 
+import android.bluetooth.BluetoothDevice;
 import android.telecom.Call;
 
 import androidx.lifecycle.LiveData;
@@ -38,7 +39,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class TelecomActivityViewModel extends ViewModel {
     private final LocalCallHandler mLocalCallHandler;
-    private final LiveData<Boolean> mHasHfpDeviceConnectedLiveData;
+    private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
 
     private RefreshUiEvent mRefreshTabsLiveData;
 
@@ -47,12 +48,12 @@ public class TelecomActivityViewModel extends ViewModel {
 
     @Inject
     public TelecomActivityViewModel(
-            @Named("Hfp") LiveData<Boolean> hasHfpDeviceConnectedLiveData,
+            @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
             RefreshUiEvent refreshUiEvent,
             LocalCallHandler localCallHandler,
             ToolbarTitleLiveData toolbarTitleLiveData) {
         mLocalCallHandler = localCallHandler;
-        mHasHfpDeviceConnectedLiveData = hasHfpDeviceConnectedLiveData;
+        mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
         mToolbarTitleLiveData = toolbarTitleLiveData;
         mRefreshTabsLiveData = refreshUiEvent;
 
@@ -82,9 +83,9 @@ public class TelecomActivityViewModel extends ViewModel {
         return mRefreshTabsLiveData;
     }
 
-    /** Returns a {@link LiveData} which monitors if there are any connected HFP devices. */
-    public LiveData<Boolean> hasHfpDeviceConnected() {
-        return mHasHfpDeviceConnectedLiveData;
+    /** Returns a {@link LiveData} which monitors if there is any connected HFP device. */
+    public LiveData<BluetoothDevice> getCurrentHfpDeviceLiveData() {
+        return mCurrentHfpDeviceLiveData;
     }
 
     /** Returns the live data which monitors the ongoing call list. */

@@ -53,7 +53,7 @@
     <string name="type_multiple" msgid="3402949522797441236">"متعدد"</string>
     <string name="select_number_dialog_title" msgid="5770700626013782205">"اختيار رقم هاتف"</string>
     <string name="select_number_dialog_just_once_button" msgid="1814381354393374660">"مرّة واحدة فقط"</string>
-    <string name="select_number_dialog_always_button" msgid="6862338683635863764">"دومًا"</string>
+    <string name="select_number_dialog_always_button" msgid="6862338683635863764">"دائمًا"</string>
     <string name="primary_number_description" msgid="1211198148918329509">"<xliff:g id="LABEL">%1$s</xliff:g>، تلقائي"</string>
     <string name="favorite_number_description" msgid="8175362259853807385">"المفضّلة، <xliff:g id="LABEL">%1$s</xliff:g>"</string>
     <string name="local_favorite_number_description" msgid="3723823871011997275">"النشاط التجاري المحلي المفضّل - <xliff:g id="LABEL">%1$s</xliff:g>"</string>
@@ -87,4 +87,6 @@
     <string name="sms_notification_title" msgid="5980540487139970307">"رسائل SMS باستخدام Dialer"</string>
     <string name="sms_notification_text" msgid="9193883830187173056">"إرسال رسائل SMS"</string>
     <string name="self_managed_call_description" msgid="7626811322858259206">"مكالمة عبر <xliff:g id="SELF_MANAGED_APP_NAME">%1$s</xliff:g>"</string>
+    <string name="self_managed_call_current_speaker" msgid="7995502777230960442">"المتحدِّث: \"<xliff:g id="CALLER_NAME">%1$s</xliff:g>\""</string>
+    <string name="self_managed_call_participants" msgid="6303695666595174477">"عدد المشاركين: <xliff:g id="COUNT">%1$d</xliff:g>"</string>
 </resources>

@@ -82,11 +82,23 @@ public class DialerSettingsFragment extends Hilt_DialerSettingsFragment {
             toolbar.setNavButtonMode(NavButtonMode.DISABLED);
             toolbar.setSearchMode(SearchMode.DISABLED);
             toolbar.setLogo(requireActivity().getDrawable(R.drawable.ic_app_icon));
-            ((TelecomActivity) requireActivity()).setTabsShown(true);
+            ((TelecomActivity) requireActivity()).setTabsShown(true, this);
 
             toolbar.setMenuItems(R.xml.menuitems);
         } else {
             super.setupToolbar(toolbar);
+        }
+    }
+
+    @Override
+    protected void setupChildFragmentToolbar(@NonNull Preference preference) {
+        if (mShowSettingsAsToolbarTab) {
+            ToolbarController toolbar = getPreferenceToolbar(this);
+            if (toolbar != null) {
+                toolbar.setNavButtonMode(NavButtonMode.BACK);
+            }
+        } else {
+            super.setupChildFragmentToolbar(preference);
         }
     }
 }

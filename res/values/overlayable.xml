@@ -33,6 +33,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="bool" name="config_always_show_incall_dialpad"/>
       <item type="bool" name="config_dialog_allow_dismiss_button"/>
       <item type="bool" name="config_enable_dial_motion"/>
+      <item type="bool" name="config_include_self_managed_calls"/>
       <item type="bool" name="config_should_show_active_call_setting"/>
       <item type="bool" name="config_should_show_incoming_call_hun_setting"/>
       <item type="bool" name="config_should_suppress_incoming_call_hun"/>

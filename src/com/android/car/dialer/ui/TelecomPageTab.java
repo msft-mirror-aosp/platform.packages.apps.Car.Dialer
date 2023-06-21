@@ -19,6 +19,7 @@ package com.android.car.dialer.ui;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -74,7 +75,6 @@ public class TelecomPageTab {
     private final Tab mToolbarTab;
     private Fragment mFragment;
     private String mFragmentTag;
-    private boolean mWasFragmentRestored;
 
     private TelecomPageTab(@Nullable Drawable icon, @Nullable String text, @Page String page,
                            @NonNull Consumer<TelecomPageTab> listener, Factory factory) {
@@ -100,17 +100,7 @@ public class TelecomPageTab {
         mFragment = fragmentManager.findFragmentByTag(mFragmentTag);
         if (mFragment == null || shouldForceRecreateFragment) {
             mFragment = mFactory.createFragment(page);
-            mWasFragmentRestored = false;
-            return;
         }
-        mWasFragmentRestored = true;
-    }
-
-    /**
-     * Returns true if the fragment for this tab is restored from a saved state.
-     */
-    public boolean wasFragmentRestored() {
-        return mWasFragmentRestored;
     }
 
     /**
@@ -163,7 +153,6 @@ public class TelecomPageTab {
         private final String[] mTabConfig;
         private final List<TelecomPageTab> mTabs = new ArrayList<>();
         private final OnItemClickedListener<TelecomPageTab> mSelectedListener;
-        private int mCurrentTabIndex;
         private int mStartTabIndex;
 
         public Factory(Context context,
@@ -186,12 +175,6 @@ public class TelecomPageTab {
             mStartTabIndex = getTabIndex(startTab);
 
             createTabs(context);
-            mCurrentTabIndex = mStartTabIndex;
-            for (int i = 0; i < mTabs.size(); i++) {
-                if (mTabs.get(i).wasFragmentRestored()) {
-                    mCurrentTabIndex = i;
-                }
-            }
         }
 
         @TelecomPageTab.Page
@@ -233,7 +216,6 @@ public class TelecomPageTab {
                         context.getString(TAB_LABELS.get(page)),
                         page,
                         tab -> {
-                            mCurrentTabIndex = getTabIndex(tab.mPage);
                             if (mSelectedListener != null) {
                                 mSelectedListener.onItemClicked(tab);
                             }
@@ -271,12 +253,23 @@ public class TelecomPageTab {
             return mTabs;
         }
 
-        public int getSelectedTabIndex() {
-            return mCurrentTabIndex;
-        }
-
         public int getStartTabIndex() {
             return mStartTabIndex;
+        }
+
+        /**
+         * Returns the tab index for the given fragment.
+         */
+        public int getTabIndex(Fragment fragment) {
+            String fragmentTag = fragment.getTag();
+            if (TextUtils.isEmpty(fragmentTag)) {
+                return -1;
+            }
+            String[] tagParts = fragmentTag.split(":");
+            if (tagParts.length == 2) {
+                return getTabIndex(tagParts[1]);
+            }
+            return -1;
         }
     }
 }

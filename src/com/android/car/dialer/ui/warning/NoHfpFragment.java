@@ -90,7 +90,7 @@ public class NoHfpFragment extends Hilt_NoHfpFragment {
 
     @Override
     protected void setupToolbar(@NonNull ToolbarController toolbar) {
-        ((TelecomActivity) requireActivity()).setTabsShown(false);
+        ((TelecomActivity) requireActivity()).setTabsShown(false, this);
         toolbar.setLogo(null);
         toolbar.setTitle((CharSequence) null);
         toolbar.setMenuItems(null);

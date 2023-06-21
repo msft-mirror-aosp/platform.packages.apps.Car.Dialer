@@ -39,6 +39,8 @@
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- This is to support VoIP app image uri from a web. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <!-- The Dialer needs to be directBootAware so that it can reflect the correct call state
          when the system boots up. -->
@@ -120,7 +122,7 @@
                  android:exported="true">
             <meta-data android:name="android.telecom.IN_CALL_SERVICE_UI" android:value="true"/>
             <meta-data android:name="android.telecom.INCLUDE_SELF_MANAGED_CALLS"
-                android:value="true" />
+                android:value="@string/config_include_self_managed_calls" />
             <intent-filter>
                 <action android:name="android.telecom.InCallService"/>
             </intent-filter>

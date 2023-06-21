@@ -16,6 +16,8 @@
 
 package com.android.car.dialer.framework;
 
+import static org.mockito.Mockito.mock;
+
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
@@ -72,14 +74,7 @@ public final class SingleHfpEmulatorModule {
     @Named("Hfp")
     @Provides
     static LiveData<BluetoothDevice> provideCurrentHfpDeviceLiveData() {
-        return LiveDataFunctions.dataOf(null);
-    }
-
-    @Singleton
-    @Named("Hfp")
-    @Provides
-    static LiveData<Boolean> hasHfpDeviceConnectedLiveData() {
-        return LiveDataFunctions.dataOf(true);
+        return LiveDataFunctions.dataOf(mock(BluetoothDevice.class));
     }
 
     @Provides

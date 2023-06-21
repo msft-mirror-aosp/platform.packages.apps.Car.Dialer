@@ -17,6 +17,7 @@
 package com.android.car.dialer.ui.activecall;
 
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.telecom.Call;
@@ -131,18 +132,13 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
             return;
         }
         String callerDisplayName = callDetail.getCallerDisplayName();
-        if (TextUtils.isEmpty(callerDisplayName)) {
-            mAvatarView.setImageDrawable(mDefaultAvatar);
-            String number = callDetail.getNumber();
-            mTitle.setText(TelecomUtils.getReadableNumber(getContext(), number));
-        } else {
-            mTitle.setText(callerDisplayName);
-            mAvatarView.setImageDrawable(
-                    TelecomUtils.createLetterTile(
-                            getContext(),
-                            TelecomUtils.getInitials(callerDisplayName),
-                            callerDisplayName));
-        }
+        Uri callerImageUri = callDetail.getCallerImageUri();
+        String displayName = TextUtils.isEmpty(callerDisplayName)
+                ? TelecomUtils.getReadableNumber(getContext(), callDetail.getNumber())
+                : callerDisplayName;
+        mTitle.setText(displayName);
+        TelecomUtils.setContactBitmapAsync(getContext(), mAvatarView, callerImageUri,
+                TelecomUtils.getInitials(displayName), displayName);
     }
 
     private void updateProfile(Contact contact) {
@@ -152,9 +148,13 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
             return;
         }
 
-        mTitle.setText(contact.getDisplayName());
-        TelecomUtils.setContactBitmapAsync(getContext(), mAvatarView,
-                contact.getAvatarUri(), contact.getInitials(), contact.getDisplayName());
+        if (TextUtils.isEmpty(callDetail.getCallerDisplayName())) {
+            mTitle.setText(contact.getDisplayName());
+        }
+        if (callDetail.getCallerImageUri() == null) {
+            TelecomUtils.setContactBitmapAsync(getContext(), mAvatarView,
+                    contact.getAvatarUri(), contact.getInitials(), contact.getDisplayName());
+        }
     }
 
     private void swapCalls() {

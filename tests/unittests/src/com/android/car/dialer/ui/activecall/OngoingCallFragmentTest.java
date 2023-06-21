@@ -35,8 +35,8 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.android.car.dialer.R;
-import com.android.car.dialer.livedata.CallDetailLiveData;
 import com.android.car.dialer.testing.TestActivity;
+import com.android.car.telephony.calling.CallDetailLiveData;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -85,8 +85,6 @@ public class ProjectionCallHandlerTest {
     @Mock
     private CarProjectionManager mCarProjectionManager;
     @Mock
-    private UiCallManager mUiCallManager;
-    @Mock
     private InCallNotificationController mInCallNotificationController;
     @Mock
     private Car mCar;
@@ -101,8 +99,9 @@ public class ProjectionCallHandlerTest {
 
         when(mTelecomManager.isInEmergencyCall()).thenReturn(false);
 
-        mProjectionCallHandler = new ProjectionCallHandler(mTelecomManager, mCar,
-                car -> mCarProjectionManager, mUiCallManager, mInCallNotificationController);
+        mProjectionCallHandler = new ProjectionCallHandler(
+                mTelecomManager, mCar, car -> mCarProjectionManager, () -> Collections.emptyList(),
+                mInCallNotificationController);
     }
 
     @Test

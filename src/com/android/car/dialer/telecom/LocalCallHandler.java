@@ -17,11 +17,6 @@
 package com.android.car.dialer.telecom;
 
 import android.car.drivingstate.CarUxRestrictions;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
 import android.telecom.Call;
 import android.telecom.CallAudioState;
 
@@ -31,18 +26,20 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.apps.common.log.L;
+import com.android.car.telephony.calling.InCallServiceManager;
 import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
 import com.google.common.base.Predicate;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.android.scopes.ViewModelScoped;
 
 /**
@@ -50,10 +47,11 @@ import dagger.hilt.android.scopes.ViewModelScoped;
  * change and call audio state change.
  */
 @ViewModelScoped
-public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsChangedListener {
+public class LocalCallHandler
+        implements CarUxRestrictionsUtil.OnUxRestrictionsChangedListener, PropertyChangeListener {
     private static final String TAG = "CD.CallHandler";
-    private final Context mContext;
     private final CarUxRestrictionsUtil mCarUxRestrictionsUtil;
+    private final InCallServiceManager mInCallServiceManager;
     private final SelfManagedCallUtil mSelfManagedCallUtil;
     private final Call.Callback mRingingCallStateChangeCallback;
 
@@ -81,41 +79,16 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
                 }
             };
 
-    private InCallServiceImpl mInCallService;
-    private final ServiceConnection mInCallServiceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            L.d(TAG, "onServiceConnected: %s, service: %s", name, binder);
-            mInCallService = ((InCallServiceImpl.LocalBinder) binder).getService();
-            for (Call call : mInCallService.getCallList()) {
-                notifyCallAdded(call);
-            }
-            mInCallService.addActiveCallListChangedCallback(mActiveCallListChangedCallback);
-            mInCallService.addCallAudioStateChangedCallback(mCallAudioStateCallback);
-            // Register will call onRestrictionsChanged(CarUxRestrictions) and notify call list
-            // changed, so we don't need to call notifyCallListChanged() again.
-            mCarUxRestrictionsUtil.register(LocalCallHandler.this);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            L.d(TAG, "onServiceDisconnected: %s", name);
-            cleanup();
-        }
-    };
-
     /**
      * Initiate a LocalCallHandler.
-     *
-     * @param context Application context.
      */
     @Inject
     public LocalCallHandler(
-            @ApplicationContext Context context,
             CarUxRestrictionsUtil carUxRestrictionsUtil,
+            InCallServiceManager inCallServiceManager,
             SelfManagedCallUtil selfManagedCallUtil) {
-        mContext = context;
         mCarUxRestrictionsUtil = carUxRestrictionsUtil;
+        mInCallServiceManager = inCallServiceManager;
         mSelfManagedCallUtil = selfManagedCallUtil;
 
         mCallListLiveData = new MutableLiveData<>();
@@ -133,9 +106,10 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
             }
         };
 
-        Intent intent = new Intent(mContext, InCallServiceImpl.class);
-        intent.setAction(InCallServiceImpl.ACTION_LOCAL_BIND);
-        mContext.bindService(intent, mInCallServiceConnection, Context.BIND_AUTO_CREATE);
+        mInCallServiceManager.addObserver(this);
+        if (mInCallServiceManager.getInCallService() != null) {
+            onInCallServiceConnected();
+        }
     }
 
     /** Returns the {@link LiveData} which monitors the call audio state change. */
@@ -166,22 +140,45 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
         notifyCallListChanged();
     }
 
+    public void propertyChange(PropertyChangeEvent evt) {
+        L.i(TAG, "InCallService has updated.");
+        if (mInCallServiceManager.getInCallService() == null) {
+            cleanup();
+        } else {
+            onInCallServiceConnected();
+        }
+    }
+
+    private void onInCallServiceConnected() {
+        InCallServiceImpl inCallService =
+                (InCallServiceImpl) mInCallServiceManager.getInCallService();
+        for (Call call : inCallService.getCallList()) {
+            notifyCallAdded(call);
+        }
+        inCallService.addActiveCallListChangedCallback(mActiveCallListChangedCallback);
+        inCallService.addCallAudioStateChangedCallback(mCallAudioStateCallback);
+        // Register will call onRestrictionsChanged(CarUxRestrictions) and notify call list
+        // changed, so we don't need to call notifyCallListChanged() again.
+        mCarUxRestrictionsUtil.register(LocalCallHandler.this);
+    }
+
     /** Disconnects the {@link InCallServiceImpl} and cleanup. */
     public void tearDown() {
-        mContext.unbindService(mInCallServiceConnection);
+        mInCallServiceManager.removeObserver(this);
         cleanup();
     }
 
     private void cleanup() {
         mCarUxRestrictionsUtil.unregister(this);
-        if (mInCallService != null) {
-            for (Call call : mInCallService.getCallList()) {
+        InCallServiceImpl inCallService =
+                (InCallServiceImpl) mInCallServiceManager.getInCallService();
+        if (inCallService != null) {
+            for (Call call : inCallService.getCallList()) {
                 notifyCallRemoved(call);
             }
-            mInCallService.removeActiveCallListChangedCallback(mActiveCallListChangedCallback);
-            mInCallService.removeCallAudioStateChangedCallback(mCallAudioStateCallback);
+            inCallService.removeActiveCallListChangedCallback(mActiveCallListChangedCallback);
+            inCallService.removeCallAudioStateChangedCallback(mCallAudioStateCallback);
         }
-        mInCallService = null;
     }
 
     /**
@@ -194,7 +191,13 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
      * </ul>
      */
     private void notifyCallListChanged() {
-        List<Call> callList = new ArrayList<>(mInCallService.getCallList());
+        InCallServiceImpl inCallService =
+                (InCallServiceImpl) mInCallServiceManager.getInCallService();
+        if (inCallService == null) {
+            return;
+        }
+
+        List<Call> callList = new ArrayList<>(inCallService.getCallList());
         // If car is not driving(parked or idle), filter self managed calls.
         if (mSelfManagedCallUtil.canShowCalInCallView()) {
             callList = filter(callList, call -> call != null
@@ -202,11 +205,11 @@ public class LocalCallHandler implements CarUxRestrictionsUtil.OnUxRestrictionsC
         }
 
         List<Call> activeCallList = filter(callList,
-                call -> call != null && call.getState() != Call.STATE_RINGING);
+                call -> call != null && call.getDetails().getState() != Call.STATE_RINGING);
         mOngoingCallListLiveData.setValue(activeCallList);
 
         Call ringingCall = firstMatch(callList,
-                call -> call != null && call.getState() == Call.STATE_RINGING);
+                call -> call != null && call.getDetails().getState() == Call.STATE_RINGING);
         mIncomingCallLiveData.setValue(ringingCall);
 
         mCallListLiveData.setValue(callList);

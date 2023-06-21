@@ -29,7 +29,7 @@ limitations under the License.
         </shape>
     </item>
     <item>
-        <ripple android:color="@color/car_card_ripple_background">
+        <ripple android:color="@color/car_ui_ripple_color">
             <item android:id="@android:id/mask">
                 <shape android:shape="oval">
                     <solid android:color="@android:color/white"/>

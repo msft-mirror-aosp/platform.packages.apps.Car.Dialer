@@ -29,13 +29,13 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="attr" name="progressViewLayout"/>
       <item type="attr" name="tabBarSize"/>
       <item type="attr" name="toolbarTitleMode"/>
+      <item type="bool" name="config_add_favorite_button_span_size_one"/>
       <item type="bool" name="config_always_show_incall_dialpad"/>
       <item type="bool" name="config_dialog_allow_dismiss_button"/>
       <item type="bool" name="config_enable_dial_motion"/>
       <item type="bool" name="config_should_show_active_call_setting"/>
       <item type="bool" name="config_should_show_incoming_call_hun_setting"/>
       <item type="bool" name="config_should_suppress_incoming_call_hun"/>
-      <item type="bool" name="config_add_favorite_button_span_size_one" />
       <item type="bool" name="config_show_calllog_action_button_for_non_contact"/>
       <item type="bool" name="config_show_contact_detail_button_for_empty_contact"/>
       <item type="bool" name="config_show_contact_details_action_bar_avatar"/>
@@ -46,12 +46,12 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="bool" name="config_show_fullscreen_incall_ui"/>
       <item type="bool" name="config_show_hun_fullscreen_incall_ui"/>
       <item type="bool" name="config_show_postal_address"/>
-      <item type="bool" name="config_show_type_down_list_on_dialpad"/>
-      <item type="bool" name="config_show_toolbar_with_contact_details"/>
-      <item type="bool" name="config_show_search_as_toolbar_tab" />
+      <item type="bool" name="config_show_search_as_toolbar_tab"/>
+      <item type="bool" name="config_show_search_in_menu_items"/>
       <item type="bool" name="config_show_settings_as_toolbar_tab"/>
-      <item type="bool" name="config_show_search_in_menu_items" />
-      <item type="bool" name="config_show_settings_in_menu_items" />
+      <item type="bool" name="config_show_settings_in_menu_items"/>
+      <item type="bool" name="config_show_toolbar_with_contact_details"/>
+      <item type="bool" name="config_show_type_down_list_on_dialpad"/>
       <item type="color" name="add_favorite_background_color"/>
       <item type="color" name="audio_output_accent"/>
       <item type="color" name="call_button_outline"/>
@@ -153,6 +153,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="in_call_controller_bar_margin_bottom"/>
       <item type="dimen" name="in_call_margin_between_avatar_and_text"/>
       <item type="dimen" name="in_call_margin_label_end"/>
+      <item type="dimen" name="in_call_metadata_margin_end"/>
+      <item type="dimen" name="in_call_metadata_margin_top"/>
       <item type="dimen" name="in_call_phone_number_margin_top"/>
       <item type="dimen" name="in_call_state_margin_top"/>
       <item type="dimen" name="in_call_user_profile_list_margin"/>
@@ -258,6 +260,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="call_button_focus_area"/>
       <item type="id" name="call_count_text"/>
       <item type="id" name="call_duration"/>
+      <item type="id" name="call_metadata"/>
       <item type="id" name="call_state"/>
       <item type="id" name="call_type_icons"/>
       <item type="id" name="calllog_action_button"/>
@@ -275,6 +278,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="contact_picture"/>
       <item type="id" name="contact_result"/>
       <item type="id" name="control_bar_focus_area"/>
+      <item type="id" name="current_speaker"/>
       <item type="id" name="delete_button"/>
       <item type="id" name="dialpad_contact_avatar"/>
       <item type="id" name="dialpad_contact_initials"/>
@@ -325,6 +329,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="ongoing_conf_call_fragment"/>
       <item type="id" name="onhold_label"/>
       <item type="id" name="onhold_user_profile"/>
+      <item type="id" name="participants"/>
       <item type="id" name="pause_button"/>
       <item type="id" name="phone_number"/>
       <item type="id" name="pound"/>
@@ -484,7 +489,9 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="select_number_dialog_always_button"/>
       <item type="string" name="select_number_dialog_just_once_button"/>
       <item type="string" name="select_number_dialog_title"/>
+      <item type="string" name="self_managed_call_current_speaker"/>
       <item type="string" name="self_managed_call_description"/>
+      <item type="string" name="self_managed_call_participants"/>
       <item type="string" name="setting_title"/>
       <item type="string" name="seven"/>
       <item type="string" name="seven_letters"/>

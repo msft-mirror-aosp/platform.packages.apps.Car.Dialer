@@ -17,6 +17,7 @@
 package com.android.car.dialer.ui.activecall;
 
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.telecom.Call;
@@ -73,16 +74,20 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     private TextView mPhoneNumberView;
     @Nullable
     private TextView mPhoneLabelView;
+    @Nullable
+    private View mCallMetadataView;
+    @Nullable
+    private TextView mCurrentSpeakerView;
+    @Nullable
+    private TextView mParticipants;
     private Chronometer mUserProfileCallStateText;
     private TextView mNameView;
     private ImageView mAvatarView;
     private BackgroundImageView mBackgroundImage;
-    private LetterTileDrawable mDefaultAvatar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDefaultAvatar = TelecomUtils.createLetterTile(getContext(), null, null);
         mInCallViewModel = new ViewModelProvider(getActivity()).get(InCallViewModel.class);
     }
 
@@ -98,6 +103,9 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         mAvatarView.setOutlineProvider(ContactAvatarOutputlineProvider.get());
         mPhoneNumberView = mUserProfileContainerView.findViewById(R.id.user_profile_phone_number);
         mPhoneLabelView = mUserProfileContainerView.findViewById(R.id.user_profile_phone_label);
+        mCallMetadataView = mUserProfileContainerView.findViewById(R.id.call_metadata);
+        mCurrentSpeakerView = mUserProfileContainerView.findViewById(R.id.current_speaker);
+        mParticipants = mUserProfileContainerView.findViewById(R.id.participants);
         mUserProfileCallStateText = mUserProfileContainerView.findViewById(
                 R.id.user_profile_call_state);
         mBackgroundImage = view.findViewById(R.id.background_image);
@@ -124,32 +132,45 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
 
         String callerDisplayName = callDetail.getCallerDisplayName();
         String number = callDetail.getNumber();
-        mPhoneNumberView.setVisibility(View.GONE);
-        if (!TextUtils.isEmpty(callerDisplayName)) {
-            mNameView.setText(callerDisplayName);
-            LetterTileDrawable letterTile = TelecomUtils.createLetterTile(
-                    getContext(), TelecomUtils.getInitials(callerDisplayName), callerDisplayName);
-            mAvatarView.setImageDrawable(letterTile);
-            mBackgroundImage.setAlpha(getResources().getFloat(
-                    R.dimen.config_background_image_error_alpha));
-            mBackgroundImage.setBackgroundColor(letterTile.getColor());
-            if (!TextUtils.isEmpty(number)) {
-                mPhoneNumberView.setText(TelecomUtils.getReadableNumber(getContext(), number));
-                mPhoneNumberView.setVisibility(View.VISIBLE);
-            }
+        String displayName = TextUtils.isEmpty(callerDisplayName)
+                ? TelecomUtils.getReadableNumber(getContext(), number)
+                : callerDisplayName;
+
+        mNameView.setText(displayName);
+
+        Uri callerImageUri = callDetail.getCallerImageUri();
+        LetterTileDrawable letterTile = TelecomUtils.createLetterTile(
+                getContext(), TelecomUtils.getInitials(displayName), displayName);
+        loadAvatar(callerImageUri, letterTile);
+
+        if (!TextUtils.isEmpty(callerDisplayName) && !TextUtils.isEmpty(number)) {
+            mPhoneNumberView.setText(TelecomUtils.getReadableNumber(getContext(), number));
+            mPhoneNumberView.setVisibility(View.VISIBLE);
         } else {
-            mNameView.setText(TelecomUtils.getReadableNumber(getContext(), number));
-            mAvatarView.setImageDrawable(mDefaultAvatar);
-            mBackgroundImage.setAlpha(getResources().getFloat(
-                    R.dimen.config_background_image_error_alpha));
-            mBackgroundImage.setBackgroundColor(mDefaultAvatar.getColor());
+            mPhoneNumberView.setVisibility(View.GONE);
         }
 
         if (callDetail.isSelfManaged()) {
+            String currentSpeaker = TextUtils.isEmpty(callDetail.getCurrentSpeaker()) ? null :
+                    getString(R.string.self_managed_call_current_speaker,
+                            callDetail.getCurrentSpeaker());
+            ViewUtils.setText(mCurrentSpeakerView, currentSpeaker);
+            String participants = callDetail.getParticipantCount() < 0 ? null :
+                    getString(R.string.self_managed_call_participants,
+                            callDetail.getParticipantCount());
+            ViewUtils.setText(mParticipants, participants);
+            if (currentSpeaker == null && participants == null) {
+                ViewUtils.setVisible(mCallMetadataView, false);
+            } else {
+                ViewUtils.setVisible(mCallMetadataView, true);
+                ViewUtils.setVisible(mCurrentSpeakerView, currentSpeaker != null);
+                ViewUtils.setVisible(mParticipants, participants != null);
+            }
             ViewUtils.setText(mPhoneLabelView,
                     getString(R.string.self_managed_call_description, appInfo.second));
             ViewUtils.setVisible(mPhoneLabelView, true);
         } else {
+            ViewUtils.setVisible(mCallMetadataView, false);
             ViewUtils.setVisible(mPhoneLabelView, false);
         }
     }
@@ -166,7 +187,9 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         String number = callDetail.getNumber();
         String nameViewText = contact.getDisplayName();
         String formattedNumber = TelecomUtils.getReadableNumber(getContext(), number);
-        mNameView.setText(nameViewText);
+        if (TextUtils.isEmpty(callDetail.getCallerDisplayName())) {
+            mNameView.setText(nameViewText);
+        }
 
         if (TextUtils.equals(nameViewText, formattedNumber)) {
             mPhoneNumberView.setVisibility(View.GONE);
@@ -182,32 +205,11 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             mPhoneNumberView.setVisibility(View.VISIBLE);
         }
 
-        LetterTileDrawable letterTile = TelecomUtils.createLetterTile(
-                getContext(), contact.getInitials(), contact.getDisplayName());
-
-        Glide.with(this)
-                .load(contact.getAvatarUri())
-                .apply(new RequestOptions().centerCrop().error(letterTile))
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                                Target<Drawable> target, boolean isFirstResource) {
-                        mBackgroundImage.setAlpha(getResources().getFloat(
-                                R.dimen.config_background_image_error_alpha));
-                        mBackgroundImage.setBackgroundColor(letterTile.getColor());
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model,
-                                                   Target<Drawable> target, DataSource dataSource,
-                                                   boolean isFirstResource) {
-                        mBackgroundImage.setAlpha(getResources().getFloat(
-                                R.dimen.config_background_image_alpha));
-                        mBackgroundImage.setBackgroundDrawable(resource, false);
-                        return false;
-                    }
-                }).into(mAvatarView);
+        if (callDetail.getCallerImageUri() == null) {
+            LetterTileDrawable letterTile = TelecomUtils.createLetterTile(
+                    getContext(), contact.getInitials(), contact.getDisplayName());
+            loadAvatar(contact.getAvatarUri(), letterTile);
+        }
     }
 
     /**
@@ -228,5 +230,32 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             mUserProfileCallStateText.setText(TelecomUtils.callStateToUiString(getContext(),
                     callStateAndConnectTime.first));
         }
+    }
+
+    private void loadAvatar(@Nullable Uri avatarUri,
+                            @NonNull LetterTileDrawable fallbackDrawable) {
+        Glide.with(this)
+                .load(avatarUri)
+                .apply(new RequestOptions().centerCrop().error(fallbackDrawable))
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Drawable> target, boolean isFirstResource) {
+                        mBackgroundImage.setAlpha(getResources().getFloat(
+                                R.dimen.config_background_image_error_alpha));
+                        mBackgroundImage.setBackgroundColor(fallbackDrawable.getColor());
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model,
+                                                   Target<Drawable> target, DataSource dataSource,
+                                                   boolean isFirstResource) {
+                        mBackgroundImage.setAlpha(getResources().getFloat(
+                                R.dimen.config_background_image_alpha));
+                        mBackgroundImage.setBackgroundDrawable(resource, false);
+                        return false;
+                    }
+                }).into(mAvatarView);
     }
 }

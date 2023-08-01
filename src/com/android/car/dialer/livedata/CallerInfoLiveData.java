@@ -63,7 +63,8 @@ public class CallerInfoLiveData extends MediatorLiveData<Contact> {
         LiveData<String> accountNameLiveData = Transformations.distinctUntilChanged(
                 LiveDataFunctions.mapNonNull(
                         mCallDetailLiveData,
-                        callDetail -> callDetail.getPhoneAccountHandle().getId()));
+                        callDetail -> callDetail.getPhoneAccountHandle() == null
+                            ? null : callDetail.getPhoneAccountHandle().getId()));
         LiveData<List<Contact>> contactListLiveData = LiveDataFunctions.switchMapNonNull(
                 accountNameLiveData,
                 accountName -> InMemoryPhoneBook.get().getContactsLiveDataByAccount(accountName));

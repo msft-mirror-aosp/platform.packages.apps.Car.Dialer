@@ -34,6 +34,8 @@ import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.telephony.common.CallDetail;
+import com.android.car.ui.baselayout.Insets;
+import com.android.car.ui.baselayout.InsetsChangedListener;
 import com.android.car.ui.core.CarUi;
 import com.android.car.ui.toolbar.ToolbarController;
 
@@ -43,7 +45,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 /** Activity for ongoing call and incoming call. */
 @AndroidEntryPoint(FragmentActivity.class)
-public class InCallActivity extends Hilt_InCallActivity {
+public class InCallActivity extends Hilt_InCallActivity implements InsetsChangedListener {
     private static final String TAG = "CD.InCallActivity";
 
     @Inject
@@ -153,5 +155,12 @@ public class InCallActivity extends Hilt_InCallActivity {
         } else {
             mShowIncomingCall.setValue(false);
         }
+    }
+
+    @Override
+    public void onCarUiInsetsChanged(Insets insets) {
+        // Do nothing, this is just a marker that we will handle the insets in fragments.
+        // This is only necessary because the fragments are not immediately added to the
+        // activity when calling .commit()
     }
 }

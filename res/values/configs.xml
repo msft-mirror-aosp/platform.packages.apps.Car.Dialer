@@ -105,8 +105,7 @@
     it takes up entire row. -->
     <bool name="config_add_favorite_button_span_size_one">true</bool>
 
-    <!-- A string value to determine if self managed calls will be presented in the in-call screen.
-     The allowed values are "true" and "false". -->
-    <string translatable="false" name="config_include_self_managed_calls">false</string>
+    <!-- A config to determine if self managed calls will be presented in the in-call screen. -->
+    <bool name="config_include_self_managed_calls">false</bool>
 
 </resources>

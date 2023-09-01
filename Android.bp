@@ -88,12 +88,6 @@ android_app {
     dex_preopt: {
         enabled: false,
     },
-
-    product_variables: {
-        pdk: {
-            enabled: false,
-        },
-    },
 }
 
 //##################################################################################
@@ -144,12 +138,6 @@ android_test_helper_app {
 
     dex_preopt: {
         enabled: false,
-    },
-
-    product_variables: {
-        pdk: {
-            enabled: false,
-        },
     },
 
     // runtime cc library which is used by mockito-target-extended.
@@ -208,11 +196,5 @@ android_app {
 
     dex_preopt: {
         enabled: false,
-    },
-
-    product_variables: {
-        pdk: {
-            enabled: false,
-        },
     },
 }

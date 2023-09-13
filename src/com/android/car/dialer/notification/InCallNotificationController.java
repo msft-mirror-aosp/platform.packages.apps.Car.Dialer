@@ -152,7 +152,7 @@ public final class InCallNotificationController {
                 mNotificationBuilder.build());
 
         mNotificationFuture = NotificationUtils.getDisplayNameAndRoundedAvatar(
-                mContext, callNumber, callDetail.getPhoneAccountHandle().getId(), callerDisplayName,
+                mContext, callNumber, callDetail.getPhoneAccountName(), callerDisplayName,
                         callerImageUri)
                 .thenAcceptAsync((pair) -> {
                     // Check that the notification hasn't already been dismissed

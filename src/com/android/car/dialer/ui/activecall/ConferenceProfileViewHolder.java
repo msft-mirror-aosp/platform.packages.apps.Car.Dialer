@@ -63,7 +63,7 @@ public class ConferenceProfileViewHolder extends RecyclerView.ViewHolder {
     public void bind(CallDetail callDetail) {
         String number = callDetail.getNumber();
         Contact contact = InMemoryPhoneBook.get().lookupContactEntry(
-                number, callDetail.getPhoneAccountHandle().getId());
+                number, callDetail.getPhoneAccountName());
         String readableNumber = TelecomUtils.getReadableNumber(mContext, number);
         String callerDisplayName = callDetail.getCallerDisplayName();
         String initials;

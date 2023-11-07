@@ -30,7 +30,7 @@ android_test {
         "androidx.test.uiautomator_uiautomator",
         "hilt_android_testing",
         "mockito-target-extended",
-        "truth-prebuilt",
+        "truth",
     ],
 
     jni_libs: ["libstaticjvmtiagent"],

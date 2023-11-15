@@ -22,6 +22,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.telecom.Call;
@@ -74,8 +75,10 @@ public class IncomingCallFragmentTest {
         activityScenario.onActivity(activity -> {
             InCallViewModel mockInCallViewModel = new ViewModelProvider(activity).get(
                     InCallViewModel.class);
+            Call call = mock(Call.class);
             Call.Details mockDetails = MockEntityFactory.createMockCallDetails(NUMBER);
-            mCallDetail = CallDetail.fromTelecomCallDetail(mockDetails);
+            when(call.getDetails()).thenReturn(mockDetails);
+            mCallDetail = CallDetail.fromTelecomCall(call);
             when(mockInCallViewModel.getIncomingCallDetail()).thenReturn(
                     LiveDataFunctions.dataOf(mCallDetail));
             when(mockInCallViewModel.getIncomingCallerInfoLiveData()).thenReturn(

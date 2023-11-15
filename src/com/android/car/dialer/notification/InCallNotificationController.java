@@ -107,7 +107,7 @@ public final class InCallNotificationController {
             mNotificationFuture.cancel(true);
         }
 
-        CallDetail callDetail = CallDetail.fromTelecomCallDetail(call.getDetails());
+        CallDetail callDetail = CallDetail.fromTelecomCall(call);
         String callNumber = callDetail.getNumber();
         mActiveInCallNotifications.add(callNumber);
 
@@ -181,7 +181,7 @@ public final class InCallNotificationController {
     public void cancelInCallNotification(Call call) {
         L.d(TAG, "cancelInCallNotification");
         if (call.getDetails() != null) {
-            String callNumber = CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber();
+            String callNumber = CallDetail.fromTelecomCall(call).getNumber();
             cancelInCallNotification(callNumber);
         }
     }
@@ -197,7 +197,7 @@ public final class InCallNotificationController {
 
     private PendingIntent getFullscreenIntent(Call call) {
         Intent intent = getIntent(NotificationService.ACTION_SHOW_FULLSCREEN_UI, call);
-        CallDetail callDetail = CallDetail.fromTelecomCallDetail(call.getDetails());
+        CallDetail callDetail = CallDetail.fromTelecomCall(call);
 
         // Only put the extra component name for the self managed calls.
         if (callDetail.isSelfManaged()) {
@@ -232,7 +232,7 @@ public final class InCallNotificationController {
         Intent intent = new Intent(action, null, mContext, NotificationService.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(NotificationService.EXTRA_PHONE_NUMBER,
-                CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber());
+                CallDetail.fromTelecomCall(call).getNumber());
         return intent;
     }
 

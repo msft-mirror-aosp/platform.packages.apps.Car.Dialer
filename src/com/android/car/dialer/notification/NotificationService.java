@@ -127,7 +127,7 @@ public class NotificationService extends Hilt_NotificationService {
         List<Call> callList = mCallListProvider.get();
         for (Call call : callList) {
             if (call.getDetails() != null && TextUtils.equals(
-                    CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber(), callId)) {
+                    CallDetail.fromTelecomCall(call).getNumber(), callId)) {
                 call.answer(/* videoState= */0);
                 return;
             }
@@ -138,7 +138,7 @@ public class NotificationService extends Hilt_NotificationService {
         List<Call> callList = mCallListProvider.get();
         for (Call call : callList) {
             if (call.getDetails() != null && TextUtils.equals(
-                    CallDetail.fromTelecomCallDetail(call.getDetails()).getNumber(), callId)) {
+                    CallDetail.fromTelecomCall(call).getNumber(), callId)) {
                 call.reject(false, /* textMessage= */"");
                 return;
             }

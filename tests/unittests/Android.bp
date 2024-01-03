@@ -27,7 +27,7 @@ android_test {
         "androidx.test.espresso.core",
         "androidx.test.espresso.contrib",
         "androidx.test.espresso.intents",
-        "truth-prebuilt",
+        "truth",
         "mockito-target-extended-minus-junit4",
     ],
 

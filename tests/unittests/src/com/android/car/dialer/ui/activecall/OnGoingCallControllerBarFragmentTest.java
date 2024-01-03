@@ -85,7 +85,7 @@ public class OnGoingCallControllerBarFragmentTest {
 
         when(mMockCall.getDetails()).thenReturn(mMockDetails);
         when(mMockDetails.can(eq(Call.Details.CAPABILITY_SUPPORT_HOLD))).thenReturn(true);
-        mCallDetail = CallDetail.fromTelecomCallDetail(mMockDetails);
+        mCallDetail = CallDetail.fromTelecomCall(mMockCall);
 
         mPrimaryCallLiveData = new MutableLiveData<>(mMockCall);
         mCallList = new ArrayList<>();

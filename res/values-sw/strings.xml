@@ -20,7 +20,7 @@
     <string name="no_hfp" msgid="7371139867234667691">"Ili upige simu, kwanza unganisha simu yako kwenye gari lako kupitia Bluetooth."</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth haipatikani."</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"Ili upige au upokee simu, washa Bluetooth."</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Ili upige au upokee simu, oanisha simu yako na gari."</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Ili upige au upokee simu, unganisha simu yako na gari."</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Unganisha kwenye Bluetooth"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Dharura"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Simu ya dharura"</string>

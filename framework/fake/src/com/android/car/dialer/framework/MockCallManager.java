@@ -249,7 +249,7 @@ public class MockCallManager {
 
         // Add call log if direction is defined (All calls except conference)
         if (!isConference) {
-            CallDetail detail = CallDetail.fromTelecomCallDetail(call.getDetails());
+            CallDetail detail = CallDetail.fromTelecomCall(call);
             int callDuration = (int) (System.currentTimeMillis() - detail.getConnectTimeMillis());
 
             CallLogRawData data = new CallLogRawData();
@@ -399,7 +399,7 @@ public class MockCallManager {
      */
     private Call findCallById(String id) {
         for (Call call : mCallList) {
-            CallDetail detail = CallDetail.fromTelecomCallDetail(call.getDetails());
+            CallDetail detail = CallDetail.fromTelecomCall(call);
             if (detail.getNumber().equals(id)) {
                 return call;
             }

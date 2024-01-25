@@ -28,12 +28,12 @@ import androidx.lifecycle.ViewModel;
 
 import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.LiveDataFunctions;
+import com.android.car.dialer.livedata.CallerInfoLiveData;
+import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.calling.AudioRouteLiveData;
 import com.android.car.telephony.calling.CallDetailLiveData;
 import com.android.car.telephony.calling.CallStateLiveData;
-import com.android.car.dialer.livedata.CallerInfoLiveData;
 import com.android.car.telephony.calling.SupportedAudioRoutesLiveData;
-import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
 
@@ -138,7 +138,7 @@ public class InCallViewModel extends ViewModel {
                 callList -> {
                     List<CallDetail> detailList = new ArrayList<>();
                     for (Call call : callList) {
-                        detailList.add(CallDetail.fromTelecomCallDetail(call.getDetails()));
+                        detailList.add(CallDetail.fromTelecomCall(call));
                     }
                     return detailList;
                 });

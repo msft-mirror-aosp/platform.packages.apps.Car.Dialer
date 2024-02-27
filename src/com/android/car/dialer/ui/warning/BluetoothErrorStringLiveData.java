@@ -18,7 +18,6 @@ package com.android.car.dialer.ui.warning;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -34,7 +33,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.android.scopes.ViewModelScoped;
 
 /**
@@ -42,12 +40,10 @@ import dagger.hilt.android.scopes.ViewModelScoped;
  * error. If there is no error, its value will be {@link #NO_BT_ERROR}.
  */
 @ViewModelScoped
-public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
+public class BluetoothErrorStringLiveData extends MediatorLiveData<Integer> {
     private static final String TAG = "CD.BluetoothErrorStringLiveData";
 
-    public static final String NO_BT_ERROR = "NO_ERROR";
-
-    private Context mContext;
+    public static final Integer NO_BT_ERROR = Integer.MIN_VALUE;
 
     private LiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
     private LiveData<Set<BluetoothDevice>> mPairListLiveData;
@@ -55,15 +51,12 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
 
     @Inject
     BluetoothErrorStringLiveData(
-            @ApplicationContext Context context,
             @Named("Hfp") LiveData<List<BluetoothDevice>> hfpDeviceListLiveData,
             @Named("Bluetooth") LiveData<Set<BluetoothDevice>> pairListLiveData,
             @Named("Bluetooth") LiveData<Integer> bluetoothStateLiveData,
             @Nullable BluetoothAdapter bluetoothAdapter) {
-        mContext = context;
-
         if (bluetoothAdapter == null) {
-            setValue(mContext.getString(R.string.bluetooth_unavailable));
+            setValue(R.string.bluetooth_unavailable);
         } else {
             setValue(NO_BT_ERROR);
             mHfpDeviceListLiveData = hfpDeviceListLiveData;
@@ -104,11 +97,11 @@ public class BluetoothErrorStringLiveData extends MediatorLiveData<String> {
                 setValue(NO_BT_ERROR);
             }
         } else if (!isBluetoothEnabled) {
-            setValue(mContext.getString(R.string.bluetooth_disabled));
+            setValue(R.string.bluetooth_disabled);
         } else if (!hasPairedDevices) {
-            setValue(mContext.getString(R.string.bluetooth_unpaired));
+            setValue(R.string.bluetooth_unpaired);
         } else {
-            setValue(mContext.getString(R.string.no_hfp));
+            setValue(R.string.no_hfp);
         }
     }
 

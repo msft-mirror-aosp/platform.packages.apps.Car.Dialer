@@ -154,4 +154,10 @@
         <item name="android:textFontWeight">500</item>
         <item name="android:textStyle">normal</item>
     </style>
+
+    <style name="HeaderButtonStyle" parent="FullScreenErrorButtonStyle">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
 </resources>

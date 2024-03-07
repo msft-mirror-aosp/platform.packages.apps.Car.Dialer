@@ -16,6 +16,8 @@
 
 package com.android.car.dialer.ui.activecall;
 
+import android.content.ComponentName;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.android.car.apps.common.BackgroundImageView;
 import com.android.car.apps.common.LetterTileDrawable;
+import com.android.car.apps.common.UxrButton;
 import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
@@ -52,9 +55,9 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+
+import javax.inject.Inject;
 
 /**
  * A fragment that displays information about a call with actions.
@@ -71,6 +74,8 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     private ImageView mAppIconView;
     @Nullable
     private TextView mAppNameView;
+    @Nullable
+    private UxrButton mGoToAppButton;
     private TextView mPhoneNumberView;
     @Nullable
     private TextView mPhoneLabelView;
@@ -112,6 +117,7 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
 
         mAppIconView = mUserProfileContainerView.findViewById(R.id.app_icon);
         mAppNameView = mUserProfileContainerView.findViewById(R.id.app_name);
+        mGoToAppButton = mUserProfileContainerView.findViewById(R.id.go_to_app_button);
     }
 
     /**
@@ -129,6 +135,28 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
             mAppIconView.setImageDrawable(appInfo.first);
         }
         ViewUtils.setText(mAppNameView, appInfo.second);
+        if (mGoToAppButton != null) {
+            ViewUtils.setVisible(mGoToAppButton, callDetail.isSelfManaged());
+            if (callDetail.isSelfManaged()) {
+                mGoToAppButton.setOnClickListener(v -> {
+                    // 3P may set their preferred inCallView. If not set, launch default activity.
+                    Intent intent = new Intent();
+                    ComponentName componentName = callDetail.getInCallViewComponentName();
+                    String packageName = callDetail.getCallingAppPackageName();
+                    if (componentName != null) {
+                        intent.setComponent(componentName);
+                        startActivity(intent);
+                    } else if (packageName != null) {
+                        intent = requireActivity()
+                                .getPackageManager()
+                                .getLaunchIntentForPackage(packageName);
+                        startActivity(intent);
+                    } else {
+                        L.w(TAG, "Could not return to app. Component or package name missing");
+                    }
+                });
+            }
+        }
 
         String callerDisplayName = callDetail.getCallerDisplayName();
         String number = callDetail.getNumber();

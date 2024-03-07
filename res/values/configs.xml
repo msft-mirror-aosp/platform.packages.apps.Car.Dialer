@@ -106,6 +106,6 @@
     <bool name="config_add_favorite_button_span_size_one">true</bool>
 
     <!-- A config to determine if self managed calls will be presented in the in-call screen. -->
-    <bool name="config_include_self_managed_calls">false</bool>
+    <bool name="config_include_self_managed_calls">true</bool>
 
 </resources>

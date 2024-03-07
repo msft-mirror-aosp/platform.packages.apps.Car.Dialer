@@ -35,6 +35,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.android.car.dialer.R;
+import com.android.car.dialer.testing.MockEntityFactory;
 import com.android.car.dialer.testing.TestActivity;
 import com.android.car.telephony.calling.CallDetailLiveData;
 
@@ -50,6 +51,7 @@ import java.util.Collections;
 public class OngoingCallFragmentTest {
 
     private OngoingCallFragment mOngoingCallFragment;
+    @Mock
     private Call mMockCall;
     @Mock
     private CallAudioState mMockCallAudioState;
@@ -62,11 +64,13 @@ public class OngoingCallFragmentTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        startFragment();
     }
 
     @Test
     public void testOnCreateView() {
+        Call.Details callDetails = MockEntityFactory.createMockCallDetails(
+                "123", Call.STATE_ACTIVE);
+        startFragment(callDetails);
         onView(withId(R.id.incall_dialpad_fragment))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.user_profile_container))
@@ -75,6 +79,9 @@ public class OngoingCallFragmentTest {
 
     @Test
     public void testOnOpenDialpad() {
+        Call.Details callDetails = MockEntityFactory.createMockCallDetails(
+                "123", Call.STATE_ACTIVE);
+        startFragment(callDetails);
         mActivityScenario.onActivity(activity -> {
             mOngoingCallFragment.onOpenDialpad();
         });
@@ -87,6 +94,9 @@ public class OngoingCallFragmentTest {
 
     @Test
     public void testOnCloseDialpad() {
+        Call.Details callDetails = MockEntityFactory.createMockCallDetails(
+                "123", Call.STATE_ACTIVE);
+        startFragment(callDetails);
         mActivityScenario.onActivity(activity -> {
             mOngoingCallFragment.onCloseDialpad();
         });
@@ -97,11 +107,32 @@ public class OngoingCallFragmentTest {
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 
-    private void startFragment() {
+    @Test
+    public void testGoToApp_buttonDoesShow() {
+        Call.Details callDetails = MockEntityFactory.createMockVoipCallDetails(
+                "123", Call.STATE_ACTIVE);
+        startFragment(callDetails);
+
+        onView(withId(R.id.go_to_app_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+    }
+
+    @Test
+    public void testGoToApp_buttonDoesNotShow() {
+        Call.Details callDetails = MockEntityFactory.createMockCallDetails(
+                "123", Call.STATE_ACTIVE);
+        startFragment(callDetails);
+
+        onView(withId(R.id.go_to_app_button))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+    }
+
+    private void startFragment(Call.Details callDetails) {
         mActivityScenario = ActivityScenario.launch(TestActivity.class);
         mActivityScenario.onActivity(activity -> {
             InCallViewModel mockInCallViewModel = new ViewModelProvider(activity).get(
                     InCallViewModel.class);
+            when(mMockCall.getDetails()).thenReturn(callDetails);
             mMockCallDetailLiveData = new CallDetailLiveData();
             mMockCallDetailLiveData.setTelecomCall(mMockCall);
             mShouldShowOnHoldCall = new MutableLiveData<>(false);

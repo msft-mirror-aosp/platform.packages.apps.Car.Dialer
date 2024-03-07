@@ -79,6 +79,7 @@
     <dimen name="in_call_app_info_margin_x">@dimen/car_ui_margin</dimen>
     <dimen name="in_call_app_info_margin_y">@dimen/car_ui_padding_3</dimen>
     <dimen name="in_call_app_icon_margin_end">@dimen/car_ui_padding_5</dimen>
+    <dimen name="in_call_app_button_margin_start">@dimen/car_ui_padding_6</dimen>
 
     <!-- Ringing call dimensions -->
     <dimen name="ringing_call_button_touch_target_size">@dimen/touch_target_size</dimen>

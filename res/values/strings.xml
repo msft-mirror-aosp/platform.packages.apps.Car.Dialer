@@ -286,4 +286,6 @@
         Participants:\u0020<xliff:g id="count" example="5">%1$d</xliff:g>
     </string>
 
+    <!-- Go to app button string in the ongoingCallView [CHAR LIMIT=25] -->
+    <string name="go_to_app_button_text">Go to app</string>
 </resources>

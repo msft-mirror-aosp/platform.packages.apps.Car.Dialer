@@ -19,6 +19,7 @@ package com.android.car.dialer.testing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.content.ComponentName;
 import android.net.Uri;
 import android.telecom.Call;
 import android.telecom.GatewayInfo;
@@ -28,13 +29,24 @@ import android.telecom.PhoneAccountHandle;
 public final class MockEntityFactory {
 
     /** Create a mock {@link Call.Details} with given number. */
-    public static Call.Details createMockCallDetails(String number) {
+    public static Call.Details createMockCallDetails(String number, int state) {
         Call.Details callDetails = mock(Call.Details.class);
         Uri uri = Uri.fromParts("tel", number, null);
         GatewayInfo gatewayInfo = new GatewayInfo("", uri, uri);
+        PhoneAccountHandle handle = mock(PhoneAccountHandle.class);
+        ComponentName componentName = new ComponentName("package_name", "class_name");
+        when(handle.getComponentName()).thenReturn(componentName);
         when(callDetails.getHandle()).thenReturn(uri);
         when(callDetails.getGatewayInfo()).thenReturn(gatewayInfo);
-        when(callDetails.getAccountHandle()).thenReturn(mock(PhoneAccountHandle.class));
+        when(callDetails.getAccountHandle()).thenReturn(handle);
+        when(callDetails.getState()).thenReturn(state);
+        return callDetails;
+    }
+
+    /** Create a mock voip {@link Call.Details} with given number. */
+    public static Call.Details createMockVoipCallDetails(String number, int state) {
+        Call.Details callDetails = createMockCallDetails(number, state);
+        when(callDetails.hasProperty(Call.Details.PROPERTY_SELF_MANAGED)).thenReturn(true);
         return callDetails;
     }
 }

@@ -29,12 +29,11 @@ public class NoHfpViewModel extends ViewModel {
     private final BluetoothErrorStringLiveData mBluetoothErrorStringLiveData;
 
     @Inject
-    NoHfpViewModel(
-            BluetoothErrorStringLiveData bluetoothErrorStringLiveData) {
+    NoHfpViewModel(BluetoothErrorStringLiveData bluetoothErrorStringLiveData) {
         mBluetoothErrorStringLiveData = bluetoothErrorStringLiveData;
     }
 
-    public LiveData<String> getBluetoothErrorStringLiveData() {
+    public LiveData<Integer> getBluetoothErrorStringLiveData() {
         return mBluetoothErrorStringLiveData;
     }
 }

@@ -74,7 +74,7 @@ android_library {
         "androidx.legacy_legacy-support-v4",
         "androidx.lifecycle_lifecycle-common-java8",
         "androidx.lifecycle_lifecycle-extensions",
-        "gson-prebuilt-jar",
+        "gson",
         "guava",
         "hilt_android",
         "mockito-target-extended-minus-junit4",

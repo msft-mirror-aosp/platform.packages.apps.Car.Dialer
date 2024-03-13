@@ -22,7 +22,6 @@ import static org.mockito.Mockito.mock;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -46,9 +45,7 @@ import java.util.Set;
 public class BluetoothErrorStringLiveDataTest {
 
     @Mock
-    private Context mContext;
-    @Mock
-    private Observer<String> mMockObserver;
+    private Observer<Integer> mMockObserver;
     private BluetoothAdapter mBluetoothAdapter;
     private MutableLiveData<List<BluetoothDevice>> mHfpDeviceListLiveData;
     private MutableLiveData<Set<BluetoothDevice>> mPairedListLiveData;
@@ -70,8 +67,8 @@ public class BluetoothErrorStringLiveDataTest {
 
         initializeBluetoothErrorStringLiveData();
 
-        assertThat(mBluetoothErrorStringLiveData.getValue()).isEqualTo(
-                mContext.getString(R.string.bluetooth_unavailable));
+        assertThat(mBluetoothErrorStringLiveData.getValue())
+                .isEqualTo(R.string.bluetooth_unavailable);
     }
 
     @Test
@@ -82,8 +79,7 @@ public class BluetoothErrorStringLiveDataTest {
 
         initializeBluetoothErrorStringLiveData();
 
-        assertThat(mBluetoothErrorStringLiveData.getValue()).isEqualTo(
-                mContext.getString(R.string.bluetooth_disabled));
+        assertThat(mBluetoothErrorStringLiveData.getValue()).isEqualTo(R.string.bluetooth_disabled);
     }
 
     @Test
@@ -95,8 +91,7 @@ public class BluetoothErrorStringLiveDataTest {
 
         initializeBluetoothErrorStringLiveData();
 
-        assertThat(mBluetoothErrorStringLiveData.getValue()).isEqualTo(
-                mContext.getString(R.string.bluetooth_unpaired));
+        assertThat(mBluetoothErrorStringLiveData.getValue()).isEqualTo(R.string.bluetooth_unpaired);
     }
 
     @Test
@@ -110,8 +105,7 @@ public class BluetoothErrorStringLiveDataTest {
 
         initializeBluetoothErrorStringLiveData();
 
-        assertThat(mBluetoothErrorStringLiveData.getValue()).isEqualTo(
-                mContext.getString(R.string.no_hfp));
+        assertThat(mBluetoothErrorStringLiveData.getValue()).isEqualTo(R.string.no_hfp);
     }
 
     @Test
@@ -130,7 +124,7 @@ public class BluetoothErrorStringLiveDataTest {
     }
 
     private void initializeBluetoothErrorStringLiveData() {
-        mBluetoothErrorStringLiveData = new BluetoothErrorStringLiveData(mContext,
+        mBluetoothErrorStringLiveData = new BluetoothErrorStringLiveData(
                 mHfpDeviceListLiveData, mPairedListLiveData, mBluetoothStateLiveData,
                 mBluetoothAdapter);
         // Observers needed so that the liveData's internal initialization is triggered

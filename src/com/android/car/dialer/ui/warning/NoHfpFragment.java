@@ -60,14 +60,14 @@ public class NoHfpFragment extends Hilt_NoHfpFragment {
         View view = inflater.inflate(R.layout.no_hfp, container, false);
         mErrorMessageView = view.findViewById(R.id.error_string);
 
-        LiveData<String> errorStringLiveData = new ViewModelProvider(getActivity())
+        LiveData<Integer> errorStringIdLiveData = new ViewModelProvider(getActivity())
                 .get(NoHfpViewModel.class)
                 .getBluetoothErrorStringLiveData();
 
-        errorStringLiveData.observe(getViewLifecycleOwner(), error -> {
+        errorStringIdLiveData.observe(getViewLifecycleOwner(), errorStringId -> {
             // Do not set the NO_BT_ERROR message to avoid UI jankiness
-            if (!BluetoothErrorStringLiveData.NO_BT_ERROR.equals(error)) {
-                mErrorMessageView.setText(error);
+            if (!BluetoothErrorStringLiveData.NO_BT_ERROR.equals(errorStringId)) {
+                mErrorMessageView.setText(errorStringId);
             }
         });
 

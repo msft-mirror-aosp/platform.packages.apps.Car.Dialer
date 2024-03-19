@@ -94,12 +94,18 @@
             </intent-filter>
         </activity>
 
+        <!-- Permission to allow systemui to launch this as the in call blocking activity -->
         <activity android:name=".ui.activecall.InCallActivity"
                   android:launchMode="singleInstance"
-                  android:exported="false"
+                  android:exported="true"
                   android:theme="@style/Theme.Dialer.InCall"
-                  android:label="@string/phone_app_name">
+                  android:label="@string/phone_app_name"
+                  android:permission="android.permission.MANAGE_ACTIVITY_TASKS">
             <meta-data android:name="distractionOptimized" android:value="true"/>
+            <!-- go/safer-intents-v-guide -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
         </activity>
 
         <activity android:name=".sms.DirectSendActivity"

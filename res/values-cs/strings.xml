@@ -48,8 +48,8 @@
     <string name="favorites_empty" msgid="5794510741132758130">"Žádné oblíbené položky"</string>
     <string name="no_favorites_added" msgid="2359050103464783907">"Zatím jste nepřidali žádné oblíbené kontakty"</string>
     <string name="add_favorite_button" msgid="7914955940249767808">"Přidat oblíbený kontakt"</string>
-    <string name="search_title" msgid="5412680850141871664">"Prohledat kontakty"</string>
-    <string name="search_hint" msgid="3099066132607042439">"Prohledat kontakty"</string>
+    <string name="search_title" msgid="5412680850141871664">"Hledat v kontaktech"</string>
+    <string name="search_hint" msgid="3099066132607042439">"Hledat v kontaktech"</string>
     <string name="type_multiple" msgid="3402949522797441236">"Více čísel"</string>
     <string name="select_number_dialog_title" msgid="5770700626013782205">"Vyberte telefonní číslo"</string>
     <string name="select_number_dialog_just_once_button" msgid="1814381354393374660">"Pouze jednou"</string>

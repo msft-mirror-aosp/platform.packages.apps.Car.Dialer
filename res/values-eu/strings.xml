@@ -68,7 +68,7 @@
     <string name="onhold_call_separator" msgid="2357788035385100805">"•"</string>
     <string name="swap_call_label" msgid="309322319645637302">"Aldatu deia"</string>
     <string name="setting_title" msgid="1296639422364732365">"Ezarpenak"</string>
-    <string name="pref_start_page_title" msgid="1953465507368478503">"Hasierako pantaila"</string>
+    <string name="pref_start_page_title" msgid="1953465507368478503">"Orri nagusia"</string>
     <string name="sort_order_title" msgid="975104366728292702">"Kontaktuak bistaratzeko ordena"</string>
     <string name="pref_connected_phone_title" msgid="5472866963149472593">"Konektatutako telefonoa"</string>
     <string name="pref_no_incoming_call_hun_title" msgid="2314257779205958332">"Pribatutasuna"</string>

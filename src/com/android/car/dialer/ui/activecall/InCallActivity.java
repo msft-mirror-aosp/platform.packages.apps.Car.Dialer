@@ -105,7 +105,7 @@ public class InCallActivity extends Hilt_InCallActivity implements InsetsChanged
             mShowIncomingCall.setValue(false);
         }
 
-        if (getIntent().hasExtra(Intent.EXTRA_COMPONENT_NAME)) {
+        if (getIntent() != null && getIntent().hasExtra(Intent.EXTRA_COMPONENT_NAME)) {
             // EXTRA_COMPONENT_NAME indicates InCallActivity was started as UXR Blocking UI and is
             // only meant to be a foreground activity.
             if (!isFinishing()) {

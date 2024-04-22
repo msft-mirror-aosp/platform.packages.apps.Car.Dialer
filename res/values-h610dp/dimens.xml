@@ -29,8 +29,6 @@
     <dimen name="fab_outline_size">104dp</dimen>
     <dimen name="fab_ripple_radius">52dp</dimen>
 
-    <dimen name="in_call_button_size">128dp</dimen>
-
     <!-- Components -->
     <dimen name="control_bar_height">128dp</dimen>
 </resources>

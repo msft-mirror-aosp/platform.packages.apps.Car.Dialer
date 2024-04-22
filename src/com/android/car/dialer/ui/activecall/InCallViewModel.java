@@ -39,6 +39,8 @@ import com.android.car.telephony.common.Contact;
 
 import com.google.common.collect.Lists;
 
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -47,8 +49,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
-
-import dagger.hilt.android.lifecycle.HiltViewModel;
 
 /**
  * View model for {@link InCallActivity} and {@link OngoingCallFragment}. UI that doesn't belong to
@@ -199,7 +199,7 @@ public class InCallViewModel extends ViewModel {
         // Set initial value to avoid NPE
         mDialpadIsOpen.setValue(false);
 
-        mShowOnholdCall = new ShowOnholdCallLiveData(mSecondaryCallLiveData, mDialpadIsOpen);
+        mShowOnholdCall = new ShowOnholdCallLiveData(mSecondaryCallLiveData);
     }
 
     /** Returns if primary and secondary calls can merge. */
@@ -443,29 +443,18 @@ public class InCallViewModel extends ViewModel {
     }
 
     private static class ShowOnholdCallLiveData extends MediatorLiveData<Boolean> {
-
         private final LiveData<Call> mSecondaryCallLiveData;
-        private final MutableLiveData<Boolean> mDialpadIsOpen;
 
-        private ShowOnholdCallLiveData(LiveData<Call> secondaryCallLiveData,
-                MutableLiveData<Boolean> dialpadState) {
+        private ShowOnholdCallLiveData(LiveData<Call> secondaryCallLiveData) {
             mSecondaryCallLiveData = secondaryCallLiveData;
-            mDialpadIsOpen = dialpadState;
             setValue(false);
 
             addSource(mSecondaryCallLiveData, v -> update());
-            addSource(mDialpadIsOpen, v -> update());
         }
 
         private void update() {
-            Boolean shouldShowOnholdCall = !mDialpadIsOpen.getValue();
             Call onholdCall = mSecondaryCallLiveData.getValue();
-            if (shouldShowOnholdCall && onholdCall != null
-                    && onholdCall.getState() == Call.STATE_HOLDING) {
-                setValue(true);
-            } else {
-                setValue(false);
-            }
+            setValue(onholdCall != null && onholdCall.getState() == Call.STATE_HOLDING);
         }
 
         @Override

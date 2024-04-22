@@ -19,7 +19,6 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="@dimen/dialer_card_elevation"
         android:background="@drawable/on_hold_background">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,8 +38,8 @@
                 android:id="@+id/icon"
                 android:layout_width="@dimen/small_avatar_icon_size"
                 android:layout_height="@dimen/small_avatar_icon_size"
+                android:layout_marginStart="@dimen/onhold_profile_content_margin"
                 android:scaleType="centerCrop"
-                android:layout_marginStart="@dimen/onhold_profile_avatar_margin"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"/>
@@ -120,20 +119,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/time_separator"
-                app:layout_constraintEnd_toStartOf="@+id/swap_call"/>
-
-            <TextView
-                android:id="@id/swap_call"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/onhold_profile_avatar_margin"
-                android:text="@string/swap_call_label"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:singleLine="true"
-                android:textColor="?android:attr/colorAccent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </FrameLayout>

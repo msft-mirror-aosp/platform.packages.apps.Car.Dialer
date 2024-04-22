@@ -30,9 +30,7 @@ public class RingingCallControllerBarFragment extends Hilt_RingingCallController
                 container, false);
 
         fragmentView.findViewById(R.id.answer_call_button).setOnClickListener((v) -> answerCall());
-        fragmentView.findViewById(R.id.answer_call_text).setOnClickListener((v) -> answerCall());
         fragmentView.findViewById(R.id.end_call_button).setOnClickListener((v) -> declineCall());
-        fragmentView.findViewById(R.id.end_call_text).setOnClickListener((v) -> declineCall());
 
         return fragmentView;
     }

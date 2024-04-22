@@ -287,5 +287,5 @@
     </string>
 
     <!-- Go to app button string in the ongoingCallView [CHAR LIMIT=25] -->
-    <string name="go_to_app_button_text">Go to app</string>
+    <string name="go_to_app_button_text">Exit Drive View</string>
 </resources>

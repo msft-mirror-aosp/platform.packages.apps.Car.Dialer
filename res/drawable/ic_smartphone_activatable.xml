@@ -14,8 +14,8 @@
      limitations under the License.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:width="@dimen/primary_icon_enclosing_circle_size"
-          android:height="@dimen/primary_icon_enclosing_circle_size"
+    <item android:width="@dimen/in_call_button_width"
+          android:height="@dimen/in_call_button_size"
           android:drawable="@drawable/button_active_state_circle"/>
 
     <item android:width="@dimen/primary_icon_size"

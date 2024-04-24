@@ -48,8 +48,8 @@
     <string name="favorites_empty" msgid="5794510741132758130">"Žádné oblíbené položky"</string>
     <string name="no_favorites_added" msgid="2359050103464783907">"Zatím jste nepřidali žádné oblíbené kontakty"</string>
     <string name="add_favorite_button" msgid="7914955940249767808">"Přidat oblíbený kontakt"</string>
-    <string name="search_title" msgid="5412680850141871664">"Prohledat kontakty"</string>
-    <string name="search_hint" msgid="3099066132607042439">"Prohledat kontakty"</string>
+    <string name="search_title" msgid="5412680850141871664">"Hledat v kontaktech"</string>
+    <string name="search_hint" msgid="3099066132607042439">"Hledat v kontaktech"</string>
     <string name="type_multiple" msgid="3402949522797441236">"Více čísel"</string>
     <string name="select_number_dialog_title" msgid="5770700626013782205">"Vyberte telefonní číslo"</string>
     <string name="select_number_dialog_just_once_button" msgid="1814381354393374660">"Pouze jednou"</string>
@@ -89,4 +89,5 @@
     <string name="self_managed_call_description" msgid="7626811322858259206">"Zavolat: <xliff:g id="SELF_MANAGED_APP_NAME">%1$s</xliff:g>"</string>
     <string name="self_managed_call_current_speaker" msgid="7995502777230960442">"Mluví: <xliff:g id="CALLER_NAME">%1$s</xliff:g>"</string>
     <string name="self_managed_call_participants" msgid="6303695666595174477">"Účastníci: <xliff:g id="COUNT">%1$d</xliff:g>"</string>
+    <string name="go_to_app_button_text" msgid="5162163134990295961">"Přejít na aplikaci"</string>
 </resources>

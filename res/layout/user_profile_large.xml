@@ -39,6 +39,14 @@ limitations under the License.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        <com.android.car.apps.common.UxrButton
+            android:id="@+id/go_to_app_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/in_call_app_button_margin_start"
+            android:text="@string/go_to_app_button_text"
+            style="@style/HeaderButtonStyle"/>
     </LinearLayout>
 
     <ImageView

@@ -39,9 +39,9 @@ import com.android.car.ui.baselayout.InsetsChangedListener;
 import com.android.car.ui.core.CarUi;
 import com.android.car.ui.toolbar.ToolbarController;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+
+import javax.inject.Inject;
 
 /** Activity for ongoing call and incoming call. */
 @AndroidEntryPoint(FragmentActivity.class)
@@ -103,6 +103,15 @@ public class InCallActivity extends Hilt_InCallActivity implements InsetsChanged
         if (mIncomingCallLiveData.getValue() != null) {
             mInCallNotificationController.showInCallNotification(mIncomingCallLiveData.getValue());
             mShowIncomingCall.setValue(false);
+        }
+
+        if (getIntent() != null && getIntent().hasExtra(Intent.EXTRA_COMPONENT_NAME)) {
+            // EXTRA_COMPONENT_NAME indicates InCallActivity was started as UXR Blocking UI and is
+            // only meant to be a foreground activity.
+            if (!isFinishing()) {
+                L.d(TAG, "User navigated away, calling finish()");
+                finish();
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Copyright (C) 2023 The Android Open Source Project
+<!-- Copyright (C) 2024 The Android Open Source Project
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -141,6 +141,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="dimen" name="favorite_card_space_vertical"/>
       <item type="dimen" name="favorite_item_padding"/>
       <item type="dimen" name="favorites_avatar_margin_bottom"/>
+      <item type="dimen" name="in_call_app_button_margin_start"/>
       <item type="dimen" name="in_call_app_icon_margin_end"/>
       <item type="dimen" name="in_call_app_info_height"/>
       <item type="dimen" name="in_call_app_info_icon_size"/>
@@ -300,6 +301,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="id" name="five"/>
       <item type="id" name="four"/>
       <item type="id" name="fragment_container"/>
+      <item type="id" name="go_to_app_button"/>
       <item type="id" name="guideline"/>
       <item type="id" name="guideline_begin"/>
       <item type="id" name="guideline_end"/>
@@ -450,6 +452,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="string" name="four_letters"/>
       <item type="string" name="given_name_first_key"/>
       <item type="string" name="given_name_first_title"/>
+      <item type="string" name="go_to_app_button_text"/>
       <item type="string" name="header_for_type_other"/>
       <item type="string" name="in_call_notification_channel_name"/>
       <item type="string" name="local_favorite_number_description"/>
@@ -521,6 +524,7 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="style" name="AddFavoriteText"/>
       <item type="style" name="DialpadPrimaryButton"/>
       <item type="style" name="DialpadSecondaryButton"/>
+      <item type="style" name="HeaderButtonStyle"/>
       <item type="style" name="KeypadButtonStyle"/>
       <item type="style" name="KeypadImage"/>
       <item type="style" name="KeypadLetter"/>

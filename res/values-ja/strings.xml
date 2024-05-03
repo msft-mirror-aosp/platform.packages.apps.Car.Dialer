@@ -89,5 +89,6 @@
     <string name="self_managed_call_description" msgid="7626811322858259206">"<xliff:g id="SELF_MANAGED_APP_NAME">%1$s</xliff:g> - 通話"</string>
     <string name="self_managed_call_current_speaker" msgid="7995502777230960442">"話しています: <xliff:g id="CALLER_NAME">%1$s</xliff:g>"</string>
     <string name="self_managed_call_participants" msgid="6303695666595174477">"参加者: <xliff:g id="COUNT">%1$d</xliff:g> 人"</string>
-    <string name="go_to_app_button_text" msgid="5162163134990295961">"アプリに移動"</string>
+    <!-- no translation found for go_to_app_button_text (6174828617141019984) -->
+    <skip />
 </resources>

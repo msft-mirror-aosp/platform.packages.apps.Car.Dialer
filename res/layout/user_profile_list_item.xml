@@ -25,8 +25,8 @@
     android:paddingEnd="@dimen/in_call_user_profile_list_margin">
     <ImageView
         android:id="@+id/user_profile_avatar"
-        android:layout_width="@dimen/in_call_avatar_icon_size_small"
-        android:layout_height="@dimen/in_call_avatar_icon_size_small"
+        android:layout_width="@dimen/in_call_avatar_size_small"
+        android:layout_height="@dimen/in_call_avatar_size_small"
         android:scaleType="fitCenter"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout

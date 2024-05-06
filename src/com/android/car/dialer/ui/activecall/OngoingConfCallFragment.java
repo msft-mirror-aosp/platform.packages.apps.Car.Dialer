@@ -109,7 +109,6 @@ public class OngoingConfCallFragment extends Hilt_OngoingConfCallFragment {
         getChildFragmentManager().beginTransaction()
                 .show(mDialpadFragment)
                 .commit();
-        mConferenceCallProfilesView.setVisibility(View.GONE);
     }
 
     @VisibleForTesting
@@ -117,7 +116,6 @@ public class OngoingConfCallFragment extends Hilt_OngoingConfCallFragment {
         getChildFragmentManager().beginTransaction()
                 .hide(mDialpadFragment)
                 .commit();
-        mConferenceCallProfilesView.setVisibility(View.VISIBLE);
     }
 
     private void updateTitle(int numParticipants) {

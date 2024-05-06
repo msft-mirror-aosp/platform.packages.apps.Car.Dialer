@@ -18,17 +18,35 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/incall_dialpad_background"
+    android:onClick="preventClicks">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/in_call_dialpad_title_margin_top"
+        android:focusable="true"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.DialNumber"
+        android:textDirection="ltr"
+        android:gravity="end"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/dialpad_focus_area"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.android.car.ui.FocusArea
         android:id="@+id/dialpad_focus_area"
         android:layout_height="0dp"
         android:layout_width="0dp"
         android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/divider">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <fragment
             android:id="@+id/dialpad_fragment"
@@ -38,50 +56,4 @@
 
     </com.android.car.ui.FocusArea>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/divider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5"/>
-
-    <View
-        android:layout_height="0dp"
-        android:layout_width="0dp"
-        android:id="@+id/dialpad_info_boundaries"
-        app:layout_constraintDimensionRatio="W, 1:1"
-        app:layout_constraintTop_toTopOf="@id/dialpad_focus_area"
-        app:layout_constraintBottom_toBottomOf="@id/dialpad_focus_area"
-        app:layout_constraintStart_toEndOf="@id/divider"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <Chronometer
-        android:id="@+id/call_state"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.InCallState"
-        android:focusable="true"
-        android:singleLine="true"
-        android:gravity="center"
-        android:layout_marginBottom="@dimen/call_state_padding"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintTop_toTopOf="@id/dialpad_info_boundaries"
-        app:layout_constraintBottom_toTopOf="@+id/title"
-        app:layout_constraintStart_toStartOf="@id/dialpad_info_boundaries"
-        app:layout_constraintEnd_toEndOf="@id/dialpad_info_boundaries"/>
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:focusable="true"
-        android:singleLine="true"
-        android:textAppearance="@style/TextAppearance.DialNumber"
-        android:textDirection="ltr"
-        android:gravity="end"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintTop_toBottomOf="@id/call_state"
-        app:layout_constraintBottom_toBottomOf="@id/dialpad_info_boundaries"
-        app:layout_constraintStart_toStartOf="@id/dialpad_info_boundaries"
-        app:layout_constraintEnd_toEndOf="@id/dialpad_info_boundaries"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

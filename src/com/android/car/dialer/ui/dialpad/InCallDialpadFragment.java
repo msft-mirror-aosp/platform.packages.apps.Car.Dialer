@@ -17,16 +17,13 @@
 package com.android.car.dialer.ui.dialpad;
 
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.telecom.Call;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Chronometer;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -34,7 +31,6 @@ import com.android.car.apps.common.log.L;
 import com.android.car.dialer.R;
 import com.android.car.dialer.ui.activecall.InCallViewModel;
 import com.android.car.dialer.ui.dialpad.DialpadRestrictionViewModel.DialpadUxrMode;
-import com.android.car.telephony.common.TelecomUtils;
 import com.android.car.ui.toolbar.ToolbarController;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -45,8 +41,6 @@ public class InCallDialpadFragment extends Hilt_InCallDialpadFragment {
     private static final String TAG = "CD.InCallDialpadFragment";
 
     private TextView mTitleView;
-    @Nullable
-    private Chronometer mCallStateView;
 
     /** An active call which this fragment is serving for. */
     private LiveData<Call> mActiveCall;
@@ -60,29 +54,9 @@ public class InCallDialpadFragment extends Hilt_InCallDialpadFragment {
                 false);
 
         mTitleView = rootView.findViewById(R.id.title);
-        mCallStateView = rootView.findViewById(R.id.call_state);
 
         InCallViewModel viewModel = new ViewModelProvider(getActivity()).get(InCallViewModel.class);
-        viewModel.getCallStateAndConnectTime().observe(getViewLifecycleOwner(), (pair) -> {
-            if (mCallStateView == null) {
-                return;
-            }
 
-            if (pair == null) {
-                mCallStateView.stop();
-                mCallStateView.setText("");
-                return;
-            }
-            if (pair.first == Call.STATE_ACTIVE) {
-                mCallStateView.setBase(pair.second
-                        - System.currentTimeMillis() + SystemClock.elapsedRealtime());
-                mCallStateView.start();
-            } else {
-                mCallStateView.stop();
-                mCallStateView.setText(TelecomUtils.callStateToUiString(
-                        getContext(), pair.first));
-            }
-        });
         mActiveCall = viewModel.getPrimaryCall();
 
         return rootView;

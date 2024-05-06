@@ -78,24 +78,8 @@ public class RingingCallControllerBarFragmentTest {
     }
 
     @Test
-    public void testAnswerCallText() {
-        onView(withId(R.id.answer_call_text)).check(matches(isDisplayed())).check(
-                matches(isClickable())).perform(selfClick());
-
-        verify(mMockCall).answer(eq(0));
-    }
-
-    @Test
     public void testEndCallButton() {
         onView(withId(R.id.end_call_button)).check(matches(isDisplayed())).check(
-                matches(isClickable())).perform(selfClick());
-
-        verify(mMockCall).reject(eq(false), isNull());
-    }
-
-    @Test
-    public void testEndCallText() {
-        onView(withId(R.id.end_call_text)).check(matches(isDisplayed())).check(
                 matches(isClickable())).perform(selfClick());
 
         verify(mMockCall).reject(eq(false), isNull());

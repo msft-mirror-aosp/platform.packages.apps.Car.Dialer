@@ -25,13 +25,11 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/conference_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
-        android:layout_marginBottom="35dp"
-        android:layout_marginStart="170dp"
+        android:layout_height="@dimen/onhold_user_info_height"
+        android:background="@drawable/on_hold_background"
         app:layout_constraintBottom_toTopOf="@+id/conference_call_profiles_recycler_view"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -41,23 +39,38 @@
             android:id="@+id/conference_title"
             android:textAppearance="@style/TextAppearance.InCallState"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/in_call_content_margin"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/conference_title_separator"/>
 
         <TextView
+            android:id="@+id/conference_title_separator"
             android:textAppearance="@style/TextAppearance.InCallState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/conference_title"
+            app:layout_constraintEnd_toStartOf="@id/call_duration"
             android:text="@string/dash_delimiter"/>
 
-        <!-- A textView without a fixed width will call requestLayout() every time its text is changed -->
-        <!-- So we have to make this Chronometer match_parent to avoid redrawing the whole screen -->
         <Chronometer
             android:id="@+id/call_duration"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/conference_title_separator"
+            app:layout_constraintEnd_toEndOf="parent"
             android:textAppearance="@style/TextAppearance.InCallState"
             android:singleLine="true"/>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.android.car.ui.recyclerview.CarUiRecyclerView
         tools:ignore="Instantiatable"

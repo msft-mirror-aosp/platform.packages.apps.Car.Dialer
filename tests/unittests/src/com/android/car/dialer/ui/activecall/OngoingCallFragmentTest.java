@@ -89,6 +89,8 @@ public class OngoingCallFragmentTest {
         onView(withId(R.id.incall_dialpad_fragment))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         onView(withId(R.id.user_profile_container))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+        onView(withId(R.id.avatar_and_icon))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
     }
 

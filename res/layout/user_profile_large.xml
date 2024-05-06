@@ -16,54 +16,73 @@ limitations under the License.
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/in_call_app_info_height"
+    <com.android.car.apps.common.UxrButton
+        android:id="@+id/go_to_app_button"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/in_call_button_size"
         android:layout_marginTop="@dimen/in_call_app_info_margin_y"
-        android:layout_marginStart="@dimen/in_call_app_info_margin_x"
-        android:layout_marginEnd="@dimen/in_call_app_info_margin_x"
-        android:orientation="horizontal"
-        android:gravity="start|center_vertical"
+        android:layout_marginStart="@dimen/in_call_user_profile_margin"
+        android:text="@string/go_to_app_button_text"
+        style="@style/HeaderButtonStyle"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/avatar_and_icon"
+        android:layout_width="@dimen/in_call_avatar_icon_size"
+        android:layout_height="@dimen/in_call_avatar_icon_size"
+        android:layout_marginEnd="@dimen/in_call_user_profile_margin"
+        android:background="@drawable/avatar_ring_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" >
+
+        <ImageView
+            android:layout_width="@dimen/in_call_avatar_bg_size"
+            android:layout_height="@dimen/in_call_avatar_bg_size"
+            android:background="@drawable/avatar_background"
+            android:scaleType="fitCenter"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:id="@+id/user_profile_avatar"
+            android:layout_width="@dimen/in_call_avatar_size"
+            android:layout_height="@dimen/in_call_avatar_size"
+            android:scaleType="fitCenter"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageView
+            android:layout_width="@dimen/in_call_app_info_icon_bg_size"
+            android:layout_height="@dimen/in_call_app_info_icon_bg_size"
+            android:layout_marginEnd="@dimen/in_call_app_info_icon_bg_margin"
+            android:layout_marginBottom="@dimen/in_call_app_info_icon_bg_margin"
+            android:background="@drawable/app_icon_background"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <ImageView
             android:id="@+id/app_icon"
             android:layout_width="@dimen/in_call_app_info_icon_size"
             android:layout_height="@dimen/in_call_app_info_icon_size"
-            android:layout_marginEnd="@dimen/in_call_app_icon_margin_end"
-            android:scaleType="fitCenter" />
-
-        <TextView
-            android:id="@+id/app_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
-
-        <com.android.car.apps.common.UxrButton
-            android:id="@+id/go_to_app_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/in_call_app_button_margin_start"
-            android:text="@string/go_to_app_button_text"
-            style="@style/HeaderButtonStyle"/>
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/user_profile_avatar"
-        android:layout_width="@dimen/in_call_avatar_icon_size"
-        android:layout_height="@dimen/in_call_avatar_icon_size"
-        android:layout_marginStart="@dimen/in_call_user_profile_margin"
-        android:scaleType="fitCenter"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginEnd="@dimen/in_call_app_info_icon_margin"
+            android:layout_marginBottom="@dimen/in_call_app_info_icon_margin"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/user_profile_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
+        android:layout_marginStart="@dimen/in_call_user_profile_margin"
         android:layout_marginEnd="@dimen/in_call_user_profile_margin"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.InCallUserTitle"
@@ -71,14 +90,14 @@ limitations under the License.
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/user_profile_phone_label"
-        app:layout_constraintStart_toEndOf="@id/user_profile_avatar" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/user_profile_phone_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/in_call_phone_number_margin_top"
-        android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
+        android:layout_marginStart="@dimen/in_call_user_profile_margin"
         android:layout_marginEnd="@dimen/in_call_margin_label_end"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.InCallUserPhoneNumber"
@@ -88,7 +107,7 @@ limitations under the License.
         app:layout_constrainedWidth="true"
         app:layout_constraintTop_toBottomOf="@id/user_profile_title"
         app:layout_constraintBottom_toTopOf="@+id/call_metadata"
-        app:layout_constraintStart_toEndOf="@id/user_profile_avatar"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/user_profile_phone_number"/>
 
     <TextView
@@ -109,13 +128,13 @@ limitations under the License.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/in_call_metadata_margin_top"
-        android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
+        android:layout_marginStart="@dimen/in_call_user_profile_margin"
         android:layout_marginEnd="@dimen/in_call_user_profile_margin"
         android:orientation="horizontal"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toBottomOf="@id/user_profile_phone_label"
         app:layout_constraintBottom_toTopOf="@+id/user_profile_call_state"
-        app:layout_constraintStart_toEndOf="@id/user_profile_avatar" >
+        app:layout_constraintStart_toStartOf="parent" >
         <TextView
             android:id="@+id/current_speaker"
             android:layout_width="wrap_content"
@@ -135,15 +154,14 @@ limitations under the License.
     <!-- So we have to make this Chronometer match_parent to avoid redrawing the whole screen -->
     <Chronometer
         android:id="@id/user_profile_call_state"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/in_call_margin_between_avatar_and_text"
+        android:layout_marginStart="@dimen/in_call_user_profile_margin"
         android:layout_marginTop="@dimen/in_call_state_margin_top"
         android:layout_marginEnd="@dimen/in_call_user_profile_margin"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.InCallState"
         app:layout_constraintTop_toBottomOf="@id/call_metadata"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/user_profile_avatar"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

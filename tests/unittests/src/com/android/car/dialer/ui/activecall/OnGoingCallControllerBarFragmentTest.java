@@ -147,7 +147,7 @@ public class OnGoingCallControllerBarFragmentTest {
     public void testAudioRouteButton_withOneAudioRoute() {
         addFragment(Call.STATE_ACTIVE);
 
-        onView(withId(R.id.voice_channel_view)).check(matches(isNotClickable()));
+        onView(withId(R.id.voice_channel_button)).check(matches(isNotClickable()));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class OnGoingCallControllerBarFragmentTest {
         mAudioRouteList.add(CallAudioState.ROUTE_EARPIECE);
         addFragment(Call.STATE_ACTIVE);
 
-        onView(withId(R.id.voice_channel_view)).check(matches(isClickable()));
+        onView(withId(R.id.voice_channel_button)).check(matches(isClickable()));
     }
 
     @Test

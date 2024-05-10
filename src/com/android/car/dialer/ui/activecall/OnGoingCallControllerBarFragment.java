@@ -44,7 +44,6 @@ import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
-import com.android.car.dialer.telecom.UiCallManager;
 import com.android.car.telephony.calling.InCallServiceManager;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.ui.AlertDialogBuilder;
@@ -55,12 +54,12 @@ import com.android.car.ui.recyclerview.CarUiListItemAdapter;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
 
 /** A Fragment of the bar which controls on going call. */
 @AndroidEntryPoint(Fragment.class)
@@ -96,7 +95,6 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     private List<Integer> mAvailableRoutes;
     private CarUiListItemAdapter mAudioRouteAdapter;
     private View mMuteButton;
-    private View mAudioRouteView;
     private ImageView mAudioRouteButton;
     private TextView mAudioRouteText;
     private View mMergeButton;
@@ -208,24 +206,23 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
         View endCallButton = fragmentView.findViewById(R.id.end_call_button);
         endCallButton.setOnClickListener(v -> onEndCall());
 
-        mAudioRouteView = fragmentView.findViewById(R.id.voice_channel_view);
         mAudioRouteButton = fragmentView.findViewById(R.id.voice_channel_button);
         mAudioRouteText = fragmentView.findViewById(R.id.voice_channel_text);
         mPrimaryCallDetailLiveData.observe(getViewLifecycleOwner(),
-                primaryCallDetail -> mAudioRouteView.setEnabled(primaryCallDetail != null));
+                primaryCallDetail -> mAudioRouteButton.setEnabled(primaryCallDetail != null));
         mAudioRoutes.observe(getViewLifecycleOwner(), audioRoutes -> {
             if (audioRoutes.size() > 1) {
-                mAudioRouteView.setOnClickListener((v) -> {
-                    mAudioRouteView.setActivated(true);
+                mAudioRouteButton.setOnClickListener((v) -> {
+                    mAudioRouteButton.setActivated(true);
                     mAudioRouteSelectionDialog.show();
                 });
             } else {
-                mAudioRouteView.setClickable(false);
+                mAudioRouteButton.setClickable(false);
             }
         });
 
         mAudioRouteSelectionDialog.setOnDismissListener(
-                (dialog) -> mAudioRouteView.setActivated(false));
+                (dialog) -> mAudioRouteButton.setActivated(false));
 
         mMergeButton = fragmentView.findViewById(R.id.merge_button);
         mMergeButton.setOnClickListener((v) -> {

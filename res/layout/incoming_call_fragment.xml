@@ -21,31 +21,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.android.car.apps.common.BackgroundImageView
+    <ImageView
         android:id="@+id/background_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="@drawable/app_background"/>
 
     <include
         layout="@layout/user_profile_large"
         android:id="@+id/user_profile_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginStart="@dimen/in_call_content_margin"
+        android:layout_marginEnd="@dimen/in_call_content_margin"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/ringing_call_controller_bar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <fragment
         android:id="@+id/ringing_call_controller_bar"
         android:name="com.android.car.dialer.ui.activecall.RingingCallControllerBarFragment"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/in_call_controller_bar_height"
-        android:layout_marginStart="@dimen/in_call_controller_bar_margin"
-        android:layout_marginEnd="@dimen/in_call_controller_bar_margin"
-        android:layout_marginBottom="@dimen/in_call_controller_bar_margin_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/in_call_content_margin"
+        android:layout_marginBottom="@dimen/in_call_app_info_margin_y"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,20 +14,12 @@
      limitations under the License.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
-        <shape android:shape="oval">
-            <stroke
-                android:width="@dimen/fab_outline_thickness"
-                android:color="@color/phone_end_call"/>
-            <size
-                android:width="@dimen/fab_outline_size"
-                android:height="@dimen/fab_outline_size"/>
-        </shape>
-    </item>
-    <item android:gravity="center"
-          android:drawable="@drawable/ic_call_end"/>
-    <item>
-        <ripple android:color="@color/car_ui_ripple_color"
-                android:radius="@dimen/fab_ripple_radius"/>
-    </item>
+    <item android:width="@dimen/primary_icon_enclosing_circle_size"
+          android:height="@dimen/primary_icon_enclosing_circle_size"
+          android:drawable="@drawable/button_active_state_circle"/>
+
+    <item android:width="@dimen/primary_icon_size"
+        android:height="@dimen/primary_icon_size"
+        android:gravity="center"
+        android:drawable="@drawable/ic_call_end"/>
 </layer-list>

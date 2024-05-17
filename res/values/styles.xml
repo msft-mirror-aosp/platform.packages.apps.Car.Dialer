@@ -81,6 +81,18 @@
     <style name="TextAppearance.InCallState" parent="TextAppearance.Body1">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
+    <style name="ControllerButton">
+        <item name="android:background">@drawable/dialer_ripple_background</item>
+    </style>
+    <style name="PrimaryControllerButton">
+        <item name="android:background">@drawable/primary_dialer_ripple_background</item>
+    </style>
+    <style name="IncomingAnswerButton" parent="PrimaryControllerButton">
+        <item name="android:backgroundTint">@color/phone_call</item>
+    </style>
+    <style name="IncomingDeclineButton" parent="PrimaryControllerButton">
+
+    </style>
 
     <!-- Call history -->
     <style name="TextAppearance.CallLogTitleDefault" parent="TextAppearance.Body1"/>
@@ -154,4 +166,11 @@
         <item name="android:textFontWeight">500</item>
         <item name="android:textStyle">normal</item>
     </style>
+
+    <style name="HeaderButtonStyle" parent="FullScreenErrorButtonStyle">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:background">@drawable/dialer_ripple_background</item>
+    </style>
+
 </resources>

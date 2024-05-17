@@ -16,7 +16,8 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_enabled="true"
           android:state_activated="true">
-        <shape android:shape="oval">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/in_call_button_radius"/>
             <solid android:color="@color/primary_icon_color"/>
         </shape>
     </item>

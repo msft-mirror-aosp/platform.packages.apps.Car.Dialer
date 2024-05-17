@@ -53,6 +53,9 @@ import com.android.car.dialer.framework.testdata.ContactRawData;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,9 +64,6 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import javax.inject.Inject;
-
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
 
 @RunWith(AndroidJUnit4.class)
 @HiltAndroidTest
@@ -145,7 +145,6 @@ public class InCallTest {
                 matches(isDisplayed()));
         onView(allOf(withId(R.id.title), withText(PHONE_NUMBER), isDisplayed())).check(
                 matches(isEnabled()));
-        onView(allOf(withId(R.id.swap_call), isDisplayed())).check(matches(isEnabled()));
         onView(allOf(withId(R.id.onhold_label), withText(R.string.call_state_hold),
                 isDisplayed())).check(matches(isEnabled()));
 

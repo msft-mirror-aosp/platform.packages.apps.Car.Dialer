@@ -19,6 +19,7 @@ package com.android.car.dialer.ui.activecall;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telecom.Call;
+import android.view.View;
 
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
@@ -39,9 +40,9 @@ import com.android.car.ui.baselayout.InsetsChangedListener;
 import com.android.car.ui.core.CarUi;
 import com.android.car.ui.toolbar.ToolbarController;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.AndroidEntryPoint;
+
+import javax.inject.Inject;
 
 /** Activity for ongoing call and incoming call. */
 @AndroidEntryPoint(FragmentActivity.class)
@@ -104,6 +105,15 @@ public class InCallActivity extends Hilt_InCallActivity implements InsetsChanged
             mInCallNotificationController.showInCallNotification(mIncomingCallLiveData.getValue());
             mShowIncomingCall.setValue(false);
         }
+
+        if (getIntent() != null && getIntent().hasExtra(Intent.EXTRA_COMPONENT_NAME)) {
+            // EXTRA_COMPONENT_NAME indicates InCallActivity was started as UXR Blocking UI and is
+            // only meant to be a foreground activity.
+            if (!isFinishing()) {
+                L.d(TAG, "User navigated away, calling finish()");
+                finish();
+            }
+        }
     }
 
     @Override
@@ -162,5 +172,10 @@ public class InCallActivity extends Hilt_InCallActivity implements InsetsChanged
         // Do nothing, this is just a marker that we will handle the insets in fragments.
         // This is only necessary because the fragments are not immediately added to the
         // activity when calling .commit()
+    }
+
+    /** Used to prevent click passthrough in the dialpad fragment */
+    public void preventClicks(View view) {
+        // No-op
     }
 }

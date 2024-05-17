@@ -28,7 +28,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 
-import com.android.car.apps.common.BackgroundImageView;
+import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -38,10 +38,11 @@ import dagger.hilt.android.AndroidEntryPoint;
  */
 @AndroidEntryPoint(InCallFragment.class)
 public class OngoingCallFragment extends Hilt_OngoingCallFragment {
+    private static final String TAG = "CD.OngoingCallFragment";
+
     private Fragment mDialpadFragment;
     private Fragment mOnholdCallFragment;
-    private View mUserProfileContainerView;
-    private BackgroundImageView mBackgroundImage;
+    private View mAvatarAndIconView;
     private MutableLiveData<Boolean> mDialpadState;
 
     @Override
@@ -49,10 +50,9 @@ public class OngoingCallFragment extends Hilt_OngoingCallFragment {
             @Nullable Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.ongoing_call_fragment, container, false);
 
-        mUserProfileContainerView = fragmentView.findViewById(R.id.user_profile_container);
-        mBackgroundImage = fragmentView.findViewById(R.id.background_image);
         mOnholdCallFragment = getChildFragmentManager().findFragmentById(R.id.onhold_user_profile);
         mDialpadFragment = getChildFragmentManager().findFragmentById(R.id.incall_dialpad_fragment);
+        mAvatarAndIconView = fragmentView.findViewById(R.id.avatar_and_icon);
 
         mInCallViewModel.getPrimaryCallerInfoLiveData().observe(getViewLifecycleOwner(),
                 contact -> presentCallerInfo(
@@ -92,8 +92,7 @@ public class OngoingCallFragment extends Hilt_OngoingCallFragment {
         getChildFragmentManager().beginTransaction()
                 .show(mDialpadFragment)
                 .commit();
-        mUserProfileContainerView.setVisibility(View.GONE);
-        mBackgroundImage.setDimmed(true);
+        ViewUtils.setVisible(mAvatarAndIconView, false);
     }
 
     @VisibleForTesting
@@ -101,8 +100,7 @@ public class OngoingCallFragment extends Hilt_OngoingCallFragment {
         getChildFragmentManager().beginTransaction()
                 .hide(mDialpadFragment)
                 .commit();
-        mUserProfileContainerView.setVisibility(View.VISIBLE);
-        mBackgroundImage.setDimmed(false);
+        ViewUtils.setVisible(mAvatarAndIconView, true);
     }
 
     private void maybeShowOnholdCallFragment(Boolean showOnholdCall) {

@@ -76,7 +76,8 @@ public class IncomingCallFragmentTest {
             InCallViewModel mockInCallViewModel = new ViewModelProvider(activity).get(
                     InCallViewModel.class);
             Call call = mock(Call.class);
-            Call.Details mockDetails = MockEntityFactory.createMockCallDetails(NUMBER);
+            Call.Details mockDetails = MockEntityFactory.createMockCallDetails(
+                    NUMBER, Call.STATE_ACTIVE);
             when(call.getDetails()).thenReturn(mockDetails);
             mCallDetail = CallDetail.fromTelecomCall(call);
             when(mockInCallViewModel.getIncomingCallDetail()).thenReturn(

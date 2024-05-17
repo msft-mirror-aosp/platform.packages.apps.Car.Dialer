@@ -16,6 +16,8 @@
 
 package com.android.car.dialer.ui.activecall;
 
+import android.content.ComponentName;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,8 +35,8 @@ import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.android.car.apps.common.BackgroundImageView;
 import com.android.car.apps.common.LetterTileDrawable;
+import com.android.car.apps.common.UxrButton;
 import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.ViewUtils;
 import com.android.car.dialer.R;
@@ -46,15 +48,11 @@ import com.android.car.telephony.common.PhoneNumber;
 import com.android.car.telephony.common.TelecomUtils;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-
-import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+
+import javax.inject.Inject;
 
 /**
  * A fragment that displays information about a call with actions.
@@ -70,7 +68,7 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     @Nullable
     private ImageView mAppIconView;
     @Nullable
-    private TextView mAppNameView;
+    private UxrButton mGoToAppButton;
     private TextView mPhoneNumberView;
     @Nullable
     private TextView mPhoneLabelView;
@@ -83,7 +81,6 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     private Chronometer mUserProfileCallStateText;
     private TextView mNameView;
     private ImageView mAvatarView;
-    private BackgroundImageView mBackgroundImage;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,8 +89,8 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
     }
 
     /**
-     * Shared UI elements between ongoing call and incoming call page: {@link BackgroundImageView}
-     * and {@link R.layout#user_profile_large}.
+     * Shared UI elements between ongoing call and incoming call page:
+     * {@link R.layout#user_profile_large}
      */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -108,10 +105,9 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         mParticipants = mUserProfileContainerView.findViewById(R.id.participants);
         mUserProfileCallStateText = mUserProfileContainerView.findViewById(
                 R.id.user_profile_call_state);
-        mBackgroundImage = view.findViewById(R.id.background_image);
 
         mAppIconView = mUserProfileContainerView.findViewById(R.id.app_icon);
-        mAppNameView = mUserProfileContainerView.findViewById(R.id.app_name);
+        mGoToAppButton = mUserProfileContainerView.findViewById(R.id.go_to_app_button);
     }
 
     /**
@@ -128,7 +124,28 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         if (mAppIconView != null) {
             mAppIconView.setImageDrawable(appInfo.first);
         }
-        ViewUtils.setText(mAppNameView, appInfo.second);
+        if (mGoToAppButton != null) {
+            ViewUtils.setVisible(mGoToAppButton, callDetail.isSelfManaged());
+            if (callDetail.isSelfManaged()) {
+                mGoToAppButton.setOnClickListener(v -> {
+                    // 3P may set their preferred inCallView. If not set, launch default activity.
+                    Intent intent = new Intent();
+                    ComponentName componentName = callDetail.getInCallViewComponentName();
+                    String packageName = callDetail.getCallingAppPackageName();
+                    if (componentName != null) {
+                        intent.setComponent(componentName);
+                        startActivity(intent);
+                    } else if (packageName != null) {
+                        intent = requireActivity()
+                                .getPackageManager()
+                                .getLaunchIntentForPackage(packageName);
+                        startActivity(intent);
+                    } else {
+                        L.w(TAG, "Could not return to app. Component or package name missing");
+                    }
+                });
+            }
+        }
 
         String callerDisplayName = callDetail.getCallerDisplayName();
         String number = callDetail.getNumber();
@@ -237,25 +254,6 @@ public abstract class InCallFragment extends Hilt_InCallFragment {
         Glide.with(this)
                 .load(avatarUri)
                 .apply(new RequestOptions().centerCrop().error(fallbackDrawable))
-                .listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                                Target<Drawable> target, boolean isFirstResource) {
-                        mBackgroundImage.setAlpha(getResources().getFloat(
-                                R.dimen.config_background_image_error_alpha));
-                        mBackgroundImage.setBackgroundColor(fallbackDrawable.getColor());
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model,
-                                                   Target<Drawable> target, DataSource dataSource,
-                                                   boolean isFirstResource) {
-                        mBackgroundImage.setAlpha(getResources().getFloat(
-                                R.dimen.config_background_image_alpha));
-                        mBackgroundImage.setBackgroundDrawable(resource, false);
-                        return false;
-                    }
-                }).into(mAvatarView);
+                .into(mAvatarView);
     }
 }

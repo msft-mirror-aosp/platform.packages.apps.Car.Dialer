@@ -44,7 +44,7 @@
     <string name="call_log_header_older" msgid="3971634717537073179">"अझ पुरानो"</string>
     <string name="call_logs_empty" msgid="3084720078894119049">"हालैका कलहरू छैनन्"</string>
     <string name="contact_list_empty" msgid="4225504548491888138">"कुनै पनि सम्पर्क छैन"</string>
-    <string name="available_after_sync" msgid="33765918799197782">"सिंक गरेपछि उपलब्ध हुन्छ। तपाईंले फोनमा सम्पर्कहरू साझा गर्न दिनुभएको छ भन्ने सुनिश्चित गर्नुहोस्।"</string>
+    <string name="available_after_sync" msgid="33765918799197782">"सिंक गरेपछि उपलब्ध हुन्छ। तपाईंले फोनमा कन्ट्याक्टहरू साझा गर्न दिनुभएको छ भन्ने सुनिश्चित गर्नुहोस्।"</string>
     <string name="favorites_empty" msgid="5794510741132758130">"मन पर्ने कुराहरू छैनन्"</string>
     <string name="no_favorites_added" msgid="2359050103464783907">"तपाईंले अहिलेसम्म कुनै पनि मन पर्ने कुराहरू थप्नुभएको छैन"</string>
     <string name="add_favorite_button" msgid="7914955940249767808">"कन्ट्याक्टमा भएको कुनै मन पर्ने व्यक्ति थप्नु…"</string>
@@ -89,5 +89,5 @@
     <string name="self_managed_call_description" msgid="7626811322858259206">"<xliff:g id="SELF_MANAGED_APP_NAME">%1$s</xliff:g> कल"</string>
     <string name="self_managed_call_current_speaker" msgid="7995502777230960442">"वक्ता: <xliff:g id="CALLER_NAME">%1$s</xliff:g>"</string>
     <string name="self_managed_call_participants" msgid="6303695666595174477">"सहभागीहरू: <xliff:g id="COUNT">%1$d</xliff:g>"</string>
-    <string name="go_to_app_button_text" msgid="5162163134990295961">"एपमा जानुहोस्"</string>
+    <string name="go_to_app_button_text" msgid="6174828617141019984">"ड्राइभ भ्यूबाट बाहिरिनुहोस्"</string>
 </resources>

@@ -96,6 +96,7 @@
 
         <!-- Permission to allow systemui to launch this as the in call blocking activity -->
         <activity android:name=".ui.activecall.InCallActivity"
+                  android:excludeFromRecents="true"
                   android:launchMode="singleInstance"
                   android:exported="true"
                   android:theme="@style/Theme.Dialer.InCall"

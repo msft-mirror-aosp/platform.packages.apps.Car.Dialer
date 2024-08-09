@@ -17,6 +17,7 @@
 plugins {
     id 'com.android.application'
     id 'jacoco'
+    id 'buildSrc.jdk.jdk8'
 }
 
 android {
@@ -104,11 +105,6 @@ android {
         androidTestEmulator.java.srcDirs=['tests/unittests/src']
         androidTestFake.setRoot('tests/instrutests')
         androidTestFake.java.srcDirs = ['tests/instrutests/src']
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     testOptions {

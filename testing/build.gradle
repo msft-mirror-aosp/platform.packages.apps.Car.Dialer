@@ -16,6 +16,7 @@
 
 plugins {
     id 'com.android.library'
+    id 'jacoco'
     id 'buildSrc.jdk.jdk8'
 }
 
@@ -25,6 +26,7 @@ android {
     defaultConfig {
         minSdkVersion 31
         targetSdkVersion gradle.ext.aaosTargetSDK
+        testInstrumentationRunnerArguments clearPackageData: 'true', coverage: 'true'
         versionCode 1
         versionName '1.0'
     }

@@ -35,19 +35,19 @@
     <string name="audio_route_phone_speaker" msgid="4608904003558187244">"Phone speaker"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"Phone"</string>
     <string name="dial_a_number" msgid="7432322177412387160">"Dial a number"</string>
-    <string name="call_history_title" msgid="7997887846276371553">"Recent"</string>
+    <string name="call_history_title" msgid="7997887846276371553">"Recents"</string>
     <string name="contacts_title" msgid="9201954388634537346">"Contacts"</string>
-    <string name="favorites_title" msgid="4767723901530488145">"Favourites"</string>
-    <string name="dialpad_title" msgid="3746259645005208554">"Dial Pad"</string>
+    <string name="favorites_title" msgid="4767723901530488145">"Favorites"</string>
+    <string name="dialpad_title" msgid="3746259645005208554">"Dialpad"</string>
     <string name="call_log_header_today" msgid="2069013936632793214">"Today"</string>
     <string name="call_log_header_yesterday" msgid="4613686845163357847">"Yesterday"</string>
     <string name="call_log_header_older" msgid="3971634717537073179">"Older"</string>
     <string name="call_logs_empty" msgid="3084720078894119049">"No recents"</string>
     <string name="contact_list_empty" msgid="4225504548491888138">"No contacts"</string>
-    <string name="available_after_sync" msgid="33765918799197782">"Available after syncing. Make sure that you have allowed sharing contacts on your phone."</string>
-    <string name="favorites_empty" msgid="5794510741132758130">"No favourites"</string>
-    <string name="no_favorites_added" msgid="2359050103464783907">"You haven\'t added any favourites yet"</string>
-    <string name="add_favorite_button" msgid="7914955940249767808">"Add a favourite"</string>
+    <string name="available_after_sync" msgid="33765918799197782">"Available after syncing. Make sure you have allowed sharing contacts on your phone."</string>
+    <string name="favorites_empty" msgid="5794510741132758130">"No favorites"</string>
+    <string name="no_favorites_added" msgid="2359050103464783907">"You haven\'t added any favorites yet"</string>
+    <string name="add_favorite_button" msgid="7914955940249767808">"Add a favorite"</string>
     <string name="search_title" msgid="5412680850141871664">"Search contacts"</string>
     <string name="search_hint" msgid="3099066132607042439">"Search contacts"</string>
     <string name="type_multiple" msgid="3402949522797441236">"Multiple"</string>
@@ -55,43 +55,39 @@
     <string name="select_number_dialog_just_once_button" msgid="1814381354393374660">"Just once"</string>
     <string name="select_number_dialog_always_button" msgid="6862338683635863764">"Always"</string>
     <string name="primary_number_description" msgid="1211198148918329509">"<xliff:g id="LABEL">%1$s</xliff:g> , default"</string>
-    <string name="favorite_number_description" msgid="8175362259853807385">"Favourite –  <xliff:g id="LABEL">%1$s</xliff:g>"</string>
-    <string name="local_favorite_number_description" msgid="3723823871011997275">"Local favourite –  <xliff:g id="LABEL">%1$s</xliff:g>"</string>
-    <string name="phone_favorites" msgid="2257447553252980575">"Favourites"</string>
-    <string name="local_favorites" msgid="4954852813126882412">"Local favourites"</string>
+    <string name="favorite_number_description" msgid="8175362259853807385">"Favorite -  <xliff:g id="LABEL">%1$s</xliff:g>"</string>
+    <string name="local_favorite_number_description" msgid="3723823871011997275">"Local favorite -  <xliff:g id="LABEL">%1$s</xliff:g>"</string>
+    <string name="phone_favorites" msgid="2257447553252980575">"Favorites"</string>
+    <string name="local_favorites" msgid="4954852813126882412">"Local favorites"</string>
     <string name="no_phone_numbers" msgid="8738691115921148445">"No phone numbers"</string>
     <string name="in_call_notification_channel_name" msgid="1978093630512401778">"Incoming call notification"</string>
     <string name="notification_incoming_call" msgid="1722904631804432389">"Incoming call"</string>
     <string name="notification_incoming_call_join_number" msgid="3531262061121638116">"Incoming call • <xliff:g id="PHONE_NUMBER">%1$s</xliff:g>"</string>
     <string name="missed_call_notification_channel_name" msgid="1135686963409691772">"Missed call notification"</string>
-    <!-- no translation found for notification_missed_call (7505605344790234498) -->
-    <skip />
+    <string name="notification_missed_call" msgid="7505605344790234498">"{count,plural, =1{Missed call}other{Missed calls(#)}}"</string>
     <string name="onhold_call_separator" msgid="2357788035385100805">"•"</string>
     <string name="swap_call_label" msgid="309322319645637302">"Switch calls"</string>
     <string name="setting_title" msgid="1296639422364732365">"Settings"</string>
     <string name="pref_start_page_title" msgid="1953465507368478503">"Start screen"</string>
     <string name="sort_order_title" msgid="975104366728292702">"Contact order"</string>
-    <string name="pref_connected_phone_title" msgid="5472866963149472593">"Connected phone"</string>
+    <string name="pref_connected_phone_title" msgid="5472866963149472593">"Connected Phone"</string>
     <string name="pref_no_incoming_call_hun_title" msgid="2314257779205958332">"Privacy"</string>
     <string name="pref_no_incoming_call_hun_summary" msgid="8833377984331845097">"Only show call alerts in cluster"</string>
-    <string name="pref_show_fullscreen_active_call_ui_title" msgid="6924304583510509581">"Active call"</string>
+    <string name="pref_show_fullscreen_active_call_ui_title" msgid="6924304583510509581">"Active Call"</string>
     <string name="pref_show_fullscreen_active_call_ui_summary" msgid="1629142960991476502">"Show active call view when answering call"</string>
     <string name="given_name_first_title" msgid="8072187841056104968">"First name"</string>
-    <string name="family_name_first_title" msgid="7721976826282427987">"Surname"</string>
+    <string name="family_name_first_title" msgid="7721976826282427987">"Last name"</string>
     <string name="audio_route_dialog_title" msgid="2262715267187794363"></string>
     <string name="audio_route_dialog_subtitle" msgid="8780526104805330121"></string>
     <string name="ongoing_conf_title" msgid="4161590966144000887">"Conference"</string>
     <string name="ongoing_conf_header_title" msgid="3534072126439808273">"Conference (<xliff:g id="COUNT">%1$d</xliff:g>)"</string>
-    <string name="dialing_disabled_warning" msgid="8094136040809498594">"Dialling disabled"</string>
+    <string name="dialing_disabled_warning" msgid="8094136040809498594">"Dialing disabled"</string>
     <string name="restricted_dialing_mode_label" msgid="2439439835180117206">"Dialpad usage is restricted while driving"</string>
     <string name="comma_delimiter" msgid="7949695553572428165">", "</string>
-    <string name="sms_notification_title" msgid="5980540487139970307">"Dialler SMS"</string>
+    <string name="sms_notification_title" msgid="5980540487139970307">"Dialer SMS"</string>
     <string name="sms_notification_text" msgid="9193883830187173056">"Sending SMS"</string>
     <string name="self_managed_call_description" msgid="7626811322858259206">"<xliff:g id="SELF_MANAGED_APP_NAME">%1$s</xliff:g> Call"</string>
-    <!-- no translation found for self_managed_call_current_speaker (7995502777230960442) -->
-    <skip />
-    <!-- no translation found for self_managed_call_participants (6303695666595174477) -->
-    <skip />
-    <!-- no translation found for go_to_app_button_text (6174828617141019984) -->
-    <skip />
+    <string name="self_managed_call_current_speaker" msgid="7995502777230960442">"Speaking: <xliff:g id="CALLER_NAME">%1$s</xliff:g>"</string>
+    <string name="self_managed_call_participants" msgid="6303695666595174477">"Participants: <xliff:g id="COUNT">%1$d</xliff:g>"</string>
+    <string name="go_to_app_button_text" msgid="6174828617141019984">"Exit Drive View"</string>
 </resources>

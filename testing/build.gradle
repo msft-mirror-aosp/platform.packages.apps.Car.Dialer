@@ -25,7 +25,7 @@ android {
 
     defaultConfig {
         minSdkVersion 31
-        targetSdkVersion gradle.ext.aaosTargetSDK
+        targetSdkVersion 33
         testInstrumentationRunnerArguments clearPackageData: 'true', coverage: 'true'
         versionCode 1
         versionName '1.0'

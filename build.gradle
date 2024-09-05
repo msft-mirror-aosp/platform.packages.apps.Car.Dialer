@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.application'
-apply plugin: 'jacoco'
+plugins {
+    id 'com.android.application'
+    id 'jacoco'
+    id 'buildSrc.jdk.jdk8'
+}
 
 android {
     compileSdkVersion gradle.ext.aaosLatestSDK
@@ -23,7 +26,7 @@ android {
     defaultConfig {
         applicationId 'com.android.car.dialer'
         minSdkVersion 31 // Dialer requires apis that became public in S.
-        targetSdkVersion gradle.ext.aaosTargetSDK
+        targetSdkVersion 33
         testInstrumentationRunnerArguments clearPackageData: 'true', coverage: 'true'
         versionCode gradle.ext.getVersionCode()
         versionName gradle.ext.getVersionName()
@@ -102,11 +105,6 @@ android {
         androidTestEmulator.java.srcDirs=['tests/unittests/src']
         androidTestFake.setRoot('tests/instrutests')
         androidTestFake.java.srcDirs = ['tests/instrutests/src']
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     testOptions {

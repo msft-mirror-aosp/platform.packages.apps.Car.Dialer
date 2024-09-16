@@ -20,6 +20,7 @@ plugins {
 }
 
 android {
+    namespace "com.android.car.dialer.framework"
     compileSdkVersion gradle.ext.aaosLatestSDK
 
     defaultConfig {

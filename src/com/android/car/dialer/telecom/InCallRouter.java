@@ -33,10 +33,10 @@ import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.dialer.ui.activecall.InCallViewModel;
 import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 
-import javax.inject.Inject;
-
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.android.scopes.ServiceScoped;
+
+import javax.inject.Inject;
 
 /**
  * Routes a call to different path depending on its state. If there is any {@link
@@ -82,6 +82,9 @@ class InCallRouter {
             routeToNotification(call);
             // Otherwise, no operations. Incoming call will be displayed outside of Dialer app
             // such as cluster.
+        } else if (state == Call.STATE_DIALING) {
+            // Launch the InCallView when dialing even from the paired phone
+            routeToFullScreenIncomingCallPage(true, false);
         } else if (state != Call.STATE_DISCONNECTED) {
             // Don't launch the in call page if state is disconnected.
             // Otherwise, the InCallActivity finishes right after onCreate() and flashes.

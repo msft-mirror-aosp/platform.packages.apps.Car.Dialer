@@ -34,18 +34,11 @@ android {
     }
 
     signingConfigs {
-        aaos {
-            storeFile file(gradle.ext.aaosCertPath)
+        unbundled {
+            storeFile file(gradle.ext.unbundledCertPath)
             storePassword 'carapps'
             keyAlias 'carapps'
             keyPassword 'carapps'
-        }
-
-        platform {
-            storeFile file(gradle.ext.platformCertPath)
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
         }
     }
 
@@ -55,26 +48,19 @@ android {
             dimension 'devMode'
             versionNameSuffix '-fake'
             testInstrumentationRunner 'com.android.car.dialer.integration.DialerHiltTestRunner'
-            signingConfig signingConfigs.aaos
+            signingConfig signingConfigs.unbundled
         }
 
         emulator {
             dimension 'devMode'
             versionNameSuffix '-emulator'
             testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-            signingConfig signingConfigs.aaos
+            signingConfig signingConfigs.unbundled
         }
 
         production {
             dimension 'devMode'
-            signingConfig signingConfigs.aaos
-        }
-
-        platform {
-            dimension 'devMode'
-            if (file(gradle.ext.platformCertPath).exists()) {
-                signingConfig signingConfigs.platform
-            }
+            signingConfig signingConfigs.unbundled
         }
     }
 
@@ -85,10 +71,6 @@ android {
         }
 
         production {
-            java.srcDirs = ['src']
-        }
-
-        platform {
             java.srcDirs = ['src']
         }
 

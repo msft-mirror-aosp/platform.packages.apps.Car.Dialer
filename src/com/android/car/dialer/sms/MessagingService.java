@@ -23,9 +23,11 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
+import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 
+import com.android.car.apps.common.log.L;
 import com.android.car.dialer.R;
 import com.android.car.messenger.common.MessagingUtils;
 
@@ -39,6 +41,7 @@ public class MessagingService extends Hilt_MessagingService {
     private static final String TAG = "CD.MessagingService";
 
     private static final String CHANNEL_ID = "ID";
+    private static final int SERVICE_STARTED_NOTIFICATION_ID = Integer.MAX_VALUE;
 
     @Override
     public void onCreate() {
@@ -60,7 +63,14 @@ public class MessagingService extends Hilt_MessagingService {
                 .setContentText(getString(R.string.sms_notification_text))
                 .build();
 
-        startForeground(Integer.MAX_VALUE, notification);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(
+                    SERVICE_STARTED_NOTIFICATION_ID,
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE);
+        } else {
+            startForeground(SERVICE_STARTED_NOTIFICATION_ID, notification);
+        }
     }
 
     @Override
@@ -71,21 +81,21 @@ public class MessagingService extends Hilt_MessagingService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null || intent.getAction() == null) {
-            return START_STICKY;
+            return START_NOT_STICKY;
         }
 
         String action = intent.getAction();
 
-        Log.d(TAG, "action: " + action);
-
+        L.d(TAG, "action: " + action);
         switch (action) {
             case ACTION_DIRECT_SEND:
                 MessagingUtils.directSend(this, intent);
+                stopSelf();
                 break;
             default:
                 break;
         }
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 }

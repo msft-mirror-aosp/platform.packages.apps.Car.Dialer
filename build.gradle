@@ -27,7 +27,7 @@ android {
     defaultConfig {
         applicationId 'com.android.car.dialer'
         minSdkVersion 31 // Dialer requires apis that became public in S.
-        targetSdkVersion 33
+        targetSdkVersion 34
         testInstrumentationRunnerArguments clearPackageData: 'true', coverage: 'true'
         versionCode gradle.ext.getVersionCode()
         versionName gradle.ext.getVersionName()

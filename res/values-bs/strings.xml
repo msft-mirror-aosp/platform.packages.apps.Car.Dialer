@@ -19,9 +19,9 @@
     <string name="phone_app_name" msgid="238824437273544459">"Telefon"</string>
     <string name="no_hfp" msgid="7371139867234667691">"Da uspostavite poziv, najprije povežite telefon s automobilom preko Bluetootha."</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth nije dostupan."</string>
-    <string name="bluetooth_disabled" msgid="1275246762067907843">"Za upućivanje ili primanje poziva uključite Bluetooth."</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Za upućivanje ili primanje poziva uparite telefon s automobilom."</string>
-    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Poveži se na Bluetooth"</string>
+    <string name="bluetooth_disabled" msgid="1275246762067907843">"Da upućujete ili primate pozive, uključite Bluetooth."</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Da upućujete ili primate pozive, uparite telefon s automobilom."</string>
+    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Poveži se s Bluetoothom"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Hitan slučaj"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Hitni poziv"</string>
     <string name="error_contact_deleted" msgid="6356539067659368396">"Moguće je da je ovaj kontakt izbrisan."</string>

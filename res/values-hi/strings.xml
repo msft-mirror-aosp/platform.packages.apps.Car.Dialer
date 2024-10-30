@@ -19,8 +19,8 @@
     <string name="phone_app_name" msgid="238824437273544459">"फ़ोन"</string>
     <string name="no_hfp" msgid="7371139867234667691">"कॉल पूरी करने के लिए, फ़ोन को पहले ब्लूटूथ के ज़रिए कार से कनेक्ट करें."</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"ब्लूटूथ उपलब्ध नहीं है."</string>
-    <string name="bluetooth_disabled" msgid="1275246762067907843">"कॉल करने या उसका जवाब देने के लिए ब्लूटूथ चालू करें."</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"कॉल करने या कॉल का जवाब देने के लिए, अपने फ़ोन को कार से जोड़ें."</string>
+    <string name="bluetooth_disabled" msgid="1275246762067907843">"कॉल करने या जवाब देने के लिए, ब्लूटूथ चालू करें."</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"कॉल करने या जवाब देने के लिए, अपने फ़ोन को कार से जोड़ें."</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"ब्लूटूथ से कनेक्ट करें"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"आपातकालीन कॉल"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"आपातकालीन कॉल"</string>

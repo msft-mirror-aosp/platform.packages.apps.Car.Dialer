@@ -17,15 +17,16 @@
 plugins {
     id 'com.android.library'
     id 'jacoco'
+    id 'aaosApps.buildLogic'
     id 'buildSrc.jdk.jdk8'
 }
 
 android {
-    compileSdkVersion gradle.ext.aaosLatestSDK
+    namespace "com.android.car.dialer.testing"
 
     defaultConfig {
         minSdkVersion 31
-        targetSdkVersion 33
+        targetSdkVersion 34
         testInstrumentationRunnerArguments clearPackageData: 'true', coverage: 'true'
         versionCode 1
         versionName '1.0'

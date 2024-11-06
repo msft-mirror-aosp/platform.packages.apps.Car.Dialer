@@ -19,8 +19,8 @@
     <string name="phone_app_name" msgid="238824437273544459">"Telefon"</string>
     <string name="no_hfp" msgid="7371139867234667691">"Aby bylo možné volat, propojte telefon s autem pomocí Bluetooth"</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth není k dispozici."</string>
-    <string name="bluetooth_disabled" msgid="1275246762067907843">"Chcete-li přijímat a uskutečňovat hovory, zapněte Bluetooth."</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Chcete-li uskutečňovat a přijímat hovory, spárujte telefon s autem."</string>
+    <string name="bluetooth_disabled" msgid="1275246762067907843">"Pokud chcete přijímat a uskutečňovat hovory, zapněte Bluetooth."</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Pokud chcete volat a přijímat hovory, spárujte telefon s autem."</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Připojit k Bluetooth"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Tísňové volání"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Tísňové volání"</string>

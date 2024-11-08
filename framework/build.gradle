@@ -94,5 +94,5 @@ dependencies {
     fakeImplementation project(':car-telephony-common')
     fakeImplementation 'com.google.code.gson:gson:2.8.8'
     fakeImplementation 'com.google.guava:guava:30.1.1-android'
-    fakeImplementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'
+    fakeImplementation libs.dexmaker.mockito.inline
 }

@@ -55,6 +55,6 @@ dependencies {
 
     implementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'androidx.test.espresso:espresso-contrib:3.5.1'
-    implementation 'com.linkedin.dexmaker:dexmaker-mockito-inline:2.28.1'
+    implementation libs.dexmaker.mockito.inline
 
 }

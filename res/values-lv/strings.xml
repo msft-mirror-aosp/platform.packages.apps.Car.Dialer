@@ -20,7 +20,7 @@
     <string name="no_hfp" msgid="7371139867234667691">"Lai veiktu zvanu, vispirms savienojiet tālruni ar automašīnu, izmantojot Bluetooth."</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth nav pieejams."</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"Lai veiktu vai saņemtu zvanus, ieslēdziet Bluetooth."</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Lai veiktu vai saņemtu zvanus, tālruni savienojiet pārī ar automašīnu."</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Lai veiktu vai saņemtu zvanus, savienojiet tālruni pārī ar automašīnu."</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Izveidot savienojumu ar Bluetooth"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Ārkārtas zvans"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Ārkārtas zvans"</string>

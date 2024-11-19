@@ -38,6 +38,7 @@ android_library {
 
     static_libs: [
         "car-apps-common-prebuilt",
+        "car-telephony-common-prebuilt",
         "androidx.annotation_annotation",
         "androidx.core_core",
         "hilt_android",

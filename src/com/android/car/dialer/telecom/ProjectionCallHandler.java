@@ -32,7 +32,7 @@ import androidx.annotation.VisibleForTesting;
 
 import com.android.car.apps.common.log.L;
 import com.android.car.dialer.notification.InCallNotificationController;
-import com.android.car.telephony.calling.InCallServiceManager;
+import com.android.car.telephony.calling.SimpleInCallServiceImpl;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +42,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 @Singleton
-class ProjectionCallHandler implements InCallServiceImpl.ActiveCallListChangedCallback,
+class ProjectionCallHandler implements SimpleInCallServiceImpl.ActiveCallListChangedCallback,
         CarProjectionManager.ProjectionStatusListener {
     private static final String TAG = "CD.ProjectionCallHandler";
 

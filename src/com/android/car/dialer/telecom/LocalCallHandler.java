@@ -27,10 +27,14 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.apps.common.log.L;
 import com.android.car.telephony.calling.InCallServiceManager;
+import com.android.car.telephony.calling.SimpleInCallServiceImpl.ActiveCallListChangedCallback;
+import com.android.car.telephony.calling.SimpleInCallServiceImpl.CallAudioStateCallback;
 import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
 import com.google.common.base.Predicate;
+
+import dagger.hilt.android.scopes.ViewModelScoped;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -39,8 +43,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import dagger.hilt.android.scopes.ViewModelScoped;
 
 /**
  * Binds to the {@link InCallServiceImpl}, and upon establishing a connection, handles call list
@@ -56,14 +58,14 @@ public class LocalCallHandler
     private final Call.Callback mRingingCallStateChangeCallback;
 
     private final MutableLiveData<CallAudioState> mCallAudioStateLiveData = new MutableLiveData<>();
-    private final InCallServiceImpl.CallAudioStateCallback mCallAudioStateCallback =
+    private final CallAudioStateCallback mCallAudioStateCallback =
             mCallAudioStateLiveData::setValue;
 
     private final MutableLiveData<List<Call>> mCallListLiveData;
     private final MutableLiveData<Call> mIncomingCallLiveData;
     private final MutableLiveData<List<Call>> mOngoingCallListLiveData;
-    private final InCallServiceImpl.ActiveCallListChangedCallback mActiveCallListChangedCallback =
-            new InCallServiceImpl.ActiveCallListChangedCallback() {
+    private final ActiveCallListChangedCallback mActiveCallListChangedCallback =
+            new ActiveCallListChangedCallback() {
                 @Override
                 public boolean onTelecomCallAdded(Call telecomCall) {
                     notifyCallAdded(telecomCall);

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.android.car.dialer.telecom;
 
 import static android.app.Activity.RESULT_OK;
@@ -58,6 +57,7 @@ import com.android.car.dialer.R;
 import com.android.car.dialer.bluetooth.PhoneAccountManager;
 import com.android.car.dialer.notification.InCallNotificationController;
 import com.android.car.dialer.ui.activecall.InCallActivity;
+import com.android.car.telephony.calling.SimpleInCallServiceImpl;
 import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
@@ -92,9 +92,9 @@ public class InCallServiceImplTest {
     @Mock
     private CallAudioState mMockCallAudioState;
     @Mock
-    private InCallServiceImpl.CallAudioStateCallback mCallAudioStateCallback;
+    private SimpleInCallServiceImpl.CallAudioStateCallback mCallAudioStateCallback;
     @Mock
-    private InCallServiceImpl.ActiveCallListChangedCallback mActiveCallListChangedCallback;
+    private SimpleInCallServiceImpl.ActiveCallListChangedCallback mActiveCallListChangedCallback;
     @Mock
     private PhoneAccountManager mPhoneAccountManager;
     @Mock
@@ -128,7 +128,7 @@ public class InCallServiceImplTest {
                 .commit();
 
         mInCallServiceImpl =
-                ((InCallServiceImpl.LocalBinder) binder).getService();
+                (InCallServiceImpl) (((SimpleInCallServiceImpl.LocalBinder) binder).getService());
         mInCallServiceImpl.mPhoneAccountManager = mPhoneAccountManager;
         when(mPhoneAccountManager.getAppInfo(any(PhoneAccountHandle.class), anyBoolean()))
                 .thenReturn(Pair.create(new ColorDrawable(Color.BLUE), "Phone"));

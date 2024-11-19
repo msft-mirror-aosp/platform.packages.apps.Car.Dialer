@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.android.car.dialer.telecom;
 
 import android.car.drivingstate.CarUxRestrictions;
@@ -21,6 +20,7 @@ import android.telecom.Call;
 
 import androidx.annotation.NonNull;
 
+import com.android.car.telephony.calling.SimpleInCallServiceImpl;
 import com.android.car.telephony.selfmanaged.SelfManagedCallUtil;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
 
@@ -30,7 +30,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 /**Handles the driving state change and show incall ui for self managed calls when start driving. */
-public class SelfManagedCallHandler implements InCallServiceImpl.ActiveCallListChangedCallback,
+public class SelfManagedCallHandler implements
+        SimpleInCallServiceImpl.ActiveCallListChangedCallback,
         CarUxRestrictionsUtil.OnUxRestrictionsChangedListener {
     private final SelfManagedCallUtil mSelfManagedCallUtil;
     private final CarUxRestrictionsUtil mCarUxRestrictionsUtil;

@@ -93,13 +93,6 @@ class InCallRouter {
     }
 
     /**
-     * Called by {@link InCallServiceImpl#onCallRemoved(Call)}.
-     */
-    void onCallRemoved(Call call) {
-        // No-op
-    }
-
-    /**
      * Presents the ringing call in HUN.
      */
     private void routeToNotification(Call call) {

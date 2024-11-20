@@ -16,11 +16,12 @@
 
 plugins {
     id 'com.android.library'
+    id 'aaosApps.buildLogic'
     id 'buildSrc.jdk.jdk8'
 }
 
 android {
-    compileSdkVersion gradle.ext.aaosLatestSDK
+    namespace "com.android.car.dialer.framework"
 
     defaultConfig {
         minSdkVersion 31
@@ -30,18 +31,11 @@ android {
     }
 
     signingConfigs {
-        aaos {
-            storeFile file(gradle.ext.aaosCertPath)
+        unbundled {
+            storeFile file(gradle.ext.unbundledCertPath)
             storePassword 'carapps'
             keyAlias 'carapps'
             keyPassword 'carapps'
-        }
-
-        platform {
-            storeFile file(gradle.ext.platformCertPath)
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
         }
     }
 
@@ -49,24 +43,17 @@ android {
     productFlavors {
         fake {
             dimension 'devMode'
-            signingConfig signingConfigs.aaos
+            signingConfig signingConfigs.unbundled
         }
 
         emulator {
             dimension 'devMode'
-            signingConfig signingConfigs.aaos
+            signingConfig signingConfigs.unbundled
         }
 
         production {
             dimension 'devMode'
-            signingConfig signingConfigs.aaos
-        }
-
-        platform {
-            dimension 'devMode'
-            if (file(gradle.ext.platformCertPath).exists()) {
-                signingConfig signingConfigs.platform
-            }
+            signingConfig signingConfigs.unbundled
         }
     }
     sourceSets {
@@ -76,10 +63,6 @@ android {
         }
 
         production {
-            java.srcDirs = ['real/src']
-        }
-
-        platform {
             java.srcDirs = ['real/src']
         }
 

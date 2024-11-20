@@ -20,7 +20,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,16 +33,17 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.android.car.dialer.telecom.LocalCallHandler;
+import com.android.car.dialer.telecom.DialerInCallModel;
+import com.android.car.dialer.telecom.InCallServiceImpl;
 import com.android.car.telephony.calling.AudioRouteLiveData;
+import com.android.car.telephony.calling.CallComparator;
+import com.android.car.telephony.calling.InCallServiceManager;
 import com.android.car.telephony.calling.SupportedAudioRoutesLiveData;
 import com.android.car.telephony.common.CallDetail;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -76,19 +76,22 @@ public class InCallViewModelTest {
     private Call mMockRingingCall;
     @Mock
     private Call.Details mMockRingingCallDetails;
-    @Captor
-    private ArgumentCaptor<Call.Callback> mCallbackCaptor;
     @Mock
-    AudioRouteLiveData.Factory mMockAudioRouteLiveDataFactory;
+    private AudioRouteLiveData.Factory mMockAudioRouteLiveDataFactory;
     @Mock
-    SupportedAudioRoutesLiveData.Factory mMockSupportedAudioRoutesLiveDataFactory;
+    private SupportedAudioRoutesLiveData.Factory mMockSupportedAudioRoutesLiveDataFactory;
+    private DialerInCallModel mInCallModel;
     @Mock
-    LocalCallHandler mMockLocalCallHandler;
+    private InCallServiceImpl mMockInCallService;
+    private InCallServiceManager mInCallServiceManager;
 
     @Before
     @UiThreadTest
     public void setup() {
         MockitoAnnotations.initMocks(this);
+
+        mInCallServiceManager = new InCallServiceManager();
+        mInCallServiceManager.setInCallService(mMockInCallService);
 
         when(mMockActiveCallDetails.getState()).thenReturn(Call.STATE_ACTIVE);
         when(mMockActiveCall.getDetails()).thenReturn(mMockActiveCallDetails);
@@ -98,7 +101,6 @@ public class InCallViewModelTest {
         when(mMockHoldingCall.getDetails()).thenReturn(mMockHoldingCallDetails);
         when(mMockRingingCallDetails.getState()).thenReturn(Call.STATE_RINGING);
         when(mMockRingingCall.getDetails()).thenReturn(mMockRingingCallDetails);
-        doNothing().when(mMockActiveCall).registerCallback(mCallbackCaptor.capture());
 
         // Set up call details
         GatewayInfo gatewayInfo = new GatewayInfo("", GATEWAY_ADDRESS, GATEWAY_ADDRESS);
@@ -113,16 +115,11 @@ public class InCallViewModelTest {
         when(mMockSupportedAudioRoutesLiveDataFactory.create(any())).thenReturn(
                 mock(SupportedAudioRoutesLiveData.class));
 
-        when(mMockLocalCallHandler.getIncomingCallLiveData()).thenReturn(
-                new MutableLiveData<>(mMockRingingCall));
-        when(mMockLocalCallHandler.getCallListLiveData()).thenReturn(
-                new MutableLiveData<>(Arrays.asList(
-                        mMockRingingCall, mMockDialingCall, mMockActiveCall, mMockHoldingCall)));
-        when(mMockLocalCallHandler.getOngoingCallListLiveData()).thenReturn(
-                new MutableLiveData<>(Arrays.asList(
-                        mMockDialingCall, mMockActiveCall, mMockHoldingCall)));
+        when(mMockInCallService.getCallList()).thenReturn(Arrays.asList(
+                        mMockRingingCall, mMockDialingCall, mMockActiveCall, mMockHoldingCall));
 
-        mInCallViewModel = new InCallViewModel(mMockLocalCallHandler,
+        mInCallModel = new DialerInCallModel(mInCallServiceManager, new CallComparator());
+        mInCallViewModel = new InCallViewModel(mInCallModel,
                 mMockAudioRouteLiveDataFactory, mMockSupportedAudioRoutesLiveDataFactory,
                 Executors.newSingleThreadExecutor(), new MutableLiveData<>());
         mInCallViewModel.getIncomingCall().observeForever(s -> { });
@@ -135,6 +132,7 @@ public class InCallViewModelTest {
     }
 
     @Test
+    @UiThreadTest
     public void testGetCallList() {
         List<Call> callListInOrder =
                 Arrays.asList(mMockDialingCall, mMockActiveCall, mMockHoldingCall);
@@ -145,12 +143,9 @@ public class InCallViewModelTest {
     @Test
     @UiThreadTest
     public void testStateChange_triggerCallListUpdate() {
-        Call.Callback callback = mCallbackCaptor.getValue();
-        assertThat(callback).isNotNull();
-
         when(mMockActiveCallDetails.getState()).thenReturn(Call.STATE_HOLDING);
         when(mMockHoldingCallDetails.getState()).thenReturn(Call.STATE_ACTIVE);
-        callback.onStateChanged(mMockActiveCall, Call.STATE_HOLDING);
+        mInCallModel.onStateChanged(mMockActiveCall, Call.STATE_HOLDING);
 
         List<Call> callListInOrder =
                 Arrays.asList(mMockDialingCall, mMockHoldingCall, mMockActiveCall);
@@ -159,22 +154,26 @@ public class InCallViewModelTest {
     }
 
     @Test
+    @UiThreadTest
     public void testGetIncomingCall() {
         Call incomingCall = mInCallViewModel.getIncomingCall().getValue();
         assertThat(incomingCall).isEqualTo(mMockRingingCall);
     }
 
     @Test
+    @UiThreadTest
     public void testGetPrimaryCall() {
         assertThat(mInCallViewModel.getPrimaryCall().getValue()).isEqualTo(mMockDialingCall);
     }
 
     @Test
+    @UiThreadTest
     public void testGetPrimaryCallState() {
         assertThat(mInCallViewModel.getPrimaryCallState().getValue()).isEqualTo(Call.STATE_DIALING);
     }
 
     @Test
+    @UiThreadTest
     public void testGetPrimaryCallDetail() {
         CallDetail callDetail = mInCallViewModel.getPrimaryCallDetail().getValue();
         assertThat(callDetail.getNumber()).isEqualTo(NUMBER);
@@ -184,6 +183,7 @@ public class InCallViewModelTest {
     }
 
     @Test
+    @UiThreadTest
     public void testGetCallStateAndConnectTime() {
         Pair<Integer, Long> pair = mInCallViewModel.getCallStateAndConnectTime().getValue();
         assertThat(pair.first).isEqualTo(Call.STATE_DIALING);

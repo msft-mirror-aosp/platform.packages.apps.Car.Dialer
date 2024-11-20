@@ -57,7 +57,6 @@ public abstract class InCallServiceProxy extends SimpleInCallServiceImpl {
      * Local binder so fakes can bind and access InCallService APIs.
      */
     public class LocalBinder extends Binder {
-
         /**
          * Returns a reference to {@link InCallServiceProxy}.
          */

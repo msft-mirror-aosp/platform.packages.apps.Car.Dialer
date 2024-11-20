@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.android.car.dialer.ui.activecall;
 
 import android.telecom.Call;
@@ -26,24 +25,20 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.android.car.apps.common.log.L;
 import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.livedata.CallerInfoLiveData;
-import com.android.car.dialer.telecom.LocalCallHandler;
 import com.android.car.telephony.calling.AudioRouteLiveData;
+import com.android.car.telephony.calling.CallComparator;
 import com.android.car.telephony.calling.CallDetailLiveData;
 import com.android.car.telephony.calling.CallStateLiveData;
+import com.android.car.telephony.calling.InCallModel;
 import com.android.car.telephony.calling.SupportedAudioRoutesLiveData;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
 
-import com.google.common.collect.Lists;
-
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -58,28 +53,26 @@ import javax.inject.Inject;
 public class InCallViewModel extends ViewModel {
     private static final String TAG = "CD.InCallViewModel";
 
-    private final LocalCallHandler mLocalCallHandler;
+    private final InCallModel mInCallModel;
     private final AudioRouteLiveData.Factory mAudioRouteLiveDataFactory;
     private final SupportedAudioRoutesLiveData.Factory mSupportedAudioRoutesLiveDataFactory;
     private final LiveData<List<Contact>> mContactListLiveData;
     private final ExecutorService mExecutorService;
 
-    private final MutableLiveData<Boolean> mHasOngoingCallChangedLiveData;
-    private final MediatorLiveData<List<Call>> mOngoingCallListLiveData;
-    private final MutableLiveData<List<Call>> mConferenceCallListLiveData;;
+    private final LiveData<List<Call>> mOngoingCallListLiveData;
+    private final LiveData<List<Call>> mConferenceCallListLiveData;;
     private final LiveData<List<CallDetail>> mConferenceCallDetailListLiveData;
-    private final Comparator<Call> mCallComparator;
 
     private final LiveData<CallDetail> mIncomingCallDetailLiveData;
     private final CallerInfoLiveData mIncomingCallerInfoLiveData;
 
-    private final CallDetailLiveData mCallDetailLiveData;
+    private final LiveData<CallDetail> mCallDetailLiveData;
     private final LiveData<Integer> mCallStateLiveData;
     private final LiveData<Call> mPrimaryCallLiveData;
     private final LiveData<Call> mSecondaryCallLiveData;
     private final LiveData<Contact> mPrimaryCallerInfoLiveData;
     private final LiveData<Contact> mSecondaryCallerInfoLiveData;
-    private final CallDetailLiveData mSecondaryCallDetailLiveData;
+    private final LiveData<CallDetail> mSecondaryCallDetailLiveData;
     private final LiveData<Pair<Call, Call>> mOngoingCallPairLiveData;
     private final MutableLiveData<Boolean> mDialpadIsOpen;
     private final ShowOnholdCallLiveData mShowOnholdCall;
@@ -90,49 +83,21 @@ public class InCallViewModel extends ViewModel {
     private final AudioRouteLiveData mAudioRouteLiveData;
     private final SupportedAudioRoutesLiveData mSupportedAudioRoutesLiveData;
 
-    // Reuse the same instance so the callback won't be registered more than once.
-    private final Call.Callback mCallStateChangedCallback = new Call.Callback() {
-        @Override
-        public void onStateChanged(Call call, int state) {
-            L.d(TAG, "onStateChanged: %s", call);
-            mHasOngoingCallChangedLiveData.setValue(true);
-        }
-
-        @Override
-        public void onParentChanged(Call call, Call parent) {
-            L.d(TAG, "onParentChanged %s", call);
-            mHasOngoingCallChangedLiveData.setValue(true);
-        }
-
-        @Override
-        public void onChildrenChanged(Call call, List<Call> children) {
-            L.d(TAG, "onChildrenChanged %s", call);
-            mHasOngoingCallChangedLiveData.setValue(true);
-        }
-    };
-
     @Inject
     public InCallViewModel(
-            LocalCallHandler localCallHandler,
+            InCallModel inCallModel,
             AudioRouteLiveData.Factory audioRouteLiveDataFactory,
             SupportedAudioRoutesLiveData.Factory supportedAudioRouteLiveDataFactory,
             ExecutorService executorService,
             LiveData<List<Contact>> contactListLiveData) {
-        mLocalCallHandler = localCallHandler;
+        mInCallModel = inCallModel;
         mAudioRouteLiveDataFactory = audioRouteLiveDataFactory;
         mSupportedAudioRoutesLiveDataFactory = supportedAudioRouteLiveDataFactory;
         mContactListLiveData = contactListLiveData;
         mExecutorService = executorService;
 
-        mCallComparator = new CallComparator();
-
-        mConferenceCallListLiveData = new MutableLiveData<>();
-        mHasOngoingCallChangedLiveData = new MutableLiveData<>();
-        mOngoingCallListLiveData = new MediatorLiveData<>();
-        mOngoingCallListLiveData.addSource(mHasOngoingCallChangedLiveData,
-                changed -> recalculateOngoingCallList());
-        mOngoingCallListLiveData.addSource(mLocalCallHandler.getOngoingCallListLiveData(),
-                callList -> recalculateOngoingCallList());
+        mConferenceCallListLiveData = mInCallModel.getConferenceCallListLiveData();
+        mOngoingCallListLiveData = mInCallModel.getOngoingCallListLiveData();
 
         mConferenceCallDetailListLiveData = Transformations.map(mConferenceCallListLiveData,
                 callList -> {
@@ -144,23 +109,23 @@ public class InCallViewModel extends ViewModel {
                 });
 
         mIncomingCallDetailLiveData = Transformations.switchMap(
-                mLocalCallHandler.getIncomingCallLiveData(), input -> {
+                mInCallModel.getIncomingCallLiveData(), call -> {
                     CallDetailLiveData callDetailLiveData = new CallDetailLiveData();
-                    callDetailLiveData.setTelecomCall(input);
+                    callDetailLiveData.setTelecomCall(call);
                     return callDetailLiveData;
                 });
         mIncomingCallerInfoLiveData = new CallerInfoLiveData(
                 mIncomingCallDetailLiveData, mExecutorService);
 
-        mCallDetailLiveData = new CallDetailLiveData();
-        mPrimaryCallLiveData = Transformations.map(mOngoingCallListLiveData, input -> {
-            Call call = input.isEmpty() ? null : input.get(0);
-            mCallDetailLiveData.setTelecomCall(call);
-            return call;
+        mPrimaryCallLiveData = mInCallModel.getPrimaryCallLiveData();
+        mCallDetailLiveData = Transformations.switchMap(mPrimaryCallLiveData, call -> {
+            CallDetailLiveData callDetailLiveData = new CallDetailLiveData();
+            callDetailLiveData.setTelecomCall(call);
+            return callDetailLiveData;
         });
         mPrimaryCallerInfoLiveData = new CallerInfoLiveData(mCallDetailLiveData, mExecutorService);
         mAudioRouteLiveData = mAudioRouteLiveDataFactory.create(mCallDetailLiveData,
-                mLocalCallHandler.getCallAudioStateLiveData());
+                mInCallModel.getCallAudioStateLiveData());
         mSupportedAudioRoutesLiveData = mSupportedAudioRoutesLiveDataFactory.create(
                 mCallDetailLiveData);
 
@@ -175,11 +140,11 @@ public class InCallViewModel extends ViewModel {
         mCallStateAndConnectTimeLiveData =
                 LiveDataFunctions.pair(mCallStateLiveData, mCallConnectTimeLiveData);
 
-        mSecondaryCallDetailLiveData = new CallDetailLiveData();
-        mSecondaryCallLiveData = Transformations.map(mOngoingCallListLiveData, callList -> {
-            Call call = (callList != null && callList.size() > 1) ? callList.get(1) : null;
-            mSecondaryCallDetailLiveData.setTelecomCall(call);
-            return call;
+        mSecondaryCallLiveData = mInCallModel.getSecondaryCallLiveData();
+        mSecondaryCallDetailLiveData = Transformations.switchMap(mSecondaryCallLiveData, call -> {
+            CallDetailLiveData callDetailLiveData = new CallDetailLiveData();
+            callDetailLiveData.setTelecomCall(call);
+            return callDetailLiveData;
         });
         mSecondaryCallerInfoLiveData = new CallerInfoLiveData(
                 mSecondaryCallDetailLiveData, mExecutorService);
@@ -235,12 +200,12 @@ public class InCallViewModel extends ViewModel {
 
     /** Returns the live data which monitors all the calls. */
     public LiveData<List<Call>> getAllCallList() {
-        return mLocalCallHandler.getCallListLiveData();
+        return mInCallModel.getCallListLiveData();
     }
 
     /** Returns the live data which monitors the current incoming call. */
     public LiveData<Call> getIncomingCall() {
-        return mLocalCallHandler.getIncomingCallLiveData();
+        return mInCallModel.getIncomingCallLiveData();
     }
 
     public LiveData<CallDetail> getIncomingCallDetail() {
@@ -335,7 +300,7 @@ public class InCallViewModel extends ViewModel {
      * Returns current call audio state.
      */
     public LiveData<CallAudioState> getCallAudioState() {
-        return mLocalCallHandler.getCallAudioStateLiveData();
+        return mInCallModel.getCallAudioStateLiveData();
     }
 
     /** Return the {@link MutableLiveData} for dialpad open state. */
@@ -358,88 +323,6 @@ public class InCallViewModel extends ViewModel {
 
     public LiveData<Contact> getIncomingCallerInfoLiveData() {
         return mIncomingCallerInfoLiveData;
-    }
-
-    @Override
-    protected void onCleared() {
-        unregisterOngoingCallCallbacks();
-        mLocalCallHandler.tearDown();
-    }
-
-    private void recalculateOngoingCallList() {
-        L.d(TAG, "recalculate ongoing call list");
-        unregisterOngoingCallCallbacks();
-
-        List<Call> activeCallList = mLocalCallHandler.getOngoingCallListLiveData().getValue();
-        if (activeCallList == null || activeCallList.isEmpty()) {
-            mOngoingCallListLiveData.setValue(Collections.emptyList());
-            mConferenceCallListLiveData.setValue(Collections.emptyList());
-            return;
-        }
-
-        List<Call> conferenceList = new ArrayList<>();
-        List<Call> ongoingCallList = new ArrayList<>();
-        for (Call call : activeCallList) {
-            call.registerCallback(mCallStateChangedCallback);
-            if (call.getParent() != null) {
-                conferenceList.add(call);
-            } else {
-                ongoingCallList.add(call);
-            }
-        }
-        ongoingCallList.sort(mCallComparator);
-
-        L.d(TAG, "activeList(%d): %s", activeCallList.size(), activeCallList);
-        L.d(TAG, "conf(%d): %s", conferenceList.size(), conferenceList);
-        L.d(TAG, "ongoing(%d): %s", ongoingCallList.size(), ongoingCallList);
-        mConferenceCallListLiveData.setValue(conferenceList);
-        mOngoingCallListLiveData.setValue(ongoingCallList);
-    }
-
-    /**
-     * A call might be removed when bluetooth disconnects. The right time to unregister the callback
-     * is when the ongoing call list changes or {@link InCallViewModel} gets destroyed.
-     */
-    private void unregisterOngoingCallCallbacks() {
-        List<Call> ongoingCallList = mOngoingCallListLiveData.getValue();
-        if (ongoingCallList != null) {
-            for (Call call : ongoingCallList) {
-                call.unregisterCallback(mCallStateChangedCallback);
-            }
-        }
-    }
-
-    private static class CallComparator implements Comparator<Call> {
-        /**
-         * The rank of call state. Used for sorting active calls. Rank is listed from lowest to
-         * highest.
-         */
-        private static final List<Integer> CALL_STATE_RANK = Lists.newArrayList(
-                Call.STATE_RINGING,
-                Call.STATE_DISCONNECTED,
-                Call.STATE_DISCONNECTING,
-                Call.STATE_NEW,
-                Call.STATE_CONNECTING,
-                Call.STATE_SELECT_PHONE_ACCOUNT,
-                Call.STATE_HOLDING,
-                Call.STATE_ACTIVE,
-                Call.STATE_DIALING);
-
-        @Override
-        public int compare(Call call, Call otherCall) {
-            boolean callHasParent = call.getParent() != null;
-            boolean otherCallHasParent = otherCall.getParent() != null;
-
-            if (callHasParent && !otherCallHasParent) {
-                return 1;
-            } else if (!callHasParent && otherCallHasParent) {
-                return -1;
-            }
-            int carCallRank = CALL_STATE_RANK.indexOf(call.getDetails().getState());
-            int otherCarCallRank = CALL_STATE_RANK.indexOf(otherCall.getDetails().getState());
-
-            return otherCarCallRank - carCallRank;
-        }
     }
 
     private static class ShowOnholdCallLiveData extends MediatorLiveData<Boolean> {

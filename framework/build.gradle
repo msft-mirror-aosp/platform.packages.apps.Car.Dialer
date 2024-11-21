@@ -80,7 +80,8 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':car-apps-common')
+    implementation project(':car-apps-common')
+    implementation project(':car-telephony-common')
     implementation files(gradle.ext.lib_car_system_stubs)
     implementation 'com.google.dagger:hilt-android:2.38.1'
     annotationProcessor 'com.google.dagger:hilt-android-compiler:2.38.1'
@@ -89,9 +90,6 @@ dependencies {
     implementation 'androidx.core:core:1.6.0'
 
     fakeRuntimeOnly 'androidx.legacy:legacy-support-v4:1.0.0'
-    fakeImplementation project(':car-telephony-common')
-    fakeImplementation project(':car-apps-common')
-    fakeImplementation project(':car-telephony-common')
     fakeImplementation 'com.google.code.gson:gson:2.8.8'
     fakeImplementation 'com.google.guava:guava:30.1.1-android'
     fakeImplementation libs.dexmaker.mockito.inline

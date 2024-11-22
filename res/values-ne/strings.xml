@@ -37,14 +37,14 @@
     <string name="dial_a_number" msgid="7432322177412387160">"नम्बर डायल गर्नुहोस्"</string>
     <string name="call_history_title" msgid="7997887846276371553">"हालैका"</string>
     <string name="contacts_title" msgid="9201954388634537346">"कन्ट्याक्टहरू"</string>
-    <string name="favorites_title" msgid="4767723901530488145">"मन पर्ने कन्ट्याक्टहरू"</string>
+    <string name="favorites_title" msgid="4767723901530488145">"मन पर्ने"</string>
     <string name="dialpad_title" msgid="3746259645005208554">"डायलप्याड"</string>
     <string name="call_log_header_today" msgid="2069013936632793214">"आज"</string>
     <string name="call_log_header_yesterday" msgid="4613686845163357847">"हिजो"</string>
     <string name="call_log_header_older" msgid="3971634717537073179">"अझ पुरानो"</string>
     <string name="call_logs_empty" msgid="3084720078894119049">"हालैका कलहरू छैनन्"</string>
     <string name="contact_list_empty" msgid="4225504548491888138">"कुनै पनि सम्पर्क छैन"</string>
-    <string name="available_after_sync" msgid="33765918799197782">"सिंक गरेपछि उपलब्ध हुन्छ। तपाईंले फोनमा कन्ट्याक्टहरू साझा गर्न दिनुभएको छ भन्ने सुनिश्चित गर्नुहोस्।"</string>
+    <string name="available_after_sync" msgid="33765918799197782">"सिंक भएपछि उपलब्ध हुन्छ। तपाईंले आफ्नो फोनमा कन्ट्याक्टहरू सेयर गर्न दिनुभएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।"</string>
     <string name="favorites_empty" msgid="5794510741132758130">"मन पर्ने कुराहरू छैनन्"</string>
     <string name="no_favorites_added" msgid="2359050103464783907">"तपाईंले अहिलेसम्म कुनै पनि मन पर्ने कुराहरू थप्नुभएको छैन"</string>
     <string name="add_favorite_button" msgid="7914955940249767808">"कन्ट्याक्टमा भएको कुनै मन पर्ने व्यक्ति थप्नु…"</string>

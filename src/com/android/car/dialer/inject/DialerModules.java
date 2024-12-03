@@ -29,21 +29,16 @@ import androidx.preference.PreferenceManager;
 
 import com.android.car.dialer.framework.ConnectToBluetoothButtonDecorator;
 import com.android.car.dialer.framework.UxrButtonDecorator;
+import com.android.car.dialer.telecom.DialerInCallModel;
 import com.android.car.dialer.telecom.InCallServiceImpl;
 import com.android.car.dialer.ui.common.DialerBaseFragment;
 import com.android.car.dialer.ui.common.OnItemClickedListener;
 import com.android.car.dialer.ui.contact.ContactDetailsFragment;
+import com.android.car.telephony.calling.CallComparator;
+import com.android.car.telephony.calling.InCallModel;
 import com.android.car.telephony.calling.InCallServiceManager;
 import com.android.car.telephony.common.Contact;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
 
 import dagger.Binds;
 import dagger.Module;
@@ -53,6 +48,15 @@ import dagger.hilt.android.components.ActivityComponent;
 import dagger.hilt.android.components.FragmentComponent;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * Dialer modules.
@@ -121,6 +125,18 @@ public final class DialerModules {
                 return inCallService.getCallList();
             }
             return Collections.emptyList();
+        }
+
+        @Provides
+        static Comparator<Call> provideCallComparator() {
+            return new CallComparator();
+        }
+
+        @Singleton
+        @Provides
+        static InCallModel provideInCallModel(InCallServiceManager inCallServiceManager,
+                                              Comparator<Call> callComparator) {
+            return new DialerInCallModel(inCallServiceManager, callComparator);
         }
     }
 

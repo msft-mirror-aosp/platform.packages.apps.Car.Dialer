@@ -18,7 +18,6 @@ plugins {
     id 'com.android.application'
     id 'jacoco'
     id 'aaosApps.buildLogic'
-    id 'buildSrc.jdk.jdk8'
 }
 
 android {
@@ -142,6 +141,11 @@ android {
         ignore 'MissingDefaultResource'
 
         abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 

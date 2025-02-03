@@ -34,6 +34,7 @@ import com.android.car.apps.common.util.LiveDataFunctions;
 import com.android.car.dialer.Constants;
 import com.android.car.dialer.R;
 import com.android.car.dialer.notification.InCallNotificationController;
+import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.telephony.common.CallDetail;
 import com.android.car.ui.baselayout.Insets;
 import com.android.car.ui.baselayout.InsetsChangedListener;
@@ -153,8 +154,14 @@ public class InCallActivity extends Hilt_InCallActivity implements InsetsChanged
     }
 
     private void handleIntent() {
-        Intent intent = getIntent();
+        if (mInCallViewModel.getPrimaryCall().getValue() == null
+                    && mInCallViewModel.getIncomingCall().getValue() == null) {
+            Intent telecomActivityIntent =
+                    new Intent(getApplicationContext(), TelecomActivity.class);
+            startActivity(telecomActivityIntent);
+        }
 
+        Intent intent = getIntent();
         if (intent != null) {
             mShowIncomingCall.setValue(
                     getIntent().getBooleanExtra(Constants.Intents.EXTRA_SHOW_INCOMING_CALL, false));

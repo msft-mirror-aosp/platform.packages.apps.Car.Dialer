@@ -21,7 +21,7 @@
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth を使用できません。"</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"電話を使うには、Bluetooth をオンにしてください。"</string>
     <string name="bluetooth_unpaired" msgid="1600552386483652892">"電話を使うには、スマートフォンと車をペア設定してください。"</string>
-    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Bluetooth に接続する"</string>
+    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Bluetooth に接続"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"緊急通報"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"緊急通報"</string>
     <string name="error_contact_deleted" msgid="6356539067659368396">"この連絡先は削除された可能性があります。"</string>

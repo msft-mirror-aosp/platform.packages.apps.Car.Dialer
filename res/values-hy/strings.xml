@@ -20,7 +20,7 @@
     <string name="no_hfp" msgid="7371139867234667691">"Զանգելու համար նախ հեռախոսը միացրեք ավտոմեքենային Bluetooth-ի միջոցով։"</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth-ը հասանելի չէ։"</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"Զանգեր կատարելու և ստանալու համար միացրեք Bluetooth-ը։"</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Զանգեր կատարելու և ստանալու համար հեռախոսը միացրեք ավտոմեքենային։"</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Զանգեր կատարելու և ստանալու համար հեռախոսը զուգակցեք մեքենայի հետ։"</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Միանալ Bluetooth-ին"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Շտապ կանչ"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Շտապ կանչ"</string>

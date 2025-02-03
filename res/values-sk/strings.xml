@@ -21,7 +21,7 @@
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth nie je k dispozícii."</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"Ak chcete volať alebo prijímať hovory, zapnite Bluetooth."</string>
     <string name="bluetooth_unpaired" msgid="1600552386483652892">"Ak chcete volať alebo prijímať hovory, spárujte telefón s autom."</string>
-    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Pripojiť k zariadeniu Bluetooth"</string>
+    <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Pripojiť k rozhraniu Bluetooth"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Tiesňové volanie"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Tiesňové volanie"</string>
     <string name="error_contact_deleted" msgid="6356539067659368396">"Tento kontakt bol zrejme odstránený."</string>

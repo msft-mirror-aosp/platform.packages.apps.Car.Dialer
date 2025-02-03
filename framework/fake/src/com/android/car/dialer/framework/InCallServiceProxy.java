@@ -20,14 +20,15 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.telecom.Call;
-import android.telecom.InCallService;
+
+import com.android.car.telephony.calling.SimpleInCallServiceImpl;
 
 import java.util.List;
 
 /**
  * Fake implementation of InCallServiceProxy.
  */
-public abstract class InCallServiceProxy extends InCallService {
+public abstract class InCallServiceProxy extends SimpleInCallServiceImpl {
     private static final String ACTION_PROXY_BIND = "proxy_bind";
     private List<Call> mCallList;
 
@@ -56,9 +57,8 @@ public abstract class InCallServiceProxy extends InCallService {
      * Local binder so fakes can bind and access InCallService APIs.
      */
     public class LocalBinder extends Binder {
-
         /**
-         * Returns a reference to {@link InCallService}.
+         * Returns a reference to {@link InCallServiceProxy}.
          */
         public InCallServiceProxy getService() {
             return InCallServiceProxy.this;

@@ -20,7 +20,7 @@
     <string name="no_hfp" msgid="7371139867234667691">"ต้องเชื่อมต่อโทรศัพท์กับรถผ่านบลูทูธก่อนเพื่อให้โทรได้"</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"บลูทูธไม่พร้อมใช้งาน"</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"เปิดบลูทูธเพื่อโทรออกหรือรับสาย"</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"หากต้องการโทรออกหรือรับสาย ให้จับคู่โทรศัพท์กับรถ"</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"จับคู่โทรศัพท์กับรถเพื่อโทรออกหรือรับสาย"</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"เชื่อมต่อบลูทูธ"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"ฉุกเฉิน"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"หมายเลขฉุกเฉิน"</string>

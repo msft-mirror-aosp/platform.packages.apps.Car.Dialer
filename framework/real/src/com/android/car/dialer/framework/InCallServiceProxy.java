@@ -17,17 +17,18 @@
 package com.android.car.dialer.framework;
 
 import android.telecom.Call;
-import android.telecom.InCallService;
+
+import com.android.car.telephony.calling.SimpleInCallServiceImpl;
 
 import java.util.List;
 
 /**
  * Real implementation of InCallServiceProxy
  */
-public abstract class InCallServiceProxy extends InCallService {
+public abstract class InCallServiceProxy extends SimpleInCallServiceImpl {
 
     /**
-     * Returns the real call list from {@link InCallService}
+     * Returns the real call list from {@link android.telecom.InCallService}
      */
     public final List<Call> getCallList() {
         return getCalls();

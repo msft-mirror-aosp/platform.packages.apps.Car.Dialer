@@ -24,21 +24,21 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.android.car.dialer.livedata.RefreshUiEvent;
-import com.android.car.dialer.telecom.LocalCallHandler;
+import com.android.car.telephony.calling.InCallModel;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import dagger.hilt.android.lifecycle.HiltViewModel;
-
 /**
  * View model for {@link TelecomActivity}.
  */
 @HiltViewModel
 public class TelecomActivityViewModel extends ViewModel {
-    private final LocalCallHandler mLocalCallHandler;
+    private final InCallModel mInCallModel;
     private final LiveData<BluetoothDevice> mCurrentHfpDeviceLiveData;
 
     private RefreshUiEvent mRefreshTabsLiveData;
@@ -50,9 +50,9 @@ public class TelecomActivityViewModel extends ViewModel {
     public TelecomActivityViewModel(
             @Named("Hfp") LiveData<BluetoothDevice> currentHfpDeviceLiveData,
             RefreshUiEvent refreshUiEvent,
-            LocalCallHandler localCallHandler,
+            InCallModel inCallModel,
             ToolbarTitleLiveData toolbarTitleLiveData) {
-        mLocalCallHandler = localCallHandler;
+        mInCallModel = inCallModel;
         mCurrentHfpDeviceLiveData = currentHfpDeviceLiveData;
         mToolbarTitleLiveData = toolbarTitleLiveData;
         mRefreshTabsLiveData = refreshUiEvent;
@@ -90,11 +90,6 @@ public class TelecomActivityViewModel extends ViewModel {
 
     /** Returns the live data which monitors the ongoing call list. */
     public LiveData<List<Call>> getOngoingCallListLiveData() {
-        return mLocalCallHandler.getOngoingCallListLiveData();
-    }
-
-    @Override
-    protected void onCleared() {
-        mLocalCallHandler.tearDown();
+        return mInCallModel.getOngoingCallListLiveData();
     }
 }

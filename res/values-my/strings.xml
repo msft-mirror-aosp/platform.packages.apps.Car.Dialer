@@ -34,7 +34,7 @@
     <string name="audio_route_vehicle" msgid="6250361588960528769">"ကားစပီကာများ"</string>
     <string name="audio_route_phone_speaker" msgid="4608904003558187244">"ဖုန်းစပီကာ"</string>
     <string name="audio_route_handset" msgid="9133081623895172144">"ဖုန်း"</string>
-    <string name="dial_a_number" msgid="7432322177412387160">"နံပါတ်ကို ခေါ်ဆိုရန်"</string>
+    <string name="dial_a_number" msgid="7432322177412387160">"ခေါ်ဆိုရန် ဖုန်းနံပါတ်"</string>
     <string name="call_history_title" msgid="7997887846276371553">"လတ်တလော"</string>
     <string name="contacts_title" msgid="9201954388634537346">"အဆက်အသွယ်များ"</string>
     <string name="favorites_title" msgid="4767723901530488145">"အသုံးအများဆုံး"</string>
@@ -44,7 +44,7 @@
     <string name="call_log_header_older" msgid="3971634717537073179">"ယခင်နေ့များက"</string>
     <string name="call_logs_empty" msgid="3084720078894119049">"လတ်တလော မှတ်တမ်းမရှိပါ"</string>
     <string name="contact_list_empty" msgid="4225504548491888138">"အဆက်အသွယ်တစ်ခုမျှ မရှိပါ"</string>
-    <string name="available_after_sync" msgid="33765918799197782">"စင့်ခ်လုပ်ပြီးလျှင် ရနိုင်မည်။ သင့်ဖုန်းပေါ်တွင် အဆက်အသွယ်များကို မျှဝေခွင့်ပြုထားပြီး ဖြစ်ရပါမည်။"</string>
+    <string name="available_after_sync" msgid="33765918799197782">"စင့်ခ်လုပ်ပြီးလျှင် ရနိုင်မည်။ သင့်ဖုန်းပေါ်တွင် အဆက်အသွယ်များ မျှဝေခွင့်ပြုထားရပါမည်။"</string>
     <string name="favorites_empty" msgid="5794510741132758130">"အနှစ်သက်ဆုံး မရှိပါ"</string>
     <string name="no_favorites_added" msgid="2359050103464783907">"သင့်အကြိုက်ဆုံးတစ်ခုမျှ မထည့်ရသေးပါ"</string>
     <string name="add_favorite_button" msgid="7914955940249767808">"အကြိုက်ဆုံး ထည့်ရန်"</string>

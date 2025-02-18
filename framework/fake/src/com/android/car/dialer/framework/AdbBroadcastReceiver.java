@@ -16,20 +16,22 @@
 
 package com.android.car.dialer.framework;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.android.car.apps.common.log.L;
 import com.android.car.dialer.framework.testdata.ContactRawData;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Broadcast receiver for receiving Dialer debug commands from ADB.
@@ -72,6 +74,7 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     /**
      * Registers this class to an application context
      */
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     public void registerReceiver(@ApplicationContext Context context) {
         Log.d(TAG, "Registered to " + context);
         IntentFilter filter = new IntentFilter();
@@ -83,7 +86,11 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
         filter.addAction(ACTION_CLEARALL);
         filter.addAction(ACTION_MERGE);
         filter.addAction(ACTION_ADD_CONTACT);
-        context.registerReceiver(this, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(this, filter, Context.RECEIVER_EXPORTED);
+        } else {
+            context.registerReceiver(this, filter);
+        }
     }
 
     /**

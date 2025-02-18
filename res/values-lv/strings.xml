@@ -20,7 +20,7 @@
     <string name="no_hfp" msgid="7371139867234667691">"Lai veiktu zvanu, vispirms savienojiet tālruni ar automašīnu, izmantojot Bluetooth."</string>
     <string name="bluetooth_unavailable" msgid="5258854283739591569">"Bluetooth nav pieejams."</string>
     <string name="bluetooth_disabled" msgid="1275246762067907843">"Lai veiktu vai saņemtu zvanus, ieslēdziet Bluetooth."</string>
-    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Lai veiktu vai saņemtu zvanus, tālruni savienojiet pārī ar automašīnu."</string>
+    <string name="bluetooth_unpaired" msgid="1600552386483652892">"Lai veiktu vai saņemtu zvanus, savienojiet tālruni pārī ar automašīnu."</string>
     <string name="connect_bluetooth_button_text" msgid="293188695227298042">"Izveidot savienojumu ar Bluetooth"</string>
     <string name="emergency_button_text" msgid="3467659545392931727">"Ārkārtas zvans"</string>
     <string name="emergency_call_description" msgid="6700161437750325693">"Ārkārtas zvans"</string>
@@ -44,7 +44,7 @@
     <string name="call_log_header_older" msgid="3971634717537073179">"Vecāki zvani"</string>
     <string name="call_logs_empty" msgid="3084720078894119049">"Nav nesenu zvanu"</string>
     <string name="contact_list_empty" msgid="4225504548491888138">"Nav kontaktpersonu"</string>
-    <string name="available_after_sync" msgid="33765918799197782">"Lapa būs pieejama pēc sinhronizēšanas. Pārliecinieties, ka jums ir atļauts kopīgot kontaktpersonas savā tālrunī."</string>
+    <string name="available_after_sync" msgid="33765918799197782">"Tie būs pieejami pēc sinhronizēšanas. Pārliecinieties, ka tālrunī esat atļāvis kontaktinformācijas kopīgošanu."</string>
     <string name="favorites_empty" msgid="5794510741132758130">"Izlasē nav neviena vienuma."</string>
     <string name="no_favorites_added" msgid="2359050103464783907">"Jūs vēl neesat pievienojis nevienu izlases vienumu."</string>
     <string name="add_favorite_button" msgid="7914955940249767808">"Pievienot izlasei"</string>

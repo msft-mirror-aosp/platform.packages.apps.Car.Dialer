@@ -150,7 +150,6 @@ android {
 }
 
 dependencies {
-    runtimeOnly 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation files(gradle.ext.lib_car_system_stubs)
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'

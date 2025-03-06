@@ -16,5 +16,5 @@
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="missing_phone_permission_error" msgid="3612495509188457942">"Oproepe kan nie gemaak word nie omdat hierdie program nie die Foon-toestemming het nie"</string>
+    <string name="missing_phone_permission_error" msgid="3612495509188457942">"Oproepe kan nie gemaak word nie omdat hierdie app nie die Foon-toestemming het nie"</string>
 </resources>

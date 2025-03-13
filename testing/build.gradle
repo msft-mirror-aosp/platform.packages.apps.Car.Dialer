@@ -41,19 +41,17 @@ android {
 }
 
 dependencies {
-    def lifecycle_version = '2.2.0'
-    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
 
-    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation libs.androidx.recyclerview
 
-    implementation 'com.google.dagger:hilt-android:2.38.1'
-    annotationProcessor 'com.google.dagger:hilt-android-compiler:2.38.1'
+    implementation libs.hilt.android
+    annotationProcessor libs.hilt.android.compiler
 
     implementation project(path: ':car-ui-lib')
     implementation project(path: ':car-ui-lib-testing')
 
-    implementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'androidx.test.espresso:espresso-contrib:3.5.1'
+    implementation libs.androidx.espresso.core
+    implementation libs.androidx.espresso.contrib
     implementation libs.dexmaker.mockito.inline
 
 }

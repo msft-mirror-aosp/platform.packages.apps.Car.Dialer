@@ -84,7 +84,7 @@ android {
         }
 
         androidTestEmulator.setRoot('tests/unittests')
-        androidTestEmulator.java.srcDirs=['tests/unittests/src']
+        androidTestEmulator.java.srcDirs = ['tests/unittests/src']
         androidTestFake.setRoot('tests/instrutests')
         androidTestFake.java.srcDirs = ['tests/instrutests/src']
     }
@@ -144,8 +144,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 }
 

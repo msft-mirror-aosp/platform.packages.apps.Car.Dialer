@@ -3,6 +3,9 @@
 pyli@google.com
 dnek@google.com
 
+# For Gradle-related and upload config changes
+per-file *.gradle, *.gradle.kts, PREUPLOAD.cfg = froeht@google.com
+
 # For urgent reviews only
 arnaudberry@google.com
 stenning@google.com

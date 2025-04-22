@@ -17,7 +17,10 @@ package {
     default_applicable_licenses: ["Android-Apache-2.0"],
 }
 
-common_libs = ["android.car-system-stubs"]
+common_libs = [
+    "android.car-system-stubs",
+    "token-shared-lib",
+]
 
 common_static_libs = [
     "car-apps-common-prebuilt",
@@ -45,6 +48,7 @@ common_static_libs = [
     "androidx.sqlite_sqlite",
     "androidx.sqlite_sqlite-framework",
     "androidx.exifinterface_exifinterface",
+    "oem-token-lib"
 ]
 
 // Switch away from "platform"

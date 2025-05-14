@@ -47,7 +47,7 @@
     <string name="available_after_sync" msgid="33765918799197782">"సింక్ అయిన తర్వాత అందుబాటులో ఉంటుంది. మీ ఫోన్‌లో కాంటాక్ట్‌లను షేర్ చేయడాన్ని మీరు అనుమతించినట్లు నిర్ధారించుకోండి."</string>
     <string name="favorites_empty" msgid="5794510741132758130">"ఇష్టమైనవి లేవు"</string>
     <string name="no_favorites_added" msgid="2359050103464783907">"మీరు ఇష్టమైనవి ఏవీ ఇంకా జోడించలేదు"</string>
-    <string name="add_favorite_button" msgid="7914955940249767808">"ఫేవరెట్‌ను జోడించండి (యాడ్ చేయండి)"</string>
+    <string name="add_favorite_button" msgid="7914955940249767808">"ఫేవరెట్‌ను జోడించండి"</string>
     <string name="search_title" msgid="5412680850141871664">"కాంటాక్ట్‌లలో సెర్చ్ చేయండి"</string>
     <string name="search_hint" msgid="3099066132607042439">"కాంటాక్ట్‌లలో సెర్చ్ చేయండి"</string>
     <string name="type_multiple" msgid="3402949522797441236">"అనేకం"</string>

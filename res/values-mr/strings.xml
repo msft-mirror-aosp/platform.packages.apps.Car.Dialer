@@ -47,7 +47,7 @@
     <string name="available_after_sync" msgid="33765918799197782">"सिंक केल्यानंतर उपलब्ध होईल. तुम्ही तुमच्या फोनमधून संपर्क शेअर करण्याची अनुमती दिली असल्याची खात्री करा."</string>
     <string name="favorites_empty" msgid="5794510741132758130">"कोणतेही आवडते नाहीत"</string>
     <string name="no_favorites_added" msgid="2359050103464783907">"तुम्ही सध्या कोणतेही आवडते जोडलेले नाहीत."</string>
-    <string name="add_favorite_button" msgid="7914955940249767808">"आवडते जोडा"</string>
+    <string name="add_favorite_button" msgid="7914955940249767808">"आवडीचा संपर्क जोडा"</string>
     <string name="search_title" msgid="5412680850141871664">"संपर्क शोधा"</string>
     <string name="search_hint" msgid="3099066132607042439">"संपर्क शोधा"</string>
     <string name="type_multiple" msgid="3402949522797441236">"एकाहून अधिक"</string>

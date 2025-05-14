@@ -47,7 +47,7 @@
     <string name="available_after_sync" msgid="33765918799197782">"ஒத்திசைவிற்குப் பிறகு தெரியும். உங்கள் மொபைலில் தொடர்புகளைப் பகிர்வதை அனுமதித்துள்ளீர்கள் என்பதை உறுதிப்படுத்திக்கொள்ளவும்."</string>
     <string name="favorites_empty" msgid="5794510741132758130">"பிடித்தவை எதுவுமில்லை"</string>
     <string name="no_favorites_added" msgid="2359050103464783907">"பிடித்தவை எதையும் நீங்கள் இதுவரை சேர்க்கவில்லை"</string>
-    <string name="add_favorite_button" msgid="7914955940249767808">"பிடித்ததைச் சேர்"</string>
+    <string name="add_favorite_button" msgid="7914955940249767808">"பிடித்தவர்களைச் சேர்"</string>
     <string name="search_title" msgid="5412680850141871664">"தொடர்புகளில் தேடுக"</string>
     <string name="search_hint" msgid="3099066132607042439">"தொடர்புகளில் தேடுக"</string>
     <string name="type_multiple" msgid="3402949522797441236">"பலர்"</string>

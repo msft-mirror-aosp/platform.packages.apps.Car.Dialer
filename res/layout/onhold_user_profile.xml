@@ -11,118 +11,94 @@
      limitations under the License.
 -->
 <com.android.car.ui.FocusArea
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/on_hold_background">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/guideline"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/swap_calls_view"
-            android:background="?android:attr/selectableItemBackground">
+            android:background="@drawable/on_hold_background">
 
-            <androidx.constraintlayout.widget.Guideline
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/guideline"
-                android:orientation="vertical"
-                app:layout_constraintGuide_begin="@dimen/onhold_profile_guideline"/>
+        <RelativeLayout
+                android:id="@+id/swap_calls_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackground">
 
             <ImageView
-                android:id="@+id/icon"
-                android:layout_width="@dimen/small_avatar_icon_size"
-                android:layout_height="@dimen/small_avatar_icon_size"
-                android:layout_marginStart="@dimen/onhold_profile_content_margin"
-                android:scaleType="centerCrop"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
-
+                    android:id="@+id/icon"
+                    android:layout_width="@dimen/small_avatar_icon_size"
+                    android:layout_height="@dimen/small_avatar_icon_size"
+                    android:layout_marginStart="@dimen/onhold_profile_content_margin"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:scaleType="centerCrop" />
             <ImageView
-                android:id="@+id/app_icon"
-                android:layout_width="@dimen/inline_icon_size"
-                android:layout_height="@dimen/inline_icon_size"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="@id/icon"
-                app:layout_constraintBottom_toBottomOf="@id/icon" />
+                    android:id="@+id/app_icon"
+                    android:layout_width="@dimen/inline_icon_size"
+                    android:layout_height="@dimen/inline_icon_size"
+                    android:layout_alignEnd="@id/icon"
+                    android:layout_alignBottom="@id/icon"
+                    android:scaleType="fitCenter" />
+            <!-- Extra LinearLayout required to keep truncate title if its too long -->
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/onhold_profile_guideline"
+                    android:layout_centerVertical="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:theme="@style/Theme.Dialer.BidiText"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:singleLine="true"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constrainedWidth="true"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@id/guideline"
-                app:layout_constraintEnd_toStartOf="@+id/title_separator"/>
+                <TextView
+                        android:id="@+id/title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:theme="@style/Theme.Dialer.BidiText"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:singleLine="true"
+                        android:ellipsize="end"/>
 
-            <TextView
-                android:id="@id/title_separator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/onhold_profile_status_margin"
-                android:layout_marginEnd="@dimen/onhold_profile_status_margin"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:singleLine="true"
-                android:text="@string/onhold_call_separator"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/title"
-                app:layout_constraintEnd_toStartOf="@+id/time"/>
+                <TextView
+                        android:id="@+id/title_separator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/onhold_profile_status_margin"
+                        android:layout_marginEnd="@dimen/onhold_profile_status_margin"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:singleLine="true"
+                        android:text="@string/onhold_call_separator" />
 
-            <Chronometer
-                android:id="@id/time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/onhold_time_color"
-                android:singleLine="true"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/title_separator"
-                app:layout_constraintEnd_toStartOf="@+id/time_separator"/>
+                <Chronometer
+                        android:id="@+id/time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="@color/onhold_time_color"
+                        android:singleLine="true" />
 
-            <TextView
-                android:id="@id/time_separator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/onhold_profile_status_margin"
-                android:layout_marginEnd="@dimen/onhold_profile_status_margin"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:singleLine="true"
-                android:text="@string/onhold_call_separator"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/time"
-                app:layout_constraintEnd_toStartOf="@+id/onhold_label"/>
+                <TextView
+                        android:id="@+id/time_separator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/onhold_profile_status_margin"
+                        android:layout_marginEnd="@dimen/onhold_profile_status_margin"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:singleLine="true"
+                        android:text="@string/onhold_call_separator" />
 
-            <TextView
-                android:id="@id/onhold_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:singleLine="true"
-                android:text="@string/call_state_hold"
-                android:textColor="@color/onhold_label_color"
-                android:layout_marginEnd="@dimen/onhold_label_margin_end"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/time_separator"
-                app:layout_constraintEnd_toEndOf="parent"/>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+                <TextView
+                        android:id="@+id/onhold_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/onhold_label_margin_end"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:singleLine="true"
+                        android:text="@string/call_state_hold"
+                        android:textColor="@color/onhold_label_color"/>
+            </LinearLayout>
+        </RelativeLayout>
     </FrameLayout>
-
 </com.android.car.ui.FocusArea>

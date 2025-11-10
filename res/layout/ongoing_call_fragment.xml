@@ -13,81 +13,42 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/background_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/app_background"/>
+            android:id="@+id/background_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/app_background"/>
 
-    <!-- This ConstraintLayout is to make a full-screen transparent background -->
+    <!-- This RelativeLayout is to make a full-screen transparent background -->
     <!-- so that the ripple effects in the controller bar buttons work.        -->
     <!-- If you put the transparent background on the root element of          -->
     <!-- in_call_fragment, the BackgroundImageView will cover up the ripples.  -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:background="@android:color/transparent">
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/dialpad_divider"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.7"/>
-
-        <LinearLayout
+    <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginStart="@dimen/in_call_content_margin"
-            android:layout_marginEnd="@dimen/in_call_content_margin"
-            app:layout_constraintTop_toBottomOf="@+id/onhold_user_profile"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <include
-                layout="@layout/user_profile_large"
-                android:id="@+id/user_profile_container"/>
-
-        </LinearLayout>
-
-        <fragment
-            android:id="@+id/onhold_user_profile"
-            android:name="com.android.car.dialer.ui.activecall.OnHoldCallUserProfileFragment"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/onhold_user_info_height"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <fragment
-            android:name="com.android.car.dialer.ui.dialpad.InCallDialpadFragment"
-            android:id="@+id/incall_dialpad_fragment"
-            android:layout_width="0dp"
             android:layout_height="match_parent"
-            app:layout_constraintStart_toStartOf="@+id/dialpad_divider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/onhold_user_profile"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            android:background="@android:color/transparent">
+
+        <fragment
+                android:id="@+id/onhold_user_profile"
+                android:name="com.android.car.dialer.ui.activecall.OnHoldCallUserProfileFragment"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/onhold_user_info_height"
+                android:layout_alignParentTop="true" />
 
         <com.android.car.ui.FocusArea
-            android:id="@+id/control_bar_focus_area"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/in_call_app_info_margin_y"
-            app:defaultFocus="@+id/end_call_button"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+                android:id="@+id/control_bar_focus_area"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="@dimen/in_call_app_info_margin_y"
+                app:defaultFocus="@+id/end_call_button">
 
             <fragment
                 android:id="@+id/ongoing_call_control_bar"
@@ -99,6 +60,48 @@ limitations under the License.
 
         </com.android.car.ui.FocusArea>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <FrameLayout
+                android:id="@+id/middle_content_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/onhold_user_profile"
+                android:layout_alignParentBottom="true"
+                android:baselineAligned="false">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/in_call_content_margin"
+                    android:layout_marginEnd="@dimen/in_call_content_margin">
+
+                <include
+                        layout="@layout/user_profile_large"
+                        android:id="@+id/user_profile_container"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
+                <Space
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.7" />
+
+                <fragment
+                        android:name="com.android.car.dialer.ui.dialpad.InCallDialpadFragment"
+                        android:id="@+id/incall_dialpad_fragment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.3" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+</FrameLayout>

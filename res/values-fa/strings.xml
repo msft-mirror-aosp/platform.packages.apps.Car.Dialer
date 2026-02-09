@@ -28,7 +28,7 @@
     <string name="error_invalid_phone_number" msgid="5349049631580646136">"این شماره را نمی‌توان شماره‌گیری کرد. آن را بررسی کنید و دوباره امتحان کنید."</string>
     <string name="error_telephony_not_available" msgid="8715829862083386178">"تماس تلفنی دردسترس نیست. لطفاً بعداً دوباره امتحان کنید."</string>
     <string name="decline_call" msgid="2505987200485272226">"رد کردن"</string>
-    <string name="answer_call" msgid="3272474440561548115">"پاسخ"</string>
+    <string name="answer_call" msgid="3272474440561548115">"جواب"</string>
     <string name="call_back" msgid="5745638356098600872">"پاسخ تماس"</string>
     <string name="message" msgid="106616332778369322">"پیام"</string>
     <string name="audio_route_vehicle" msgid="6250361588960528769">"بلندگوی خودرو"</string>

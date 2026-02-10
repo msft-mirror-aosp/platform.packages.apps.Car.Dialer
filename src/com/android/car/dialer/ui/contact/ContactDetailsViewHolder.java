@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -185,10 +186,15 @@ class ContactDetailsViewHolder extends RecyclerView.ViewHolder {
                 R.string.local_favorite_number_description, readableLabel) : readableLabel;
         if (phoneNumber.isPrimary()) {
             mText.setText(context.getString(R.string.primary_number_description, favoriteLabel));
-            mText.setTextAppearance(R.style.TextAppearance_DefaultNumberLabel);
+            TypedValue typedValue = new TypedValue();
+            context.getTheme().resolveAttribute(R.attr.oemColorPrimary, typedValue, true);
+            mText.setTextColor(context.getColor(typedValue.resourceId));
         } else {
             mText.setText(favoriteLabel);
-            mText.setTextAppearance(R.style.TextAppearance_ContactDetailsListSubtitle);
+            TypedValue typedValue = new TypedValue();
+            context.getTheme().resolveAttribute(
+                    android.R.attr.textColorSecondary, typedValue, true);
+            mText.setTextColor(context.getColor(typedValue.resourceId));
         }
 
         mCallActionView.setOnClickListener(

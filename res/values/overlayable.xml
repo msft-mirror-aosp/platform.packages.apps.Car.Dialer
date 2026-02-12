@@ -568,11 +568,8 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="style" name="TextAppearance.CallLogTimestampMissedCall"/>
       <item type="style" name="TextAppearance.CallLogTitleDefault"/>
       <item type="style" name="TextAppearance.CallLogTitleMissedCall"/>
-      <item type="style" name="TextAppearance.ContactDetailsListSubtitle"/>
       <item type="style" name="TextAppearance.ContactDetailsListTitle"/>
       <item type="style" name="TextAppearance.ContactDetailsTitle"/>
-      <item type="style" name="TextAppearance.ContactResultTitle"/>
-      <item type="style" name="TextAppearance.DefaultNumberLabel"/>
       <item type="style" name="TextAppearance.DialNumber"/>
       <item type="style" name="TextAppearance.DialpadDisplayName"/>
       <item type="style" name="TextAppearance.EmergencyDialNumber"/>

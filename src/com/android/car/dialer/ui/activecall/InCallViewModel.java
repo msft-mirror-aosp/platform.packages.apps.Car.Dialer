@@ -175,11 +175,22 @@ public class InCallViewModel extends ViewModel {
         if (callDetail == null || otherCallDetail == null) {
             return false;
         }
+
+        boolean isSameAccount = Objects.equals(
+                callDetail.getPhoneAccountHandle(),
+                otherCallDetail.getPhoneAccountHandle());
+
+        if (callDetail.isConference() || !isSameAccount) {
+            return false;
+        }
+
+        if (callDetail.isSelfManaged()) {
+            return callDetail.can(Call.Details.CAPABILITY_MERGE_CONFERENCE);
+        }
+
         // No CAPABILITY_MERGE_CONFERENCE check since Bluetooth doesn't set it for phone calls that
         // can merge.
-        return !callDetail.isConference()
-                && Objects.equals(callDetail.getPhoneAccountHandle(),
-                    otherCallDetail.getPhoneAccountHandle());
+        return true;
     }
 
     /** Merge primary and secondary calls into a conference */

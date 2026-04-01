@@ -282,8 +282,7 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
     private void updatePauseButtonEnabledState() {
         CallDetail primaryCallDetail = mPrimaryCallDetailLiveData.getValue();
         boolean holdable = primaryCallDetail != null
-                && (primaryCallDetail.can(Call.Details.CAPABILITY_HOLD)
-                || primaryCallDetail.can(Call.Details.CAPABILITY_SUPPORT_HOLD));
+                && primaryCallDetail.can(Call.Details.CAPABILITY_HOLD);
         boolean shouldEnablePauseButton =  holdable && (mPrimaryCallState == Call.STATE_HOLDING
                 || mPrimaryCallState == Call.STATE_ACTIVE);
 

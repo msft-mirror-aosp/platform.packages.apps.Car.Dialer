@@ -49,6 +49,8 @@ import com.android.car.telephony.common.CallDetail;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -64,7 +66,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Manager class for creating and mocking calls.
@@ -159,9 +160,20 @@ public class MockCallManager {
     /**
      * Places a hold on a call
      */
+    public void holdCall(String id) {
+        Call call = findCallById(id);
+        if (call != null) {
+            hold(call);
+        }
+    }
+
+    /**
+     * Places a hold on a call
+     */
     private void hold(Call call) {
         Log.d(TAG, "Holding " + call);
         when(call.getState()).thenReturn(Call.STATE_HOLDING);
+        when(call.getDetails().getState()).thenReturn(Call.STATE_HOLDING);
 
         // Holding a call will automatically swap the primary and secondary calls. See updateList().
         if (call.equals(mPrimaryCall) && mSecondaryCall != null) {
@@ -178,9 +190,20 @@ public class MockCallManager {
     /**
      * Unhold a call
      */
+    public void unholdCall(String id) {
+        Call call = findCallById(id);
+        if (call != null) {
+            unhold(call);
+        }
+    }
+
+    /**
+     * Unhold a call
+     */
     private void unhold(Call call) {
         Log.d(TAG, "Unholding " + call);
         when(call.getState()).thenReturn(Call.STATE_ACTIVE);
+        when(call.getDetails().getState()).thenReturn(Call.STATE_ACTIVE);
         updateList();
 
         List<Call.Callback> callbacks = getCallbacks(call);
@@ -344,6 +367,7 @@ public class MockCallManager {
         Log.d(TAG, "answering call: " + call);
 
         when(call.getState()).thenReturn(Call.STATE_ACTIVE);
+        when(call.getDetails().getState()).thenReturn(Call.STATE_ACTIVE);
         updateList();
 
         List<Call.Callback> callbacks = getCallbacks(call);
@@ -581,6 +605,7 @@ public class MockCallManager {
             }
 
             doReturn(mDetails).when(mCall).getDetails();
+            when(mDetails.getState()).thenReturn(mCallState);
             when(mCall.getState()).thenReturn(mCallState);
         }
 

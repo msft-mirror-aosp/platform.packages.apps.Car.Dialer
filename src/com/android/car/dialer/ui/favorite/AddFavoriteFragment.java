@@ -33,12 +33,13 @@ import com.android.car.ui.recyclerview.CarUiContentListItem;
 import com.android.car.ui.recyclerview.CarUiListItem;
 import com.android.car.ui.recyclerview.CarUiListItemAdapter;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * A fragment that allows the user to search for and select favorite phone numbers
@@ -68,9 +69,10 @@ public class AddFavoriteFragment extends Hilt_AddFavoriteFragment {
                 FavoriteViewModel.class);
         mSelectedNumbers = new HashSet<>();
 
-        mFavoriteIcon = getResources().getDrawable(R.drawable.ic_favorite_activatable, null);
+        mFavoriteIcon = getContext().getDrawable(R.drawable.ic_favorite_activatable);
         mFavoriteIcon.setTintList(
-                getResources().getColorStateList(R.color.primary_icon_selector, null));
+                getResources().getColorStateList(R.color.primary_icon_selector,
+                    getContext().getTheme()));
 
         mFavoritePhoneNumberList = new ArrayList<>();
         mDialogAdapter = new CarUiListItemAdapter(mFavoritePhoneNumberList);

@@ -53,32 +53,21 @@ REGENERATE USING packages/apps/Car/tests/tools/rro/generate-overlayable.py
       <item type="bool" name="config_show_settings_in_menu_items"/>
       <item type="bool" name="config_show_toolbar_with_contact_details"/>
       <item type="bool" name="config_show_type_down_list_on_dialpad"/>
-      <item type="color" name="add_favorite_background_color"/>
-      <item type="color" name="audio_output_accent"/>
-      <item type="color" name="background_color"/>
-      <item type="color" name="call_button_outline"/>
-      <item type="color" name="car_key2"/>
-      <item type="color" name="car_key2_dark"/>
-      <item type="color" name="car_key2_light"/>
+      <item type="color" name="colorPrimary"/>
+      <item type="color" name="color_green"/>
+      <item type="color" name="color_on_primary"/>
+      <item type="color" name="color_on_surface"/>
+      <item type="color" name="color_on_surface_inverse"/>
+      <item type="color" name="color_on_surface_variant"/>
+      <item type="color" name="color_primary"/>
+      <item type="color" name="color_red"/>
+      <item type="color" name="color_surface"/>
+      <item type="color" name="color_surface_variant"/>
+      <item type="color" name="color_yellow"/>
       <item type="color" name="contact_details_icon_tint"/>
-      <item type="color" name="divider_color"/>
-      <item type="color" name="divider_color_dark"/>
-      <item type="color" name="divider_color_light"/>
-      <item type="color" name="emergency_text_color"/>
       <item type="color" name="icon_accent_activatable"/>
       <item type="color" name="icon_tint_state_list"/>
-      <item type="color" name="notification_app_icon_color"/>
-      <item type="color" name="onhold_call_background"/>
-      <item type="color" name="onhold_label_color"/>
-      <item type="color" name="onhold_time_color"/>
-      <item type="color" name="phone_call"/>
-      <item type="color" name="phone_end_call"/>
-      <item type="color" name="primary_icon_color"/>
       <item type="color" name="primary_icon_selector"/>
-      <item type="color" name="secondary_background_color"/>
-      <item type="color" name="secondary_icon_color"/>
-      <item type="color" name="secondary_icon_color_dark"/>
-      <item type="color" name="secondary_icon_color_light"/>
       <item type="dimen" name="avatar_icon_size"/>
       <item type="dimen" name="bksp_button_width"/>
       <item type="dimen" name="call_fab_elevation"/>

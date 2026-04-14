@@ -16,8 +16,8 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/primary_icon_color"
+    <item android:color="?android:attr/colorForeground"
           android:state_enabled="true"/>
-    <item android:color="@color/secondary_icon_color"
+    <item android:color="?android:attr/textColorSecondary"
           android:state_enabled="false"/>
 </selector>

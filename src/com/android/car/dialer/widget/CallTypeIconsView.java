@@ -61,7 +61,7 @@ public class CallTypeIconsView extends View {
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         mIconResources = new IconResources(context);
-        mIconResources.voicemail.setColorFilter(context.getColor(R.color.primary_icon_color),
+        mIconResources.voicemail.setColorFilter(context.getColor(R.color.color_primary),
                 PorterDuff.Mode.SRC_IN);
         mSingleIconSize = getResources().getDimensionPixelSize(R.dimen.inline_icon_size);
     }

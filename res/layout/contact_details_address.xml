@@ -50,7 +50,8 @@
 
         <TextView
             android:id="@id/text"
-            android:textAppearance="@style/TextAppearance.ContactDetailsListSubtitle"
+            android:textAppearance="?attr/oemTextAppearanceBodySmall"
+            android:textColor="?android:attr/textColorSecondary"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:singleLine="true"

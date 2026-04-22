@@ -111,17 +111,6 @@
     <!-- Contact details -->
     <style name="TextAppearance.ContactDetailsTitle" parent="TextAppearance.Display2"/>
     <style name="TextAppearance.ContactDetailsListTitle" parent="TextAppearance.Body1"/>
-    <style name="TextAppearance.ContactDetailsListSubtitle" parent="TextAppearance.Body3">
-        <item name="android:textColor">?android:attr/textColorSecondary</item>
-    </style>
-    <style name="TextAppearance.DefaultNumberLabel" parent="TextAppearance.Body3">
-        <item name="android:textColor">@*android:color/accent_device_default_light</item>
-    </style>
-
-    <!-- Contact results -->
-    <style name="TextAppearance.ContactResultTitle" parent="TextAppearance.Body1">
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
-    </style>
 
     <!-- Dialpad type down list query special style -->
     <style name="TextAppearance.TypeDownListSpan" parent="TextAppearance.Body3">
@@ -144,7 +133,7 @@
     </style>
 
     <style name="AddFavoriteText">
-        <item name="android:textColor">@color/hero_button_text_color</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
 
     <style name="Widget.Dialer.Button" parent="android:Widget.DeviceDefault.Button">

@@ -39,6 +39,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.SystemClock;
 import android.provider.ContactsContract;
+import android.telecom.Call;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.action.ViewActions;
@@ -136,9 +137,9 @@ public class InCallTest {
     public void swapCall() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> {
-                    mFakeTelecomManager.placeCall(PHONE_NUMBER);
+                    mFakeTelecomManager.placeCall(PHONE_NUMBER, Call.STATE_ACTIVE);
                     SystemClock.sleep(1000);
-                    mFakeTelecomManager.placeCall(PHONE_NUMBER_2);
+                    mFakeTelecomManager.placeCall(PHONE_NUMBER_2, Call.STATE_ACTIVE);
                 });
         onView(allOf(withId(R.id.merge_button), isDisplayed())).check(matches(isEnabled()));
         onView(allOf(withId(R.id.user_profile_title), withText(PHONE_NUMBER_2))).check(
@@ -162,9 +163,9 @@ public class InCallTest {
     public void mergeCall() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> {
-                    mFakeTelecomManager.placeCall(PHONE_NUMBER);
+                    mFakeTelecomManager.placeCall(PHONE_NUMBER, Call.STATE_ACTIVE);
                     SystemClock.sleep(1000);
-                    mFakeTelecomManager.placeCall(PHONE_NUMBER_2);
+                    mFakeTelecomManager.placeCall(PHONE_NUMBER_2, Call.STATE_ACTIVE);
                 });
 
         onView(allOf(withId(R.id.merge_button), isDisplayed())).perform(selfClick());

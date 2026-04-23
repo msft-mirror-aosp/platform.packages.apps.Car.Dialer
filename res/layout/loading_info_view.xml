@@ -33,6 +33,8 @@
 
     <TextView
         android:id="@id/loading_info_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         style="@style/LoadingInfoMessageStyle"
         app:layout_constraintTop_toBottomOf="@id/loading_info_icon"
         app:layout_constraintBottom_toTopOf="@+id/loading_info_secondary_message"
@@ -41,6 +43,8 @@
 
     <TextView
         android:id="@id/loading_info_secondary_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         style="@style/LoadingInfoSecondaryMessageStyle"
         app:layout_constraintTop_toBottomOf="@id/loading_info_message"
         app:layout_constraintBottom_toTopOf="@+id/loading_info_action_button"
@@ -49,6 +53,8 @@
 
     <com.android.car.apps.common.UxrButton
         android:id="@id/loading_info_action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         style="@style/LoadingInfoActionButtonStyle"
         android:layout_marginTop="@dimen/loading_info_button_margin_top"
         app:layout_constraintTop_toBottomOf="@id/loading_info_secondary_message"

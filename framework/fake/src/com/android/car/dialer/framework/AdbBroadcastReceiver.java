@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
+import android.telecom.Call;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -48,6 +49,9 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     private static final String ACTION_DISCONNECT = ACTION_PREFIX + ".disconnect";
     private static final String ACTION_ADDCALL = ACTION_PREFIX + ".addCall";
     private static final String ACTION_RECEIVECALL = ACTION_PREFIX + ".rcvCall";
+    private static final String ACTION_ANSWERCALL = ACTION_PREFIX + ".answerCall";
+    private static final String ACTION_HOLDCALL = ACTION_PREFIX + ".holdCall";
+    private static final String ACTION_UNHOLDCALL = ACTION_PREFIX + ".unholdCall";
     private static final String ACTION_ENDCALL = ACTION_PREFIX + ".endCall";
     private static final String ACTION_CLEARALL = ACTION_PREFIX + ".clearAll";
     private static final String ACTION_MERGE = ACTION_PREFIX + ".merge";
@@ -55,6 +59,7 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
     // Contact --number 511 --address "100\ Hello\ Street,\ World,\ CA"
     private static final String ACTION_ADD_CONTACT = ACTION_PREFIX + ".addContact";
     private static final String EXTRA_CALL_ID = "id";
+    private static final String EXTRA_CALL_STATE = "state";
     private static final String EXTRA_DEVICE_ID = "device_id";
     private static final String EXTRA_CONTACT_NAME = "name";
     private static final String EXTRA_PHONE_NUMBER = "number";
@@ -82,6 +87,9 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
         filter.addAction(ACTION_DISCONNECT);
         filter.addAction(ACTION_ADDCALL);
         filter.addAction(ACTION_RECEIVECALL);
+        filter.addAction(ACTION_ANSWERCALL);
+        filter.addAction(ACTION_HOLDCALL);
+        filter.addAction(ACTION_UNHOLDCALL);
         filter.addAction(ACTION_ENDCALL);
         filter.addAction(ACTION_CLEARALL);
         filter.addAction(ACTION_MERGE);
@@ -112,8 +120,9 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
         switch (action) {
             case ACTION_ADDCALL:
                 id = intent.getStringExtra(EXTRA_CALL_ID);
-                Log.d(TAG, action + id);
-                mFakeTelecomManager.placeCall(id);
+                int addCallState = intent.getIntExtra(EXTRA_CALL_STATE, Call.STATE_ACTIVE);
+                Log.d(TAG, action + id + " state: " + addCallState);
+                mFakeTelecomManager.placeCall(id, addCallState);
                 break;
             case ACTION_ENDCALL:
                 id = intent.getStringExtra(EXTRA_CALL_ID);
@@ -122,8 +131,24 @@ public class AdbBroadcastReceiver extends BroadcastReceiver {
                 break;
             case ACTION_RECEIVECALL:
                 id = intent.getStringExtra(EXTRA_CALL_ID);
+                int rcvCallState = intent.getIntExtra(EXTRA_CALL_STATE, Call.STATE_RINGING);
+                Log.d(TAG, action + id + " state: " + rcvCallState);
+                mFakeTelecomManager.receiveCall(id, rcvCallState);
+                break;
+            case ACTION_ANSWERCALL:
+                id = intent.getStringExtra(EXTRA_CALL_ID);
                 Log.d(TAG, action + id);
-                mFakeTelecomManager.receiveCall(id);
+                mFakeTelecomManager.answerCall(id);
+                break;
+            case ACTION_HOLDCALL:
+                id = intent.getStringExtra(EXTRA_CALL_ID);
+                Log.d(TAG, action + id);
+                mFakeTelecomManager.holdCall(id);
+                break;
+            case ACTION_UNHOLDCALL:
+                id = intent.getStringExtra(EXTRA_CALL_ID);
+                Log.d(TAG, action + id);
+                mFakeTelecomManager.unholdCall(id);
                 break;
             case ACTION_CLEARALL:
                 Log.d(TAG, action);

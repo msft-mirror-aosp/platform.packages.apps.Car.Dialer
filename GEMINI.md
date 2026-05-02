@@ -27,6 +27,7 @@ cd ../libs/aaos-apps-gradle-project && ./gradlew :car-dialer-app:test
 
 *   **Always Run Tests:** After implementing any new feature, modifying existing logic, or applying bug fixes in the Dialer application, you **MUST** run the unit tests to ensure that everything passes and no regressions were introduced.
 *   **Git Commit Policy:** Never change a commit or commit files unless explicitly stated by the user to do so.
+*   **Cleanup Policy:** Any test files or temporary files created by Gemini during its run must be cleared after the task is completed to maintain a clean workspace.
 
 ## Fake Implementation and ADB Testing (Drift Bottle)
 

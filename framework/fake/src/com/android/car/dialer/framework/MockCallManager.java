@@ -177,7 +177,13 @@ public class MockCallManager {
 
         // Holding a call will automatically swap the primary and secondary calls. See updateList().
         if (call.equals(mPrimaryCall) && mSecondaryCall != null) {
-            unhold(mSecondaryCall);
+            Log.d(TAG, "Unholding " + mSecondaryCall);
+            when(mSecondaryCall.getState()).thenReturn(Call.STATE_ACTIVE);
+            when(mSecondaryCall.getDetails().getState()).thenReturn(Call.STATE_ACTIVE);
+            List<Call.Callback> callbacks = getCallbacks(mSecondaryCall);
+            for (Call.Callback callback : callbacks) {
+                callback.onStateChanged(mSecondaryCall, Call.STATE_ACTIVE);
+            }
         }
         updateList();
 
@@ -204,6 +210,18 @@ public class MockCallManager {
         Log.d(TAG, "Unholding " + call);
         when(call.getState()).thenReturn(Call.STATE_ACTIVE);
         when(call.getDetails().getState()).thenReturn(Call.STATE_ACTIVE);
+
+        // Unholding a call will automatically swap the primary and secondary calls.
+        // See updateList().
+        if (call.equals(mSecondaryCall) && mPrimaryCall != null) {
+            Log.d(TAG, "Holding " + mPrimaryCall);
+            when(mPrimaryCall.getState()).thenReturn(Call.STATE_HOLDING);
+            when(mPrimaryCall.getDetails().getState()).thenReturn(Call.STATE_HOLDING);
+            List<Call.Callback> callbacks = getCallbacks(mPrimaryCall);
+            for (Call.Callback callback : callbacks) {
+                callback.onStateChanged(mPrimaryCall, Call.STATE_HOLDING);
+            }
+        }
         updateList();
 
         List<Call.Callback> callbacks = getCallbacks(call);
@@ -584,6 +602,10 @@ public class MockCallManager {
             DisconnectCause disconnectCause = new DisconnectCause(1, label, null, "");
             long connectTimeMillis = System.currentTimeMillis();
 
+            when(mDetails.can(Call.Details.CAPABILITY_HOLD)).thenReturn(true);
+            when(mDetails.can(Call.Details.CAPABILITY_SUPPORT_HOLD)).thenReturn(true);
+            when(mDetails.getCallCapabilities()).thenReturn(Call.Details.CAPABILITY_HOLD
+                    | Call.Details.CAPABILITY_SUPPORT_HOLD);
             when(mDetails.getCallDirection()).thenReturn(mCallDirection);
             when(mDetails.getHandle()).thenReturn(uri);
             when(mDetails.getDisconnectCause()).thenReturn(disconnectCause);

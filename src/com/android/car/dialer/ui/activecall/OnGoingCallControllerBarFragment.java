@@ -149,9 +149,10 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
                 CarUiContentListItem item = new CarUiContentListItem(
                         CarUiContentListItem.Action.NONE);
                 AudioRouteInfo routeInfo = getAudioRouteInfo(audioRoute);
-                Drawable drawable = getResources().getDrawable(routeInfo.mIcon, null);
+                Drawable drawable = getContext().getDrawable(routeInfo.mIcon);
                 drawable.setTintList(
-                        getResources().getColorStateList(R.color.icon_accent_activatable, null));
+                        getResources().getColorStateList(R.color.icon_accent_activatable,
+                            getContext().getTheme()));
                 item.setIcon(drawable);
                 item.setOnItemClickedListener(audioRouteItem -> onSetAudioRoute(audioRoute));
                 String routeTitle = getString(routeInfo.mLabel);
@@ -266,7 +267,8 @@ public class OnGoingCallControllerBarFragment extends Hilt_OnGoingCallController
 
     private CharSequence withAccentColor(CharSequence routeTitle) {
         TextAppearanceSpan activeRouteSpan = new TextAppearanceSpan(null, 0, -1,
-                getResources().getColorStateList(R.color.icon_accent_activatable, null), null);
+                getResources().getColorStateList(R.color.icon_accent_activatable,
+                    getContext().getTheme()), null);
         SpannableString spannableTitle = new SpannableString(routeTitle);
         spannableTitle.setSpan(activeRouteSpan, 0, routeTitle.length(), 0);
         return spannableTitle;

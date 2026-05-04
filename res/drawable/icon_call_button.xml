@@ -19,7 +19,7 @@
             android:shape="oval">
             <stroke
                 android:width="@dimen/fab_outline_thickness"
-                android:color="@color/call_button_outline"/>
+                android:color="@color/color_green"/>
             <size
                 android:width="@dimen/fab_outline_size"
                 android:height="@dimen/fab_outline_size"/>

@@ -76,7 +76,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="@color/onhold_time_color"
+                        android:textColor="@color/color_on_surface_variant"
                         android:singleLine="true" />
 
                 <TextView
@@ -97,7 +97,7 @@
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:singleLine="true"
                         android:text="@string/call_state_hold"
-                        android:textColor="@color/onhold_label_color"/>
+                        android:textColor="@color/color_yellow"/>
             </LinearLayout>
         </RelativeLayout>
     </FrameLayout>

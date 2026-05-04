@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/onhold_call_background"/>
+    <solid android:color="@color/color_surface_variant"/>
     <corners android:topLeftRadius="@dimen/dialer_bg_corner_radius"
         android:topRightRadius="@dimen/dialer_bg_corner_radius"/>
 </shape>

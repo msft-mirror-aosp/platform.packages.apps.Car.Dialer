@@ -9,10 +9,13 @@ DEVICE_ID=$2
 
 if [ -z "$FLAVOR" ]; then
     echo "Please select the dialer flavor to build:"
-    options=("emu" "fake" "Quit")
+    options=("emu" "fake" "production" "quit")
     select opt in "${options[@]}"
     do
-        case $opt in
+        choice="${opt:-$REPLY}"
+        choice="${choice,,}"
+
+        case $choice in
             "emu")
                 FLAVOR="emu"
                 break
@@ -21,10 +24,14 @@ if [ -z "$FLAVOR" ]; then
                 FLAVOR="fake"
                 break
                 ;;
-            "Quit")
+            "production")
+                FLAVOR="production"
+                break
+                ;;
+            "quit")
                 exit 0
                 ;;
-            *) echo "Invalid option $REPLY";;
+            *) echo "Invalid option $REPLY. Please enter a number or name.";;
         esac
     done
 fi

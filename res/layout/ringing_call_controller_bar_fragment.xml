@@ -27,7 +27,7 @@ limitations under the License.
             android:layout_height="@dimen/in_call_button_size"
             android:layout_marginEnd="@dimen/in_call_button_margin"
             android:src="@drawable/ic_phone"
-            android:tint="@android:color/black" />
+            android:tint="@color/color_surface" />
 
     <ImageButton
             android:id="@+id/end_call_button"
@@ -35,6 +35,6 @@ limitations under the License.
             android:layout_width="@dimen/incoming_call_button_width"
             android:layout_height="@dimen/in_call_button_size"
             android:src="@drawable/ic_call_end_button"
-            android:tint="@android:color/black" />
+            android:tint="@color/color_on_surface" />
 
 </LinearLayout>

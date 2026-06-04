@@ -84,7 +84,7 @@ public class OnGoingCallControllerBarFragmentTest {
         MockitoAnnotations.initMocks(this);
 
         when(mMockCall.getDetails()).thenReturn(mMockDetails);
-        when(mMockDetails.can(eq(Call.Details.CAPABILITY_SUPPORT_HOLD))).thenReturn(true);
+        when(mMockDetails.can(eq(Call.Details.CAPABILITY_HOLD))).thenReturn(true);
         mCallDetail = CallDetail.fromTelecomCall(mMockCall);
 
         mPrimaryCallLiveData = new MutableLiveData<>(mMockCall);

@@ -92,7 +92,7 @@
         <View
             android:layout_width="@dimen/vertical_divider_width"
             android:layout_height="match_parent"
-            android:background="@color/divider_color"
+            android:background="@color/color_on_surface_inverse"
             android:layout_marginTop="@dimen/vertical_divider_inset"
             android:layout_marginBottom="@dimen/vertical_divider_inset"
             app:layout_constraintStart_toStartOf="parent"/>

@@ -27,7 +27,7 @@ limitations under the License.
             android:layout_height="@dimen/in_call_button_size"
             android:layout_marginEnd="@dimen/in_call_button_margin"
             android:src="@drawable/ic_call_end_button"
-            android:tint="@android:color/black" />
+            android:tint="@color/color_on_surface" />
 
     <ImageButton
             android:id="@+id/mute_button"

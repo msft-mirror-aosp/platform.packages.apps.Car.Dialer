@@ -49,6 +49,8 @@ import com.android.car.telephony.common.CallDetail;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -64,7 +66,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * Manager class for creating and mocking calls.
@@ -159,13 +160,30 @@ public class MockCallManager {
     /**
      * Places a hold on a call
      */
+    public void holdCall(String id) {
+        Call call = findCallById(id);
+        if (call != null) {
+            hold(call);
+        }
+    }
+
+    /**
+     * Places a hold on a call
+     */
     private void hold(Call call) {
         Log.d(TAG, "Holding " + call);
         when(call.getState()).thenReturn(Call.STATE_HOLDING);
+        when(call.getDetails().getState()).thenReturn(Call.STATE_HOLDING);
 
         // Holding a call will automatically swap the primary and secondary calls. See updateList().
         if (call.equals(mPrimaryCall) && mSecondaryCall != null) {
-            unhold(mSecondaryCall);
+            Log.d(TAG, "Unholding " + mSecondaryCall);
+            when(mSecondaryCall.getState()).thenReturn(Call.STATE_ACTIVE);
+            when(mSecondaryCall.getDetails().getState()).thenReturn(Call.STATE_ACTIVE);
+            List<Call.Callback> callbacks = getCallbacks(mSecondaryCall);
+            for (Call.Callback callback : callbacks) {
+                callback.onStateChanged(mSecondaryCall, Call.STATE_ACTIVE);
+            }
         }
         updateList();
 
@@ -178,9 +196,32 @@ public class MockCallManager {
     /**
      * Unhold a call
      */
+    public void unholdCall(String id) {
+        Call call = findCallById(id);
+        if (call != null) {
+            unhold(call);
+        }
+    }
+
+    /**
+     * Unhold a call
+     */
     private void unhold(Call call) {
         Log.d(TAG, "Unholding " + call);
         when(call.getState()).thenReturn(Call.STATE_ACTIVE);
+        when(call.getDetails().getState()).thenReturn(Call.STATE_ACTIVE);
+
+        // Unholding a call will automatically swap the primary and secondary calls.
+        // See updateList().
+        if (call.equals(mSecondaryCall) && mPrimaryCall != null) {
+            Log.d(TAG, "Holding " + mPrimaryCall);
+            when(mPrimaryCall.getState()).thenReturn(Call.STATE_HOLDING);
+            when(mPrimaryCall.getDetails().getState()).thenReturn(Call.STATE_HOLDING);
+            List<Call.Callback> callbacks = getCallbacks(mPrimaryCall);
+            for (Call.Callback callback : callbacks) {
+                callback.onStateChanged(mPrimaryCall, Call.STATE_HOLDING);
+            }
+        }
         updateList();
 
         List<Call.Callback> callbacks = getCallbacks(call);
@@ -344,6 +385,7 @@ public class MockCallManager {
         Log.d(TAG, "answering call: " + call);
 
         when(call.getState()).thenReturn(Call.STATE_ACTIVE);
+        when(call.getDetails().getState()).thenReturn(Call.STATE_ACTIVE);
         updateList();
 
         List<Call.Callback> callbacks = getCallbacks(call);
@@ -560,6 +602,10 @@ public class MockCallManager {
             DisconnectCause disconnectCause = new DisconnectCause(1, label, null, "");
             long connectTimeMillis = System.currentTimeMillis();
 
+            when(mDetails.can(Call.Details.CAPABILITY_HOLD)).thenReturn(true);
+            when(mDetails.can(Call.Details.CAPABILITY_SUPPORT_HOLD)).thenReturn(true);
+            when(mDetails.getCallCapabilities()).thenReturn(Call.Details.CAPABILITY_HOLD
+                    | Call.Details.CAPABILITY_SUPPORT_HOLD);
             when(mDetails.getCallDirection()).thenReturn(mCallDirection);
             when(mDetails.getHandle()).thenReturn(uri);
             when(mDetails.getDisconnectCause()).thenReturn(disconnectCause);
@@ -581,6 +627,7 @@ public class MockCallManager {
             }
 
             doReturn(mDetails).when(mCall).getDetails();
+            when(mDetails.getState()).thenReturn(mCallState);
             when(mCall.getState()).thenReturn(mCallState);
         }
 

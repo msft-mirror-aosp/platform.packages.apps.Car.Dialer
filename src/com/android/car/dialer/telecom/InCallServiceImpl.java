@@ -127,8 +127,7 @@ public class InCallServiceImpl extends Hilt_InCallServiceImpl {
                     continue;
                 }
                 if (call.getDetails().getState() == Call.STATE_ACTIVE) {
-                    if (call.getDetails().can(Call.Details.CAPABILITY_SUPPORT_HOLD)
-                            || call.getDetails().can(Call.Details.CAPABILITY_HOLD)) {
+                    if (call.getDetails().can(Call.Details.CAPABILITY_HOLD)) {
                         L.i(TAG, "Hold the holdable call: %s", call);
                         call.hold();
                     } else {

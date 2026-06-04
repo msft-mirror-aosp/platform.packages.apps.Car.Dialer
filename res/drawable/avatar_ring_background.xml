@@ -17,7 +17,7 @@ limitations under the License.
     <item android:id="@android:id/background">
         <shape android:shape="oval">
             <stroke android:width="@dimen/in_call_avatar_ring_stroke_size"
-                android:color="@color/secondary_background_color"/>
+                android:color="@color/color_surface_variant"/>
         </shape>
     </item>
 </selector>

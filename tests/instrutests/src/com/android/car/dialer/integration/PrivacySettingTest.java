@@ -37,6 +37,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.telecom.Call;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -53,6 +54,9 @@ import com.android.car.dialer.framework.testdata.CallLogDataHandler;
 import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -60,9 +64,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
-
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
 
 @RunWith(AndroidJUnit4.class)
 @HiltAndroidTest
@@ -108,7 +109,7 @@ public class PrivacySettingTest {
                         allOf(withId(android.R.id.switch_widget), isNotChecked())))));
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mFakeTelecomManager.receiveCall(CALL_ID));
+                () -> mFakeTelecomManager.receiveCall(CALL_ID, Call.STATE_RINGING));
 
         waitUntilNotificationShows();
 
@@ -127,7 +128,7 @@ public class PrivacySettingTest {
                         allOf(withId(android.R.id.switch_widget), isChecked())))));
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mFakeTelecomManager.receiveCall(CALL_ID));
+                () -> mFakeTelecomManager.receiveCall(CALL_ID, Call.STATE_RINGING));
 
         assertThat(mNotificationManager.getActiveNotifications().length).isEqualTo(0);
     }

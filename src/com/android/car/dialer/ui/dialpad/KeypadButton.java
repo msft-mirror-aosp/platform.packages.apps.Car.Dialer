@@ -91,7 +91,7 @@ public class KeypadButton extends FrameLayout {
         }
 
         if (mImageRes != INVALID_IMAGE_RES) {
-            ImageView imageView = (ImageView) findViewById(R.id.keypad_image);
+            ImageView imageView = findViewById(R.id.keypad_image);
             imageView.setImageResource(mImageRes);
             imageView.setVisibility(VISIBLE);
         }

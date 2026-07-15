@@ -58,22 +58,43 @@ is possible with the connect command below.
       ```
       adb shell am broadcast -a com.android.car.dialer.intent.action.addCall --es id 511
       ```
+      Optional: specify an initial call state (e.g., directly start as ACTIVE):
+      ```
+      adb shell am broadcast -a com.android.car.dialer.intent.action.addCall --es id 511 --ei state 4
+      ```
+
     * Receive an incoming call
       ```
       adb shell am broadcast -a com.android.car.dialer.intent.action.rcvCall --es id 511
       ```
+      Optional: specify an initial call state:
+      ```
+      adb shell am broadcast -a com.android.car.dialer.intent.action.rcvCall --es id 511 --ei state 2
+      ```
+
+    * Answer a call
+      Moves a RINGING call to the ACTIVE state.
+      ```
+      adb shell am broadcast -a com.android.car.dialer.intent.action.answerCall --es id 511
+      ```
+
     * End a call
       ```
       adb shell am broadcast -a com.android.car.dialer.intent.action.endCall --es id 511
       ```
-    * Hold current call
+
+    * Hold a specific call
+      Moves the call to the HOLDING state.
       ```
-      adb shell am broadcast -a com.android.car.dialer.intent.action.holdCall
+      adb shell am broadcast -a com.android.car.dialer.intent.action.holdCall --es id 511
       ```
-    * Unhold current call
+
+    * Unhold a specific call
+      Moves the call back to the ACTIVE state.
       ```
-      adb shell am broadcast -a com.android.car.dialer.intent.action.unholdCall
+      adb shell am broadcast -a com.android.car.dialer.intent.action.unholdCall --es id 511
       ```
+
     * Merge calls
       Merge the primary and secondary calls into a conference call. This command will only work if
       both the primary and secondary calls exist. An existing conference call is considered a
@@ -81,11 +102,25 @@ is possible with the connect command below.
       ```
       adb shell am broadcast -a com.android.car.dialer.intent.action.mergeCall
       ```
+
     * Clear all calls
       This command will remove **ALL** calls in the call list.
       ```
       adb shell am broadcast -a com.android.car.dialer.intent.action.clearAll
       ```
+
+#### Reference: Call States (Integer values for `--ei state`)
+| State Name | Value | Description |
+| :--- | :--- | :--- |
+| STATE_NEW | 0 | Call is being created |
+| STATE_DIALING | 1 | Outgoing call is dialing |
+| STATE_RINGING | 2 | Incoming call is ringing |
+| STATE_HOLDING | 3 | Call is on hold |
+| STATE_ACTIVE | 4 | Call is connected/active |
+| STATE_DISCONNECTED | 7 | Call has ended |
+| STATE_CONNECTING | 9 | Outgoing call is connecting |
+| STATE_DISCONNECTING | 10 | Call is currently ending |
+
 * Insert Test Data
   * Insert Contact
     The following command allows user to insert test contacts for the simulated bluetooth

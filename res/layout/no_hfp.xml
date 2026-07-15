@@ -70,7 +70,9 @@
 
             <com.android.car.apps.common.UxrButton
                 android:id="@+id/connect_bluetooth_button"
-                style="@style/FullScreenErrorButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/hero_button_height"
+                style="@style/Widget.Dialer.Button"
                 android:text="@string/connect_bluetooth_button_text"
                 android:layout_marginTop="@dimen/connect_bluetooth_button_margin_top"
                 app:layout_constraintTop_toBottomOf="@+id/error_string"

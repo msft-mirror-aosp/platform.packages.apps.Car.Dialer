@@ -41,6 +41,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.telecom.Call;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.intent.Intents;
@@ -57,6 +58,9 @@ import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.dialer.ui.activecall.InCallActivity;
 import com.android.car.ui.testing.actions.CarUiRecyclerViewActions;
 
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,9 +70,6 @@ import org.junit.runner.RunWith;
 import java.util.List;
 
 import javax.inject.Inject;
-
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
 
 @RunWith(AndroidJUnit4.class)
 @HiltAndroidTest
@@ -115,7 +116,7 @@ public class ActiveCallSettingTest {
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> {
-                    mFakeTelecomManager.receiveCall(CALL_ID);
+                    mFakeTelecomManager.receiveCall(CALL_ID, Call.STATE_RINGING);
                     clickNotificationAnswerButton();
                     mFakeTelecomManager.endCall(CALL_ID);
                 });
@@ -142,7 +143,7 @@ public class ActiveCallSettingTest {
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> {
-                    mFakeTelecomManager.receiveCall(CALL_ID);
+                    mFakeTelecomManager.receiveCall(CALL_ID, Call.STATE_RINGING);
                     clickNotificationAnswerButton();
                     mFakeTelecomManager.endCall(CALL_ID);
                 });

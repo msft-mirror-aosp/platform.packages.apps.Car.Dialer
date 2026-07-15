@@ -15,12 +15,12 @@
   limitations under the License.
   -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/primary_icon_color"
+    <item android:color="?android:attr/colorForeground"
           android:state_enabled="true"
           android:state_activated="false"/>
-    <item android:color="#FFFFFF"
-          android:state_enabled="true"
-          android:state_activated="true"/>
-    <item android:color="#80FFFFFF"
+   <item android:color="?android:attr/textColorPrimary"
+         android:state_enabled="true"
+         android:state_activated="true"/>
+    <item android:color="?android:attr/textColorSecondary"
           android:state_enabled="false"/>
 </selector>

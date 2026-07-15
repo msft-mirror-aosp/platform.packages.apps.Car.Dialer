@@ -46,6 +46,8 @@ import com.android.car.dialer.ui.TelecomActivity;
 import com.android.car.telephony.common.PhoneCallLog;
 import com.android.car.telephony.common.TelecomUtils;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,8 +59,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /** Controller that manages the missed call notifications. */
 @Singleton
@@ -144,7 +144,7 @@ public final class MissedCallNotificationController {
 
                     Notification.Builder builder = new Notification.Builder(mContext, CHANNEL_ID)
                             .setSmallIcon(R.drawable.ic_phone)
-                            .setColor(mContext.getColor(R.color.notification_app_icon_color))
+                            .setColor(mContext.getColor(R.color.color_primary))
                             .setLargeIcon(pair.second)
                             .setContentTitle(contentTitle)
                             .setContentText(TelecomUtils.getBidiWrappedNumber(pair.first))

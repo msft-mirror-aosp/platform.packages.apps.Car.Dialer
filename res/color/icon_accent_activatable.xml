@@ -14,8 +14,8 @@
      limitations under the License.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/primary_icon_color"
+    <item android:color="?android:attr/colorForeground"
           android:state_activated="false"/>
-    <item android:color="@color/audio_output_accent"
+    <item android:color="?android:attr/textColorPrimary"
           android:state_activated="true"/>
 </selector>

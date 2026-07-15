@@ -44,11 +44,9 @@ import com.android.car.telephony.common.CallDetail;
 import com.android.car.telephony.common.Contact;
 import com.android.car.telephony.common.TelecomUtils;
 
-import java.util.Objects;
+import dagger.hilt.android.AndroidEntryPoint;
 
 import javax.inject.Inject;
-
-import dagger.hilt.android.AndroidEntryPoint;
 
 /**
  * A fragment that displays information about onhold call.
@@ -158,19 +156,10 @@ public class OnHoldCallUserProfileFragment extends Hilt_OnHoldCallUserProfileFra
     }
 
     private void swapCalls() {
-        Call primaryCall = mPrimaryCallLiveData.getValue();
+        // Unhold secondary call so telecom can foreground it, see
+        // CallSequencingController#unholdCall(Call)
         Call secondaryCall = mSecondaryCallLiveData.getValue();
-
-        // Hold primary call and the secondary call will automatically come to the foreground
-        // for the same phone account handle.
-        if (primaryCall.getDetails().getState() != Call.STATE_HOLDING) {
-            primaryCall.hold();
-        }
-
-        // For different phone account handles, we will unhold the other call.
-        if (!Objects.equals(
-                primaryCall.getDetails().getAccountHandle(),
-                secondaryCall.getDetails().getAccountHandle())) {
+        if (secondaryCall != null) {
             secondaryCall.unhold();
         }
     }

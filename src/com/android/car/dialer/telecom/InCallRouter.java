@@ -96,7 +96,7 @@ class InCallRouter {
      * Presents the ringing call in HUN.
      */
     private void routeToNotification(Call call) {
-        if (shouldShowIncomingCallHun()) {
+        if (shouldShowIncomingCallHun(call)) {
             mInCallNotificationController.showInCallNotification(call);
         }
         call.registerCallback(new Call.Callback() {
@@ -133,7 +133,12 @@ class InCallRouter {
         mContext.startActivity(launchIntent);
     }
 
-    private boolean shouldShowIncomingCallHun() {
+    private boolean shouldShowIncomingCallHun(Call call) {
+        if (call != null && call.getDetails() != null
+                && call.getDetails().hasProperty(Call.Details.PROPERTY_SELF_MANAGED)) {
+            return false;
+        }
+
         boolean shouldSuppressHunByDefault =
                 mContext.getResources().getBoolean(R.bool.config_should_suppress_incoming_call_hun);
         return !mSharedPreferences

@@ -33,13 +33,13 @@ import android.telecom.InCallService;
 import android.telecom.TelecomManager;
 import android.util.Log;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import dagger.hilt.android.qualifiers.ApplicationContext;
 
 /**
  * A fake TelecomManager implementation
@@ -88,7 +88,7 @@ public class FakeTelecomManager {
 
                 Uri uri = inv.getArgument(0);
                 String number = uri.getSchemeSpecificPart();
-                placeCall(number);
+                placeCall(number, Call.STATE_ACTIVE);
 
                 return null;
             }
@@ -100,20 +100,30 @@ public class FakeTelecomManager {
     /**
      * Places a call.
      */
-    public void placeCall(String id) {
-        mMockCallManager.addCall(id, Call.Details.DIRECTION_OUTGOING, Call.STATE_ACTIVE);
+    public void placeCall(String id, int state) {
+        mMockCallManager.addCall(id, Call.Details.DIRECTION_OUTGOING, state);
     }
 
     /**
      * Receive a call.
      */
-    public void receiveCall(String id) {
-        mMockCallManager.addCall(id, Call.Details.DIRECTION_INCOMING, Call.STATE_RINGING);
+    public void receiveCall(String id, int state) {
+        mMockCallManager.addCall(id, Call.Details.DIRECTION_INCOMING, state);
     }
 
     /** Answers an incoming call. */
     public void answerCall(String id) {
         mMockCallManager.answerCall(id);
+    }
+
+    /** Puts a call on hold. */
+    public void holdCall(String id) {
+        mMockCallManager.holdCall(id);
+    }
+
+    /** Unholds a call. */
+    public void unholdCall(String id) {
+        mMockCallManager.unholdCall(id);
     }
 
     /**
